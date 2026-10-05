@@ -1,0 +1,818 @@
+{
+  "set": "VIVA MEXICO",
+  "family": "Cultural",
+  "finishes": [
+    {
+      "id": "vm_aztec_sunfire",
+      "name": "Aztec Sunfire",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_14_50 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_aztec_sunfire.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_aztec_sunfire_spec.png",
+      "crop_y": 3256,
+      "style": "molten_aztec",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#923514"
+    },
+    {
+      "id": "vm_talavera_azul",
+      "name": "Talavera Azul",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_14_57 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_talavera_azul.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_talavera_azul_spec.png",
+      "crop_y": 3256,
+      "style": "obsidian_gold",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#434e6e"
+    },
+    {
+      "id": "vm_quetzal_sunset",
+      "name": "Quetzal Sunset",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_15_05 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_quetzal_sunset.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_quetzal_sunset_spec.png",
+      "crop_y": 3256,
+      "style": "quetzal_chrome",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#8a4939"
+    },
+    {
+      "id": "vm_sacred_heart_eclipse",
+      "name": "Sacred Heart Eclipse",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_15_10 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_sacred_heart_eclipse.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_sacred_heart_eclipse_spec.png",
+      "crop_y": 3256,
+      "style": "jaguar_dark",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#5a382d"
+    },
+    {
+      "id": "vm_guadalupe_lowrider",
+      "name": "Guadalupe Lowrider",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_15_20 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_guadalupe_lowrider.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_guadalupe_lowrider_spec.png",
+      "crop_y": 3256,
+      "style": "talavera_blue",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#51312a"
+    },
+    {
+      "id": "vm_rosa_corazon",
+      "name": "Rosa Corazon",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_15_33 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_rosa_corazon.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_rosa_corazon_spec.png",
+      "crop_y": 3256,
+      "style": "marigold",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#742c47"
+    },
+    {
+      "id": "vm_mariachi_verde",
+      "name": "Mariachi Verde",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_15_42 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_mariachi_verde.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_mariachi_verde_spec.png",
+      "crop_y": 3256,
+      "style": "neon_calavera",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#5b4d2d"
+    },
+    {
+      "id": "vm_calavera_violeta",
+      "name": "Calavera Violeta",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_15_48 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_calavera_violeta.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_calavera_violeta_spec.png",
+      "crop_y": 3256,
+      "style": "chrome_mask",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#4e3c57"
+    },
+    {
+      "id": "vm_serape_sunburst",
+      "name": "Serape Sunburst",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_15_53 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_serape_sunburst.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_serape_sunburst_spec.png",
+      "crop_y": 3256,
+      "style": "woven_prism",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#7c3917"
+    },
+    {
+      "id": "vm_riviera_lowrider",
+      "name": "Riviera Lowrider",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_15_59 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_riviera_lowrider.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_riviera_lowrider_spec.png",
+      "crop_y": 3256,
+      "style": "agave_green",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#394f7a"
+    },
+    {
+      "id": "vm_luchador_plata",
+      "name": "Luchador Plata",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_16_10 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_luchador_plata.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_luchador_plata_spec.png",
+      "crop_y": 3256,
+      "style": "monarch",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#604d45"
+    },
+    {
+      "id": "vm_luchador_rayo",
+      "name": "Luchador Rayo",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_16_21 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_luchador_rayo.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_luchador_rayo_spec.png",
+      "crop_y": 3256,
+      "style": "floral_paint",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#3f4452"
+    },
+    {
+      "id": "vm_cactus_sunset",
+      "name": "Cactus Sunset",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_16_55 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_cactus_sunset.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_cactus_sunset_spec.png",
+      "crop_y": 3256,
+      "style": "desert",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#871511"
+    },
+    {
+      "id": "vm_sierra_verde",
+      "name": "Sierra Verde",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_17_00 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_sierra_verde.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_sierra_verde_spec.png",
+      "crop_y": 3256,
+      "style": "gold_brass",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#446c44"
+    },
+    {
+      "id": "vm_cenote_lace",
+      "name": "Cenote Lace",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_17_05 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_cenote_lace.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_cenote_lace_spec.png",
+      "crop_y": 3256,
+      "style": "paper_cut",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#337d8b"
+    },
+    {
+      "id": "vm_agave_pearl",
+      "name": "Agave Pearl",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_17_10 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_agave_pearl.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_agave_pearl_spec.png",
+      "crop_y": 3256,
+      "style": "confetti",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#3f715d"
+    },
+    {
+      "id": "vm_baja_horizon",
+      "name": "Baja Horizon",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_17_16 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_baja_horizon.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_baja_horizon_spec.png",
+      "crop_y": 3256,
+      "style": "muertos",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#9a5c40"
+    },
+    {
+      "id": "vm_pacific_coast_dawn",
+      "name": "Pacific Coast Dawn",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_17_20 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_pacific_coast_dawn.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_pacific_coast_dawn_spec.png",
+      "crop_y": 3256,
+      "style": "sunrise",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#947f7c"
+    },
+    {
+      "id": "vm_copper_canyon",
+      "name": "Copper Canyon",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_17_26 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_copper_canyon.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_copper_canyon_spec.png",
+      "crop_y": 3256,
+      "style": "copper",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#8c6120"
+    },
+    {
+      "id": "vm_sierra_niebla",
+      "name": "Sierra Niebla",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_17_32 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_sierra_niebla.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_sierra_niebla_spec.png",
+      "crop_y": 3256,
+      "style": "temple_gold",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#909aa6"
+    },
+    {
+      "id": "vm_oaxaca_moonwater",
+      "name": "Oaxaca Moonwater",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_17_36 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_oaxaca_moonwater.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_oaxaca_moonwater_spec.png",
+      "crop_y": 3256,
+      "style": "ember",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#1d2b45"
+    },
+    {
+      "id": "vm_xolo_candy_desert",
+      "name": "Xolo Candy Desert",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_17_42 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_xolo_candy_desert.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_xolo_candy_desert_spec.png",
+      "crop_y": 3256,
+      "style": "black_dog",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#c3714f"
+    },
+    {
+      "id": "vm_huichol_beadwork",
+      "name": "Huichol Beadwork",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_17_56 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_huichol_beadwork.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_huichol_beadwork_spec.png",
+      "crop_y": 3256,
+      "style": "beadwork",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#5c443d"
+    },
+    {
+      "id": "vm_sonora_blue_calavera",
+      "name": "Sonora Blue Calavera",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_18_03 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_sonora_blue_calavera.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_sonora_blue_calavera_spec.png",
+      "crop_y": 3256,
+      "style": "heatwave",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#5c6574"
+    },
+    {
+      "id": "vm_bajio_gold_calaveras",
+      "name": "Bajio Gold Calaveras",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_18_12 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_bajio_gold_calaveras.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_bajio_gold_calaveras_spec.png",
+      "crop_y": 3256,
+      "style": "aqua",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#5d5037"
+    },
+    {
+      "id": "vm_lucha_rosa",
+      "name": "Lucha Rosa",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_18_18 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_lucha_rosa.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_lucha_rosa_spec.png",
+      "crop_y": 3256,
+      "style": "jade",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#78474f"
+    },
+    {
+      "id": "vm_desert_marigold",
+      "name": "Desert Marigold",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_18_23 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_desert_marigold.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_desert_marigold_spec.png",
+      "crop_y": 3256,
+      "style": "marigold",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#624a30"
+    },
+    {
+      "id": "vm_zapata_jade",
+      "name": "Zapata Jade",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_18_27 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_zapata_jade.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_zapata_jade_spec.png",
+      "crop_y": 3256,
+      "style": "bronze",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#535b46"
+    },
+    {
+      "id": "vm_cinco_spark",
+      "name": "Cinco Spark",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_18_31 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_cinco_spark.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_cinco_spark_spec.png",
+      "crop_y": 3256,
+      "style": "spark",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#585872"
+    },
+    {
+      "id": "vm_mezcal_smoke",
+      "name": "Mezcal Smoke",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_18_35 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_mezcal_smoke.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_mezcal_smoke_spec.png",
+      "crop_y": 3256,
+      "style": "smoke",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#595387"
+    },
+    {
+      "id": "vm_riviera_corazon",
+      "name": "Riviera Corazon",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_18_39 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_riviera_corazon.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_riviera_corazon_spec.png",
+      "crop_y": 3256,
+      "style": "aqua",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#614334"
+    },
+    {
+      "id": "vm_noche_buena",
+      "name": "Noche Buena",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_18_49 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_noche_buena.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_noche_buena_spec.png",
+      "crop_y": 3256,
+      "style": "holiday_red",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#694a3e"
+    },
+    {
+      "id": "vm_rosario_gold",
+      "name": "Rosario Gold",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_18_54 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_rosario_gold.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_rosario_gold_spec.png",
+      "crop_y": 3256,
+      "style": "rosary_gold",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#7d3d21"
+    },
+    {
+      "id": "vm_pyramid_shadow",
+      "name": "Pyramid Shadow",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_18_58 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_pyramid_shadow.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_pyramid_shadow_spec.png",
+      "crop_y": 3256,
+      "style": "shadow",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#68331a"
+    },
+    {
+      "id": "vm_fiesta_chrome",
+      "name": "Fiesta Chrome",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_19_02 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_fiesta_chrome.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_fiesta_chrome_spec.png",
+      "crop_y": 3256,
+      "style": "chrome",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#602915"
+    },
+    {
+      "id": "vm_maguey_pearl",
+      "name": "Maguey Pearl",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_19_06 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_maguey_pearl.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_maguey_pearl_spec.png",
+      "crop_y": 3256,
+      "style": "pearl",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#6d2d18"
+    },
+    {
+      "id": "vm_cantina_neon",
+      "name": "Cantina Neon",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_19_11 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_cantina_neon.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_cantina_neon_spec.png",
+      "crop_y": 3256,
+      "style": "neon",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#8b2f28"
+    },
+    {
+      "id": "vm_azulejo_storm",
+      "name": "Azulejo Storm",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_19_15 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_azulejo_storm.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_azulejo_storm_spec.png",
+      "crop_y": 3256,
+      "style": "tile_storm",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#714120"
+    },
+    {
+      "id": "vm_calavera_royal",
+      "name": "Calavera Royal",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_19_20 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_calavera_royal.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_calavera_royal_spec.png",
+      "crop_y": 3256,
+      "style": "royal",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#7e3b17"
+    },
+    {
+      "id": "vm_talavera_muertos",
+      "name": "Talavera Muertos",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_19_24 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_talavera_muertos.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_talavera_muertos_spec.png",
+      "crop_y": 3256,
+      "style": "volcanic",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#7a695a"
+    },
+    {
+      "id": "vm_tulum_candelaria",
+      "name": "Tulum Candelaria",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_19_30 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_tulum_candelaria.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_tulum_candelaria_spec.png",
+      "crop_y": 3256,
+      "style": "reef",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#80411d"
+    },
+    {
+      "id": "vm_eclipse_ofrenda",
+      "name": "Eclipse Ofrenda",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_19_33 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_eclipse_ofrenda.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_eclipse_ofrenda_spec.png",
+      "crop_y": 3256,
+      "style": "ribbon",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#673524"
+    },
+    {
+      "id": "vm_charro_nocturne",
+      "name": "Charro Nocturne",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_19_39 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_charro_nocturne.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_charro_nocturne_spec.png",
+      "crop_y": 3256,
+      "style": "leather",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#37535e"
+    },
+    {
+      "id": "vm_cempasuchil_noir",
+      "name": "Cempasuchil Noir",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_19_45 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_cempasuchil_noir.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_cempasuchil_noir_spec.png",
+      "crop_y": 3256,
+      "style": "cempasuchil",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#453f3a"
+    },
+    {
+      "id": "vm_sierra_madre",
+      "name": "Sierra Madre",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_19_50 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_sierra_madre.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_sierra_madre_spec.png",
+      "crop_y": 3256,
+      "style": "mountain",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#4b6053"
+    },
+    {
+      "id": "vm_mole_negro",
+      "name": "Mole Negro",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_19_55 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_mole_negro.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_mole_negro_spec.png",
+      "crop_y": 3256,
+      "style": "black_sauce",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#65483c"
+    },
+    {
+      "id": "vm_veracruz_carnival",
+      "name": "Veracruz Carnival",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_20_02 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_veracruz_carnival.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_veracruz_carnival_spec.png",
+      "crop_y": 3256,
+      "style": "carnival",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#803e23"
+    },
+    {
+      "id": "vm_jalisco_flash",
+      "name": "Jalisco Flash",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_20_18 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_jalisco_flash.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_jalisco_flash_spec.png",
+      "crop_y": 3256,
+      "style": "flash",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#565964"
+    },
+    {
+      "id": "vm_mosaic_jaguar",
+      "name": "Mosaic Jaguar",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_27_55 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_mosaic_jaguar.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_mosaic_jaguar_spec.png",
+      "crop_y": 3256,
+      "style": "jaguar_mosaic",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#452e1e"
+    },
+    {
+      "id": "vm_milagro_silver",
+      "name": "Milagro Silver",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_28_02 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_milagro_silver.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_milagro_silver_spec.png",
+      "crop_y": 3256,
+      "style": "silver",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#532015"
+    },
+    {
+      "id": "vm_sacred_cenote",
+      "name": "Sacred Cenote",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_28_08 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_sacred_cenote.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_sacred_cenote_spec.png",
+      "crop_y": 3256,
+      "style": "cenote",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#3e3027"
+    },
+    {
+      "id": "vm_playa_dorada",
+      "name": "Playa Dorada",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_28_15 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_playa_dorada.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_playa_dorada_spec.png",
+      "crop_y": 3256,
+      "style": "copper",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#c49a77"
+    },
+    {
+      "id": "vm_adobe_sunset",
+      "name": "Adobe Sunset",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_28_21 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_adobe_sunset.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_adobe_sunset_spec.png",
+      "crop_y": 3256,
+      "style": "adobe",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#7a563c"
+    },
+    {
+      "id": "vm_zapotec_thunder",
+      "name": "Zapotec Thunder",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_28_26 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_zapotec_thunder.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_zapotec_thunder_spec.png",
+      "crop_y": 3256,
+      "style": "thunder",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#956b3b"
+    },
+    {
+      "id": "vm_nopal_bloom",
+      "name": "Nopal Bloom",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_28_34 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_nopal_bloom.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_nopal_bloom_spec.png",
+      "crop_y": 3256,
+      "style": "nopal",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#ab6832"
+    },
+    {
+      "id": "vm_mayan_jade",
+      "name": "Mayan Jade",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_28_40 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_mayan_jade.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_mayan_jade_spec.png",
+      "crop_y": 3256,
+      "style": "jade",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#895c21"
+    },
+    {
+      "id": "vm_neon_cantina",
+      "name": "Neon Cantina",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_28_46 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_neon_cantina.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_neon_cantina_spec.png",
+      "crop_y": 3256,
+      "style": "chili",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#5b3b65"
+    },
+    {
+      "id": "vm_baja_cartografia",
+      "name": "Baja Cartografia",
+      "source": "C:\\DRIVE E BACKUP\\Shokker Paint Booth Gold to Platinum\\assets\\reference_textures\\cultural\\Viva Mexico\\ChatGPT Image May 4, 2026, 11_28_57 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/viva_mexico/vm_baja_cartografia.png",
+      "spec": "assets/reference_textures/cultural/viva_mexico/vm_baja_cartografia_spec.png",
+      "crop_y": 3256,
+      "style": "cobalt",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#998260"
+    }
+  ]
+}

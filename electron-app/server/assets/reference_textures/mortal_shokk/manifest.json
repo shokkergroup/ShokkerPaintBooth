@@ -1,0 +1,32 @@
+{
+  "format": "spb-mortal-shokk-v2",
+  "notes": "Bottom ~15% of source PNG (render/export captions) is cropped at load. Spec is scratch-built per plate + Viva-class pre/post pipeline; tune detail_scale / chromatic_shift per finish.",
+  "finishes": [
+    {"id": "ms_acid_veil_ambush", "file": "Acid Veil Ambush_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.9, "dark_interior_flatten": 0.4, "chromatic_shift": true},
+    {"id": "ms_blood_empress", "file": "Blood Empress_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.87, "dark_interior_flatten": 0.44, "chromatic_shift": true},
+    {"id": "ms_bone_sonata", "file": "Bone Sonata_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.84, "dark_interior_flatten": 0.46, "chromatic_shift": false},
+    {"id": "ms_chainburst_inferno", "file": "Chainburst Inferno_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.92, "dark_interior_flatten": 0.38, "chromatic_shift": true},
+    {"id": "ms_cinder_spiral", "file": "Cinder Spiral_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.89, "dark_interior_flatten": 0.41, "chromatic_shift": true},
+    {"id": "ms_crimson_dragon", "file": "Crimson Dragon_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.91, "dark_interior_flatten": 0.4, "chromatic_shift": true},
+    {"id": "ms_cryo_shard", "file": "Cryo Shard_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.86, "dark_interior_flatten": 0.45, "chromatic_shift": false},
+    {"id": "ms_crystal_onslaught", "file": "Crystal Onslaught_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.93, "dark_interior_flatten": 0.39, "chromatic_shift": true},
+    {"id": "ms_dragon_ascent", "file": "Dragon Ascent_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.88, "dark_interior_flatten": 0.42, "chromatic_shift": true},
+    {"id": "ms_dragon_soul", "file": "Dragon Soul_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.9, "dark_interior_flatten": 0.41, "chromatic_shift": true},
+    {"id": "ms_emerald_scale_mirage", "file": "Emerald Scale Mirage_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.94, "dark_interior_flatten": 0.37, "chromatic_shift": true},
+    {"id": "ms_fang_cataclysm", "file": "Fang Cataclysm_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.89, "dark_interior_flatten": 0.43, "chromatic_shift": false},
+    {"id": "ms_frost_sentinel", "file": "Frost Sentinel_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.85, "dark_interior_flatten": 0.46, "chromatic_shift": false},
+    {"id": "ms_frozen_inferno", "file": "Frozen Inferno_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.91, "dark_interior_flatten": 0.4, "chromatic_shift": true},
+    {"id": "ms_lotus_ascention", "file": "Lotus Ascention_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.87, "dark_interior_flatten": 0.44, "chromatic_shift": true},
+    {"id": "ms_molten_sting", "file": "Molten Sting_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.92, "dark_interior_flatten": 0.39, "chromatic_shift": true},
+    {"id": "ms_porcelain_cipher", "file": "Porcelain Cipher_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.88, "dark_interior_flatten": 0.43, "chromatic_shift": false},
+    {"id": "ms_serpent_haze_strike", "file": "Serpent Haze Strike_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.9, "dark_interior_flatten": 0.41, "chromatic_shift": true},
+    {"id": "ms_shadow_wraith", "file": "Shadow Wraith_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.83, "dark_interior_flatten": 0.48, "chromatic_shift": false},
+    {"id": "ms_soul_forge", "file": "Soul Forge_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.91, "dark_interior_flatten": 0.4, "chromatic_shift": true},
+    {"id": "ms_tempest_crown", "file": "Tempest Crown_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.89, "dark_interior_flatten": 0.42, "chromatic_shift": true},
+    {"id": "ms_thunder_mandala", "file": "Thunder Mandala_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.93, "dark_interior_flatten": 0.38, "chromatic_shift": true},
+    {"id": "ms_toxic_labyrinth", "file": "Toxic Labyrinth_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.9, "dark_interior_flatten": 0.41, "chromatic_shift": true},
+    {"id": "ms_venom_eclipse", "file": "Venom Eclipse_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.92, "dark_interior_flatten": 0.39, "chromatic_shift": true},
+    {"id": "ms_venom_veil", "file": "Venom Veil_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.89, "dark_interior_flatten": 0.42, "chromatic_shift": true},
+    {"id": "ms_zero_hour", "file": "Zero Hour_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png", "detail_scale": 1.88, "dark_interior_flatten": 0.43, "chromatic_shift": false}
+  ]
+}

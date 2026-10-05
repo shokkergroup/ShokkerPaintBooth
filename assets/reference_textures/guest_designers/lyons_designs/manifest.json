@@ -1,0 +1,12 @@
+{
+  "designer_display_name": "Lyons Designs",
+  "credit_line": "Ronald Lyons",
+  "finishes": [
+    {
+      "id": "gd_lyons_black_rainbow_holo_x",
+      "display_name": "Black Rainbow Holo X",
+      "invert_roughness": false,
+      "description": "Guest-authored iRacing plate: full-color albedo plus paired metallic and roughness maps (mapped to SPB M/R); clearcoat sculpted from albedo edges for glossy holo reads."
+    }
+  ]
+}

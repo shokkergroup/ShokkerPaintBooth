@@ -1,0 +1,1211 @@
+{
+  "set": "GRUNGE & FUN",
+  "family": "Material World",
+  "pipeline": "viva_mexico_spec_masterclass",
+  "size": [
+    2048,
+    2048
+  ],
+  "finishes": [
+    {
+      "id": "gf_x_1024293_6391",
+      "name": "Blacktop Neon Rain",
+      "source": "assets/reference_textures/grunge_fun/1024293_6391.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_1024293_6391.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_1024293_6391_spec.png",
+      "desc": "Blacktop Neon Rain is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #casino-neon, #neon, #rain, #blacktop, #dots.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "casino-neon",
+        "neon",
+        "rain",
+        "blacktop",
+        "dots"
+      ],
+      "crop_y": 0,
+      "style": "casino_neon",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#38513a"
+    },
+    {
+      "id": "gf_x_1024294_6392",
+      "name": "Electric Green Scanline",
+      "source": "assets/reference_textures/grunge_fun/1024294_6392.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_1024294_6392.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_1024294_6392_spec.png",
+      "desc": "Electric Green Scanline is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #scanline, #green, #glitch, #digital.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "grunge-scratch",
+        "scanline",
+        "green",
+        "glitch",
+        "digital"
+      ],
+      "crop_y": 0,
+      "style": "grunge_scratch",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#455923"
+    },
+    {
+      "id": "gf_x_1152842_or6ilf0",
+      "name": "Midnight Blue Mesh",
+      "source": "assets/reference_textures/grunge_fun/1152842_OR6ILF0.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_1152842_or6ilf0.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_1152842_or6ilf0_spec.png",
+      "desc": "Midnight Blue Mesh is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #blue, #mesh, #halftone, #depth.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "halftone-hex",
+        "blue",
+        "mesh",
+        "halftone",
+        "depth"
+      ],
+      "crop_y": 0,
+      "style": "halftone_hex",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#161e82"
+    },
+    {
+      "id": "gf_x_1195794_6247",
+      "name": "Broken Glass Mosaic",
+      "source": "assets/reference_textures/grunge_fun/1195794_6247.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_1195794_6247.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_1195794_6247_spec.png",
+      "desc": "Broken Glass Mosaic is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #punk-checker, #mosaic, #glass, #black-white, #cells.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "punk-checker",
+        "mosaic",
+        "glass",
+        "black-white",
+        "cells"
+      ],
+      "crop_y": 0,
+      "style": "punk_checker",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#797977"
+    },
+    {
+      "id": "gf_x_1292",
+      "name": "Golden Circuit Lace",
+      "source": "assets/reference_textures/grunge_fun/1292.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_1292.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_1292_spec.png",
+      "desc": "Golden Circuit Lace is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #disco-glitter, #gold, #circuit, #lace, #ornate.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "disco-glitter",
+        "gold",
+        "circuit",
+        "lace",
+        "ornate"
+      ],
+      "crop_y": 0,
+      "style": "disco_glitter",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#edb013"
+    },
+    {
+      "id": "gf_x_13845",
+      "name": "Rainbow Audio Shockwave",
+      "source": "assets/reference_textures/grunge_fun/13845.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_13845.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_13845_spec.png",
+      "desc": "Rainbow Audio Shockwave is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #casino-neon, #rainbow, #wave, #audio, #neon.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "casino-neon",
+        "rainbow",
+        "wave",
+        "audio",
+        "neon"
+      ],
+      "crop_y": 0,
+      "style": "casino_neon",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#722b49"
+    },
+    {
+      "id": "gf_x_1434947_595",
+      "name": "Sunburst Polygon Pop",
+      "source": "assets/reference_textures/grunge_fun/1434947_595.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_1434947_595.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_1434947_595_spec.png",
+      "desc": "Sunburst Polygon Pop is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #comic-pop, #yellow, #polygon, #sunburst, #pop.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "comic-pop",
+        "yellow",
+        "polygon",
+        "sunburst",
+        "pop"
+      ],
+      "crop_y": 0,
+      "style": "comic_pop",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#fed80d"
+    },
+    {
+      "id": "gf_x_16302407_yellow_hexagon_halftone_pattern_backg",
+      "name": "Hazard Honeycomb Glow",
+      "source": "assets/reference_textures/grunge_fun/16302407_yellow_hexagon_halftone_pattern_background.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_16302407_yellow_hexagon_halftone_pattern_backg.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_16302407_yellow_hexagon_halftone_pattern_backg_spec.png",
+      "desc": "Hazard Honeycomb Glow is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #yellow, #honeycomb, #hex, #halftone.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "halftone-hex",
+        "yellow",
+        "honeycomb",
+        "hex",
+        "halftone"
+      ],
+      "crop_y": 0,
+      "style": "halftone_hex",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#fec303"
+    },
+    {
+      "id": "gf_x_18677",
+      "name": "Matrix Asphalt Rain",
+      "source": "assets/reference_textures/grunge_fun/18677.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_18677.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_18677_spec.png",
+      "desc": "Matrix Asphalt Rain is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #matrix, #green, #rain, #asphalt.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "grunge-scratch",
+        "matrix",
+        "green",
+        "rain",
+        "asphalt"
+      ],
+      "crop_y": 0,
+      "style": "grunge_scratch",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#203724"
+    },
+    {
+      "id": "gf_x_18914258_casino_2021_11",
+      "name": "Lucky Dice Blackout",
+      "source": "assets/reference_textures/grunge_fun/18914258_casino_2021_11.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_18914258_casino_2021_11.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_18914258_casino_2021_11_spec.png",
+      "desc": "Lucky Dice Blackout is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #casino-neon, #casino, #dice, #cards, #black.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "casino-neon",
+        "casino",
+        "dice",
+        "cards",
+        "black"
+      ],
+      "crop_y": 0,
+      "style": "casino_neon",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#655d3e"
+    },
+    {
+      "id": "gf_x_19034947_en9y_pjge_210709",
+      "name": "Gilded Mermaid Scales",
+      "source": "assets/reference_textures/grunge_fun/19034947_en9y_pjge_210709.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_19034947_en9y_pjge_210709.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_19034947_en9y_pjge_210709_spec.png",
+      "desc": "Gilded Mermaid Scales is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #metal-flake, #scales, #gold, #white, #mermaid.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "metal-flake",
+        "scales",
+        "gold",
+        "white",
+        "mermaid"
+      ],
+      "crop_y": 0,
+      "style": "metal_flake",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#e0d4a8"
+    },
+    {
+      "id": "gf_x_19516529_casino_2021_17",
+      "name": "Vegas Chip Nightfall",
+      "source": "assets/reference_textures/grunge_fun/19516529_casino_2021_17.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_19516529_casino_2021_17.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_19516529_casino_2021_17_spec.png",
+      "desc": "Vegas Chip Nightfall is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #casino-neon, #casino, #chips, #dots, #night.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "casino-neon",
+        "casino",
+        "chips",
+        "dots",
+        "night"
+      ],
+      "crop_y": 0,
+      "style": "casino_neon",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#5a4b2e"
+    },
+    {
+      "id": "gf_x_20216645_6276400",
+      "name": "Bronze Maze Circuit",
+      "source": "assets/reference_textures/grunge_fun/20216645_6276400.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_20216645_6276400.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_20216645_6276400_spec.png",
+      "desc": "Bronze Maze Circuit is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #metal-flake, #bronze, #maze, #circuit, #geometric.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "metal-flake",
+        "bronze",
+        "maze",
+        "circuit",
+        "geometric"
+      ],
+      "crop_y": 0,
+      "style": "metal_flake",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#57462e"
+    },
+    {
+      "id": "gf_x_20771417_v6t9_6fpy_210512",
+      "name": "Blue Koi Scale Pop",
+      "source": "assets/reference_textures/grunge_fun/20771417_v6t9_6fpy_210512.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_20771417_v6t9_6fpy_210512.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_20771417_v6t9_6fpy_210512_spec.png",
+      "desc": "Blue Koi Scale Pop is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #acid-wash, #blue, #scales, #koi, #pop.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "acid-wash",
+        "blue",
+        "scales",
+        "koi",
+        "pop"
+      ],
+      "crop_y": 0,
+      "style": "acid_wash",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#9fbdcf"
+    },
+    {
+      "id": "gf_x_2149635369",
+      "name": "Molten Mustard Marble",
+      "source": "assets/reference_textures/grunge_fun/2149635369.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_2149635369.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_2149635369_spec.png",
+      "desc": "Molten Mustard Marble is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #worn-rust, #marble, #molten, #red, #yellow.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "worn-rust",
+        "marble",
+        "molten",
+        "red",
+        "yellow"
+      ],
+      "crop_y": 0,
+      "style": "worn_rust",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#a75416"
+    },
+    {
+      "id": "gf_x_22587040_6656535",
+      "name": "Monochrome Pixel Snow",
+      "source": "assets/reference_textures/grunge_fun/22587040_6656535.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_22587040_6656535.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_22587040_6656535_spec.png",
+      "desc": "Monochrome Pixel Snow is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #pixel, #snow, #black-white, #static.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "grunge-scratch",
+        "pixel",
+        "snow",
+        "black-white",
+        "static"
+      ],
+      "crop_y": 0,
+      "style": "grunge_scratch",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#858585"
+    },
+    {
+      "id": "gf_x_22587046_6656517",
+      "name": "Silver Pixel Gravel",
+      "source": "assets/reference_textures/grunge_fun/22587046_6656517.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_22587046_6656517.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_22587046_6656517_spec.png",
+      "desc": "Silver Pixel Gravel is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #pixel, #gravel, #silver, #static.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "grunge-scratch",
+        "pixel",
+        "gravel",
+        "silver",
+        "static"
+      ],
+      "crop_y": 0,
+      "style": "grunge_scratch",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#afafaf"
+    },
+    {
+      "id": "gf_x_2311",
+      "name": "Cotton Candy Halftone Fade",
+      "source": "assets/reference_textures/grunge_fun/2311.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_2311.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_2311_spec.png",
+      "desc": "Cotton Candy Halftone Fade is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #acid-wash, #gradient, #pastel, #halftone, #fade.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "acid-wash",
+        "gradient",
+        "pastel",
+        "halftone",
+        "fade"
+      ],
+      "crop_y": 0,
+      "style": "acid_wash",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#e7b8f2"
+    },
+    {
+      "id": "gf_x_237560942_1f15d9a7_672f_4b74_9792_9a0daae8fbe2",
+      "name": "Red Checker Burnout",
+      "source": "assets/reference_textures/grunge_fun/237560942_1f15d9a7-672f-4b74-9792-9a0daae8fbe2.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_237560942_1f15d9a7_672f_4b74_9792_9a0daae8fbe2.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_237560942_1f15d9a7_672f_4b74_9792_9a0daae8fbe2_spec.png",
+      "desc": "Red Checker Burnout is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #punk-checker, #checker, #red, #burnout, #punk.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "punk-checker",
+        "checker",
+        "red",
+        "burnout",
+        "punk"
+      ],
+      "crop_y": 0,
+      "style": "punk_checker",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#7c100a"
+    },
+    {
+      "id": "gf_x_2425",
+      "name": "Purple Reptile Circuit",
+      "source": "assets/reference_textures/grunge_fun/2425.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_2425.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_2425_spec.png",
+      "desc": "Purple Reptile Circuit is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #purple, #scale, #reptile, #circuit.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "halftone-hex",
+        "purple",
+        "scale",
+        "reptile",
+        "circuit"
+      ],
+      "crop_y": 0,
+      "style": "halftone_hex",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#6e60d3"
+    },
+    {
+      "id": "gf_x_2474",
+      "name": "Lava Honeycomb Split",
+      "source": "assets/reference_textures/grunge_fun/2474.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_2474.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_2474_spec.png",
+      "desc": "Lava Honeycomb Split is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #lava, #honeycomb, #yellow, #red.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "halftone-hex",
+        "lava",
+        "honeycomb",
+        "yellow",
+        "red"
+      ],
+      "crop_y": 0,
+      "style": "halftone_hex",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#c64816"
+    },
+    {
+      "id": "gf_x_26323837_blue_hexagon_pattern_background",
+      "name": "Blue Honeycomb Haze",
+      "source": "assets/reference_textures/grunge_fun/26323837_blue_hexagon_pattern_background.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_26323837_blue_hexagon_pattern_background.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_26323837_blue_hexagon_pattern_background_spec.png",
+      "desc": "Blue Honeycomb Haze is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #blue, #honeycomb, #hex, #soft.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "halftone-hex",
+        "blue",
+        "honeycomb",
+        "hex",
+        "soft"
+      ],
+      "crop_y": 0,
+      "style": "halftone_hex",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#08aef7"
+    },
+    {
+      "id": "gf_x_283511752_c9a714fc_a791_4c92_a2af_e3b8537ecaef",
+      "name": "Deep Blue Dot Fade",
+      "source": "assets/reference_textures/grunge_fun/283511752_c9a714fc-a791-4c92-a2af-e3b8537ecaef.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_283511752_c9a714fc_a791_4c92_a2af_e3b8537ecaef.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_283511752_c9a714fc_a791_4c92_a2af_e3b8537ecaef_spec.png",
+      "desc": "Deep Blue Dot Fade is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #blue, #dots, #halftone, #fade.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "halftone-hex",
+        "blue",
+        "dots",
+        "halftone",
+        "fade"
+      ],
+      "crop_y": 0,
+      "style": "halftone_hex",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#003c7c"
+    },
+    {
+      "id": "gf_x_29035",
+      "name": "Torn Poster Static",
+      "source": "assets/reference_textures/grunge_fun/29035.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_29035.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_29035_spec.png",
+      "desc": "Torn Poster Static is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #poster, #torn, #orange, #static.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "grunge-scratch",
+        "poster",
+        "torn",
+        "orange",
+        "static"
+      ],
+      "crop_y": 0,
+      "style": "grunge_scratch",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#c8775c"
+    },
+    {
+      "id": "gf_x_30330639_lightabstrback14gradientd",
+      "name": "Rainbow Hex Tunnel",
+      "source": "assets/reference_textures/grunge_fun/30330639_lightabstrback14gradientd.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_30330639_lightabstrback14gradientd.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_30330639_lightabstrback14gradientd_spec.png",
+      "desc": "Rainbow Hex Tunnel is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #rainbow, #hex, #tunnel, #optical.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "halftone-hex",
+        "rainbow",
+        "hex",
+        "tunnel",
+        "optical"
+      ],
+      "crop_y": 0,
+      "style": "halftone_hex",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#257324"
+    },
+    {
+      "id": "gf_x_31587230_7837300",
+      "name": "Warped Arcade Checker",
+      "source": "assets/reference_textures/grunge_fun/31587230_7837300.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_31587230_7837300.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_31587230_7837300_spec.png",
+      "desc": "Warped Arcade Checker is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #punk-checker, #checker, #arcade, #warp, #purple.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "punk-checker",
+        "checker",
+        "arcade",
+        "warp",
+        "purple"
+      ],
+      "crop_y": 0,
+      "style": "punk_checker",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#8e6685"
+    },
+    {
+      "id": "gf_x_3521",
+      "name": "Electric Scribble Storm",
+      "source": "assets/reference_textures/grunge_fun/3521.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_3521.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_3521_spec.png",
+      "desc": "Electric Scribble Storm is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #casino-neon, #electric, #scribble, #storm, #neon.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "casino-neon",
+        "electric",
+        "scribble",
+        "storm",
+        "neon"
+      ],
+      "crop_y": 0,
+      "style": "casino_neon",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#235e9e"
+    },
+    {
+      "id": "gf_x_391161788_673b312d_2817_44f1_bfa5_bc51bf8df42d",
+      "name": "Peach Stone Scuff",
+      "source": "assets/reference_textures/grunge_fun/391161788_673b312d-2817-44f1-bfa5-bc51bf8df42d.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_391161788_673b312d_2817_44f1_bfa5_bc51bf8df42d.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_391161788_673b312d_2817_44f1_bfa5_bc51bf8df42d_spec.png",
+      "desc": "Peach Stone Scuff is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #worn-rust, #peach, #stone, #scuff, #weathered.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "worn-rust",
+        "peach",
+        "stone",
+        "scuff",
+        "weathered"
+      ],
+      "crop_y": 0,
+      "style": "worn_rust",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#fea38d"
+    },
+    {
+      "id": "gf_x_3946420_524",
+      "name": "Python Scale Armor",
+      "source": "assets/reference_textures/grunge_fun/3946420_524.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_3946420_524.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_3946420_524_spec.png",
+      "desc": "Python Scale Armor is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #metal-flake, #python, #scale, #armor, #brown.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "metal-flake",
+        "python",
+        "scale",
+        "armor",
+        "brown"
+      ],
+      "crop_y": 0,
+      "style": "metal_flake",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#9c8970"
+    },
+    {
+      "id": "gf_x_4004",
+      "name": "Solar Mesh Fade",
+      "source": "assets/reference_textures/grunge_fun/4004.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_4004.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_4004_spec.png",
+      "desc": "Solar Mesh Fade is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #acid-wash, #solar, #mesh, #gradient, #green.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "acid-wash",
+        "solar",
+        "mesh",
+        "gradient",
+        "green"
+      ],
+      "crop_y": 0,
+      "style": "acid_wash",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#bcb863"
+    },
+    {
+      "id": "gf_x_417665166_62a76dd6_56af_4a68_b801_92f5967beda0",
+      "name": "Black White Decay Wall",
+      "source": "assets/reference_textures/grunge_fun/417665166_62a76dd6-56af-4a68-b801-92f5967beda0.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_417665166_62a76dd6_56af_4a68_b801_92f5967beda0.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_417665166_62a76dd6_56af_4a68_b801_92f5967beda0_spec.png",
+      "desc": "Black White Decay Wall is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #decay, #wall, #black-white, #scratch.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "grunge-scratch",
+        "decay",
+        "wall",
+        "black-white",
+        "scratch"
+      ],
+      "crop_y": 0,
+      "style": "grunge_scratch",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#7a7a7a"
+    },
+    {
+      "id": "gf_x_420841114_17c7c800_04f4_4c25_8844_09134f10d3a7",
+      "name": "Frosted Vertical Smear",
+      "source": "assets/reference_textures/grunge_fun/420841114_17c7c800-04f4-4c25-8844-09134f10d3a7.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_420841114_17c7c800_04f4_4c25_8844_09134f10d3a7.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_420841114_17c7c800_04f4_4c25_8844_09134f10d3a7_spec.png",
+      "desc": "Frosted Vertical Smear is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #frost, #vertical, #smear, #silver.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "grunge-scratch",
+        "frost",
+        "vertical",
+        "smear",
+        "silver"
+      ],
+      "crop_y": 0,
+      "style": "grunge_scratch",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#868e96"
+    },
+    {
+      "id": "gf_x_426098859_bfe8ddbc_e982_4a17_b396_d362c3e1e12f",
+      "name": "Redline Audio Pulse",
+      "source": "assets/reference_textures/grunge_fun/426098859_bfe8ddbc-e982-4a17-b396-d362c3e1e12f.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_426098859_bfe8ddbc_e982_4a17_b396_d362c3e1e12f.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_426098859_bfe8ddbc_e982_4a17_b396_d362c3e1e12f_spec.png",
+      "desc": "Redline Audio Pulse is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #casino-neon, #red, #audio, #pulse, #wave.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "casino-neon",
+        "red",
+        "audio",
+        "pulse",
+        "wave"
+      ],
+      "crop_y": 0,
+      "style": "casino_neon",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#e41e00"
+    },
+    {
+      "id": "gf_x_426203826_fc914006_6101_4668_8c1d_3322a73a9319",
+      "name": "Rainbow Sonar Sweep",
+      "source": "assets/reference_textures/grunge_fun/426203826_fc914006-6101-4668-8c1d-3322a73a9319.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_426203826_fc914006_6101_4668_8c1d_3322a73a9319.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_426203826_fc914006_6101_4668_8c1d_3322a73a9319_spec.png",
+      "desc": "Rainbow Sonar Sweep is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #casino-neon, #rainbow, #sonar, #wave, #sweep.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "casino-neon",
+        "rainbow",
+        "sonar",
+        "wave",
+        "sweep"
+      ],
+      "crop_y": 0,
+      "style": "casino_neon",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#af4300"
+    },
+    {
+      "id": "gf_x_6090",
+      "name": "Sunset Mesh Burst",
+      "source": "assets/reference_textures/grunge_fun/6090.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_6090.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_6090_spec.png",
+      "desc": "Sunset Mesh Burst is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #acid-wash, #sunset, #mesh, #orange, #red.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "acid-wash",
+        "sunset",
+        "mesh",
+        "orange",
+        "red"
+      ],
+      "crop_y": 0,
+      "style": "acid_wash",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#b9692b"
+    },
+    {
+      "id": "gf_x_6113",
+      "name": "Toxic Green Mesh Fade",
+      "source": "assets/reference_textures/grunge_fun/6113.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_6113.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_6113_spec.png",
+      "desc": "Toxic Green Mesh Fade is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #acid-wash, #green, #toxic, #mesh, #fade.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "acid-wash",
+        "green",
+        "toxic",
+        "mesh",
+        "fade"
+      ],
+      "crop_y": 0,
+      "style": "acid_wash",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#8c9f4a"
+    },
+    {
+      "id": "gf_x_69",
+      "name": "Blue Digital Drizzle",
+      "source": "assets/reference_textures/grunge_fun/69.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_69.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_69_spec.png",
+      "desc": "Blue Digital Drizzle is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #blue, #digital, #drizzle, #rain.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "grunge-scratch",
+        "blue",
+        "digital",
+        "drizzle",
+        "rain"
+      ],
+      "crop_y": 0,
+      "style": "grunge_scratch",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#0f414b"
+    },
+    {
+      "id": "gf_x_819188_26851_nwdlx0",
+      "name": "Champagne Bubble Grid",
+      "source": "assets/reference_textures/grunge_fun/819188_26851-NWDLX0.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_819188_26851_nwdlx0.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_819188_26851_nwdlx0_spec.png",
+      "desc": "Champagne Bubble Grid is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #disco-glitter, #champagne, #bubbles, #grid, #dots.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "disco-glitter",
+        "champagne",
+        "bubbles",
+        "grid",
+        "dots"
+      ],
+      "crop_y": 0,
+      "style": "disco_glitter",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#988650"
+    },
+    {
+      "id": "gf_x_850287_o4yijt0",
+      "name": "Carnival Dot Burst",
+      "source": "assets/reference_textures/grunge_fun/850287_O4YIJT0.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_850287_o4yijt0.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_850287_o4yijt0_spec.png",
+      "desc": "Carnival Dot Burst is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #disco-glitter, #carnival, #dots, #burst, #red.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "disco-glitter",
+        "carnival",
+        "dots",
+        "burst",
+        "red"
+      ],
+      "crop_y": 0,
+      "style": "disco_glitter",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#a05457"
+    },
+    {
+      "id": "gf_x_850288_o4yijy0",
+      "name": "Blue Starburst Marquee",
+      "source": "assets/reference_textures/grunge_fun/850288_O4YIJY0.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_850288_o4yijy0.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_850288_o4yijy0_spec.png",
+      "desc": "Blue Starburst Marquee is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #disco-glitter, #blue, #starburst, #marquee, #dots.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "disco-glitter",
+        "blue",
+        "starburst",
+        "marquee",
+        "dots"
+      ],
+      "crop_y": 0,
+      "style": "disco_glitter",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#3ea0b6"
+    },
+    {
+      "id": "gf_x_8514125_3910277",
+      "name": "Magenta Static Weave",
+      "source": "assets/reference_textures/grunge_fun/8514125_3910277.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_8514125_3910277.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_8514125_3910277_spec.png",
+      "desc": "Magenta Static Weave is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #magenta, #static, #weave, #noise.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "grunge-scratch",
+        "magenta",
+        "static",
+        "weave",
+        "noise"
+      ],
+      "crop_y": 0,
+      "style": "grunge_scratch",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#4f4183"
+    },
+    {
+      "id": "gf_x_9121",
+      "name": "Toxic Diagonal Beam",
+      "source": "assets/reference_textures/grunge_fun/9121.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_9121.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_9121_spec.png",
+      "desc": "Toxic Diagonal Beam is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #acid-wash, #toxic, #diagonal, #beam, #green.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "acid-wash",
+        "toxic",
+        "diagonal",
+        "beam",
+        "green"
+      ],
+      "crop_y": 0,
+      "style": "acid_wash",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#94d402"
+    },
+    {
+      "id": "gf_x_9169",
+      "name": "Cherry Sunrise Halftone",
+      "source": "assets/reference_textures/grunge_fun/9169.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_9169.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_9169_spec.png",
+      "desc": "Cherry Sunrise Halftone is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #acid-wash, #cherry, #sunrise, #halftone, #orange.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "acid-wash",
+        "cherry",
+        "sunrise",
+        "halftone",
+        "orange"
+      ],
+      "crop_y": 0,
+      "style": "acid_wash",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#e43f02"
+    },
+    {
+      "id": "gf_x_9338",
+      "name": "Purple Blue Dot Mesh",
+      "source": "assets/reference_textures/grunge_fun/9338.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_9338.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_9338_spec.png",
+      "desc": "Purple Blue Dot Mesh is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #halftone-hex, #purple, #blue, #dots, #mesh.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "halftone-hex",
+        "purple",
+        "blue",
+        "dots",
+        "mesh"
+      ],
+      "crop_y": 0,
+      "style": "halftone_hex",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#6f3aa8"
+    },
+    {
+      "id": "gf_x_946728_oe3t1y0",
+      "name": "Blacklight Wireframe",
+      "source": "assets/reference_textures/grunge_fun/946728_OE3T1Y0.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_946728_oe3t1y0.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_946728_oe3t1y0_spec.png",
+      "desc": "Blacklight Wireframe is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #punk-checker, #blacklight, #wireframe, #grid, #neon.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "punk-checker",
+        "blacklight",
+        "wireframe",
+        "grid",
+        "neon"
+      ],
+      "crop_y": 0,
+      "style": "punk_checker",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#2c282f"
+    },
+    {
+      "id": "gf_x_947419_oe46fw0",
+      "name": "Prism Triangle Confetti",
+      "source": "assets/reference_textures/grunge_fun/947419_OE46FW0.jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_947419_oe46fw0.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_947419_oe46fw0_spec.png",
+      "desc": "Prism Triangle Confetti is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #comic-pop, #prism, #triangle, #confetti, #rainbow.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "comic-pop",
+        "prism",
+        "triangle",
+        "confetti",
+        "rainbow"
+      ],
+      "crop_y": 0,
+      "style": "comic_pop",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#5f8db0"
+    },
+    {
+      "id": "gf_x_9819736_12811_1",
+      "name": "Dry Brush Carbon Scratch",
+      "source": "assets/reference_textures/grunge_fun/9819736_12811 (1).jpg",
+      "texture": "assets/reference_textures/grunge_fun/gf_x_9819736_12811_1.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_x_9819736_12811_1_spec.png",
+      "desc": "Dry Brush Carbon Scratch is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #grunge-scratch, #scratch, #carbon, #dry-brush, #black-white.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "grunge-scratch",
+        "scratch",
+        "carbon",
+        "dry-brush",
+        "black-white"
+      ],
+      "crop_y": 0,
+      "style": "grunge_scratch",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#4d4d4d"
+    },
+    {
+      "id": "gf_magnific_digital_illustration_a_dark_background_",
+      "name": "Radiant Dark Matter Burst",
+      "source": "assets/reference_textures/grunge_fun/magnific__digital-illustration-a-dark-background-with-a-radi__37215.jpeg",
+      "texture": "assets/reference_textures/grunge_fun/gf_magnific_digital_illustration_a_dark_background_.png",
+      "spec": "assets/reference_textures/grunge_fun/gf_magnific_digital_illustration_a_dark_background__spec.png",
+      "desc": "Radiant Dark Matter Burst is a Grunge & Fun image-authored lacquer with a matched dynamic M/R/Cc spec map that follows the artwork's pattern edges, dots, scratches, and gradients. Search tags: #grunge, #fun, #dynamic-spec, #abstract-gradient, #radiant, #dark, #burst, #halftone.",
+      "tags": [
+        "grunge",
+        "fun",
+        "dynamic-spec",
+        "abstract-gradient",
+        "radiant",
+        "dark",
+        "burst",
+        "halftone"
+      ],
+      "crop_y": 0,
+      "style": "abstract_gradient",
+      "size": [
+        2048,
+        2048
+      ],
+      "swatch": "#352b24"
+    }
+  ]
+}

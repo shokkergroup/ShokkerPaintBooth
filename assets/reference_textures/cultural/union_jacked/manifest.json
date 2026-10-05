@@ -1,0 +1,410 @@
+{
+  "group": "Union Jacked",
+  "finishes": [
+    {
+      "id": "uj_camden_signal_riot",
+      "name": "Camden Signal Riot",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 5, 2026, 04_43_01 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_camden_signal_riot.png",
+      "spec": "uj_camden_signal_riot_spec.png",
+      "swatch": "#3c2a2c"
+    },
+    {
+      "id": "uj_thames_after_dark",
+      "name": "Thames After Dark",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 5, 2026, 04_43_41 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_thames_after_dark.png",
+      "spec": "uj_thames_after_dark_spec.png",
+      "swatch": "#1f313e"
+    },
+    {
+      "id": "uj_chelsea_razor_parade",
+      "name": "Chelsea Razor Parade",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 5, 2026, 04_43_51 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_chelsea_razor_parade.png",
+      "spec": "uj_chelsea_razor_parade_spec.png",
+      "swatch": "#453a2f"
+    },
+    {
+      "id": "uj_kings_cross_mercury",
+      "name": "King's Cross Mercury",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 5, 2026, 04_44_24 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_kings_cross_mercury.png",
+      "spec": "uj_kings_cross_mercury_spec.png",
+      "swatch": "#1b1717"
+    },
+    {
+      "id": "uj_covent_garden_static",
+      "name": "Covent Garden Static",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 5, 2026, 04_44_31 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_covent_garden_static.png",
+      "spec": "uj_covent_garden_static_spec.png",
+      "swatch": "#2c2420"
+    },
+    {
+      "id": "uj_oxford_circus_chrome",
+      "name": "Oxford Circus Chrome",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 5, 2026, 04_44_47 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_oxford_circus_chrome.png",
+      "spec": "uj_oxford_circus_chrome_spec.png",
+      "swatch": "#303239"
+    },
+    {
+      "id": "uj_piccadilly_rain_stance",
+      "name": "Piccadilly Rain Stance",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 5, 2026, 04_59_47 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_piccadilly_rain_stance.png",
+      "spec": "uj_piccadilly_rain_stance_spec.png",
+      "swatch": "#685452"
+    },
+    {
+      "id": "uj_brick_lane_voltage",
+      "name": "Brick Lane Voltage",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 5, 2026, 04_59_58 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_brick_lane_voltage.png",
+      "spec": "uj_brick_lane_voltage_spec.png",
+      "swatch": "#687c8b"
+    },
+    {
+      "id": "uj_notting_carnival_glass",
+      "name": "Notting Carnival Glass",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 5, 2026, 11_21_58 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_notting_carnival_glass.png",
+      "spec": "uj_notting_carnival_glass_spec.png",
+      "swatch": "#965d5d"
+    },
+    {
+      "id": "uj_beat_burst",
+      "name": "Beat Burst",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 5, 2026, 11_22_17 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_beat_burst.png",
+      "spec": "uj_beat_burst_spec.png",
+      "swatch": "#706180"
+    },
+    {
+      "id": "uj_highland_heather_haze",
+      "name": "Highland Heather Haze",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 5, 2026, 11_36_38 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_highland_heather_haze.png",
+      "spec": "uj_highland_heather_haze_spec.png",
+      "swatch": "#6d667c"
+    },
+    {
+      "id": "uj_portobello_pearl_riot",
+      "name": "Portobello Pearl Riot",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 5, 2026, 11_36_50 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_portobello_pearl_riot.png",
+      "spec": "uj_portobello_pearl_riot_spec.png",
+      "swatch": "#aea873"
+    },
+    {
+      "id": "uj_liverpool_echo_lace",
+      "name": "Liverpool Echo Lace",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 5, 2026, 11_36_59 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_liverpool_echo_lace.png",
+      "spec": "uj_liverpool_echo_lace_spec.png",
+      "swatch": "#41747a"
+    },
+    {
+      "id": "uj_manchester_acid_union",
+      "name": "Manchester Acid Union",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 5, 2026, 11_37_05 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_manchester_acid_union.png",
+      "spec": "uj_manchester_acid_union_spec.png",
+      "swatch": "#c9ccce"
+    },
+    {
+      "id": "uj_glasgow_granite_soul",
+      "name": "Glasgow Granite Soul",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 5, 2026, 11_37_18 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_glasgow_granite_soul.png",
+      "spec": "uj_glasgow_granite_soul_spec.png",
+      "swatch": "#b29c84"
+    },
+    {
+      "id": "uj_belfast_harp_storm",
+      "name": "Belfast Harp Storm",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 5, 2026, 11_37_29 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_belfast_harp_storm.png",
+      "spec": "uj_belfast_harp_storm_spec.png",
+      "swatch": "#37534f"
+    },
+    {
+      "id": "uj_edinburgh_castle_frost",
+      "name": "Edinburgh Castle Frost",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 5, 2026, 11_37_36 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_edinburgh_castle_frost.png",
+      "spec": "uj_edinburgh_castle_frost_spec.png",
+      "swatch": "#181c2a"
+    },
+    {
+      "id": "uj_welsh_dragon_lacquer",
+      "name": "Welsh Dragon Lacquer",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 5, 2026, 11_37_55 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_welsh_dragon_lacquer.png",
+      "spec": "uj_welsh_dragon_lacquer_spec.png",
+      "swatch": "#687e8e"
+    },
+    {
+      "id": "uj_cornwall_sea_spark",
+      "name": "Cornwall Sea Spark",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 5, 2026, 11_44_31 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_cornwall_sea_spark.png",
+      "spec": "uj_cornwall_sea_spark_spec.png",
+      "swatch": "#343042"
+    },
+    {
+      "id": "uj_dover_white_cliff_pearl",
+      "name": "Dover White Cliff Pearl",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 5, 2026, 11_44_41 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_dover_white_cliff_pearl.png",
+      "spec": "uj_dover_white_cliff_pearl_spec.png",
+      "swatch": "#6e8c8e"
+    },
+    {
+      "id": "uj_brighton_pier_neon",
+      "name": "Brighton Pier Neon",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 5, 2026, 11_44_48 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_brighton_pier_neon.png",
+      "spec": "uj_brighton_pier_neon_spec.png",
+      "swatch": "#646e7e"
+    },
+    {
+      "id": "uj_southampton_dock_matte",
+      "name": "Southampton Dock Matte",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 5, 2026, 11_45_01 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_southampton_dock_matte.png",
+      "spec": "uj_southampton_dock_matte_spec.png",
+      "swatch": "#294442"
+    },
+    {
+      "id": "uj_silverstone_apex_flare",
+      "name": "Silverstone Apex Flare",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 5, 2026, 11_56_07 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_silverstone_apex_flare.png",
+      "spec": "uj_silverstone_apex_flare_spec.png",
+      "swatch": "#373e45"
+    },
+    {
+      "id": "uj_goodwood_heritage_flake",
+      "name": "Goodwood Heritage Flake",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 6, 2026, 07_31_49 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_goodwood_heritage_flake.png",
+      "spec": "uj_goodwood_heritage_flake_spec.png",
+      "swatch": "#363e44"
+    },
+    {
+      "id": "uj_isle_of_man_tt_chrome",
+      "name": "Isle of Man TT Chrome",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 6, 2026, 07_31_59 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_isle_of_man_tt_chrome.png",
+      "spec": "uj_isle_of_man_tt_chrome_spec.png",
+      "swatch": "#3a464d"
+    },
+    {
+      "id": "uj_ulster_rally_tartan",
+      "name": "Ulster Rally Tartan",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 6, 2026, 07_32_04 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_ulster_rally_tartan.png",
+      "spec": "uj_ulster_rally_tartan_spec.png",
+      "swatch": "#161613"
+    },
+    {
+      "id": "uj_highland_fling_metal",
+      "name": "Highland Fling Metal",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 6, 2026, 07_32_23 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_highland_fling_metal.png",
+      "spec": "uj_highland_fling_metal_spec.png",
+      "swatch": "#414a59"
+    },
+    {
+      "id": "uj_loch_ness_deep_void",
+      "name": "Loch Ness Deep Void",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 6, 2026, 07_32_41 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_loch_ness_deep_void.png",
+      "spec": "uj_loch_ness_deep_void_spec.png",
+      "swatch": "#252632"
+    },
+    {
+      "id": "uj_midnight_hearse_baroque",
+      "name": "Midnight Hearse Baroque",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 6, 2026, 07_32_56 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_midnight_hearse_baroque.png",
+      "spec": "uj_midnight_hearse_baroque_spec.png",
+      "swatch": "#262425"
+    },
+    {
+      "id": "uj_tudor_rose_filigree",
+      "name": "Tudor Rose Filigree",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 6, 2026, 07_49_56 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_tudor_rose_filigree.png",
+      "spec": "uj_tudor_rose_filigree_spec.png",
+      "swatch": "#1c2039"
+    },
+    {
+      "id": "uj_windsor_guard_gloss",
+      "name": "Windsor Guard Gloss",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 6, 2026, 07_52_29 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_windsor_guard_gloss.png",
+      "spec": "uj_windsor_guard_gloss_spec.png",
+      "swatch": "#264584"
+    },
+    {
+      "id": "uj_shard_glass_rain",
+      "name": "Shard Glass Rain",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 6, 2026, 07_52_39 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_shard_glass_rain.png",
+      "spec": "uj_shard_glass_rain_spec.png",
+      "swatch": "#323127"
+    },
+    {
+      "id": "uj_gherkin_twist_metal",
+      "name": "Gherkin Twist Metal",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 6, 2026, 07_52_48 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_gherkin_twist_metal.png",
+      "spec": "uj_gherkin_twist_metal_spec.png",
+      "swatch": "#313a46"
+    },
+    {
+      "id": "uj_black_cab_nocturne",
+      "name": "Black Cab Nocturne",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 6, 2026, 07_52_55 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_black_cab_nocturne.png",
+      "spec": "uj_black_cab_nocturne_spec.png",
+      "swatch": "#283152"
+    },
+    {
+      "id": "uj_red_bus_velocity",
+      "name": "Red Bus Velocity",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 6, 2026, 07_53_03 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_red_bus_velocity.png",
+      "spec": "uj_red_bus_velocity_spec.png",
+      "swatch": "#322c23"
+    },
+    {
+      "id": "uj_routemaster_candy",
+      "name": "Routemaster Candy",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 6, 2026, 07_53_07 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_routemaster_candy.png",
+      "spec": "uj_routemaster_candy_spec.png",
+      "swatch": "#382919"
+    },
+    {
+      "id": "uj_mini_cooper_flip",
+      "name": "Mini Cooper Flip",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 6, 2026, 07_53_24 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_mini_cooper_flip.png",
+      "spec": "uj_mini_cooper_flip_spec.png",
+      "swatch": "#2c1c16"
+    },
+    {
+      "id": "uj_aston_strait_silver",
+      "name": "Aston Strait Silver",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 6, 2026, 07_59_22 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_aston_strait_silver.png",
+      "spec": "uj_aston_strait_silver_spec.png",
+      "swatch": "#454d5c"
+    },
+    {
+      "id": "uj_bentley_brooklands_mist",
+      "name": "Bentley Brooklands Mist",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 6, 2026, 07_59_30 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_bentley_brooklands_mist.png",
+      "spec": "uj_bentley_brooklands_mist_spec.png",
+      "swatch": "#7c88bc"
+    },
+    {
+      "id": "uj_rolls_phantom_veil",
+      "name": "Rolls Phantom Veil",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 6, 2026, 07_59_41 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_rolls_phantom_veil.png",
+      "spec": "uj_rolls_phantom_veil_spec.png",
+      "swatch": "#302d4b"
+    },
+    {
+      "id": "uj_lotus_elan_streak",
+      "name": "Lotus Elan Streak",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 6, 2026, 07_59_47 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_lotus_elan_streak.png",
+      "spec": "uj_lotus_elan_streak_spec.png",
+      "swatch": "#48272a"
+    },
+    {
+      "id": "uj_mclaren_papaya_strike",
+      "name": "McLaren Papaya Strike",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 6, 2026, 08_00_15 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_mclaren_papaya_strike.png",
+      "spec": "uj_mclaren_papaya_strike_spec.png",
+      "swatch": "#352626"
+    },
+    {
+      "id": "uj_williams_fw_blueblood",
+      "name": "Williams FW Blueblood",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 6, 2026, 08_06_48 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_williams_fw_blueblood.png",
+      "spec": "uj_williams_fw_blueblood_spec.png",
+      "swatch": "#847480"
+    },
+    {
+      "id": "uj_jaguar_etype_silk",
+      "name": "Jaguar E-Type Silk",
+      "chromatic_shift": false,
+      "source_file": "ChatGPT Image May 6, 2026, 08_06_56 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_jaguar_etype_silk.png",
+      "spec": "uj_jaguar_etype_silk_spec.png",
+      "swatch": "#4d383b"
+    },
+    {
+      "id": "uj_blueblood_beatline",
+      "name": "Blueblood Beatline",
+      "chromatic_shift": true,
+      "source_file": "ChatGPT Image May 6, 2026, 08_07_12 PM_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "uj_blueblood_beatline.png",
+      "spec": "uj_blueblood_beatline_spec.png",
+      "swatch": "#665e63"
+    }
+  ]
+}

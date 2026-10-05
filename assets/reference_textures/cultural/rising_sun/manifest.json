@@ -1,0 +1,659 @@
+{
+  "set": "RISING SUN",
+  "family": "Cultural",
+  "finishes": [
+    {
+      "id": "rs_rising_sun_flare",
+      "name": "Rising Sun Flare",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_34_21 PM (1).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_rising_sun_flare.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_rising_sun_flare_spec.png",
+      "crop_y": 909,
+      "style": "molten",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_oni_bloodshift",
+      "name": "Oni Bloodshift",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_34_22 PM (2).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_oni_bloodshift.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_oni_bloodshift_spec.png",
+      "crop_y": 924,
+      "style": "blood",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_sakura_storm",
+      "name": "Sakura Storm",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_34_22 PM (3).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_sakura_storm.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_sakura_storm_spec.png",
+      "crop_y": 926,
+      "style": "holo_pink",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_hakuryu_ice",
+      "name": "Hakuryu Ice",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_34_22 PM (4).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_hakuryu_ice.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_hakuryu_ice_spec.png",
+      "crop_y": 895,
+      "style": "ice_holo",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_kuro_dragon",
+      "name": "Kuro Dragon",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_34_22 PM (5).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_kuro_dragon.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_kuro_dragon_spec.png",
+      "crop_y": 914,
+      "style": "black_3d",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_bamboo_zen",
+      "name": "Bamboo Zen",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_34_22 PM (6).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_bamboo_zen.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_bamboo_zen_spec.png",
+      "crop_y": 861,
+      "style": "jade",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_temple_gold",
+      "name": "Temple Gold",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_34_23 PM (7).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_temple_gold.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_temple_gold_spec.png",
+      "crop_y": 839,
+      "style": "gold",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_geisha_whisper",
+      "name": "Geisha Whisper",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_34_23 PM (8).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_geisha_whisper.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_geisha_whisper_spec.png",
+      "crop_y": 952,
+      "style": "pearl",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_thunder_dragon",
+      "name": "Thunder Dragon",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_34_23 PM (9).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_thunder_dragon.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_thunder_dragon_spec.png",
+      "crop_y": 929,
+      "style": "electric_holo",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_koi_ascension",
+      "name": "Koi Ascension",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_34_24 PM (10).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_koi_ascension.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_koi_ascension_spec.png",
+      "crop_y": 932,
+      "style": "koi_gold",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_kyoto_lantern",
+      "name": "Kyoto Lantern",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_42_04 PM (1).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_kyoto_lantern.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_kyoto_lantern_spec.png",
+      "crop_y": 918,
+      "style": "lantern",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_shibuya_pulse",
+      "name": "Shibuya Pulse",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_42_04 PM (2).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_shibuya_pulse.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_shibuya_pulse_spec.png",
+      "crop_y": 923,
+      "style": "neon_holo",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_kintsugi_moon",
+      "name": "Kintsugi Moon",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_42_04 PM (3).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_kintsugi_moon.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_kintsugi_moon_spec.png",
+      "crop_y": 911,
+      "style": "kintsugi",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_fuji_dawn",
+      "name": "Fuji Dawn",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_42_04 PM (4).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_fuji_dawn.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_fuji_dawn_spec.png",
+      "crop_y": 913,
+      "style": "dawn_pearl",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_matcha_ceremony",
+      "name": "Matcha Ceremony",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_42_05 PM (5).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_matcha_ceremony.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_matcha_ceremony_spec.png",
+      "crop_y": 932,
+      "style": "matcha",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_kabuki_inferno",
+      "name": "Kabuki Inferno",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_42_05 PM (6).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_kabuki_inferno.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_kabuki_inferno_spec.png",
+      "crop_y": 936,
+      "style": "kabuki",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_indigo_tsunami",
+      "name": "Indigo Tsunami",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_42_06 PM (7).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_indigo_tsunami.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_indigo_tsunami_spec.png",
+      "crop_y": 913,
+      "style": "ocean",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_vermilion_torii",
+      "name": "Vermilion Torii",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_42_10 PM (8).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_vermilion_torii.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_vermilion_torii_spec.png",
+      "crop_y": 878,
+      "style": "vermilion",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_crane_garden",
+      "name": "Crane Garden",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_42_10 PM (9).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_crane_garden.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_crane_garden_spec.png",
+      "crop_y": 911,
+      "style": "crane_pearl",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_sumi_eclipse",
+      "name": "Sumi Eclipse",
+      "source": "C:\\Users\\Ricky's PC\\Downloads\\ChatGPT Image May 4, 2026, 01_42_11 PM (10).png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_sumi_eclipse.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_sumi_eclipse_spec.png",
+      "crop_y": 893,
+      "style": "sumi",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "id": "rs_yurei_veil",
+      "name": "Yurei Veil",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_04 PM (1)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_yurei_veil.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_yurei_veil_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Pale ghost-silk moonlit lacquer with drifting spirit veils, dark shrine red, and spectral pearl depth."
+    },
+    {
+      "id": "rs_kitsune_ember",
+      "name": "Kitsune Ember",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_05 PM (2)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_kitsune_ember.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_kitsune_ember_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Red-orange fox-fire metallic with shrine shadow, ember motion, and sly golden spec heat."
+    },
+    {
+      "id": "rs_oni_nocturne",
+      "name": "Oni Nocturne",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_08 PM (3)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_oni_nocturne.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_oni_nocturne_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Black-crimson oni mask finish with lacquer smoke, demon-red relief, and night-market menace."
+    },
+    {
+      "id": "rs_gashadokuro_moon",
+      "name": "Gashadokuro Moon",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_08 PM (4)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_gashadokuro_moon.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_gashadokuro_moon_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Cold blue moonbone finish with giant skeleton silhouette, misty shrine detail, and icy spectral texture."
+    },
+    {
+      "id": "rs_jorogumo_silk",
+      "name": "Jorogumo Silk",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_09 PM (5)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_jorogumo_silk.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_jorogumo_silk_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Black silk spider finish with pale gold webwork, hidden kimono warmth, and venomous gloss shimmer."
+    },
+    {
+      "id": "rs_tengu_storm",
+      "name": "Tengu Storm",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_11 PM (6)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_tengu_storm.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_tengu_storm_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Electric blue-violet storm finish with tengu wings, lightning fracture, and charged shrine atmosphere."
+    },
+    {
+      "id": "rs_bakeneko_velvet",
+      "name": "Bakeneko Velvet",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_11 PM (7)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_bakeneko_velvet.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_bakeneko_velvet_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Purple-black cat-spirit velvet with moon curls, lantern flecks, and mischievous sakura glow."
+    },
+    {
+      "id": "rs_nure_onna_tide",
+      "name": "Nure-Onna Tide",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_12 PM (8)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_nure_onna_tide.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_nure_onna_tide_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Deep indigo serpent tide finish with moonlit wave scales, cyan foam, and wet mythic movement."
+    },
+    {
+      "id": "rs_hyakki_parade",
+      "name": "Hyakki Parade",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_13 PM (9)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_hyakki_parade.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_hyakki_parade_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Chaotic yokai parade in toxic green, purple lanterns, and black festival lacquer."
+    },
+    {
+      "id": "rs_bell_of_damned",
+      "name": "Bell of the Damned",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_14 PM (10)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_bell_of_damned.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_bell_of_damned_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Dark temple bell finish with blood moon haze, smoky bronze texture, and haunted red accents."
+    },
+    {
+      "id": "rs_sakura_cascade",
+      "name": "Sakura Cascade",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_16 PM (1)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_sakura_cascade.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_sakura_cascade_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Bright pink sakura river over warm gold haze with temple silhouettes and soft pearl flower detail."
+    },
+    {
+      "id": "rs_wisteria_reverie",
+      "name": "Wisteria Reverie",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_17 PM (2)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_wisteria_reverie.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_wisteria_reverie_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Lavender-blue moon garden pearl with wisteria mist, bridge depth, and cool flake shimmer."
+    },
+    {
+      "id": "rs_lotus_reverie",
+      "name": "Lotus Reverie",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_17 PM (3)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_lotus_reverie.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_lotus_reverie_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Soft aqua lotus pond pearl with watercolor depth, lily pads, and fine green-blue sparkle."
+    },
+    {
+      "id": "rs_peony_festival",
+      "name": "Peony Festival",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_17 PM (4)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_peony_festival.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_peony_festival_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Hot coral peony festival metallic with lantern warmth, fan detail, and dense floral gloss."
+    },
+    {
+      "id": "rs_iris_rain",
+      "name": "Iris Rain",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_18 PM (5)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_iris_rain.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_iris_rain_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Cool blue iris garden pearl with rain-silver highlights, temple depth, and violet petal shimmer."
+    },
+    {
+      "id": "rs_camellia_glow",
+      "name": "Camellia Glow",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_18 PM (6)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_camellia_glow.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_camellia_glow_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Deep rose camellia lacquer with lantern gold, crimson petal relief, and lush festival sparkle."
+    },
+    {
+      "id": "rs_plum_blossom_dawn",
+      "name": "Plum Blossom Dawn",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_18 PM (7)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_plum_blossom_dawn.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_plum_blossom_dawn_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Peach-pink dawn pearl with plum branches, distant temple, and soft sunlit blossom haze."
+    },
+    {
+      "id": "rs_chrysanthemum_sun",
+      "name": "Chrysanthemum Sun",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_19 PM (8)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_chrysanthemum_sun.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_chrysanthemum_sun_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Radiant yellow-orange chrysanthemum metallic with sunburst petals and warm temple gold."
+    },
+    {
+      "id": "rs_hydrangea_mist",
+      "name": "Hydrangea Mist",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_19 PM (9)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_hydrangea_mist.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_hydrangea_mist_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Pale blue-white hydrangea mist pearl with soft bridge depth and airy cold-flower shimmer."
+    },
+    {
+      "id": "rs_koi_pond_bloom",
+      "name": "Koi Pond Bloom",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 03_55_20 PM (10)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_koi_pond_bloom.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_koi_pond_bloom_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Turquoise koi pond finish with lotus pink, orange koi motion, and garden-water sparkle."
+    },
+    {
+      "id": "rs_bosozoku_riot",
+      "name": "Bosozoku Riot",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 05_29_42 PM (1)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_bosozoku_riot.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_bosozoku_riot_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Red rising-sun street-race chrome with black speed stripes, kanji energy, and aggressive metallic grit."
+    },
+    {
+      "id": "rs_wangan_midnight_pulse",
+      "name": "Wangan Midnight Pulse",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 05_29_42 PM (2)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_wangan_midnight_pulse.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_wangan_midnight_pulse_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Neon purple-blue highway pulse with Japanese street grid, star flake, and high-speed gloss."
+    },
+    {
+      "id": "rs_touge_apex",
+      "name": "Touge Apex",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 05_29_43 PM (3)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_touge_apex.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_touge_apex_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Black graphite touge finish with silver mountain-road linework and stealth carbon sparkle."
+    },
+    {
+      "id": "rs_drift_hanami_oversteer",
+      "name": "Drift Hanami Oversteer",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 05_29_43 PM (4)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_drift_hanami_oversteer.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_drift_hanami_oversteer_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Pink-black drift spiral with sakura petals, smoke curves, and oversteer gloss movement."
+    },
+    {
+      "id": "rs_kaido_chrome_bloom",
+      "name": "Kaido Chrome Bloom",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 05_29_43 PM (5)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_kaido_chrome_bloom.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_kaido_chrome_bloom_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Red-silver kaido racer chrome with rising-sun bloom, sakura lanes, and deep flake paneling."
+    },
+    {
+      "id": "rs_dekotora_electric_freight",
+      "name": "Dekotora Electric Freight",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 05_29_44 PM (6)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_dekotora_electric_freight.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_dekotora_electric_freight_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Electric freight-truck neon finish with blue-magenta panels, chrome light bars, and festival glow."
+    },
+    {
+      "id": "rs_time_attack_grid_shock",
+      "name": "Time Attack Grid Shock",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 05_29_44 PM (7)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "texture": "assets/reference_textures/cultural/rising_sun/rs_time_attack_grid_shock.png",
+      "spec": "assets/reference_textures/cultural/rising_sun/rs_time_attack_grid_shock_spec.png",
+      "style": "reference_art",
+      "size": [
+        2048,
+        2048
+      ],
+      "desc": "Black-red time-attack grid with Fuji strike, speedline texture, and hot digital spec pulses."
+    },
+    {
+      "id": "rs_akane_flake_fog",
+      "name": "Akane Flake Fog",
+      "description": "Deep red akane microflake haze with dark lacquer scratches and ember-glow metallic depth.",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 11_03_25 AM (1)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "paint": "rs_akane_flake_fog.png",
+      "spec": "rs_akane_flake_fog_spec.png"
+    },
+    {
+      "id": "rs_kurogane_rain",
+      "name": "Kurogane Rain",
+      "description": "Blackened steel rain texture with blue-red streaks, wet abrasion, and moody lacquer depth.",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 11_03_26 AM (5)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "paint": "rs_kurogane_rain.png",
+      "spec": "rs_kurogane_rain_spec.png"
+    },
+    {
+      "id": "rs_kinpaku_blaze",
+      "name": "Kinpaku Blaze",
+      "description": "Gold-leaf blaze field with orange copper grain, hot metallic flecks, and layered foil texture.",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 11_03_27 AM (8)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "paint": "rs_kinpaku_blaze.png",
+      "spec": "rs_kinpaku_blaze_spec.png"
+    },
+    {
+      "id": "rs_ryokucha_scroll",
+      "name": "Ryokucha Scroll",
+      "description": "Dark green tea-lacquer scrollwork with emerald flake pockets and carved metallic currents.",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 11_03_27 AM (9)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "paint": "rs_ryokucha_scroll.png",
+      "spec": "rs_ryokucha_scroll_spec.png"
+    },
+    {
+      "id": "rs_mikan_pearl",
+      "name": "Mikan Pearl",
+      "description": "Mikan orange pearl fade with coral-gold shimmer, soft flake texture, and warm candy depth.",
+      "source": "assets\\reference_textures\\cultural\\rising_sun\\ChatGPT Image May 4, 2026, 11_03_28 AM (10)_MoreDetail-v3_4K_4096x4096_2pass_MoreDetail-v3.png",
+      "paint": "rs_mikan_pearl.png",
+      "spec": "rs_mikan_pearl_spec.png"
+    }
+  ],
+  "material_studies": 15,
+  "count": 52
+}

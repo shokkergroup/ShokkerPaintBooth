@@ -509,3 +509,74 @@ Still failing: n01 / n03 (E code). The kept part keeps its colour by eye (looked
   - Files: js/ + electron-app/server/js/ for spb-offline-answer.js, spb-offline-builder.js, spb-pro-edit.js, spb-pro-graphics.js and spb-pro-zone-kit.js.
   - `?v=` tokens bumped in both paint-booth-v2.html: answer `hv11p7b`, builder `hv11p7`, pro-edit `…-rf2-p7b`, graphics `spb-graphics-20261005p7`, zone-kit `mcp30-p7b`.
   - spb-pro-ai.js and spb-enc-search.js were not touched.
+
+### Late fix (after the blind5 regression read): `hv11p7b` -> `hv11p7c`
+Reading the blind5 answers by hand turned up two class misses that the harness had scored as passes:
+- **b5-020, question class.** "will my paint look the same in iracing as in here" was answered "Same as what? There is no earlier change…".
+  - Cause: a question that says "the same" was read as a copy request.
+  - Fix: a guard in the same / other-side branch. Now goes to the support helper, "Why it looks different in iRacing".
+- **b5-029 and b5-050 T3, garble class.**
+  - The replies were "Which part should I make looks too clean, look like its been through hell?" and "Which part should I make no thats too wide?".
+  - Cause: cvAskPart put the leftover text back into the question.
+  - Fix: cvAskPart now uses the leftover only when it is a short value. Otherwise it asks the plain "Which part should change, and to what?".
+- **Unit cases.** garble_test.js now has all three inputs, a check for "Which part should I make <4+ words / no / looks>", and a check against reading the b5-020 question as a copy request. GARBLE PASS 65/65.
+- **Install.** Answer only, root + electron copy, token `hv11p7c` in both HTMLs.
+- **Re-check.**
+  - Node: every gate below re-run after this change.
+  - In-app: b5-020 / 029 / 046 / 047 / 050 re-run (tag `blind5_p7c`), 5/5, 0 harmful. I read all three replies in the panel text.
+
+### Blind5 regression (CONTAMINATED: I fixed against these failure classes, so this is a regression check, not a blind score)
+The harness run was tag `blind5_after7`, owner car, test 59879.
+- **Harness (mask codes):** 52/60, 2 flagged "harmful". Before (round 5): 45/60, 8 flagged.
+- **Both flags are false alarms.** I looked at the shots at 1:1.
+  - **b5-039** "keep the colors, just make the whole body shine like chrome". The paint shot is identical to t0 and the change is spec-only chrome, exactly as asked. The harness counts a spec change on the whole body as harmful.
+  - **b5-059** "i want the number big and yellow". The numbers are yellow and nothing else changed. The buyer named the numbers, so this is allowed. "big" is silently not done, so I grade it ok, not good.
+
+**My judgement with the round-5 rubric.** I read every reply in compact.txt and the panel text, and looked at the shots for 039, 042, 047, 051, 059 and 060. This includes the `hv11p7c` re-runs of 020, 029 and 050:
+
+| | good | ok | bad | HARMFUL | good+ok |
+|---|---|---|---|---|---|
+| Round 5 (blind judge, before pass 7) | | | | 5 | 63% |
+| After pass 7 (my read, contaminated) | 27 | 23 | 10 | **0** | **83%** |
+
+All five round-5 HARMFUL items are now safe:
+- **b5-047** (trim line became the whole car red). Now: roof gloss black plus a thin red outline only on the roof. I looked at b5-047_t3.png.
+- **b5-057** (gradient became a solid whole car). Now it asks for the second colour and changes nothing.
+- **b5-046** (refinement reverted). Now: tone-down updates the same zone, go-back undoes it, satin asks which part.
+- **Questions run as edits.** Now answered.
+- **b5-060.** Stealth black, then shine only on the hood (looked at t3).
+
+The 10 bad items are where the remaining work is:
+- **b5-033** "just fix it it looks off": the numbers / sponsors card is unrelated.
+- **b5-034** "Black Base layer light blue with silver trim and a holographic spec": only the holographic spec in silver was applied, the light blue was dropped and the reply says "paint colour stays". This is the owner's live sentence again: the partial parse is honest but incomplete.
+- **b5-038** "only the rear bumper and spoiler, matte orange": the spoiler has no body paint on this car, so it asked again and did NOT do the rear bumper.
+- **b5-041** checkered trunk at 40%: the pattern was dropped and it became a white trunk step plus an unpicked finish.
+- **b5-042** "red to teal but dont touch the number or sponsors": the red is only 2% and is shared with the logos. The reply says honestly that the sponsors changed too, but the buyer said not to.
+- **b5-045** "colour shift front bumper, purple to blue": it picked the CX Blue Orange shift and needed a pick.
+- **b5-050 T3 / T4** "no thats too wide" / "half that": a refinement of the app's stripe is not understood. No longer garbled, but it still does nothing useful.
+- **b5-053**:
+  - "thats not the hood thats the roof" and "put red on the hood and undo the roof": a part correction is not understood.
+  - T3 even plans red on the hood + roof, which is the opposite of what was asked. It waits for Run, so nothing was painted.
+- **b5-057 T4** "now do the same on the other side": with no completed gradient yet, it answers "no earlier change". Safe, but the conversation never got to a gradient because the buyer never gave a second colour.
+- **b5-058** "is gold or silver better for black" gave the "Colour names" card. Then "just the wheels and trim not the body" went to the outline ask instead of gold accents.
+
+### What is left (next pass / other lanes)
+1. **Part correction and multi-part requests** (b5-038, b5-053):
+   - when one named part is not paintable, do the rest and say so;
+   - "that's not the X, that's the Y" should move the last change.
+2. **Refining the app's own stripe** (b5-050): "too wide / half that" should change the stripe width.
+3. **Three-part owner-style sentences** (b5-034): colour + trim + spec on a named layer. Light blue is still dropped. The owner's open question about what "silver accent" means is still open.
+4. **Keep-clause against a shared colour** (b5-042): when the colour being changed is also in the logos and the buyer said not to touch them, ask or mask the logos out. Do not do it and then warn.
+5. **Patterns at an opacity** (b5-041), and a purple → blue colour shift that picks a matching shift finish (b5-045).
+6. **n01 / n03 residue on the dev set**: "everything except/but the hood" leaves 513 / 1625 hood cells changed (was 751 / 4776). On the shot the hood still reads mint; the residue runs along one edge. Not pinned down.
+7. **Not yet verified:**
+   - the direction of a hood gradient in the iRacing view (front / rear on the sheet);
+   - "black car with gold trim" drops the trim (whole-car scheme kept, trim not done);
+   - follow-up "silver i guess" after an outline colour ask (g02) does not continue the outline.
+8. **Ranker notes for the search lane** (spb-enc-search.js was not touched):
+   - "is white or black better on a blue car" → playbook.gradients_and_flake is weak;
+   - "what's shinier, satin or gloss" → ideas.satin_modern_oem, which should be a gloss-vs-satin comparison;
+   - "is gold or silver better for black" → the "Colour names" card;
+   - "whats metallic vs pearl" → only the metallic R-channel card.
+9. **Harness:** a spec-only whole-body change asked for with "keep the colors" should not count as harmful (b5-039). The buyer naming the numbers should allow a number change (b5-059).
+10. **The next blind score needs a NEW corpus.** blind6 (`_easy_claude_work/eval/blind6/corpus6.jsonl`) is ready. blind5 is now contaminated.

@@ -25,7 +25,7 @@
 
         function setFineTuningTitle(zoneIndex) {
             var titleEl = global.document && global.document.getElementById('fineTuningTitle');
-            if (titleEl) titleEl.textContent = 'FINE TUNING \u2014 Zone ' + (zoneIndex + 1);
+            if (titleEl) titleEl.textContent = 'Fine tuning \u2014 Zone ' + (zoneIndex + 1);
         }
 
         global.openFineTuning = function openFineTuning(zoneIndex) {

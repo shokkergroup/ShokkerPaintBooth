@@ -88,6 +88,10 @@
         return changed;
     }
 
+    function _tfx2Off() {
+        try { return !!((typeof window !== 'undefined' && window.SPB_TFX2_OFF) || (typeof globalThis !== 'undefined' && globalThis.SPB_TFX2_OFF)); } catch (e) { return false; }
+    }
+
     function composeMask(currentMask, widthValue, heightValue, gestureValue, modeValue) {
         const width = Math.max(0, Math.floor(Number(widthValue) || 0));
         const height = Math.max(0, Math.floor(Number(heightValue) || 0));
@@ -99,9 +103,12 @@
         const next = mode === 'replace' ? new Uint8Array(length) : new Uint8Array(current);
         const gesture = gestureValue || {};
         const minX = Math.max(0, Math.min(width - 1, Math.floor(Number(gesture.x1) || 0)));
-        const maxX = Math.max(0, Math.min(width - 1, Math.ceil(Number(gesture.x2) || 0)));
+        // [SPB-TFX2 2026-10-09 TA-018] the gesture end is the pointer's pixel INDEX, so the rectangle is [x1, x2) like Photoshop: the old inclusive
+        // ceil(x2) made every selection 1-2 px too large (drag 400x300 -> bbox 402x301 = 121,002 px).
+        const endAdj = _tfx2Off() ? 0 : 1;
+        const maxX = Math.max(0, Math.min(width - 1, Math.ceil(Number(gesture.x2) || 0) - endAdj));
         const minY = Math.max(0, Math.min(height - 1, Math.floor(Number(gesture.y1) || 0)));
-        const maxY = Math.max(0, Math.min(height - 1, Math.ceil(Number(gesture.y2) || 0)));
+        const maxY = Math.max(0, Math.min(height - 1, Math.ceil(Number(gesture.y2) || 0) - endAdj));
         let enclosedPixels = 0;
         let changedPixels = 0;
         const value = mode === 'subtract' ? 0 : 255;
@@ -129,5 +136,51 @@
         };
     }
 
-    return { resolveGesture, validateGesture, dirtyRect, composeMask, countDifferences };
+
+    // PORT-W5 (2026-10-09, owner "tools basically SUCK"): feather the NEW rectangle only, via the PhotoCraft-ported selection
+    // core (js/canvas/pc-selection-core.js, sigma = radius/2, no cap), then combine with the existing mask.  The previous
+    // commit feathered the WHOLE accumulated mask, so every Add/Subtract re-blurred (and shrank) every earlier selection.
+    // Hard rectangle edges stay hard (anti-alias off, like Photoshop) when feather is 0 - this is only called for feather > 0.
+    function composeFeathered(currentMask, widthValue, heightValue, gestureValue, modeValue, featherValue) {
+        const g = typeof window !== 'undefined' ? window : globalThis;
+        let core = g.SPB_PC_W5_OFF || g.SPB_PC_W1_OFF ? null : g.SPBPcSelection;
+        if (!core && !g.SPB_PC_W5_OFF && !g.SPB_PC_W1_OFF) { try { if (typeof require === 'function') core = require('../pc-selection-core.js'); } catch (e) { core = null; } }
+        if (!core || !core.feather) return null;
+        const width = Math.max(0, Math.floor(Number(widthValue) || 0));
+        const height = Math.max(0, Math.floor(Number(heightValue) || 0));
+        const r = Math.max(0, Math.min(1000, Number(featherValue) || 0));
+        if (!r || !width || !height) return null;
+        const gesture = gestureValue || {};
+        const minX = Math.max(0, Math.min(width - 1, Math.floor(Number(gesture.x1) || 0)));
+        const maxX = Math.max(0, Math.min(width - 1, Math.ceil(Number(gesture.x2) || 0) - (_tfx2Off() ? 0 : 1))); // [SPB-TFX2 TA-018] exclusive end
+        const minY = Math.max(0, Math.min(height - 1, Math.floor(Number(gesture.y1) || 0)));
+        const maxY = Math.max(0, Math.min(height - 1, Math.ceil(Number(gesture.y2) || 0) - (_tfx2Off() ? 0 : 1)));
+        if (maxX < minX || maxY < minY) return null;
+        // crop window = rect + 3 sigma (1.5 r) of padding; outside the canvas counts as unselected, exactly as in a full-canvas feather
+        const pad = Math.ceil(r * 1.5) + 2;
+        const cx0 = Math.max(0, minX - pad), cy0 = Math.max(0, minY - pad);
+        const cx1 = Math.min(width, maxX + 1 + pad), cy1 = Math.min(height, maxY + 1 + pad);
+        const cw = cx1 - cx0, ch = cy1 - cy0;
+        // zero padding where the canvas has no pixels but the feather would have bled (canvas edge): same as full-canvas zero-outside
+        const sub = new Uint8Array(cw * ch);
+        for (let y = minY; y <= maxY; y++) sub.fill(255, (y - cy0) * cw + (minX - cx0), (y - cy0) * cw + (maxX - cx0) + 1);
+        const soft = core.feather(sub, cw, ch, r);
+        const mode = modeValue === 'subtract' || modeValue === 'replace' ? modeValue : 'add';
+        const length = width * height;
+        const current = currentMask instanceof Uint8Array && currentMask.length === length ? currentMask : new Uint8Array(length);
+        const next = mode === 'replace' ? new Uint8Array(length) : new Uint8Array(current);
+        for (let y = 0; y < ch; y++) {
+            const row = (y + cy0) * width + cx0, srow = y * cw;
+            for (let x = 0; x < cw; x++) {
+                const f = soft[srow + x];
+                if (!f) continue;
+                const i = row + x;
+                if (mode === 'subtract') next[i] = Math.round(current[i] * (255 - f) / 255);
+                else next[i] = f > next[i] ? f : next[i];
+            }
+        }
+        return next;
+    }
+
+    return { resolveGesture, validateGesture, dirtyRect, composeMask, composeFeathered, countDifferences };
 });

@@ -56,7 +56,8 @@
         levelNoteDismissed: false,
         lastProgressAt: 0,       // last quest completion (ms epoch) — for the stuck nudge
         lastNudgeAt: 0,          // last time the chip re-surfaced itself (rate-limited)
-        allDoneCelebrated: false // fired the 🏆 all-quests-complete toast
+        allDoneCelebrated: false, // fired the 🏆 all-quests-complete toast
+        prefV: 3                 // QUESTS-OFF-V2/V3: saved states without prefV 3 get a one-time reset to OFF
     };
     var _baselineDone = false;   // silent initial sync happened (no toast spam on boot)
     var _bootAt = 0;             // engine init time — nudge fallback for brand-new users
@@ -75,13 +76,31 @@
                 state.wheelsOn = false;
                 state.panelOpen = false;
             }
+            // [QUESTS-OFF-V2 2026-10-09 owner] "The TRAINING WHEELS/QUESTS will NOT go away ... should not be
+            // showing up every time I reload." Off-by-default (APPCHAT, same day) only covered brand-new users;
+            // older saved state still had wheelsOn:true. One-time reset to OFF for every existing user, then the
+            // user's own choice (Tutorial button / Settings checkbox) persists as before.
+            // [TW-GONE 2026-10-12] prefV 3: the legacy "spb_guided_mode" resume (spb-guided-mode.js) had switched the
+            // wheels back on at every boot, so saved states say wheelsOn:true again. One more one-time reset to OFF.
+            if (!saved || saved.prefV !== 3) {
+                state.wheelsOn = false;
+                state.panelOpen = false;
+                state.choiceMade = true;
+                state.prefV = 3;
+                try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e2) {}
+            }
             state.panelExpanded = false;
         } catch (e) {}
     }
     function lsSave() {
         try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {}
     }
-    function toast(msg, isError) {
+    function toast(msg, isError, force) {
+        // [SPB-POLISH-F 2026-10-10 owner: quests OFF by default] Quests are opt-in. completeQuest() kept toasting
+        // "Quest complete: ..." on every probed action (a Wand click) although Training Wheels were off. No quest toast
+        // unless the user switched Training Wheels on (Tutorial button / Settings). `force` = feedback to a click on the
+        // wheels' own buttons. Quest progress is still tracked silently; opt-in flag = state.wheelsOn (spbQuests.on()).
+        if (!force && !state.wheelsOn) return;
         try { if (typeof showToast === 'function') showToast(msg, !!isError); } catch (e) {}
     }
 
@@ -205,7 +224,7 @@
             id: 'q-load', group: 'core', skill: 'load',
             title: 'Get your car in here',
             chip: 'Everything starts with your car. Load the paint you race with.',
-            body: 'At the top, choose <b>PSD/XCF/ORA</b> to open a layered car template, or <b>TGA/PNG/JPEG</b> to open an existing paint image. A layered template keeps numbers, logos and body paint separate for editing. Your paint appears under <b>SOURCE</b> when it loads.',
+            body: 'At the top, click <b>Open Paint&hellip;</b>, then choose <b>Layered template</b> to open a layered car template (PSD, XCF or ORA), or <b>Flat image</b> to open an existing paint image (TGA, PNG or JPEG). A layered template keeps numbers, logos and body paint separate for editing. Your paint appears under <b>SOURCE</b> when it loads.',
             target: function () { return $('paintFile'); },
             done: function () { return probes.paintLoaded() || probes.psdLayerCount() > 0; }
         },
@@ -213,7 +232,7 @@
             id: 'q-zone', group: 'core', skill: 'zone',
             title: 'Claim your pixels',
             chip: 'Choose where the finish goes. Pick a color on the car, or draw a selection.',
-            body: 'A <b>Zone</b> controls where a finish appears. Use <b>&#127919; PICK COLOR FROM CAR</b> in the Zone panel, then click a color on SOURCE. First click sets it; more clicks add colors. To choose an area by hand, use <b>Rectangle</b> or <b>Lasso</b> in Zone mode instead. Either method completes this step.',
+            body: 'A <b>Zone</b> controls where a finish appears. Use <b>Pick color from car</b> in the Zone panel, then click a color on the Source view. First click sets it; more clicks add colors. To choose an area by hand, use <b>Rectangle</b> or <b>Lasso</b> in Zone mode instead. Either method completes this step.',
             target: function () { return findByText('button', 'PICK COLOR FROM CAR'); },
             done: function () { return probes.zoneHasColor(); }
         },
@@ -278,7 +297,7 @@
             id: 'q-restrict', group: 'further', skill: 'restrict',
             title: 'Paint inside the lines',
             chip: 'Restrict a zone to a box, a lasso, or one PSD layer. Sponsors stay safe.',
-            body: 'Use <b>&#127919; Use Region</b> (the eyedropper strip) to box in exactly where the zone may paint — or <b>RESTRICT TO LAYER</b> in the zone panel so only one PSD layer takes paint.',
+            body: 'Use <b>Use Region</b> (the eyedropper strip) to box in exactly where the zone may paint — or <b>Restrict to layers</b> in the zone panel so only one PSD layer takes paint.',
             target: function () { return findByText('button', 'Use Region'); },
             done: function () { return probes.zoneRestricted(); }
         },
@@ -286,7 +305,7 @@
             id: 'q-touchup', group: 'further', skill: 'brush',
             title: 'Fix it by hand',
             chip: 'One stray pixel? The brush tools work right on the canvas.',
-            body: 'Grab the <b>&#128396; Brush</b> from the top toolbar and paint a touch-up right on the canvas. Eraser undoes, Size/Opacity live in the Tool Options bar.',
+            body: 'Grab the <b>Brush</b> from the top toolbar and paint a touch-up right on the canvas. Eraser undoes, Size/Opacity live in the Tool Options bar.',
             target: function () { return document.querySelector('#spbTopToolbar button[title*="Brush" i]') || findByText('#spbTopToolbar button', 'Brush'); },
             done: null // completes via the pushUndo / _pushLayerUndo hooks (questHit)
         },
@@ -294,7 +313,7 @@
             id: 'q-recipe', group: 'further', skill: 'recipe',
             title: 'Keep it forever',
             chip: 'Save the whole build — reapply it to next week\u2019s car in one click.',
-            body: 'In the zone panel\u2019s <b>⋮ More</b> menu, hit <b>&#128190; SAVE SHOKK</b>. Your whole build — zones, finishes, patterns — is saved and can be reloaded onto any car.',
+            body: 'In the zone panel\u2019s <b>⋮ More</b> menu, hit <b>Save Shokk file</b>. Your whole build — zones, finishes, patterns — is saved and can be reloaded onto any car.',
             target: function () { return findByText('button', 'SAVE SHOKK'); },
             done: null // completes via the confirmSaveShokk hook (questHit)
         }
@@ -339,11 +358,11 @@
         if (!silent) {
             if (allComplete() && !state.allDoneCelebrated) {
                 state.allDoneCelebrated = true;
-                toast('🏆 All quests complete — you\u2019re riding on your own now. The 🎓 button is there if you ever want a refresher.');
+                toast('All quests complete. You\u2019re on your own now. The Tutorial button is there if you ever want a refresher.');
             } else if (q.id === 'q-render') {
-                toast('You just painted a car. 🏁 That\u2019s the whole loop: load → pick pixels → pick a finish → render. New quests unlocked: patterns, spec, overlays.');
+                toast('You just painted a car. That\u2019s the whole loop: load → pick pixels → pick a finish → render. New quests unlocked: patterns, spec, overlays.');
             } else {
-                toast('✅ ' + q.title + ' — done!');
+                toast('Quest complete: ' + q.title);
             }
         }
         lsSave();
@@ -441,11 +460,12 @@
             if (wantNote && !old) {
                 var note = document.createElement('div');
                 note.id = 'spbLevelNote';
-                note.innerHTML = '🎓 Advanced sections are tucked away while you learn the loop. Click any section to peek — they open for good after your first render. <a href="#" onclick="event.preventDefault(); spbQuests.dismissLevelNote()">don\u2019t show again</a>';
+                note.innerHTML = 'Advanced sections are tucked away while you learn the loop. Click any section to peek — they open for good after your first render. <a href="#" onclick="event.preventDefault(); spbQuests.dismissLevelNote()">don\u2019t show again</a>';
                 host.insertBefore(note, host.firstChild);
             }
 
-            if (!state.wheelsOn || lvl >= 2) return;
+            // [SPB-POLISH-F 2026-10-10] turning Training Wheels OFF returned here BEFORE applyToolbarDisclosure(), so the 🎓 "Menus" peek button stayed in the tool band until a reload.
+            if (!state.wheelsOn || lvl >= 2) { applyToolbarDisclosure(); return; }
             for (var s = 0; s < LEVEL2_SECTIONS.length; s++) {
                 var prefix = LEVEL2_SECTIONS[s];
                 if (state.userToggledSections[prefix]) continue;
@@ -477,13 +497,13 @@
                 btn.type = 'button';
                 btn.id = 'spbToolbarPeek';
                 btn.className = 'spb-tb-summary';
-                btn.innerHTML = '🎓 Menus';
+                btn.innerHTML = 'Menus';
                 btn.title = 'Tool menus (History / Select / Retouch / Mask / Transform / Adjust) are tucked away while you learn the loop. Click to show them anyway — they appear on their own after your first render.';
                 btn.addEventListener('click', function () {
                     state.userToggledSections['toolbar'] = true;
                     lsSave();
                     applyToolbarDisclosure();
-                    toast('Tool menus unlocked for this app — they stay put. 🎓');
+                    toast('Tool menus unlocked for this app. They stay put.');
                 });
                 bar.appendChild(btn);
             } else if (!want && btn && btn.parentNode) {
@@ -597,7 +617,7 @@
         chip.style.display = 'block';
         if (showGradOffer) {
             chip.innerHTML =
-                '<div class="spb-quest-chip-title">🏁 Core Loop complete!</div>' +
+                '<div class="spb-quest-chip-title">Core loop complete</div>' +
                 '<div class="spb-quest-chip-hint">You know the loop — load, zone, finish, render. Want the training wheels off?</div>' +
                 '<div class="spb-quest-chip-row">' +
                 '<button type="button" class="spb-quest-chip-btn primary" onclick="spbQuests.graduate(true)">Wheels off</button>' +
@@ -608,12 +628,12 @@
         var pos = questPosition(move);
         var posLabel = pos && move.group === 'core' ? (' ' + pos.n + '/' + pos.of) : '';
         chip.innerHTML =
-            '<div class="spb-quest-chip-title">🎓 Next' + posLabel + ': ' + move.title + '</div>' +
+            '<div class="spb-quest-chip-title">Next' + posLabel + ': ' + move.title + '</div>' +
             '<div class="spb-quest-chip-hint">' + move.chip + '</div>' +
             '<div class="spb-quest-chip-row">' +
-            '<button type="button" class="spb-quest-chip-btn primary" onclick="spbQuests.showMe()">🔍 Show me</button>' +
+            '<button type="button" class="spb-quest-chip-btn primary" onclick="spbQuests.showMe()">Show me</button>' +
             '<button type="button" class="spb-quest-chip-btn" onclick="spbQuests.openPanel()">Quests</button>' +
-            '<button type="button" class="spb-quest-chip-x" onclick="spbQuests.dismissChip()" title="Hide hints — reopen any time from the 🎓 button">✕</button>' +
+            '<button type="button" class="spb-quest-chip-x" onclick="spbQuests.dismissChip()" title="Hide hints — reopen any time from the Menus button">✕</button>' +
             '</div>';
         // Arm the chip's quest only if nothing else is armed (a quest the user
         // picked from the checklist always wins).
@@ -623,7 +643,7 @@
     // ---- UI: quest checklist panel (owns the coach's #spbGuidePanel shell) -----
     function questRowHtml(q, locked) {
         var done = !!state.questsDone[q.id];
-        var icon = done ? '✅' : (locked ? '🔒' : '○');
+        var icon = done ? '✓' : (locked ? '–' : '○');
         var cls = 'spb-quest-row' + (done ? ' done' : '') + (locked ? ' locked' : '');
         return '<button type="button" class="' + cls + '" data-qid="' + q.id + '"' + (locked ? ' disabled' : '') + '>' +
             '<span class="spb-quest-row-icon">' + icon + '</span>' +
@@ -637,14 +657,15 @@
 
         var doneCount = 0;
         for (var dc = 0; dc < QUESTS.length; dc++) { if (state.questsDone[QUESTS[dc].id]) doneCount++; }
-        var head = '<div class="spb-guide-head"><span>&#127891; TRAINING WHEELS · ' + doneCount + '/' + QUESTS.length + '</span>' +
+        var head = '<div class="spb-guide-head"><span>Training wheels · ' + doneCount + '/' + QUESTS.length + '</span>' +
             (state.panelExpanded ? '<button type="button" class="spb-guide-nav" onclick="spbQuests.minimizePanel()" aria-label="Minimize Training Wheels">Minimize</button>' : '<button type="button" class="spb-guide-nav" onclick="spbQuests.openChecklist()" aria-expanded="false">All quests</button>') +
             '<button type="button" class="spb-guide-x" onclick="spbQuests.closePanel()" title="Close Training Wheels" aria-label="Close Training Wheels">×</button></div>' +
             '<div class="spb-quest-progress" aria-hidden="true"><div class="spb-quest-progress-fill" style="width:' + Math.round(doneCount / QUESTS.length * 100) + '%"></div></div>';
 
+        // [S12 2026-10-12 owner: "lose this vibecoded look"] quest panel copy: emoji removed from titles/buttons, caps -> sentence case (copy only)
         if (!state.wheelsOn) {
             panel.innerHTML = head + '<div class="spb-guide-body">' +
-                '<div class="spb-guide-title">Wheels are off. 🚴</div>' +
+                '<div class="spb-guide-title">Wheels are off.</div>' +
                 '<div class="spb-guide-sub">You\u2019re riding the full app. Any time you want the hints and quests back, flip the switch.</div>' +
                 '<div class="spb-guide-row"><button type="button" class="spb-guide-next" onclick="spbQuests.on()">Turn Training Wheels back on</button></div></div>';
             return;
@@ -667,27 +688,27 @@
                 '<div class="spb-guide-title">' + q.title + (isDone ? ' <span class="spb-guide-done">✓ done</span>' : '') + '</div>' +
                 '<div class="spb-guide-sub">' + q.body + '</div>' +
                 '<div class="spb-guide-row">' +
-                '<button type="button" class="spb-guide-show" onclick="spbQuests.showMe()">🔍 Show me where</button>' +
+                '<button type="button" class="spb-guide-show" onclick="spbQuests.showMe()">Show me where</button>' +
                 '<span style="flex:1"></span>' +
                 '<button type="button" class="spb-guide-nav" onclick="spbQuests.backToList()">← Quests</button>' +
-                (!state.questsDone[q.id] ? '<button type="button" class="spb-guide-next" onclick="spbQuests.markDone(\'' + q.id + '\')">✓ I did it</button>' : '') +
+                (!state.questsDone[q.id] ? '<button type="button" class="spb-guide-next" onclick="spbQuests.markDone(\'' + q.id + '\')">I did it</button>' : '') +
                 '</div></div>';
             return;
         }
 
         // Checklist view
         var html = head + '<div class="spb-guide-body spb-quest-list">';
-        html += '<div class="spb-quest-group">THE CORE LOOP</div>';
+        html += '<div class="spb-quest-group">The core loop</div>';
         for (var i = 0; i < CORE_IDS.length; i++) html += questRowHtml(questById(CORE_IDS[i]), false);
-        html += '<div class="spb-quest-group">GO FURTHER' + (coreComplete() ? '' : ' <span class="spb-quest-group-note">— finish the Core Loop first</span>') + '</div>';
+        html += '<div class="spb-quest-group">Go further' + (coreComplete() ? '' : ' <span class="spb-quest-group-note">— finish the Core Loop first</span>') + '</div>';
         for (var j = 0; j < QUESTS.length; j++) {
             if (QUESTS[j].group === 'further') html += questRowHtml(QUESTS[j], !coreComplete());
         }
         if (allComplete()) {
-            html += '<div class="spb-quest-grad"><div class="spb-quest-grad-title">🏆 All quests complete.</div>' +
-                '<div class="spb-quest-grad-sub">You\u2019ve done everything the wheels can teach. The full app is yours — the 🎓 button stays if you ever want a refresher.</div></div>';
+            html += '<div class="spb-quest-grad"><div class="spb-quest-grad-title">All quests complete.</div>' +
+                '<div class="spb-quest-grad-sub">You\u2019ve done everything the wheels can teach. The full app is yours — the Menus button stays if you ever want a refresher.</div></div>';
         } else if (coreComplete() && !state.graduated) {
-            html += '<div class="spb-quest-grad"><div class="spb-quest-grad-title">🏁 You know the loop.</div>' +
+            html += '<div class="spb-quest-grad"><div class="spb-quest-grad-title">You know the loop.</div>' +
                 '<div class="spb-quest-grad-sub">Wheels off when you\u2019re ready — everything stays reversible.</div>' +
                 '<div class="spb-guide-row">' +
                 '<button type="button" class="spb-guide-next" onclick="spbQuests.graduate(true)">Turn Training Wheels off</button>' +
@@ -756,7 +777,7 @@
                 state.chipDismissed = false;
                 state.lastNudgeAt = now;
                 lsSave();
-                toast('Still here if you want the next step. 🎓');
+                toast('Still here if you want the next step.');
             }
         } catch (e) {}
         render(changed);
@@ -813,14 +834,14 @@
         graduate: function (wheelsOff) {
             if (wheelsOff) {
                 state.graduated = true; state.wheelsOn = false;
-                toast('Wheels off. 🚴 The 🎓 button brings them back any time.');
+                toast('Training Wheels are off. The Tutorial button brings them back any time.', false, true);
                 state.chipDismissed = true;
             } else {
                 // "Keep them on": stop offering graduation, but KEEP the chip —
                 // the remaining quests (patterns, spec, overlays…) still need it.
                 state.gradOfferDismissed = true;
                 state.chipDismissed = false;
-                toast('Wheels stay on — the next quests are in the chip and the 🎓 list.');
+                toast('Training Wheels stay on. The next quests are in the hint chip and the Tutorial list.');
             }
             lsSave(); applyLevelDisclosure(); render(true);
         },
@@ -839,7 +860,7 @@
             state.activeQuest = 'q-render';
             state.chipDismissed = false;
             lsSave();
-            toast('That finish you picked lives in a zone. One step left — send it to the track. 🏁');
+            toast('That finish you picked lives in a zone. One step left: send it to the track.');
             render(true);
         },
 
@@ -935,7 +956,9 @@
         }, true);
 
         syncQuests();          // silent baseline pass
-        renderChoice();
+        // APPCHAT 2026-10-09 (owner: the tutorial is redundant now that the Offline Helper guides new users): no automatic first-run invitation; Training Wheels
+        // stays OFF by default and is still one click away (the Tutorial button / the Settings checkbox).
+        if (state.choiceMade) renderChoice();
         applyLevelDisclosure();
         render(true);
         setInterval(tick, POLL_MS);

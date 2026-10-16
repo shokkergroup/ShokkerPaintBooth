@@ -170,7 +170,7 @@
         + ' data-id="' + safeId + '" data-search="' + escapeHtml(getLibrarySearchText(item, type)).toLowerCase() + '">'
         + swatchHtml
         + '<div class="finish-item-info"><div class="finish-item-name">' + escapeHtml(item.name)
-        + (!isRegistered ? ' <span style="font-size:7px;color:#ff8800;border:1px solid #ff8800;border-radius:2px;padding:0 2px;vertical-align:middle;" title="Preview - this finish uses a generic render path">PREVIEW</span>' : '')
+        + (!isRegistered ? ' <span style="font-size:7px;color:#ff8800;border:1px solid #ff8800;border-radius:2px;padding:0 2px;vertical-align:middle;" title="Preview - this finish uses a generic render path">Preview</span>' : '')
         + '</div><div class="finish-item-desc">' + escapeHtml(item.desc) + '</div>'
         + (inlineChips.length > 0 ? '<div class="finish-item-chips" style="display:flex; flex-wrap:wrap; gap:3px; margin-top:3px;">' + inlineChips.join('') + '</div>' : '')
         + "</div><span onclick='toggleFavorite(" + safeJsId + ", event)' title=\"" + (isFav ? 'Remove from favorites' : 'Add to favorites') + '" style="cursor:pointer; font-size:14px; ' + starColor + ' padding:0 4px; flex-shrink:0; transition:color 0.15s;">' + starIcon + '</span>'

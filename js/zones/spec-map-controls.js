@@ -106,7 +106,7 @@
         return;
       }
       if (typeof confirm === 'function' &&
-          !confirm('Clear the imported spec map? You will need to re-import or re-load from SHOKK to restore it.')) {
+          !confirm('Clear the imported spec map? You will need to re-import or re-load from Shokk to restore it.')) {
         return;
       }
       setImportedSpecMapPath(null);

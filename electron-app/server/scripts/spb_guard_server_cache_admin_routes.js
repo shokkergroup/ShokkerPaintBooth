@@ -33,7 +33,7 @@ const failures = [];
 
 [
   "def register_cache_admin_routes(",
-  "@app.route('/api/clear-cache', methods=['GET', 'POST'])",
+  "@app.route('/api/clear-cache', methods=['POST'])",
   "@app.route('/api/thumb-regen/<finish_type>/<finish_id>', methods=['POST'])",
   "@app.route('/debug-rotation-log', methods=['GET'])",
   "@app.route('/api/reload-engine', methods=['POST'])",

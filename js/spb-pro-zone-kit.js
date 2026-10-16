@@ -17,6 +17,8 @@
 (function () {
     'use strict';
     function G(name) { try { return window[name]; } catch (e) { return undefined; } }
+    // [SPB-PERF2 2026-10-10] read-only layer union: every caller below only READS the mask, so it skips the 4 MB copy getZoneSourceLayersUnionMask makes on each call (about 100 calls per helper-environment rebuild = 60 % of the 1.0-1.9 s idle main-thread freeze, profile_idle.py before -> after in _easy_claude_work/perf2/PROGRESS.md). Same maths (js/spb-perf2-client.js); kill switch window.SPB_PERF2_OFF = true.
+    function unionRO(zl, W, H) { var P2 = window.__spbPerf2; if (P2 && P2.unionRO && window.SPB_PERF2_OFF !== true) { try { return P2.unionRO(zl, W, H); } catch (eP2) {} } return G('getZoneSourceLayersUnionMask')(zl, W, H); }
     function Zs() { try { return zones; } catch (e) { return []; } }
     function isHex(s) { return /^#[0-9a-f]{6}$/i.test(String(s || '')); }
     function clamp(v, lo, hi) { v = Number(v); if (!isFinite(v)) return lo; return Math.max(lo, Math.min(hi, v)); }
@@ -41,9 +43,12 @@
         scale: 'number 0.05-5 — size of the base material texture (1 = normal)',
         rotation: 'number 0-359 — rotate the base material',
         pattern: 'object {id|"none", opacity:0-100, scale:0.05-5, rotation:0-359} — a paint PATTERN on top (ids from search_patterns); opacity 100 = the colours of the pattern itself cover the zone colour, 25-35 = the zone colour with the pattern texture (measured 2026-10-05: at 50+ the own (often darker) colours of the pattern take over, e.g. hot pink + camo 70 reads brown)',
+        pattern_position: 'object {x:0-100, y:0-100 (absolute, 50 = centre)} and/or {dx:-100..100, dy:-100..100 (nudge from where it is now; + = right / down)} and/or {target:"base"} to move the zone Base picture instead — slides the zone PATTERN or picture inside its panel (same Position X / Y sliders as the UI, Ctrl+Z undoes it). Needs a pattern on the zone', // W13-NUDGE 2026-10-09 (kill window.SPB_W13N_OFF)
         spec_patterns: 'array (max 5) of {id, opacity:0-100, scale, rotation, channels:"M"|"R"|"C" letters (Metal/Rough/Clearcoat)} — SPEC pattern layers that change how the surface reflects (ids from search_spec_patterns). Replaces the existing spec pattern stack.',
         second_base: 'object {id|"none", color:"#rrggbb", strength:0-100} — a second material blended over the first (ids like finish keys)',
         spec_shift: 'object {metal:-127..127, rough:-127..127, clearcoat:-127..127} — push the zone\'s metallic / roughness / clearcoat channels up or down (added to the spec bytes: rough minus = sharper/glossier; clearcoat minus = glossier coat, stops at 16 = max gloss; clearcoat plus = duller coat)', // BUGFIX 2026-10-04: direction stated (engine adds b; 16 = max gloss)
+        copy_look_from: 'zone index (0..), zone id or exact zone name — copy EVERY look setting of that zone onto this one exactly: finish, colour (solid / gradient / special), scale, rotation, base / spec strength, intensity, pattern, spec patterns, overlays, spec shift. The region (which pixels) is not copied. "the same colour and finish as the numbers" = copy_look_from the zone that paints the numbers',          // HELPER FIX PASS 8 2026-10-05 (owner live: the spray-can yellow "the same color and finish that's on the numbers": the copy lost the Saturday Chrome finish and its 0.15 scale)
+        stroke_px: 'number 1-60 — the width in px (on a 2048 sheet) of a LINE zone (region.graphic outline / seam / stripes); the zone redraws its line at that width, nothing else changes. Thinner / thicker / "half that" edit this',          // HELPER V3 S5 2026-10-05 (additive)
         priority: 'for add_zone / move: "top" (default for a new zone; wins overlaps), "bottom", or a position number 0.. (0 = top). LOWER position wins where zones overlap, so a zone that must show on pixels other zones also select has to sit ABOVE them.',
         region: 'object — WHICH PIXELS the zone covers: {colors:["#rrggbb",...], tolerance:6-100, layers:["layer name or id",...], element:"numbers"|"sponsors"|"stripes" (the numbers / sponsors+logos / stripes the app FOUND on this paint from the picture: works on flat paints with no layers; call describe_paint first), exclude:["numbers","sponsors","stripes"] (the zone covers its selection EXCEPT these: "make the black matte but leave the numbers alone"), part:"left side" (or a list ["left side","right side"]: a NAMED PART of the car from get_car_map — the way to put anything on a specific place) with portion:"front third"|"rear half"|"lower third"|"upper half"... OR band:{axis:"height"|"length", from:0..1, to:0..1} (a stripe: height = measured from the ROOF-LINE (0) down to the ROCKER (1) of a side panel; length = from the FRONT (0) to the REAR (1)), cells:"B3:D5" or rect:{x0,y0,x1,y1 as 0-1 fractions} (ONLY for small details under ~12% of the sheet; a big box cuts across panels and is refused), clear_box:true, remaining:true (catch everything not claimed), everything:true, paintable:true (with everything: limits it to the car\'s paintable area; use it for a whole-car BASE colour)}'
     };
@@ -81,7 +86,7 @@
         var tm = null, R = 16;
         (typeof _psdLayers !== 'undefined' ? _psdLayers : []).forEach(function (l) {
             if (!l || l.visible === false || !/^\s*(wire|mask|car[ _]*mandatory|template|guides?)\b/i.test(String(l.name || ''))) return;
-            var lu = null; try { lu = G('getZoneSourceLayersUnionMask')({ sourceLayers: [l.id], sourceLayer: l.id }, W, H); } catch (e) {}
+            var lu = null; try { lu = unionRO({ sourceLayers: [l.id], sourceLayer: l.id }, W, H); } catch (e) {}
             if (!lu || !lu.union || lu.union.length !== W * H) return; if (!tm) tm = new Uint8Array(W * H); var u = lu.union; for (var k = 0; k < u.length; k++) if (u[k] > 0) tm[k] = 1;
         });
         if (!tm) return 0; var add = [], x, y, k2, d, j, got, yes;
@@ -110,6 +115,8 @@
         if (x1 < 0) return null; x1 = Math.min(W, x1 + 4); y1 = Math.min(H, y1 + 4);
         return [x0, y0, x1, y1];
     }
+    // M3 2026-10-07: a transient field on a caller-owned object that must never be serialised (JSON.stringify of a 2048x2048 Uint8Array = 4M keys)
+    function hideProp(o, k, v) { try { Object.defineProperty(o, k, { value: v, enumerable: false, configurable: true, writable: true }); } catch (e) { o[k] = v; } }
     function prepareMcpFamilyRegion(r) {
         var W = paintDims()[0], H = paintDims()[1], pd = paintPixels(), ticket = mcpFamilySourceTicket(pd, W, H);
         if (!ticket) return { error: 'the committed source canvas identity is unavailable or stale; nothing was changed' };
@@ -185,7 +192,7 @@
         var mask = null, layerUnion = null, ca = catchAll(z), out;
         try { if (z.regionMask && z.useRegion) mask = z.regionMask; } catch (e) {}
         var layerGone = false;
-        try { var ids = G('zoneSourceLayerIds') ? G('zoneSourceLayerIds')(z) : []; if (ids.length && G('getZoneSourceLayersUnionMask')) { var lu = G('getZoneSourceLayersUnionMask')(z, W, H); layerUnion = lu && lu.union; if (!layerUnion) layerGone = true; } } catch (e2) {}
+        try { var ids = G('zoneSourceLayerIds') ? G('zoneSourceLayerIds')(z) : []; if (ids.length && G('getZoneSourceLayersUnionMask')) { var lu = unionRO(z, W, H); layerUnion = lu && lu.union; if (!layerUnion) layerGone = true; } } catch (e2) {}
         var tg = zoneTargets(z), ct = tg.length ? colourTest(tg) : null;
         if (layerGone || (!ct && !mask && !ca)) out = null;      // engine rule: a layer restriction alone selects nothing
         else out = function (R, Gc, B, idx) {
@@ -457,8 +464,27 @@
     function describeAll() { return withMemo(function () { return Zs().map(function (z, i) { return describe(i); }); }); }
 
     // ------------------------------------------------------------------ validate
+    // CX3 2026-10-09 (Codex 'Shared layer intelligence' / layer-targets; owner rule: change ONLY the named part). The official ARCA template has four layers
+    // named "Base Paint": the old first-name-match (then first substring match) could bind a paint change to a spec-map layer. Now: an exact layer id wins, then a
+    // "Group / Layer" path (SpbLayerTargets), then a UNIQUE exact name, then a UNIQUE substring; a repeated name returns null (the caller asks) instead of guessing.
+    // Kill switch window.SPB_CX3_OFF restores the first-match behaviour.
     function findLayer(x) {
-        try { var s = String(x).toLowerCase(); return _psdLayers.filter(function (l) { return l && l.img && (l.id === x || String(l.name).toLowerCase() === s); })[0] || _psdLayers.filter(function (l) { return l && l.img && String(l.name).toLowerCase().indexOf(s) !== -1; })[0] || null; } catch (e) { return null; }
+        if (window.SPB_CX3_OFF) {
+            try { var s0 = String(x).toLowerCase(); return _psdLayers.filter(function (l) { return l && l.img && (l.id === x || String(l.name).toLowerCase() === s0); })[0] || _psdLayers.filter(function (l) { return l && l.img && String(l.name).toLowerCase().indexOf(s0) !== -1; })[0] || null; } catch (e0) { return null; }
+        }
+        try {
+            var rows = _psdLayers.filter(function (l) { return l && l.img; }), s = String(x).toLowerCase();
+            var ids = rows.filter(function (l) { return l.id != null && (l.id === x || (typeof x === 'string' && String(l.id) === x)); });
+            if (ids.length) return ids.length === 1 ? ids[0] : null;
+            if (window.SpbLayerTargets && s.indexOf('/') !== -1) { var grouped = window.SpbLayerTargets.resolve(x, rows); return grouped.ok ? grouped.row : null; }
+            var named = rows.filter(function (l) { return String(l.name).toLowerCase() === s; });
+            if (named.length) return named.length === 1 ? named[0] : null;
+            var fuzzy = rows.filter(function (l) { return String(l.name).toLowerCase().indexOf(s) !== -1; });
+            return fuzzy.length === 1 ? fuzzy[0] : null;
+        } catch (e) { return null; }
+    }
+    function layerNameHint(x) {          // CX3: say WHY a layer was not found when the name is shared by several layers
+        try { if (window.SPB_CX3_OFF) return ''; var s = String(x).toLowerCase(), n = _psdLayers.filter(function (l) { return l && l.img && (String(l.name).toLowerCase() === s || String(l.name).toLowerCase().indexOf(s) !== -1); }).length; return n > 1 ? ' (' + n + ' layers match that name: use the full "Group / Layer" path or the layer id)' : ''; } catch (e) { return ''; }
     }
     function finishDoc(key) {
         var id = String(key || '').replace(/^[a-z]+::/, ''), kind = /^monolithic::/.test(key) ? 'mono' : (/^base::/.test(key) ? 'base' : null);
@@ -486,6 +512,7 @@
             else if (!g.stops.every(function (t) { return t && isFinite(Number(t.pos)) && isHex(t.color); })) err.push('every gradient stop needs pos 0-100 and color "#rrggbb"');
             if (g && g.direction && ['horizontal', 'vertical', 'diagonal_down', 'diagonal_up', 'radial', 'angular'].indexOf(g.direction) === -1) err.push('gradient.direction must be horizontal|vertical|diagonal_down|diagonal_up|radial|angular');
         }
+        if (s.pattern_position != null) { var pp0 = s.pattern_position; if (!pp0 || typeof pp0 !== 'object' || ['x', 'y', 'dx', 'dy'].every(function (k) { return pp0[k] == null; })) err.push('pattern_position needs x / y (0-100, 50 = centre) or dx / dy (a nudge)'); else if (['x', 'y', 'dx', 'dy'].some(function (k) { return pp0[k] != null && !isFinite(Number(pp0[k])); })) err.push('pattern_position x / y / dx / dy must be numbers'); }          // W13-NUDGE 2026-10-09
         if (s.pattern != null) { var p = s.pattern; if (typeof p === 'string') p = { id: p }; if (!p || !p.id) err.push('pattern needs an id'); else if (p.id !== 'none') { var okp = false; try { okp = PATTERNS.some(function (q) { return q.id === p.id; }); } catch (e) {} if (!okp) { var psug = closestIds(PATTERNS, p.id, '', 5); err.push('unknown pattern id "' + p.id + '"' + (psug.length ? ' — closest ids: ' + psug.join(', ') + ' (or call search_patterns)' : ' — call search_patterns')); } } }
         if (s.spec_patterns != null) {
             if (!Array.isArray(s.spec_patterns) || s.spec_patterns.length > 5) err.push('spec_patterns must be an array of at most 5 layers');
@@ -518,7 +545,7 @@
             if (r.band && !(typeof r.band === 'object' && isFinite(Number(r.band.from)) && (r.band.to == null || isFinite(Number(r.band.to))))) err.push('region.band must be {axis:"height"|"length", from:0..1, to:0..1}');
             var bigBox = r.rect || (r.cells ? parseCells(r.cells) : null);
             if (bigBox && !r.island) { var bArea = Math.abs(bigBox.x1 - bigBox.x0) * Math.abs(bigBox.y1 - bigBox.y0); if (bArea > 0.12) err.push('that box covers ' + Math.round(bArea * 100) + '% of the whole sheet: a box that big cuts across roof, hood, doors and bumpers and will NOT sit on the car the way you mean. Put it on a named part instead (region.part + portion/band from get_car_map), or select by paint colour / layer / remaining. Boxes are only for small details.'); }
-            if (r.layers) (Array.isArray(r.layers) ? r.layers : [r.layers]).forEach(function (l) { if (!findLayer(l)) err.push('no PSD layer named "' + l + '"'); });
+            if (r.layers) (Array.isArray(r.layers) ? r.layers : [r.layers]).forEach(function (l) { if (!findLayer(l)) err.push('no PSD layer named "' + l + '"' + layerNameHint(l)); });
             if (forNew && !(r.colors && r.colors.length) && !(r.layers && r.layers.length) && !r.cells && !r.rect && !r.island && !r.graphic && !r.element && !r.remaining && !r.everything && !r.paintable) err.push('a new zone must cover something: give region.colors, region.layers, region.cells/rect, or region.remaining');
         } else if (forNew) err.push('a new zone needs a region (what it covers)');
         if (s.intensity != null && !(Number(s.intensity) >= 0 && Number(s.intensity) <= 100)) warn.push('intensity is 0-100');
@@ -569,13 +596,130 @@
             }
             var m = null, rl = []; try { rl = (window.SpbProCar && window.SpbProCar.roles) ? window.SpbProCar.roles() : []; } catch (e) {}
             var ids = rl.filter(function (x) { return x.visible !== false && EX_ROLE[kind].test(String(x.role || '')); }).map(function (x) { return x.id; });
-            if (ids.length) { try { var lu = G('getZoneSourceLayersUnionMask')({ sourceLayers: ids, sourceLayer: ids[0] }, W, H); m = lu && lu.union; } catch (e2) {} }
+            if (ids.length) { try { var lu = unionRO({ sourceLayers: ids, sourceLayer: ids[0] }, W, H); m = lu && lu.union; } catch (e2) {} }
             if (!m && window.SpbProElements) { var em = window.SpbProElements.maskFor(kind); m = em && em.mask; }
             if (!m) return;
             if (!out) out = new Uint8Array(W * H);
             for (i = 0; i < m.length; i++) if (m[i] > 0) out[i] = 255;
         });
         return out;
+    }
+    // W2-ACCENT 2026-10-09 (orchestrator W2 lane; Haiku harm theme #1: a part / side repaint covering the livery's ACCENT ART -- painted shapes and stripe blocks that are part of the
+    // design, not decal layers). accentMask(): within one part, cut the paint into regions by CRISP colour edges; the biggest region is the base; a smaller region is an ACCENT when it is
+    // a flat colour (not a gradient), clearly different from what surrounds it, and big enough not to be grain. Edits that name a part (not "everything / including the stripes") leave
+    // these pixels alone. Kill switch: window.SPB_ACCENT_OFF = true. DEFAULT ON since W5-ACCENT2 2026-10-09 (full 30 x 3 cars gate passed); window.SPB_ACCENT_OFF = true is the kill switch. Probe (arca V5 / SSL / NG City): 17-57% of a side is accent art; flat colour bases are untouched.
+    var ACC_G = 512, ACC_WALL = 10, ACC_DE = 25, ACC_FLAT = 14, ACC_MINFRAC = 0.0025, ACC_MAXFRAC = 0.12, ACC_CAP = 0.3;          // w2a4: a region over 12% of the part is a BASE area (NG City: the yellow half of the side was protected = half the side unpainted), and accents together never exceed 30% of it
+    var _accLin = null;
+    function accLab(rgb, n, out) {
+        if (!_accLin) { _accLin = new Float32Array(256); for (var i = 0; i < 256; i++) { var c = i / 255; _accLin[i] = c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); } }
+        var f = function (t) { return t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116; };
+        for (var p = 0; p < n; p++) {
+            var r = _accLin[rgb[p * 4]], g = _accLin[rgb[p * 4 + 1]], b = _accLin[rgb[p * 4 + 2]];
+            var x = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047, y = 0.2126 * r + 0.7152 * g + 0.0722 * b, z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883;
+            var fy = f(y); out[p * 3] = 116 * fy - 16; out[p * 3 + 1] = 500 * (f(x) - fy); out[p * 3 + 2] = 200 * (fy - f(z));
+        }
+    }
+    // partMask: Uint8Array over the paint canvas (W x H, side = sqrt(length)). Returns { mask: Uint8Array(W*H) 255 on accents, share: accent cells / part cells (0..1) } or null.
+    function accentMask(partMask, W, H) {
+        if ((window.SPB_ACCENT_OFF === true) || !partMask) return null;
+        var src = null; try { src = document.getElementById('paintCanvas'); } catch (e) { src = null; }
+        if (!src || src.width < 64) return null;
+        var Gs = ACC_G, cv = document.createElement('canvas'); cv.width = cv.height = Gs; var cx = cv.getContext('2d', { willReadFrequently: true });
+        cx.imageSmoothingEnabled = true; cx.imageSmoothingQuality = 'high'; cx.drawImage(src, 0, 0, Gs, Gs);
+        var rgb; try { rgb = cx.getImageData(0, 0, Gs, Gs).data; } catch (e2) { return null; }
+        var side = Math.round(Math.sqrt(partMask.length)), NN = Gs * Gs, pm = new Uint8Array(NN), N = 0, x, y, i;
+        for (y = 0; y < Gs; y++) { var sy = Math.min(side - 1, Math.floor((y + 0.5) * side / Gs)); for (x = 0; x < Gs; x++) { if (partMask[sy * side + Math.min(side - 1, Math.floor((x + 0.5) * side / Gs))]) { pm[y * Gs + x] = 1; N++; } } }
+        if (N < 400) return null;
+        var lab = new Float32Array(NN * 3); accLab(rgb, NN, lab);
+        var wall = new Uint8Array(NN), de = function (a, b) { var d0 = lab[a * 3] - lab[b * 3], d1 = lab[a * 3 + 1] - lab[b * 3 + 1], d2 = lab[a * 3 + 2] - lab[b * 3 + 2]; return Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2); };
+        for (y = 0; y < Gs; y++) for (x = 0; x < Gs; x++) { i = y * Gs + x; if (!pm[i]) continue; if (x + 1 < Gs && de(i, i + 1) >= ACC_WALL) { wall[i] = 1; wall[i + 1] = 1; } if (y + 1 < Gs && de(i, i + Gs) >= ACC_WALL) { wall[i] = 1; wall[i + Gs] = 1; } }
+        var lbl = new Int32Array(NN), n = 0, stack = new Int32Array(NN), area = [0], sL = [0], sa = [0], sb = [0], qL = [0], qa = [0], qb = [0];
+        for (i = 0; i < NN; i++) {
+            if (!pm[i] || wall[i] || lbl[i]) continue;
+            n++; var sp = 0, ar = 0, a0 = 0, a1 = 0, a2 = 0, b0 = 0, b1 = 0, b2 = 0; stack[sp++] = i; lbl[i] = n;
+            while (sp) {
+                var c = stack[--sp], L = lab[c * 3], A = lab[c * 3 + 1], B = lab[c * 3 + 2]; ar++; a0 += L; a1 += A; a2 += B; b0 += L * L; b1 += A * A; b2 += B * B;
+                var cxp = c % Gs, nb;
+                if (cxp > 0 && (nb = c - 1, pm[nb] && !wall[nb] && !lbl[nb])) { lbl[nb] = n; stack[sp++] = nb; }
+                if (cxp < Gs - 1 && (nb = c + 1, pm[nb] && !wall[nb] && !lbl[nb])) { lbl[nb] = n; stack[sp++] = nb; }
+                if (c >= Gs && (nb = c - Gs, pm[nb] && !wall[nb] && !lbl[nb])) { lbl[nb] = n; stack[sp++] = nb; }
+                if (c < NN - Gs && (nb = c + Gs, pm[nb] && !wall[nb] && !lbl[nb])) { lbl[nb] = n; stack[sp++] = nb; }
+            }
+            area.push(ar); sL.push(a0); sa.push(a1); sb.push(a2); qL.push(b0); qa.push(b1); qb.push(b2);
+        }
+        if (n < 2) return { mask: new Uint8Array(W * H), share: 0 };
+        var base = 1; for (i = 2; i <= n; i++) if (area[i] > area[base]) base = i;
+        // colour of what surrounds each candidate region: sample 3 cells out (the other side of the edge) in the four directions
+        var rs = new Float64Array((n + 1) * 3), rc = new Int32Array(n + 1), d = 3;
+        var cand = new Uint8Array(n + 1), minA = Math.max(10, ACC_MINFRAC * N);
+        for (i = 1; i <= n; i++) if (i !== base && area[i] >= minA && area[i] <= ACC_MAXFRAC * N) { var m0 = sL[i] / area[i], m1 = sa[i] / area[i], m2 = sb[i] / area[i], v = Math.max(0, qL[i] / area[i] - m0 * m0) + Math.max(0, qa[i] / area[i] - m1 * m1) + Math.max(0, qb[i] / area[i] - m2 * m2); if (Math.sqrt(v) <= ACC_FLAT) cand[i] = 1; }
+        var offs = [-d, d, -d * Gs, d * Gs];
+        for (y = d; y < Gs - d; y++) for (x = d; x < Gs - d; x++) {
+            i = y * Gs + x; var k = lbl[i]; if (!k || !cand[k]) continue;
+            for (var o = 0; o < 4; o++) { var q = i + offs[o]; if (pm[q] && lbl[q] !== k) { rs[k * 3] += lab[q * 3]; rs[k * 3 + 1] += lab[q * 3 + 1]; rs[k * 3 + 2] += lab[q * 3 + 2]; rc[k]++; } }
+        }
+        var acc = new Uint8Array(NN), accN = 0;
+        for (i = 1; i <= n; i++) {
+            if (!cand[i] || rc[i] < 4) continue;
+            var e0 = sL[i] / area[i] - rs[i * 3] / rc[i], e1 = sa[i] / area[i] - rs[i * 3 + 1] / rc[i], e2 = sb[i] / area[i] - rs[i * 3 + 2] / rc[i];
+            if (Math.sqrt(e0 * e0 + e1 * e1 + e2 * e2) >= ACC_DE) cand[i] = 2;
+        }
+        var accIds = []; for (i = 1; i <= n; i++) if (cand[i] === 2) accIds.push(i);
+        accIds.sort(function (a, b) { return area[b] - area[a]; }); var accTot = 0; accIds.forEach(function (id) { accTot += area[id]; });
+        while (accIds.length && accTot > ACC_CAP * N) { var big = accIds.shift(); accTot -= area[big]; cand[big] = 1; }          // too much "accent" = the part is mostly art: protect only the smaller shapes
+        for (i = 0; i < NN; i++) if (lbl[i] && cand[lbl[i]] === 2) acc[i] = 1;
+        // W5-ACCENT2 2026-10-09 (B-0045 on the owner car: the thin pink heartbeat line INSIDE the white chevrons was too small to count as an accent and turned black): close the accent mask (dilate 4, erode 4 cells) so
+        // lines / holes narrower than ~8 cells inside accent art are protected with it. Kill switch: window.SPB_ACCENT_NOCLOSE = true.
+        if (!window.SPB_ACCENT_NOCLOSE) {
+            var boxPass = function (src, r, dil) { var tmp = new Uint8Array(NN), dst = new Uint8Array(NN), xx, yy, kk, v; for (yy = 0; yy < Gs; yy++) for (xx = 0; xx < Gs; xx++) { v = dil ? 0 : 1; for (kk = -r; kk <= r; kk++) { var x2 = xx + kk; var b = (x2 < 0 || x2 >= Gs) ? (dil ? 0 : 1) : src[yy * Gs + x2]; if (dil ? b : !b) { v = dil ? 1 : 0; break; } } tmp[yy * Gs + xx] = v; }
+                for (yy = 0; yy < Gs; yy++) for (xx = 0; xx < Gs; xx++) { v = dil ? 0 : 1; for (kk = -r; kk <= r; kk++) { var y2 = yy + kk; var b2 = (y2 < 0 || y2 >= Gs) ? (dil ? 0 : 1) : tmp[y2 * Gs + xx]; if (dil ? b2 : !b2) { v = dil ? 1 : 0; break; } } dst[yy * Gs + xx] = v; } return dst; };
+            var clo = boxPass(boxPass(acc, 4, true), 4, false);
+            for (i = 0; i < NN; i++) if (clo[i] && pm[i]) acc[i] = 1;
+        }
+        // grow 2 cells (the anti-aliased rim + the wall cells between the regions), inside the part
+        var g1 = acc;
+        for (var it = 0; it < 2; it++) { var g2 = new Uint8Array(g1); for (y = 1; y < Gs - 1; y++) for (x = 1; x < Gs - 1; x++) { i = y * Gs + x; if (!g1[i] && pm[i] && (g1[i - 1] || g1[i + 1] || g1[i - Gs] || g1[i + Gs])) g2[i] = 1; } g1 = g2; }
+        for (i = 0; i < NN; i++) if (g1[i]) accN++;
+        var out = new Uint8Array(W * H);
+        for (y = 0; y < H; y++) { var gy = Math.min(Gs - 1, Math.floor(y * Gs / H)); for (x = 0; x < W; x++) if (g1[gy * Gs + Math.min(Gs - 1, Math.floor(x * Gs / W))]) out[y * W + x] = 255; }
+        return { mask: out, share: accN / N };
+    }
+    function accentShareFor(part, portion) {          // for the edit brain: how much of this named part is accent art (0..1), or 0
+        try {
+            if ((window.SPB_ACCENT_OFF === true) || !window.SpbProCar || !window.SpbProCar.maskFor) return 0;
+            var mm = window.SpbProCar.maskFor(part, portion); if (!mm || !mm.mask) return 0;
+            var ac = accentMask(mm.mask, paintDims()[0], paintDims()[1]);
+            return ac ? ac.share : 0;
+        } catch (e) { return 0; }
+    }
+    // W2-ACCENT 2026-10-09: ANY helper path that paints a named part (offline edit, design composer, flames, textures) keeps the accent art unless the buyer's own words say to cover it.
+    // The buyer's latest message is read from the AI panel log; no message (a hand edit, an online tool call without the text) = no default (region.keepAccents:true still works explicitly).
+    var ACCENT_ALL_RE = /\b(everything|every ?thing|all of it|all over|including|even the|whole (?:car|truck|body|thing|livery|design|paint)|entire (?:car|truck|body|livery|design|paint)|completely|solid|wipe|cover (?:all|it all)|(?:and|with|plus) (?:all )?the (?:stripes?|accents?|graphics?|art)|stripes (?:too|and all)|accents? too|paint over)\b/, ACCENT_NAMED_RE = /\b(stripes?|pinstripes?|accents?|graphics?|trim|shapes?|swoosh(?:es)?|blocks?|artwork|lines?|bands?|tape|decals?)\b/;
+    // W5-ACCENT2 2026-10-09 (MCP B-0045 "flames down the side": spb_add_zone repainted the white chevron stripes black): an MCP call has no chat-log message, so the default never ran. The call's own buyer_said / spb_do text is now
+    // the buyer's words for the length of that call (wrapper on spbProAI.mcpCall, installed lazily; no edit to spb-pro-ai.js). Kill switch: window.SPB_ACCENT_MCP_OFF = true.
+    var _mcpSaidText = '';
+    function installMcpSaid() {
+        var tries = 0, t = setInterval(function () {
+            tries++; var A = window.spbProAI;
+            if (A && typeof A.mcpCall === 'function') {
+                clearInterval(t); if (A.mcpCall.__accSaid) return;
+                var orig = A.mcpCall;
+                var wrapped = function (tool, args) {
+                    var said = ''; try { if (!window.SPB_ACCENT_MCP_OFF && args) said = String(args.buyer_said || args.text || ''); } catch (e) { said = ''; }
+                    _mcpSaidText = said; var done = function (r) { _mcpSaidText = ''; return r; };
+                    try { return Promise.resolve(orig.call(A, tool, args)).then(done, function (e) { _mcpSaidText = ''; throw e; }); } catch (e2) { _mcpSaidText = ''; throw e2; }
+                };
+                wrapped.__accSaid = true; A.mcpCall = wrapped;
+            } else if (tries > 240) clearInterval(t);
+        }, 500);
+    }
+    installMcpSaid();
+    function lastBuyerText() { if (_mcpSaidText) return _mcpSaidText; try { var lg = window.spbProAI && window.spbProAI.log ? window.spbProAI.log() : null; if (!lg) return ''; for (var k = lg.length - 1; k >= 0; k--) if (lg[k] && lg[k].role === 'user') return String(lg[k].text || ''); } catch (e) {} return ''; }
+    function onlyBodyLayers(ls) { try { var rl = window.SpbProCar && window.SpbProCar.roles ? window.SpbProCar.roles() : []; var a = Array.isArray(ls) ? ls : [ls]; return a.length > 0 && a.every(function (n) { return rl.some(function (x) { return (x.name === n || x.id === n) && x.role === 'body paint'; }); }); } catch (e) { return false; } }
+    function accentDefault(r) {
+        if ((window.SPB_ACCENT_OFF === true) || r.keepAccents === false || !r.island || r.colors || (r.layers && !onlyBodyLayers(r.layers)) || r.element || r.graphic || r.everything || r.remaining || r.rect || r.cells || r.clear_box) return false;
+        var t = lastBuyerText().toLowerCase(); if (!t) return false;
+        return !ACCENT_ALL_RE.test(t) && !ACCENT_NAMED_RE.test(t);
     }
     function setRegion(z, i, r, applied) {
         var W = paintDims()[0], H = paintDims()[1], tol = clamp(r.tolerance != null ? r.tolerance : (z.pickerTolerance != null ? z.pickerTolerance : 40), 6, 100);
@@ -612,6 +756,7 @@
                 applied.push('limited to the ' + z._regionDesc);
             }
         }
+        if (r.graphic) z._graphicExclude = (r.exclude && r.exclude.length) ? [].concat(r.exclude) : null;          // HELPER V3 S5 2026-10-05: a stroke_px edit redraws the line with the same cut-outs
         if (r.graphic && window.SpbGraphics) {      // a drawn design graphic (arcs, speed lines, stripes...): rendered per colour into a sheet mask on the named parts
             var gm = window.SpbGraphics.maskFor(r.graphic);
             if (gm) { islandMask = gm.mask; z.regionMask = gm.mask; z.useRegion = true; z._regionDesc = gm.desc; z._graphic = JSON.parse(JSON.stringify(r.graphic)); if (!catchAll(z) && !zoneTargets(z).length) { z.color = 'everything'; z.colorMode = 'special'; z.colors = []; } applied.push('drawn as ' + gm.desc + (gm.empty ? ' (nothing landed on the car: check the part)' : '')); }
@@ -638,6 +783,14 @@
                 applied.push('NOT touching the ' + (Array.isArray(r.exclude) ? r.exclude : [r.exclude]).join(' and the '));
             } else applied.push('(could not find the ' + (Array.isArray(r.exclude) ? r.exclude : [r.exclude]).join(' / ') + ' to leave alone)');
         }
+        if ((r.keepAccents === true || (r.keepAccents == null && accentDefault(r))) && partMask && !(window.SPB_ACCENT_OFF === true) && !r.graphic && !r.element) {          // W2-ACCENT 2026-10-09: leave the design's accent art (stripe blocks, painted shapes) inside this part alone
+            var ac = accentMask(partMask, W, H);
+            if (ac && ac.share > 0.01) {
+                var bm2 = (z.regionMask && z.useRegion) ? z.regionMask : null, km2 = new Uint8Array(W * H), q2, kept = 0;
+                for (q2 = 0; q2 < km2.length; q2++) { var on = (!bm2 || bm2[q2]) && !ac.mask[q2]; km2[q2] = on ? 255 : 0; if (on) kept++; }
+                if (kept > 0) { z.regionMask = km2; z.useRegion = true; z._accentKept = Math.round(ac.share * 100); z._regionDesc = (z._regionDesc ? z._regionDesc + ', ' : '') + 'keeping the accent art (' + z._accentKept + '%)'; applied.push('keeping the accent art (stripes / painted shapes, ' + z._accentKept + '% of it) as it is'); }
+            }
+        }
         var familyError = intersectMcpFamilyRegion(z, r, applied); if (familyError) return familyError;
         rememberPartRegion(z, r, partMask);
         return '';
@@ -649,12 +802,59 @@
         if (to !== from) { list.splice(from, 1); list.splice(to, 0, z); }
         return to;
     }
+    // HELPER FIX PASS 8 2026-10-05 (owner live 11:45: "make the yellow on the spray can the same color and finish that's on the numbers now - the purple with Saturday chrome crushed down"):
+    // copy a zone's LOOK exactly (every field the zone panel sets) and never its selection (region / colours / layers / masks / name / id / seed).
+    var COPY_SKIP_RE = /^(id|name|color|colors|colorMode|pickerColor|pickerTolerance|tolerance|tols|regionMask|spatialMask|useRegion|hint|muted|hardEdge|renderSeedIndex|render_seed_index)$|^(source|region|lock|_)/;
+    function zoneRef(x) {
+        var list = Zs(); if (x == null) return null; if (typeof x === 'object') return list.indexOf(x) !== -1 ? x : null;
+        if (typeof x === 'number' || /^\d+$/.test(String(x))) return list[Number(x)] || null;
+        var s = String(x), sl = s.toLowerCase(); return list.filter(function (q) { return q && String(q.id) === s; })[0] || list.filter(function (q) { return q && String(q.name || '').toLowerCase() === sl; })[0] || null;
+    }
+    function copyLook(dst, src) {
+        var c = null; try { c = G('_cloneZoneState') ? G('_cloneZoneState')(src, { preserveId: false, includeRegionMask: false, includeSpatialMask: false, includePatternStrengthMap: true }) : null; } catch (e) { c = null; }
+        if (!c) c = JSON.parse(JSON.stringify(src)); var n = 0;
+        Object.keys(c).forEach(function (k) { if (COPY_SKIP_RE.test(k)) return; dst[k] = c[k]; n++; });
+        return n;
+    }
+    function lookLine(z) { var b = []; if (z.finish) b.push(nameOfFinish(z.finish, 'mono')); else if (z.base) b.push(nameOfFinish(z.base, 'base')); b.push(z.baseColorMode === 'solid' ? String(z.baseColor) : (z.baseColorMode || 'finish') + ' colour'); if (z.baseScale != null && Number(z.baseScale) !== 1) b.push('scale ' + z.baseScale); if (Array.isArray(z.specPatternStack) && z.specPatternStack.length) b.push(z.specPatternStack.length + ' spec pattern' + (z.specPatternStack.length > 1 ? 's' : '')); return b.join(', '); }
+    // ===== W13-NUDGE 2026-10-09 (lane W13-NUDGE): which zone does "move the camo on the hood left" mean? Only zones that HAVE a pattern (or, for target base, a base) count. Kill window.SPB_W13N_OFF.
+    var LAST_PAT = null;
+    var NUDGE_PART = { hood: /\b(?:hood|bonnet)\b/, roof: /\broof\b/, trunk: /\b(?:trunk|boot|deck ?lid|rear deck)\b/, door: /\b(?:doors?|sides?|flanks?|rockers?|quarters?|panels?)\b/, fender: /\bfenders?\b|\bwings?\b/, bumper: /\bbumpers?\b|\bsplitter\b|\bdiffuser\b/, spoiler: /\bspoiler\b/, nose: /\bnose\b|\bfront\b/, tail: /\btail\b|\brear\b/ };
+    function patternZoneFor(hint, opts) {
+        var list = Zs(), base = !!(opts && opts.base), has = function (z) { return !!z && !z.muted && (base ? !!(z.base || z.finish) : (z.pattern && z.pattern !== 'none')); };
+        var txt = function (z) { return (String(z.name || '') + ' ' + String(z._regionDesc || '')).toLowerCase(); };
+        var part = hint && hint.part ? String(hint.part) : '', side = hint && hint.side ? String(hint.side) : '', re = NUDGE_PART[part] || null;
+        if (re) {
+            var m = [];
+            list.forEach(function (z, i) { if (!z || !re.test(txt(z))) return; var t = txt(z); if (side && (side === 'left' ? /\b(?:right|passenger)\b/.test(t) && !/\b(?:left|driver)\b/.test(t) : /\b(?:left|driver)\b/.test(t) && !/\b(?:right|passenger)\b/.test(t))) return; m.push(i); });
+            if (!m.length) return { status: 'nozone', part: part };
+            var mp = m.filter(function (i) { return has(list[i]); });
+            if (!mp.length) return { status: 'nopattern', part: part, name: list[m[0]].name };
+            var pick = mp.filter(function (i) { return list[i] === LAST_PAT; })[0]; if (pick == null) pick = mp[0];
+            return { status: 'ok', index: pick, name: list[pick].name, many: mp.length };
+        }
+        var li = LAST_PAT ? list.indexOf(LAST_PAT) : -1; if (li >= 0 && has(list[li])) return { status: 'ok', index: li, name: list[li].name, how: 'last' };
+        var si = -1; try { si = selectedZoneIndex; } catch (e) { si = -1; } if (si >= 0 && has(list[si])) return { status: 'ok', index: si, name: list[si].name, how: 'selected' };
+        var all = []; list.forEach(function (z, i) { if (has(z)) all.push(i); });
+        if (all.length === 1) return { status: 'ok', index: all[0], name: list[all[0]].name, how: 'only' };
+        return { status: all.length ? 'ambiguous' : 'nopattern', names: all.slice(0, 4).map(function (i) { return list[i].name; }) };
+    }
     function edit(target, s) {
         var list = Zs(), z = (target && typeof target === 'object') ? target : list[target], applied = [], warnings = [], i = list.indexOf(z);
         if (!z || i < 0) return { ok: false, applied: [], warnings: ['no zone ' + (target && target.name || target)] };
         var v = validate(s, false); if (v.errors.length) return { ok: false, applied: [], warnings: v.errors };
         if (s.region != null) { var regionError = setRegion(z, i, s.region, applied); if (regionError) return { ok: false, applied: [], warnings: [regionError] }; }
         if (s.name != null) { z.name = zoneName(s.name); applied.push('renamed "' + z.name + '"'); }
+        // HELPER FIX PASS 8 2026-10-05: the copied look goes on FIRST; a finish / colour in the same change that only repeats it is skipped (re-assigning the finish would reset its scale,
+        // a repeated solid colour would clear a copied hue shift); a different colour / any other setting in the same change still applies on top ("the same finish as the numbers, but red")
+        var copied = null;
+        if (s.stroke_px != null) {          // HELPER V3 S5 2026-10-05: "thinner" / "half that" on a line zone = the same graphic redrawn at the new width (same colour, finish, cut-outs)
+            if (!z._graphic) warnings.push('stroke_px: this zone is not a line (no graphic): nothing to make thinner or thicker');
+            else { var sg = JSON.parse(JSON.stringify(z._graphic)), sgi = sg.item || sg, spx = Math.round(clamp(s.stroke_px, 1, (window.SPB_W31_OFF || (window.SPB_OF_CFG && (window.SPB_OF_CFG.noW31 || window.SPB_OF_CFG.noW31_5))) ? 60 : 150) * 10) / 10; /* W31-5 2026-10-10: same ceiling as the planner (kill noW31_5) */ sgi.stroke_px = spx; var sre = setRegion(z, i, { graphic: sg, exclude: z._graphicExclude || undefined }, []); if (sre) warnings.push('stroke_px: ' + sre); else applied.push('line width ' + spx + ' px'); }
+        }
+        if (s.copy_look_from != null) { var csrc = zoneRef(s.copy_look_from); if (!csrc || csrc === z) warnings.push('copy_look_from: no zone ' + s.copy_look_from); else { var ncp = copyLook(z, csrc); copied = csrc; applied.push('copied the whole look of "' + csrc.name + '" (' + ncp + ' settings: ' + lookLine(csrc) + ')'); } }
+        if (copied && s.finish != null) { var cfd = finishDoc(s.finish); if (cfd && (cfd.kind === 'mono' ? copied.finish === cfd.id : (copied.base === cfd.id && !copied.finish))) s = Object.assign({}, s, { finish: null }); }
+        if (copied && s.color != null && (!isHex(s.color) || (copied.baseColorMode === 'solid' && String(copied.baseColor).toLowerCase() === String(s.color).toLowerCase()))) s = Object.assign({}, s, { color: null });          // only a DIFFERENT exact colour overrides the copied one
         if (s.finish != null) {
             var fd = finishDoc(s.finish);
             // OWNTURN 2026-10-04 (owner replay: "Give the spec on the Yellow Base layer a Fractured finish ..." -> finish base::f_chrome with no colour; assigning the
@@ -699,8 +899,28 @@
             if (p.id === 'none') { z.pattern = 'none'; applied.push('pattern removed'); }
             else {
                 if (!z.base && !z.finish) z.base = 'gloss';
-                z.pattern = p.id; if (p.opacity != null) z.patternOpacity = Math.round(clamp(p.opacity, 0, 100)); if (p.scale != null) z.scale = clamp(p.scale, 0.05, 5); if (p.rotation != null) z.rotation = Math.round(clamp(p.rotation, 0, 359));
+                LAST_PAT = z;                 z.pattern = p.id; if (p.opacity != null) z.patternOpacity = Math.round(clamp(p.opacity, 0, 100)); if (p.scale != null) z.scale = clamp(p.scale, 0.05, 5); if (p.rotation != null) z.rotation = Math.round(clamp(p.rotation, 0, 359));
                 applied.push('pattern ' + patName(p.id));
+            }
+        }
+        if (s.pattern_position != null) {          // W13-NUDGE 2026-10-09 (lane W13-NUDGE; real tester: "is there a way to adjust using an x/y axis"): slide a zone's pattern / picture through the SAME setters as the Position X / Y sliders (undo step + slider labels), clamp 0-100. Kill window.SPB_W13N_OFF.
+            if (window.SPB_W13N_OFF) warnings.push('pattern_position: switched off');
+            else {
+                var pq = s.pattern_position, pbase = pq.target === 'base', fx = pbase ? G('setZoneBaseOffsetX') : G('setZonePatternOffsetX'), fy = pbase ? G('setZoneBaseOffsetY') : G('setZonePatternOffsetY');
+                var hasPat = pbase ? !!(z.base || z.finish) : ((z.pattern && z.pattern !== 'none') || (s.pattern && s.pattern.id && s.pattern.id !== 'none'));
+                if (typeof fx !== 'function' || typeof fy !== 'function') warnings.push('pattern_position: the position controls are not loaded');
+                else if (!hasPat) warnings.push('pattern_position: "' + (z.name || 'this zone') + '" has no pattern or picture to move');
+                else {
+                    var curX = Math.round((pbase ? (z.baseOffsetX != null ? z.baseOffsetX : 0.5) : (z.patternOffsetX != null ? z.patternOffsetX : 0.5)) * 100), curY = Math.round((pbase ? (z.baseOffsetY != null ? z.baseOffsetY : 0.5) : (z.patternOffsetY != null ? z.patternOffsetY : 0.5)) * 100), nx = curX, ny = curY, mv = [];
+                    if (pq.x != null) nx = pq.x; else if (pq.dx != null) nx = curX + Number(pq.dx);
+                    if (pq.y != null) ny = pq.y; else if (pq.dy != null) ny = curY + Number(pq.dy);
+                    nx = Math.round(clamp(nx, 0, 100)); ny = Math.round(clamp(ny, 0, 100));
+                    LAST_PAT = z;
+                    if (!pbase && z.patternPlacement === 'fit') { z.patternPlacement = 'normal'; applied.push('placement switched from Fit to Zone to Full Canvas (Fit locks the position sliders)'); }
+                    if (nx !== curX) { fx(i, nx); mv.push('X ' + curX + ' -> ' + nx); }
+                    if (ny !== curY) { fy(i, ny); mv.push('Y ' + curY + ' -> ' + ny); }
+                    applied.push(mv.length ? ((pbase ? 'base picture' : 'pattern') + ' position ' + mv.join(', ') + ' (50 = centre)') : ((pbase ? 'base picture' : 'pattern') + ' already at that position (X ' + curX + ', Y ' + curY + ')'));
+                }
             }
         }
         if (s.spec_patterns != null) {
@@ -752,10 +972,106 @@
     function duplicate(target, s) {
         var list = Zs(), i = (target && typeof target === 'object') ? list.indexOf(target) : target, src = list[i];
         if (!src) return { ok: false, applied: [], warnings: ['no zone to duplicate'] };
+        var anchor = !!(s && s.textureAnchor === 'canvas'); if (anchor) { s = Object.assign({}, s); delete s.textureAnchor; }
         var before = list.length; G('duplicateZone')(i);
         if (Zs().length <= before) return { ok: false, applied: [], warnings: ['zone limit reached'] };
-        var z = Zs()[i + 1], r = s ? edit(z, s) : { ok: true, applied: [], warnings: [] };
+        var z = Zs()[i + 1];
+        // ENGINE TEXTURE ANCHOR 2026-10-06 (ENGINE_TEXTURE_ANCHOR.md): a part-limited copy of a zone renders the SAME grain as the original only when both
+        // are canvas-anchored AND share the seed (verified 22/22 bit-exact in scripts/spb_texture_anchor_check.py --roof). Opt-in via spec.textureAnchor.
+        if (anchor && z) { z.textureAnchor = 'canvas'; src.textureAnchor = 'canvas'; if (src.renderSeedIndex != null) z.renderSeedIndex = src.renderSeedIndex; }
+        var r = s ? edit(z, s) : { ok: true, applied: [], warnings: [] };
         r.applied.unshift('duplicated "' + src.name + '" (copy sits just below it)'); r.zone = z; return r;
+    }
+    // ===== W3-HONEST 2026-10-09 (lane W3-HONEST; owner rule #1 "be honest"; MCP A-0196 "left side candy blue" painted only the exposed 8% while the reply claimed the side) =====
+    // Visible coverage = of the pixels a zone SELECTS (its part / layers / exclusions / colours), the share it actually WINS after the zones above it (LOWER index wins) take theirs.
+    // In-app repro (arcav5): "left side seafoam" -> "whole car matte black" -> "left side candy blue" edited the OLD left-side zone, now buried under the black body zone: 8% showed,
+    // reply said "the left side changed to blue candy". After every batch, each part zone that shows under 85% of what it selects is either (a) lifted above the older PLAIN recolour zones
+    // that cover it (a reorder inside the same undo step; nothing is deleted; refused if it would repaint a non-plain zone's pixels) or (b) reported in one honest sentence.
+    // Kill switch: window.SPB_HONEST_OFF = true (SPB_HONEST_NOLIFT = report only). Tunable: SPB_HONEST_MIN (default 0.85).
+    function honestOff() { return window.SPB_HONEST_OFF === true; }
+    function plainRecolour(q) {          // a zone that only recolours / refinishes its area: no pattern, spec pattern, gradient, second base, drawn shape or element
+        if (!q || q.muted) return false; var m = q.baseColorMode;
+        if (m === 'gradient' || m === 'source') return false;
+        if (q.pattern && q.pattern !== 'none') return false;
+        if (Array.isArray(q.specPatternStack) && q.specPatternStack.length) return false;
+        if (q.secondBase && q.secondBase !== 'none') return false;
+        if (/graphic|shape|outline|element|stripe|line|gradient/i.test(String(q._regionDesc || ''))) return false;
+        return true;
+    }
+    function provOf(z) { try { var p = z && z._aiPartProv && JSON.parse(z._aiPartProv.r); return p && p.island ? p : null; } catch (e) { return null; } }
+    function partWords(p) { return p ? (p.portion ? p.portion + ' of the ' : 'the ') + p.island : 'the car'; }
+    // -> { n, vis, share, blockers:[{index, zone, count, pct, plain}], samples, claims:{j: Uint8Array}, owner:Int32Array } or null
+    function analyseZone(list, i, st) {
+        var z = list[i]; if (!z || z.muted) return null; var W = paintDims()[0], H = paintDims()[1], pd = paintPixels(); if (!pd || !pd.data || pd.data.length !== W * H * 4) return null;
+        if (catchAll(z) === 'remaining') return null;
+        var own = ownTest(z, W, H); if (!own) return null; st = st || 8;
+        var d = pd.data, samples = [], ix, iy, o, idx;
+        for (iy = 0; iy < H; iy += st) for (ix = 0; ix < W; ix += st) { idx = iy * W + ix; o = idx * 4; if (d[o + 3] < 8) continue; if (own(d[o], d[o + 1], d[o + 2], idx)) samples.push(idx); }
+        var n = samples.length, claims = {}, owner = new Int32Array(n), j, t, s;
+        for (s = 0; s < n; s++) owner[s] = i;
+        for (j = 0; j < i; j++) { t = claimTest(list, j, W, H); if (!t) continue; var cj = new Uint8Array(n), any = 0; for (s = 0; s < n; s++) { o = samples[s] * 4; if (t(d[o], d[o + 1], d[o + 2], samples[s])) { cj[s] = 1; any++; if (owner[s] === i) owner[s] = j; } } if (any) claims[j] = cj; }
+        var cnt = {}, vis = 0; for (s = 0; s < n; s++) { if (owner[s] === i) vis++; else cnt[owner[s]] = (cnt[owner[s]] || 0) + 1; }
+        var bl = Object.keys(cnt).map(function (k2) { var q = list[k2]; return { index: Number(k2), zone: q.name, count: cnt[k2], pct: Math.round(cnt[k2] / Math.max(1, n) * 100), plain: plainRecolour(q) }; }).sort(function (a, b) { return b.count - a.count; });
+        return { n: n, vis: vis, share: n ? vis / n : 1, blockers: bl, samples: samples, claims: claims, owner: owner };
+    }
+    // public: SpbProZone.visibleShare(zone | index | id | name | "left side" [, {portion}])  ->  { zone, index, part, share (0..1), visible_pct, intended_samples, blocked_by:[{zone,index,pct,plain_recolour}], note }
+    // A part name (a string that is not a zone name) answers for the TOPMOST zone that was placed on that part.
+    function visibleShare(x, opts) {
+        try {
+            return withMemo(function () {
+                var list = Zs(), z = null, i = -1;
+                if (x != null && typeof x === 'object') z = list.indexOf(x) !== -1 ? x : null; else if (x != null) z = zoneRef(x);
+                if (!z && typeof x === 'string') { var pn = x.toLowerCase().trim(), po = opts && opts.portion ? String(opts.portion).toLowerCase() : null; for (var q = 0; q < list.length; q++) { var pv = provOf(list[q]); if (pv && !list[q].muted && String(pv.island).toLowerCase() === pn && (!po || String(pv.portion || '').toLowerCase() === po)) { z = list[q]; break; } } }
+                if (!z) return { error: 'no zone or part "' + x + '" is on the car' };
+                i = list.indexOf(z); var a = analyseZone(list, i, (opts && opts.step) || 8); if (!a) return { zone: z.name, index: i, share: 1, visible_pct: 100, intended_samples: 0, blocked_by: [], note: 'this zone selects nothing (or is muted / the catch-all)' };
+                var pv2 = provOf(z), out = { zone: z.name, index: i, part: pv2 ? partWords(pv2).replace(/^the /, '') : null, share: Math.round(a.share * 1000) / 1000, visible_pct: Math.round(a.share * 100), intended_samples: a.n, blocked_by: a.blockers.slice(0, 4).map(function (b) { return { zone: b.zone, index: b.index, pct: b.pct, plain_recolour: b.plain }; }) };
+                if (a.share < 0.85) out.note = 'only about ' + out.visible_pct + '% of what this zone selects shows; zones above it cover the rest';
+                return out;
+            });
+        } catch (e) { return { error: String(e && e.message || e) }; }
+    }
+    // after a batch: lift part zones above the plain recolours that bury them, or say so honestly. kinds[k] / specs[k] = op kind / spec of results[k]
+    function honestPass(results, kinds, specs) {
+        if (honestOff()) return; var MIN = Number(window.SPB_HONEST_MIN) > 0 ? Number(window.SPB_HONEST_MIN) : 0.85;
+        withMemo(function () {
+            results.forEach(function (r, k) {
+                try {
+                    var z = r && r._z, list = Zs(), i = z ? list.indexOf(z) : -1;
+                    if (!r || !r.ok || !z || i <= 0 || (kinds[k] !== 'add' && kinds[k] !== 'edit')) return;
+                    if (specs[k] && specs[k].priority != null) return;          // the caller placed it on purpose (VISIBLE_COLOUR puts a zone BELOW a recolour so only the visible colour changes)
+                    var pv = provOf(z); if (!pv || z.muted) return;
+                    var a = analyseZone(list, i, 8); if (!a || a.n < 150 || a.share >= MIN) { if (a) r.visible_share = Math.round(a.share * 100) / 100; return; }
+                    r.visible_share = Math.round(a.share * 100) / 100; r.warnings = r.warnings || []; r.applied = r.applied || [];
+                    var sig = a.blockers.filter(function (b) { return b.pct >= 2; }), words = partWords(pv), before = Math.round(a.share * 100);
+                    var names = sig.slice(0, 2).map(function (b) { return '“' + b.zone + '”'; }).join(' and ');
+                    var allPlain = sig.length && sig.every(function (b) { return b.plain; });
+                    if (allPlain && !window.SPB_HONEST_NOLIFT) {
+                        var tgt = Math.min.apply(null, sig.map(function (b) { return b.index; })), s, n = a.n, now = 0, stolen = 0;
+                        for (s = 0; s < n; s++) { var blockedAbove = false; for (var j in a.claims) { if (Number(j) < tgt && a.claims[j][s]) { blockedAbove = true; break; } } if (!blockedAbove) { now++; var ow = a.owner[s]; if (ow !== i && !plainRecolour(list[ow])) stolen++; } }
+                        var after = now / n;
+                        if (stolen / n <= 0.02 && after >= Math.min(MIN, a.share + 0.15)) {
+                            place(z, tgt); r.index = list.indexOf(z); r.visible_share = Math.round(after * 100) / 100; r.lifted = { above: sig.map(function (b) { return b.zone; }), from: before, to: Math.round(after * 100) };
+                            r.applied.push('lifted above the older plain recolour' + (sig.length > 1 ? 's ' : ' ') + names + ' that covered ' + (100 - before) + '% of ' + words + ' (now ' + Math.round(after * 100) + '% of it shows)');
+                            r.warnings.push('An earlier layer (' + names + ') was covering ' + (before <= 5 ? 'almost all' : 'about ' + (100 - before) + '%') + ' of ' + words + ', so I put this on top of it (' + Math.round(after * 100) + '% of ' + words + ' now shows). Undo puts it back; nothing was deleted.');
+                            return;
+                        }
+                    }
+                    r.warnings.push('Only about ' + before + '% of ' + words + ' shows this change: ' + (names ? 'an earlier layer (' + names + ') is covering the rest' : 'other layers cover the rest') + (allPlain ? '' : ' and I did not want to paint over it') + '. Move this zone above ' + (names || 'those layers') + ' in the zone list to see it fully.');
+                    r.hidden_by = sig.slice(0, 3).map(function (b) { return { zone: b.zone, index: b.index, pct: b.pct }; });
+                } catch (eH) { try { console.warn('[PRO HONEST]', eH); } catch (e2) {} }
+            });
+        });
+    }
+    // one-click fix for the (b) case: lift a zone above EVERY zone that covers part of it (one undo step, nothing deleted). -> { ok, from, to, visible_pct } (the caller says it in words)
+    function putOnTop(x) {
+        try {
+            var list = Zs(), z = (x != null && typeof x === 'object') ? x : zoneRef(x), i = z ? list.indexOf(z) : -1; if (i < 0) return { ok: false, error: 'no such zone' };
+            var a = withMemo(function () { return analyseZone(list, i, 8); }); if (!a || !a.blockers.length) return { ok: true, from: i, to: i, visible_pct: a ? Math.round(a.share * 100) : 100, note: 'nothing covers it' };
+            var tgt = Math.min.apply(null, a.blockers.filter(function (b) { return b.pct >= 2; }).map(function (b) { return b.index; })); if (!isFinite(tgt)) tgt = 0;
+            try { if (typeof window.pushZoneUndo === 'function') window.pushZoneUndo('Put "' + z.name + '" on top'); } catch (eU) {}
+            quiet(function () { place(z, tgt); }); try { G('renderZones')(); } catch (e6) {} try { G('triggerPreviewRender')(); } catch (e7) {}
+            var vs = visibleShare(z); return { ok: true, from: i, to: Zs().indexOf(z), visible_pct: vs.visible_pct, covered_before: a.blockers.slice(0, 3).map(function (b) { return b.zone; }) };
+        } catch (e) { return { ok: false, error: String(e && e.message || e) }; }
     }
     // one undo step, one repaint, no toasts. Zone refs are resolved to objects UP FRONT so earlier ops (adds, moves) cannot shift later refs.
     function batch(ops, label, opts) {
@@ -763,7 +1079,7 @@
         try { selObj = Zs()[selectedZoneIndex]; } catch (e) {}
         resolved = (ops || []).map(function (o) { return { kind: o.kind, spec: o.spec || {}, ref: o.kind === 'add' ? null : ((o.zone && typeof o.zone === 'object') ? o.zone : Zs()[o.zone]) }; });
         var familyPreparationError = '';
-        resolved.forEach(function (o) { var r = o.spec && o.spec.region; if (!r || !r.mcpFamily || familyPreparationError) return; var prepared = prepareMcpFamilyRegion(r); if (prepared.error) familyPreparationError = prepared.error; else { r._mcpFamilyMask = prepared.mask; r._mcpFamilyTicket = prepared.ticket; } });
+        resolved.forEach(function (o) { var r = o.spec && o.spec.region; if (!r || !r.mcpFamily || familyPreparationError) return; var prepared = prepareMcpFamilyRegion(r); if (prepared.error) familyPreparationError = prepared.error; else { hideProp(r, '_mcpFamilyMask', prepared.mask); hideProp(r, '_mcpFamilyTicket', prepared.ticket); } });          // M3 2026-10-07 (class APP FREEZE, train A-0417 via MCP spb_refinish {target colour, part}): the 4M-entry mask sat on the caller's spec.region as an ENUMERABLE field, and spb-pro-ai.js registerAppliedPartZones -> editKey -> partRegionKey JSON.stringify'd it (4M keys) = the page froze > 10 min. Transient fields are now non-enumerable (JSON / Object.keys skip them; direct reads still work).
         if (familyPreparationError) return resolved.map(function (o, i) { return { ok: false, applied: [], warnings: [familyPreparationError], index: o.ref ? Zs().indexOf(o.ref) : -1, name: o.spec && o.spec.name }; });
         try { if (typeof op === 'function' && !(opts && opts.noUndo)) op(label || 'AI edit'); } catch (e2) {}
         quiet(function () {
@@ -779,6 +1095,7 @@
                 r._z = r.zone || o.ref; delete r.zone; results.push(r);
             });
         });
+        try { honestPass(results, resolved.map(function (o) { return o.kind; }), resolved.map(function (o) { return o.spec; })); } catch (eHn) {}          // W3-HONEST 2026-10-09: visible-coverage check (kill switch SPB_HONEST_OFF)
         try { var si = selObj ? Zs().indexOf(selObj) : -1; if (si >= 0) selectedZoneIndex = si; } catch (e5) {}
         results.forEach(function (r) { r.index = r._z ? Zs().indexOf(r._z) : -1; r.name = r._z ? r._z.name : undefined; delete r._z; });
         try { G('renderZones')(); } catch (e6) {} try { G('triggerPreviewRender')(); } catch (e7) {}
@@ -826,7 +1143,7 @@
         if (r.element && window.SpbProElements) { var eq = window.SpbProElements.maskFor(r.element); if (!eq) return { share_pct: 0, note: 'the ' + String(r.element).split(':')[0] + ' have not been found on this paint (call describe_paint first)' }; imask = eq.mask; }
         if (r.layers && r.layers.length) {
             var ids = (Array.isArray(r.layers) ? r.layers : [r.layers]).map(findLayer).filter(Boolean).map(function (l) { return l.id; });
-            if (ids.length) { try { var lu = G('getZoneSourceLayersUnionMask')({ sourceLayers: ids, sourceLayer: ids[0] }, W, H); layerUnion = lu && lu.union; layerMissing = !layerUnion; } catch (e) { layerMissing = true; } } else layerMissing = true;
+            if (ids.length) { try { var lu = unionRO({ sourceLayers: ids, sourceLayer: ids[0] }, W, H); layerUnion = lu && lu.union; layerMissing = !layerUnion; } catch (e) { layerMissing = true; } } else layerMissing = true;
         }
         if (r.exclude && r.exclude.length) { var exm = excludedUnion(r.exclude, W, H); if (exm) { var kp = new Uint8Array(W * H), kq; for (kq = 0; kq < kp.length; kq++) kp[kq] = (!exm[kq] && (!imask || imask[kq])) ? 255 : 0; imask = kp; } }
         if (!ct && !box && !layerUnion && !imask && !r.everything && !r.remaining) return { share_pct: 0, note: 'nothing selected' };
@@ -873,17 +1190,29 @@
         if (!tot) return [];
         (typeof _psdLayers !== 'undefined' ? _psdLayers : []).forEach(function (l) {
             if (!l || l.visible === false || /^(wire|mask|car[ _]?mandatory)$/i.test(String(l.name || ''))) return;
-            var lu = null; try { lu = G('getZoneSourceLayersUnionMask')({ sourceLayers: [l.id], sourceLayer: l.id }, W, H); } catch (e) {}
+            var lu = null; try { lu = unionRO({ sourceLayers: [l.id], sourceLayer: l.id }, W, H); } catch (e) {}
             if (!lu || !lu.union) return; var m = lu.union, n = 0;
             for (iy = 0; iy < H; iy += st) for (ix = 0; ix < W; ix += st) { var k = iy * W + ix; if (mask[k] && m[k] > 0) n++; }
             if (n / tot >= 0.05) out.push({ layer: l.name, pct: Math.round(n / tot * 100) });
         });
         return out.sort(function (x, y) { return y.pct - x.pct; });
     }
+    // lane R3-EDIT 2026-10-07 H1b (sealed: "make the hood the same red as the logo" -> hood BLUE): the colours the paint shows where the named layers have pixels, most first [{hex, share_pct}]
+    function layerColours(names, n) {
+        var pd = paintPixels(); if (!pd) return []; var W = paintDims()[0], H = paintDims()[1], ids = []; if (pd.width !== W || pd.height !== H) return [];
+        [].concat(names || []).forEach(function (nm) { var l = findLayer(nm); if (l && l.visible !== false && ids.indexOf(l.id) === -1) ids.push(l.id); }); if (!ids.length) return [];
+        var lu = null; try { lu = unionRO({ sourceLayers: ids, sourceLayer: ids[0] }, W, H); } catch (e) {} if (!lu || !lu.union) return [];
+        var m = lu.union, d = pd.data, bins = {}, tot = 0, x, y;
+        for (y = 0; y < H; y += 2) for (x = 0; x < W; x += 2) { var i = y * W + x; if (!(m[i] > 0)) continue; var o = i * 4; if (d[o + 3] < 128) continue; tot++;
+            var k = (d[o] >> 4) + ',' + (d[o + 1] >> 4) + ',' + (d[o + 2] >> 4), b = bins[k] || (bins[k] = { c: 0, r: 0, g: 0, b: 0 }); b.c++; b.r += d[o]; b.g += d[o + 1]; b.b += d[o + 2]; }
+        var arr = Object.keys(bins).map(function (k) { var b = bins[k]; return { c: b.c, rgb: [b.r / b.c, b.g / b.c, b.b / b.c] }; }).sort(function (a, b) { return b.c - a.c; }), out = [];
+        arr.forEach(function (e) { if (out.length >= (n || 8)) return; var hit = out.filter(function (o) { var dr = o.rgb[0] - e.rgb[0], dg = o.rgb[1] - e.rgb[1], db = o.rgb[2] - e.rgb[2]; return dr * dr + dg * dg + db * db < 1800; })[0]; if (hit) { hit.c += e.c; return; } out.push({ c: e.c, rgb: e.rgb }); });
+        return out.filter(function (e) { return e.c >= Math.max(3, tot * 0.01); }).map(function (e) { return { hex: rgbHex(e.rgb), share_pct: Math.round(e.c / Math.max(1, tot) * 1000) / 10 }; });
+    }
     function layerFootprint(name) {
-        var l = findLayer(name); if (!l) return { error: 'no PSD layer named "' + name + '"' };
+        var l = findLayer(name); if (!l) return { error: 'no PSD layer named "' + name + '"' + layerNameHint(name) };
         var W = paintDims()[0], H = paintDims()[1], lu = null;
-        try { lu = G('getZoneSourceLayersUnionMask')({ sourceLayers: [l.id], sourceLayer: l.id }, W, H); } catch (e) {}
+        try { lu = unionRO({ sourceLayers: [l.id], sourceLayer: l.id }, W, H); } catch (e) {}
         if (!lu || !lu.union) return { layer: l.name, note: l.visible === false ? 'the layer is hidden' : 'the layer has no visible pixels' };
         var m = lu.union, st = 16, n = 0, hits = 0, cells = {}, ix, iy, x0 = 1, y0 = 1, x1 = 0, y1 = 0;
         for (iy = 0; iy < H; iy += st) for (ix = 0; ix < W; ix += st) { n++; if (m[iy * W + ix] > 0) { hits++; var fx = ix / W, fy = iy / H; if (fx < x0) x0 = fx; if (fy < y0) y0 = fy; if (fx > x1) x1 = fx; if (fy > y1) y1 = fy; var k = cellName(Math.min(7, Math.floor(fx * 8)), Math.min(7, Math.floor(fy * 8))); cells[k] = (cells[k] || 0) + 1; } }
@@ -917,9 +1246,12 @@
                 var d = describe(i), o = { i: i, id: z.id != null ? String(z.id) : undefined, name: d.name, covers: d.covers };
                 if (d.muted) o.muted = true;
                 var w = d.where; if (w) { o.share_pct = w.share_pct; o.visible_pct = w.visible_pct; if (w.cells && w.cells.length) o.cells = w.cells.slice(0, 8).join(','); if (w.blocked_by) o.blocked_by = w.blocked_by.map(function (b) { return b.zone + ' ' + b.pct_of_this_zone + '%'; }).join(', '); }
+                try { if (!honestOff() && w && w.share_pct > 0 && w.visible_pct < w.share_pct * 0.85 && provOf(z)) { var hv = analyseZone(Zs(), i, 16); if (hv && hv.n >= 40) o.shows_pct_of_its_area = Math.round(hv.share * 100); } } catch (eHv) {}          // W3-HONEST 2026-10-09: how much of the zone's own area really shows (MCP reads this from get_zones)
                 var look = []; if (d.base) look.push(d.base); if (d.special) look.push('special ' + d.special); look.push('colour ' + d.colour);
                 if (d.pattern) look.push('pattern ' + d.pattern); if (d.spec_patterns) look.push('spec patterns ' + d.spec_patterns.join('; ')); if (d.second_base) look.push('overlay ' + d.second_base);
                 if (d.intensity != null) look.push('intensity ' + d.intensity); if (d.base_strength_pct) look.push('base ' + d.base_strength_pct + '%'); if (d.spec_shift) look.push('spec shift ' + JSON.stringify(d.spec_shift));
+                if (d.scale != null) look.push('scale ' + d.scale + (d.scale < 1 ? ' (texture crushed to ' + Math.round(d.scale * 100) + '%)' : '')); if (d.rotation) look.push('rotation ' + d.rotation); if (d.spec_strength_pct) look.push('spec ' + d.spec_strength_pct + '%'); if (d.hue) look.push('hue ' + d.hue); if (d.saturation) look.push('saturation ' + d.saturation); if (d.brightness) look.push('brightness ' + d.brightness);          // HELPER FIX PASS 8 2026-10-05: the model could not copy "crushed down" (scale) because the state never said it
+                try { var zz = Zs()[i]; if (zz && zz.specScaleMode === 'independent' && zz.specScale != null) look.push('spec scale ' + zz.specScale); } catch (eSS) {}
                 o.look = look.join(' | ');
                 return o;
             });
@@ -941,6 +1273,26 @@
     function searchPatterns(q, limit) { try { return searchList(PATTERNS, q, limit); } catch (e) { return []; } }
     function specGroups() { try { var g = {}; SPEC_PATTERNS.forEach(function (p) { g[p.category || 'Other'] = (g[p.category || 'Other'] || 0) + 1; }); return g; } catch (e) { return {}; } }
 
+    // MCP-SPEED 2026-10-09 (owner live demo: every MCP preview / edit took 61-104 s and the Claude client timed out at ~60 s; a preview with NOTHING changed took 61 s).
+    // Cause: a browser tab hidden > 5 min gets "intensive wake-up throttling" — chained main-thread timers (whenSettled's 400 ms poll) fire once a MINUTE. Electron sets
+    // backgroundThrottling:false, so only the browser (Edge dev) path was hit. later(fn, ms) = setTimeout, but while the tab is hidden in a plain browser the delay runs
+    // in a tiny Web Worker (worker timers are not throttled) and fires back as a message. Any worker failure falls back to setTimeout for good.
+    var _tw = null, _twBroken = false, _twSeq = 0, _twWait = {};
+    function later(fn, ms) {
+        var useWorker = !_twBroken && typeof document !== 'undefined' && document.hidden && typeof Worker !== 'undefined' && !/Electron/i.test(navigator.userAgent || '');
+        if (useWorker) {
+            try {
+                if (!_tw) {
+                    _tw = new Worker(URL.createObjectURL(new Blob(['onmessage=function(e){setTimeout(function(){postMessage(e.data.id)},e.data.ms)}'], { type: 'text/javascript' })));
+                    _tw.onmessage = function (e) { var f = _twWait[e.data]; delete _twWait[e.data]; if (f) f(); };
+                    _tw.onerror = function () { _twBroken = true; var w = _twWait; _twWait = {}; Object.keys(w).forEach(function (k) { setTimeout(w[k], 0); }); };
+                }
+                var id = ++_twSeq; _twWait[id] = fn; _tw.postMessage({ id: id, ms: ms || 0 }); return;
+            } catch (e) { _twBroken = true; }
+        }
+        setTimeout(fn, ms);
+    }
+
     // Resolve when Pro's live preview has caught up with the zones (or after timeoutMs). Used so a look/self-check never judges a stale image.
     function whenSettled(timeoutMs) {
         var t0 = Date.now(), limit = timeoutMs || 45000, calm = 0;
@@ -952,9 +1304,9 @@
                 calm = (!busy && (synced || !badge)) ? calm + 1 : 0;
                 if (calm >= 3) return resolve(true);
                 if (Date.now() - t0 > limit) return resolve(false);
-                setTimeout(poll, 400);
+                later(poll, 400);
             })();
         });
     }
-    window.SpbProZone = { zoneName: zoneName, visibleIdx: visibleIdx, layersUnder: layersUnder, mcpFamilyMaskForPixels: mcpFamilyMaskForPixels, bodyColours: bodyColours, findLayer: findLayer, specPreviewImage: specPreviewImage, probeRegion: probeRegion, layerFootprint: layerFootprint, previewImage: previewImage, zonesForModel: zonesForModel, whenSettled: whenSettled, catchAll: catchAll, SCHEMA: SCHEMA, describe: describe, describeAll: describeAll, footprint: footprint, paintColours: paintColours, edgeFit: edgeFit, paintMapImage: paintMapImage, validate: validate, edit: edit, add: add, duplicate: duplicate, place: place, batch: batch, searchSpecPatterns: searchSpecPatterns, searchPatterns: searchPatterns, specGroups: specGroups, parseCells: parseCells, quiet: quiet };
+    window.SpbProZone = { positionOf: function (i, base) { var z = Zs()[i]; if (!z) return null; return base ? { x: Math.round((z.baseOffsetX != null ? z.baseOffsetX : 0.5) * 100), y: Math.round((z.baseOffsetY != null ? z.baseOffsetY : 0.5) * 100) } : { x: Math.round((z.patternOffsetX != null ? z.patternOffsetX : 0.5) * 100), y: Math.round((z.patternOffsetY != null ? z.patternOffsetY : 0.5) * 100), fit: z.patternPlacement === 'fit', op100: (z.patternOpacity == null ? 100 : Number(z.patternOpacity)) >= 100 }; }, patternZoneFor: patternZoneFor, visibleShare: visibleShare, putOnTop: putOnTop, accentShare: accentShareFor, accentMask: accentMask, layerColours: layerColours, lookLine: lookLine, zoneRef: zoneRef, zoneName: zoneName, visibleIdx: visibleIdx, layersUnder: layersUnder, mcpFamilyMaskForPixels: mcpFamilyMaskForPixels, bodyColours: bodyColours, findLayer: findLayer, specPreviewImage: specPreviewImage, probeRegion: probeRegion, layerFootprint: layerFootprint, previewImage: previewImage, zonesForModel: zonesForModel, whenSettled: whenSettled, later: later, catchAll: catchAll, SCHEMA: SCHEMA, describe: describe, describeAll: describeAll, footprint: footprint, paintColours: paintColours, edgeFit: edgeFit, paintMapImage: paintMapImage, validate: validate, edit: edit, add: add, duplicate: duplicate, place: place, batch: batch, searchSpecPatterns: searchSpecPatterns, searchPatterns: searchPatterns, specGroups: specGroups, parseCells: parseCells, quiet: quiet, withMemo: withMemo /* [SPB-PERF2 2026-10-10] one claim-test memo scope across a whole helper-environment build */ };
 })();

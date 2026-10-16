@@ -12,7 +12,7 @@
     var getServerBase = deps.getServerBase || function() {
       return (typeof global.ShokkerAPI !== 'undefined' && global.ShokkerAPI.baseUrl)
         ? global.ShokkerAPI.baseUrl
-        : 'http://localhost:' + (global._SHOKKER_PORT || 59876);
+        : 'http://localhost:' + (global.spbServerPort ? global.spbServerPort() : global._SHOKKER_PORT);
     };
 
     var swatchPopupObserver = null;
@@ -203,7 +203,7 @@
         }
       } catch (_) {
         if (wrap) wrap.innerHTML = '<span style="color:#cc6666;">Request failed</span>';
-        showToast('Preview failed. Is the server running?', true);
+        showToast('Preview failed. Restart Shokker Paint Booth and try again.', true);
       }
       if (btn) btn.disabled = false;
     }

@@ -1,0 +1,199 @@
+[
+ {
+  "name": "R1-first-run-card",
+  "size": "1920x1080",
+  "ls": {},
+  "boot": 17000,
+  "after": 1500,
+  "js": "(() => { const c=[]; const fr=document.getElementById('spbFirstRun'); c.push({k:'first-run card shown', pass:!!fr}); c.push({k:'Pro pre-highlighted', pass:!!document.querySelector('#spbFrPro.recommended')}); c.push({k:'Pro focused by default', pass:document.activeElement && document.activeElement.id==='spbFrPro'}); c.push({k:'quest panel suppressed', pass:document.body.classList.contains('spb-firstrun-open')}); c.push({k:'catalog size stated', pass:!!(fr && /\\d,\\d{3}/.test(fr.textContent)), detail:(fr&&(fr.textContent.match(/\\d,\\d{3}/)||[''])[0])}); return JSON.stringify(c); })()"
+ },
+ {
+  "name": "R2-pro-front-door",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "pro"
+  },
+  "boot": 17000,
+  "after": 1500,
+  "js": "(() => { const c=[]; c.push({k:'boots into Pro, not Easy', pass:!document.body.classList.contains('spb-easy-on')}); c.push({k:'PRO|EASY pill present', pass:!!document.getElementById('spbModePill')}); const pro=document.getElementById('spbModeProBtn'); c.push({k:'pill shows PRO active', pass:!!(pro && pro.classList.contains('on'))}); const old=document.getElementById('spbEasySwitchBtn'); c.push({k:'old toolbar button hidden', pass:!old || !!old.hidden}); c.push({k:'no first-run card on repeat boot', pass:!document.getElementById('spbFirstRun')}); return JSON.stringify(c); })()"
+ },
+ {
+  "name": "R3-catalog-landing",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 17000,
+  "after": 4000,
+  "js": "(() => { const vis=el=>{ try{ return el.checkVisibility({checkVisibilityCSS:true, contentVisibilityAuto:true}); }catch(e){ return !!el.offsetParent; } }; const c=[]; const rail=document.getElementById('spbEasyRail'); c.push({k:'lands on catalog, no fork', pass: rail.innerText.indexOf('PICK A FINISH')>-1}); c.push({k:'browse layout active', pass:document.body.classList.contains('spb-easy-browse')}); const f=rail.querySelector('.spb-easy-finishes'); const fb=f.getBoundingClientRect(); const tiles=[...rail.querySelectorAll('.spb-easy-finish')]; const shown=tiles.filter(e=>{const q=e.getBoundingClientRect(); return q.top>=fb.top-2&&q.bottom<=fb.bottom+2&&q.left>=fb.left-2&&q.right<=fb.right+2;}).length; c.push({k:'>=6 finishes visible at once', pass:shown>=6, detail:shown}); const near=tiles.filter(t=>{const r=t.getBoundingClientRect(); return r.top < (window.innerHeight + 900);}); const withSrc=near.filter(t=>{const i=t.querySelector('img'); return i && i.getAttribute('src');}).length; c.push({k:'thumbnails loaded (>=90% of loader band)', pass: near.length? withSrc/near.length>=0.9 : false, detail:withSrc+'/'+near.length}); c.push({k:'no SPEC USED jargon on tiles', pass: rail.innerText.indexOf('SPEC USED')===-1}); c.push({k:'PAINT|SHINE labels present', pass: rail.innerText.indexOf('SHINE')>-1}); const spec=document.getElementById('spbEasyChannelStrip'); c.push({k:'spec channels visible by default', pass:!!(spec && !spec.hidden)}); const ml=rail.querySelector('.spb-easy-myloooks'); const save0=rail.querySelector('.spb-easy-save'); const noWork=/PICK A FINISH FIRST|LOAD A PAINT FIRST|COLORS STILL NEED|CHOOSE A FINISH/.test(save0?save0.textContent:''); c.push({k:'extras visibility tracks whether there is work', pass: !!ml && (ml.hidden===noWork), detail:(noWork?'no work':'has work')+', extras '+(ml && ml.hidden?'hidden':'shown')}); const proofEl=document.getElementById('spbEasyProof'); const sideEl=document.getElementById('spbEasyStageSide'); const srcC=document.querySelector('.spb-easy-source-card'); const liveC=document.querySelector('.spb-easy-live-card'); const RR=el=>el.getBoundingClientRect(); const srcM=srcC?srcC.querySelector('.spb-easy-proof-media'):null; const liveM=liveC?liveC.querySelector('.spb-easy-proof-media'):null; const okPanes=srcC&&liveC&&vis(srcC)&&vis(liveC)&&srcM&&liveM; c.push({k:'stage: SOURCE and LIVE side by side (pre-finish too)', pass: !!okPanes && (RR(liveC).left-RR(srcC).right)>=0 && (RR(liveC).left-RR(srcC).right)<=40, detail: okPanes?('gap='+Math.round(RR(liveC).left-RR(srcC).right)):'missing'}); c.push({k:'stage: big square panes, cards hug the art', pass: !!okPanes && Math.abs(RR(srcM).width-RR(srcM).height)<=3 && RR(srcM).width>=280 && (RR(srcC).width-RR(srcM).width)<=26, detail: okPanes?('art='+Math.round(RR(srcM).width)+' card='+Math.round(RR(srcC).width)):'missing'}); const stripEl=document.getElementById('spbEasyChannelStrip'); const cellEl=stripEl?stripEl.querySelector('.spb-easy-channel'):null; c.push({k:'stage: channels 2x2 compact, docked right', pass: !!stripEl && vis(stripEl) && !!cellEl && RR(cellEl).width<=200 && (RR(proofEl).right-RR(stripEl).right)<=30, detail: cellEl?('cell='+Math.round(RR(cellEl).width)+' dockGap='+Math.round(RR(proofEl).right-RR(stripEl).right)):'missing'}); c.push({k:'stage: bench card fills the left, no overflow', pass: !!sideEl && vis(sideEl) && RR(sideEl).left<=RR(proofEl).left+8 && proofEl.scrollWidth<=proofEl.clientWidth+2, detail: (sideEl?('benchL='+Math.round(RR(sideEl).left)):'missing')+' scroll='+proofEl.scrollWidth+'/'+proofEl.clientWidth}); return JSON.stringify(c); })()"
+ },
+ {
+  "name": "R4-search",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 17000,
+  "after": 3000,
+  "js": "(async () => { const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const c=[]; const inp=document.getElementById('spbEasySearch'); const run=async q=>{ inp.value=q; inp.dispatchEvent(new Event('input',{bubbles:true})); await sleep(750); return [...document.querySelectorAll('#spbEasyRail .spb-easy-finish-name')].map(e=>e.textContent.trim()); }; let r=await run('shiny'); c.push({k:'synonym search: shiny', pass:r.length>50, detail:r.length}); r=await run('metalic'); c.push({k:'typo tolerance: metalic', pass:r.length>0, detail:r.length}); r=await run('matte black'); c.push({k:'multi-word AND: matte black', pass:r.length>0, detail:r.length}); c.push({k:'ranking puts a Black first', pass:!!(r[0] && r[0].toLowerCase().indexOf('black')>-1), detail:r[0]}); r=await run('qqzzxx'); c.push({k:'garbage returns nothing', pass:r.length===0}); const ideas=document.querySelectorAll('.spb-easy-none-idea').length; c.push({k:'zero-result offers ideas', pass:ideas>=6, detail:ideas}); const clr=document.getElementById('spbEasySearchClear'); c.push({k:'clear button visible while typing', pass:!!(clr && !clr.hidden)}); return JSON.stringify(c); })()"
+ },
+ {
+  "name": "R5-full-catalog",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 17000,
+  "after": 6000,
+  "js": "(async () => { const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const c=[]; const b=[...document.querySelectorAll('#spbEasyRail button')].find(x=>x.textContent.indexOf('FULL CATALOG')>-1); b.click(); await sleep(4000); const secs=[...document.querySelectorAll('#spbEasyRail .spb-easy-finish-section')]; c.push({k:'families listed', pass:secs.length>=58, detail:secs.length}); const chips=document.querySelectorAll('.spb-easy-secchip img[src]').length; c.push({k:'family rows show real swatches', pass:chips>=20, detail:chips}); const descs=secs.map(s=>{const d=s.querySelector('summary small'); return d?d.textContent.trim():'';}); const boiler=descs.filter(d=>d.indexOf('Click to browse every authored look')>-1).length; c.push({k:'no placeholder descriptions', pass:boiler===0, detail:boiler}); const uniq=new Set(descs.filter(Boolean)).size; c.push({k:'descriptions mostly distinct', pass:uniq>=55, detail:uniq+'/'+descs.length}); return JSON.stringify(c); })()"
+ },
+ {
+  "name": "R6-pick-a-finish",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 17000,
+  "after": 6000,
+  "js": "(async () => { const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const c=[]; try{ const _cr=await (await fetch('/iracing-cars')).json(); const _el=document.getElementById('outputDir'); if(_el && _cr && _cr.cars && _cr.cars.length){ _el.value=_cr.cars[0].path; _el.dispatchEvent(new Event('input',{bubbles:true})); _el.dispatchEvent(new Event('change',{bubbles:true})); } }catch(e){} await sleep(500); const cards=[...document.querySelectorAll('#spbEasyRail .spb-easy-finish')]; cards[0].click(); await sleep(6500); const rail=document.getElementById('spbEasyRail'); c.push({k:'finish lands in the mix', pass: rail.querySelectorAll('.spb-easy-mix-row').length>0}); c.push({k:'ON YOUR CAR panel, not MATERIAL MIX', pass: rail.innerText.indexOf('ON YOUR CAR')>-1}); c.push({k:'plain-English sliders', pass: rail.innerText.indexOf('HOW STRONG')>-1 && rail.innerText.indexOf('HOW FINE')>-1}); const save=rail.querySelector('.spb-easy-save'); c.push({k:'save enabled after a pick', pass:!!(save && !save.disabled)}); const ml=rail.querySelector('.spb-easy-myloooks'); c.push({k:'extras appear once there is work', pass:!!(ml && !ml.hidden)}); const peek=document.getElementById('spbEasySpecPeek'); c.push({k:'spec-map reveal offered', pass:!!peek}); const live=document.getElementById('spbEasyLiveCanvas'); let px=false; try{ const d=live.getContext('2d').getImageData(0,0,48,48).data; let s=0; for(let i=0;i<d.length;i+=4) s+=d[i]+d[i+1]+d[i+2]; px=s>0; }catch(e){} c.push({k:'live preview rendered', pass:px}); return JSON.stringify(c); })()",
+  "slow": true
+ },
+ {
+  "name": "R7-by-color",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 17000,
+  "after": 6000,
+  "js": "(async () => { const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const c=[]; const so=document.getElementById('spbEasyStartOver'); so.click(); await sleep(1200); const y=document.getElementById('spbEasyAskYes'); c.push({k:'START OVER uses in-app dialog', pass:!!(y && !document.getElementById('spbEasyAskBackdrop').hidden)}); if(y) y.click(); await sleep(3500); try{ const _cr=await (await fetch('/iracing-cars')).json(); const _el=document.getElementById('outputDir'); if(_el && _cr && _cr.cars && _cr.cars.length){ _el.value=_cr.cars[0].path; _el.dispatchEvent(new Event('input',{bubbles:true})); _el.dispatchEvent(new Event('change',{bubbles:true})); } }catch(e){} await sleep(500); document.getElementById('spbEasySideByColor').click(); await sleep(3000); const rail=document.getElementById('spbEasyRail'); c.push({k:'by-color entered', pass: rail.innerText.indexOf('BY COLOR')>-1}); const find=[...rail.querySelectorAll('button')].find(b=>b.textContent.indexOf('FIND MY COLORS')>-1); c.push({k:'auto-detect offered', pass:!!find}); find.click(); await sleep(8000); const rows=[...document.querySelectorAll('#spbEasyRail .spb-easy-planrow')]; c.push({k:'auto-detect found colors', pass:rows.length>=3, detail:rows.length}); const save=rail.querySelector('.spb-easy-save'); c.push({k:'blocker counts the colors', pass:/COLORS STILL NEED/.test(save.textContent), detail:save.textContent.trim()}); const tiny=document.querySelectorAll('.spb-easy-planrow-tiny').length; c.push({k:'small colors flagged', pass:tiny>0, detail:tiny}); return JSON.stringify(c); })()",
+  "slow": true
+ },
+ {
+  "name": "R8-toast-and-keys",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 17000,
+  "after": 3500,
+  "js": "(async () => { const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const c=[]; window.showToast('REGRESSION TOAST','info'); await sleep(1200); const n=[...document.querySelectorAll('body *')].filter(e=>e.textContent && e.textContent.indexOf('REGRESSION TOAST')>-1); const t=n[n.length-1]; if(t){ const r=t.getBoundingClientRect(); const hit=document.elementFromPoint(Math.round(r.left+r.width/2), Math.round(r.top+r.height/2)); c.push({k:'toast is above the Easy cover', pass: !!(hit && (t.contains(hit)||hit===t))}); } else { c.push({k:'toast is above the Easy cover', pass:false, detail:'no toast node'}); } const host=document.querySelector('#spbEasyRail .spb-easy-finishes'); const tiles=[...host.querySelectorAll('.spb-easy-finish')].filter(el=>{ try{ return el.checkVisibility({checkVisibilityCSS:true, contentVisibilityAuto:true}); }catch(e){ return !!el.offsetParent; } }); const top0=Math.round(tiles[0].getBoundingClientRect().top); let stride=1; for(let i=1;i<tiles.length;i++){ if(Math.abs(Math.round(tiles[i].getBoundingClientRect().top)-top0)>4) break; stride++; } c.push({k:'grid has multiple columns', pass:stride>1, detail:stride}); tiles[0].focus(); const key=k=>document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:k,bubbles:true,cancelable:true})); key('ArrowRight'); await sleep(120); const afterRight=tiles.indexOf(document.activeElement); c.push({k:'ArrowRight moves one tile', pass:afterRight===1, detail:afterRight}); tiles[0].focus(); key('ArrowDown'); await sleep(120); const afterDown=tiles.indexOf(document.activeElement); c.push({k:'ArrowDown moves one row', pass:afterDown===stride, detail:afterDown+' vs stride '+stride}); return JSON.stringify(c); })()"
+ },
+ {
+  "name": "R9-narrow-1100",
+  "size": "1100x760",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 17000,
+  "after": 4000,
+  "js": "(() => { const c=[]; const rail=document.getElementById('spbEasyRail'); const f=rail.querySelector('.spb-easy-finishes'); const fb=f.getBoundingClientRect(); const tiles=[...rail.querySelectorAll('.spb-easy-finish')]; const shown=tiles.filter(e=>{const q=e.getBoundingClientRect(); return q.top>=fb.top-2&&q.bottom<=fb.bottom+2&&q.left>=fb.left-2&&q.right<=fb.right+2;}).length; c.push({k:'finishes visible at 1100px', pass:shown>=4, detail:shown}); c.push({k:'no horizontal page overflow', pass:document.documentElement.scrollWidth<=window.innerWidth}); const clipped=[...document.querySelectorAll('#spbEasyRoot button')].filter(el=>{const q=el.getBoundingClientRect(); return q.width>2 && q.height>2 && (q.right>window.innerWidth+1 || q.left<-1);}).length; c.push({k:'no controls clipped off-screen', pass:clipped===0, detail:clipped}); const save=rail.querySelector('.spb-easy-save'); c.push({k:'SAVE reachable', pass:!!(save && save.getBoundingClientRect().height>4)}); const srcC9=document.querySelector('.spb-easy-source-card'); const liveC9=document.querySelector('.spb-easy-live-card'); const sideEl9=document.getElementById('spbEasyStageSide'); const vis9=el=>{ try{ return el.checkVisibility({checkVisibilityCSS:true}); }catch(e){ return !!(el && el.offsetParent); } }; const srcM9=srcC9?srcC9.querySelector('.spb-easy-proof-media'):null; const q9=srcM9?srcM9.getBoundingClientRect():{width:0,height:0}; c.push({k:'stage: both square panes survive 1100px', pass: !!srcC9 && !!liveC9 && vis9(srcC9) && vis9(liveC9) && Math.abs(q9.width-q9.height)<=3 && q9.width>=120, detail: 'art='+Math.round(q9.width)+'x'+Math.round(q9.height)}); c.push({k:'stage: bench card yields at narrow widths', pass: !sideEl9 || !vis9(sideEl9)}); return JSON.stringify(c); })()"
+ },
+ {
+  "name": "R10-glossary-and-tour",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 17000,
+  "after": 4000,
+  "js": "(async () => { const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const c=[]; const g=document.getElementById('spbEasyGlossOpen'); g.click(); await sleep(900); const terms=[...document.querySelectorAll('#spbEasyGlossBody dt')].map(d=>d.textContent.trim()); c.push({k:'glossary opens with terms', pass:terms.length>=12, detail:terms.length}); c.push({k:'glossary covers PAINT|SHINE', pass:terms.some(t=>t.indexOf('SHINE')>-1)}); const gx=document.getElementById('spbEasyGlossClose'); if(gx) gx.click(); await sleep(500); const cards=[...document.querySelectorAll('#spbEasyRail .spb-easy-finish')]; if(cards.length) cards[0].click(); await sleep(6000); const t=document.getElementById('spbEasyTeach'); t.click(); await sleep(1000); const steps=[]; for(let i=0;i<9;i++){ const card=document.querySelector('.spb-easy-tour-card'); if(!card) break; const num=document.getElementById('spbEasyTourNum'); steps.push(num?num.textContent.trim():'?'); const n=document.getElementById('spbEasyTourNext'); if(!n || n.textContent.indexOf('GOT IT')>-1) break; n.click(); await sleep(600); } c.push({k:'tour shows 5 steps', pass:steps.length===5, detail:steps.join(' / ')}); return JSON.stringify(c); })()"
+ },
+ {
+  "name": "R11-blending-math",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 17000,
+  "after": 6000,
+  "js": "(async () => { const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const vis=el=>{ try{ return el.checkVisibility({checkVisibilityCSS:true, contentVisibilityAuto:true}); }catch(e){ return !!el.offsetParent; } }; const rail=()=>document.getElementById('spbEasyRail'); const shares=()=>[...rail().querySelectorAll('.spb-easy-mix-num')].map(i=>Number(i.value)); const sum=a=>a.reduce((x,y)=>x+y,0); const c=[]; const so=document.getElementById('spbEasyStartOver'); so.click(); await sleep(1200); const y0=document.getElementById('spbEasyAskYes'); if(y0 && !document.getElementById('spbEasyAskBackdrop').hidden) y0.click(); await sleep(4500); const pick=async n=>{ const t=[...rail().querySelectorAll('.spb-easy-finish')]; if(t[n]) t[n].click(); await sleep(5500); }; await pick(0); c.push({k:'one finish is 100%', pass:sum(shares())===100 && shares().length===1, detail:shares().join('/')}); await pick(2); c.push({k:'two finishes still total 100', pass:sum(shares())===100 && shares().length===2, detail:shares().join('/')}); await pick(4); c.push({k:'three finishes still total 100', pass:sum(shares())===100 && shares().length===3, detail:shares().join('/')}); const qs=[...rail().querySelectorAll('.spb-easy-mix-presets button')].filter(vis).find(b=>b.textContent.indexOf('60/20/20')>-1); if(qs){ qs.click(); await sleep(4500); c.push({k:'QUICK SPLIT applies exactly', pass:shares().join('/')==='60/20/20', detail:shares().join('/')}); } const x=[...rail().querySelectorAll('.spb-easy-mix-row button')].filter(vis).find(b=>b.textContent.trim()==='\\u00d7'); if(x){ x.click(); await sleep(4500); c.push({k:'removal rebalances to 100', pass:sum(shares())===100 && shares().length===2, detail:shares().join('/')}); } const st=rail().querySelector('.spb-easy-whole-stack'); const rows=[...st.querySelectorAll('.spb-easy-mix-row')]; const sb=st.getBoundingClientRect(); const shown=rows.filter(r=>{const q=r.getBoundingClientRect(); return q.top>=sb.top-2 && q.top<sb.bottom;}).length; c.push({k:'mix rows are actually visible', pass:shown===rows.length, detail:shown+'/'+rows.length}); return JSON.stringify(c); })()",
+  "slow": true
+ },
+ {
+  "name": "R12-undo-redo",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 17000,
+  "after": 6000,
+  "js": "(async () => { const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const rail=()=>document.getElementById('spbEasyRail'); const rows=()=>rail().querySelectorAll('.spb-easy-mix-row').length; const U=()=>document.getElementById('spbEasyUndo'); const R=()=>document.getElementById('spbEasyRedo'); const c=[]; const so=document.getElementById('spbEasyStartOver'); so.click(); await sleep(1200); const y0=document.getElementById('spbEasyAskYes'); if(y0 && !document.getElementById('spbEasyAskBackdrop').hidden) y0.click(); await sleep(4500); c.push({k:'redo disabled on a clean slate', pass:R().disabled}); const pick=async n=>{ const t=[...rail().querySelectorAll('.spb-easy-finish')]; if(t[n]) t[n].click(); await sleep(5500); }; await pick(0); await pick(2); const two=rows(); c.push({k:'two finishes applied', pass:two===2, detail:two}); c.push({k:'undo button names the action', pass:U().textContent.trim().length>6, detail:U().textContent.trim().split(String.fromCharCode(10)).join(' ').slice(0,30)}); U().click(); await sleep(5000); c.push({k:'undo removes one', pass:rows()===1, detail:rows()}); R().click(); await sleep(5000); c.push({k:'redo restores it', pass:rows()===2, detail:rows()}); const so2=document.getElementById('spbEasyStartOver'); so2.click(); await sleep(1500); const y2=document.getElementById('spbEasyAskYes'); if(y2 && !document.getElementById('spbEasyAskBackdrop').hidden) y2.click(); await sleep(5000); c.push({k:'START OVER clears the car', pass:rows()===0, detail:rows()}); U().click(); await sleep(5500); c.push({k:'undo brings the whole plan back', pass:rows()===2, detail:rows()}); return JSON.stringify(c); })()",
+  "slow": true
+ },
+ {
+  "name": "R13-compare-and-map",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 17000,
+  "after": 6000,
+  "js": "(async () => { const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const vis=el=>{ try{ return el.checkVisibility({checkVisibilityCSS:true, contentVisibilityAuto:true}); }catch(e){ return !!el.offsetParent; } }; const rail=()=>document.getElementById('spbEasyRail'); const grab=()=>{ const cv=document.getElementById('spbEasyLiveCanvas'); const t=document.createElement('canvas'); t.width=80;t.height=80; t.getContext('2d').drawImage(cv,0,0,80,80); return t.getContext('2d').getImageData(0,0,80,80).data; }; const diff=(a,b)=>{ let s=0,n=0; for(let i=0;i<a.length;i+=4){ s+=Math.abs(a[i]-b[i])+Math.abs(a[i+1]-b[i+1])+Math.abs(a[i+2]-b[i+2]); n+=3; } return Math.round(s/n*100)/100; }; const settle=async(max)=>{ let prev=grab(); for(let i=0;i<(max||14);i++){ await sleep(1500); const now=grab(); if(diff(prev,now)<0.2) return i; prev=now; } return -1; }; const c=[]; const so=document.getElementById('spbEasyStartOver'); so.click(); await sleep(1200); const y0=document.getElementById('spbEasyAskYes'); if(y0 && !document.getElementById('spbEasyAskBackdrop').hidden) y0.click(); await sleep(4500); const byName=async nm=>{ const t=[...rail().querySelectorAll('.spb-easy-finish')].find(x=>{ const n=x.querySelector('.spb-easy-finish-name'); return n && n.textContent.trim().indexOf(nm)===0; }); if(t) t.click(); await sleep(2500); return !!t; }; const gotA=await byName('Chrome'); await settle(); const before=grab(); const add=document.getElementById('spbEasyCompareAdd'); add.click(); await sleep(2200); c.push({k:'compare counts one snapshot', pass:add.textContent.indexOf('1/')>-1, detail:add.textContent.trim()}); c.push({k:'side-by-side hidden at one', pass:document.getElementById('spbEasyCompareOpen').hidden}); const gotB=await byName('Matte'); const settledAt=await settle(); const after=grab(); c.push({k:'a second finish changes the preview', pass:diff(before,after)>2.5, detail:diff(before,after)+' Chrome->Chrome+Matte, picked='+gotA+'/'+gotB+', settled after '+settledAt}); document.getElementById('spbEasyCompareAdd').click(); await sleep(2200); const open=document.getElementById('spbEasyCompareOpen'); c.push({k:'side-by-side offered at two', pass:!open.hidden, detail:open.textContent.trim()}); if(!open.hidden){ open.click(); await sleep(3000); const g=document.getElementById('spbEasyCompareGrid'); c.push({k:'compare grid renders both', pass: !!g && g.children.length===2 && [...g.querySelectorAll('img')].filter(i=>i.getAttribute('src')).length===2}); const cl=[...document.querySelectorAll('button')].filter(vis).find(b=>b.textContent.indexOf('CLOSE')>-1); if(cl) cl.click(); await sleep(1200); } const smw=[...rail().querySelectorAll('button')].filter(vis).find(b=>b.textContent.indexOf('SHOW ME WHERE')>-1); c.push({k:'SHOW ME WHERE offered at two finishes', pass:!!smw}); if(smw){ smw.click(); await sleep(4000); const ov=document.getElementById('spbEasyMapOverlay'); c.push({k:'material map overlay renders', pass: !!ov && !ov.hidden && !!ov.getAttribute('src')}); } return JSON.stringify(c); })()",
+  "slow": true
+ },
+ {
+  "name": "R14-sculpt-destination",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 17000,
+  "after": 6000,
+  "js": "(async () => { const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const vis=el=>{ try{ return el.checkVisibility({checkVisibilityCSS:true, contentVisibilityAuto:true}); }catch(e){ return !!el.offsetParent; } }; const c=[]; const outDir=document.getElementById('outputDir'); const folder=(outDir?outDir.value:'').split(String.fromCharCode(92)).pop().toLowerCase(); const dest=document.getElementById('spbEasyDestSummary'); const easyName=dest?dest.textContent.trim():''; c.push({k:'Easy shows a destination', pass:easyName.length>3, detail:easyName}); document.getElementById('spbEasySideSculpt').click(); await sleep(6000); const u=[...document.querySelectorAll('button')].filter(vis).find(b=>b.textContent.indexOf('USE THE PAINT ALREADY OPEN')>-1); c.push({k:'Spec Sculpt offers the open paint', pass:!!u}); if(!u) return JSON.stringify(c); u.click(); await sleep(20000); const railTxt=document.getElementById('spbEasyRail').innerText; c.push({k:'Spec Sculpt finished sculpting', pass: railTxt.indexOf('SPEC SCULPT')>-1 && railTxt.indexOf('READING')===-1}); const hasFolder = railTxt.toLowerCase().indexOf('folder '+folder)>-1; c.push({k:'Spec Sculpt targets the SAME car as Easy', pass:hasFolder, detail:'expected folder '+folder}); return JSON.stringify(c); })()",
+  "slow": true
+ },
+ {
+  "name": "R15-easy-to-pro-handoff",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 17000,
+  "after": 8000,
+  "slow": true,
+  "js": "(async () => { const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const rail=()=>document.getElementById('spbEasyRail'); const byName=async nm=>{ const t=[...rail().querySelectorAll('.spb-easy-finish')].find(x=>{ const n=x.querySelector('.spb-easy-finish-name'); return n && n.textContent.trim().indexOf(nm)===0; }); if(t) t.click(); await sleep(6500); return !!t; }; const c=[]; const so=document.getElementById('spbEasyStartOver'); so.click(); await sleep(1200); const y=document.getElementById('spbEasyAskYes'); if(y && !document.getElementById('spbEasyAskBackdrop').hidden) y.click(); await sleep(4500); const a=await byName('Chrome'); const b=await byName('Matte'); c.push({k:'two finishes mixed in Easy', pass:a && b && rail().querySelectorAll('.spb-easy-mix-row').length===2}); document.getElementById('spbEasyProBtn').click(); await sleep(6000); c.push({k:'PRO takes over', pass:!document.body.classList.contains('spb-easy-on')}); const noStack=()=> (typeof zones!=='undefined') && !zones.some(z=>z && Array.isArray(z.materialStack) && z.materialStack.length); c.push({k:'ISOLATION: Easy mix does NOT leak into Pro zones', pass:noStack(), detail:(typeof zones!=='undefined'?zones.length+' pro zones':'no zones')}); c.push({k:'ISOLATION: Pro keeps its own zone set', pass:(typeof zones!=='undefined') && zones.length>0 && zones.some(z=>z && z.name==='Everything Else'), detail:(typeof zones!=='undefined'?zones.map(z=>z.name).join('|').slice(0,80):'')}); window.spbEasy.enter(); await sleep(3000); c.push({k:'ISOLATION: Easy still owns its 2-material mix on re-entry', pass:!!rail() && rail().querySelectorAll('.spb-easy-mix-row').length===2, detail:(rail()?rail().querySelectorAll('.spb-easy-mix-row').length:'no rail')+''}); window.spbEasy.exit(); await sleep(1500); c.push({k:'ISOLATION: second exit leaves Pro clean too', pass:noStack() && !document.body.classList.contains('spb-easy-on')}); return JSON.stringify(c); })()"
+ },
+ {
+  "name": "R16-toasts-speak-plain-english",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 1200,
+  "after": 3000,
+  "slow": true,
+  "js": "(async () => { const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const c=[]; const seen=[]; const hook=()=>{ if(window.__toastHooked) return true; if(typeof window.showToast!=='function') return false; window.__toastHooked=true; const orig=window.showToast; window.showToast=function(m){ try{ seen.push(String(m)); }catch(e){} return orig.apply(this,arguments); }; return true; }; for(let i=0;i<400 && !hook();i++) await sleep(50); const $=id=>document.getElementById(id); for(let i=0;i<220 && !$('spbEasyRail');i++) await sleep(100); await sleep(15000); const jargon=/\\bPSD\\b|Rasteriz|TGA decoded|Toggle eyes|keyboard shortcuts|layers loaded|layers decoded/i; const bad=seen.filter(t=>jargon.test(t)); c.push({k:'no Pro jargon in the first-boot toasts', pass:bad.length===0, detail:bad.join(' | ').slice(0,90)}); c.push({k:'the buyer still gets told what is happening', pass:seen.length>=5, detail:seen.length+' toasts'}); window.showToast('Your paint is open and ready.','success'); await sleep(900); const t=$('toast'), s=$('spbEasySave'); const tr=t.getBoundingClientRect(), sr=s.getBoundingClientRect(); const overlap=!(tr.right<sr.left||tr.left>sr.right||tr.bottom<sr.top||tr.top>sr.bottom); c.push({k:'toast never covers SAVE TO iRACING', pass:!overlap, detail:'toast@'+Math.round(tr.left)+','+Math.round(tr.top)+' save@'+Math.round(sr.left)+','+Math.round(sr.top)}); c.push({k:'toast is still visible in Easy Mode', pass:t.checkVisibility({checkVisibilityCSS:true,contentVisibilityAuto:true}) && Number(getComputedStyle(t).zIndex)>20000, detail:getComputedStyle(t).zIndex}); const b=document.querySelector('.spb-easy-painting-badge'); c.push({k:'painting badge stacks above the proof cards', pass:Number(getComputedStyle(b).zIndex)>6, detail:getComputedStyle(b).zIndex}); return JSON.stringify(c); })()"
+ },
+ {
+  "name": "R17-iracing-number-is-correctable",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 17000,
+  "after": 2500,
+  "js": "(async () => { const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const $=id=>document.getElementById(id); const vis=el=>{ try{ return el.checkVisibility({checkVisibilityCSS:true,contentVisibilityAuto:true}); }catch(e){ return !!el.offsetParent; } }; const c=[]; const main=$('iracingId'); const detected=main?String(main.value||'').trim():''; c.push({k:'an iRacing number was detected', pass:/^\\d{3,7}$/.test(detected), detail:detected}); const dr=$('spbEasySendDrawer'); dr.open=true; await sleep(700); const row=$('spbEasyIdRow'); c.push({k:'the number stays editable even when valid', pass:!!row && !row.hidden && vis(row)}); const inp=$('spbEasyIdInput'); c.push({k:'the field shows the real number', pass:inp.value===detected, detail:inp.value+' vs '+detected}); const p0=$('spbEasyFileProof').textContent.trim(); c.push({k:'file proof names the real number at rest', pass:detected!=='' && p0.indexOf(detected)>-1, detail:p0.slice(0,60)}); inp.focus(); inp.value='987654'; inp.dispatchEvent(new Event('input',{bubbles:true})); await sleep(1200); const p1=$('spbEasyFileProof').textContent.trim(); c.push({k:'correcting it re-writes the file proof', pass:p1.indexOf('987654')>-1 && p1!==p0, detail:p1.slice(0,60)}); c.push({k:'and reaches the real save field', pass:$('iracingId').value==='987654'}); inp.value=detected; inp.dispatchEvent(new Event('input',{bubbles:true})); await sleep(800); c.push({k:'restores cleanly', pass:$('iracingId').value===detected}); return JSON.stringify(c); })()"
+ },
+ {
+  "name": "R18-overlay-parity-sliders",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "pro"
+  },
+  "boot": 17000,
+  "after": 2500,
+  "slow": true,
+  "js": "(async () => { const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const vis=el=>{ try{ return el.checkVisibility({checkVisibilityCSS:true,contentVisibilityAuto:true}); }catch(e){ return !!el.offsetParent; } }; const out={}; try { zones[0].base='gloss'; setZoneSecondBase(0, 'gloss'); } catch(e) { out.err=String(e).slice(0,80); } await sleep(1800); const panels=[document.getElementById('zoneEditorFloat'), document.getElementById('zoneDetailPanel')].filter(Boolean); const panel=panels.find(p=>{ const r=p.getBoundingClientRect(); return r.width>50 && vis(p); }) || panels[0]; out.panel=panel?panel.id:null; const ovHdr=[...panel.querySelectorAll('.section-header')].find(h=>(h.textContent||'').indexOf('OVERLAYS')>-1); out.ovHdrFound=!!ovHdr; if(ovHdr){ const sec=ovHdr.closest('.section-collapsible'); if(sec && sec.classList.contains('collapsed')) ovHdr.click(); await sleep(800); } const hdr2=[...panel.querySelectorAll('.section-header-label')].find(e=>e.textContent.indexOf('2ND BASE OVERLAY')>-1); out.tier2Found=!!hdr2; const ids=['detOvsecondBaseCS0','detOvsecondBaseScale0','detOvsecondBaseRot0','detOvsecondBaseSpecScale0','detOvsecondBaseSpecRot0']; out.rows={}; for(let tries=0; tries<8; tries++){ const oh2=[...panel.querySelectorAll('.section-header')].find(h=>(h.textContent||'').indexOf('OVERLAYS')>-1); if(oh2){ const sec2=oh2.closest('.section-collapsible'); if(sec2 && sec2.classList.contains('collapsed')) oh2.click(); } const h2=[...panel.querySelectorAll('.section-header-label')].find(e=>e.textContent.indexOf('2ND BASE OVERLAY')>-1); let n=h2; while(n && n!==panel){ if(n.classList && n.classList.contains('collapsed')) n.classList.remove('collapsed'); n=n.parentElement; } const sr2=panel.querySelector('#detOvsecondBaseScale0') || document.getElementById('detOvsecondBaseScale0'); if(sr2) sr2.scrollIntoView({block:'center'}); await sleep(800); let allVis=true; for(const id of ids){ const el=panel.querySelector('#'+id) || document.getElementById(id); out.rows[id]=el? (vis(el)?'visible':'hidden') : 'MISSING'; if(out.rows[id]!=='visible') allVis=false; } if(allVis) break; } const c=[]; c.push({k:'zone popout panel found', pass:!!out.panel, detail:out.panel}); c.push({k:'2ND BASE OVERLAY section renders', pass:!!out.tier2Found}); for(const id of ids){ c.push({k:'parity row '+id.replace('detOvsecondBase','').replace('0',''), pass:out.rows[id]==='visible', detail:out.rows[id]}); } try{ setZoneOvScale(0,'second',2.0); c.push({k:'Scale drives colour+spec together', pass:zones[0].secondBaseColorScale===2 && zones[0].secondBaseSpecScale===2}); setZoneOvSpecScaleMode(0,'second',true); setZoneOvSpecScale(0,'second',0.5); c.push({k:'Spec Scale unlocks independently', pass:zones[0].secondBaseSpecScale===0.5 && zones[0].secondBaseColorScale===2}); setZoneOvScale(0,'second',1.0); setZoneOvSpecScaleMode(0,'second',false); }catch(e){ c.push({k:'setters run', pass:false, detail:String(e).slice(0,60)}); } return JSON.stringify(c); })()"
+ },
+ {
+  "name": "collections-shelves",
+  "size": "1920x1080",
+  "ls": {
+   "spb_view_mode": "easy"
+  },
+  "boot": 22000,
+  "after": 2000,
+  "js": "(async () => { const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const c=[]; const push=(k,pass,detail)=>c.push({k,pass:!!pass,detail:(detail==null?'':String(detail)).slice(0,100)}); for(let i=0;i<90 && !document.getElementById('spbEasyRail');i++) await sleep(400); await sleep(3000);\n// [SPB-OVERNIGHT V2-LADDER 2026-08-22] Featured Collections contract\nconst hdrs=[...document.querySelectorAll('.spb-easy-finish-group')];\nconst colls=hdrs.filter(g=>g.textContent.indexOf('PICKS')>-1);\npush('3 featured collection shelves render', colls.length===3, hdrs.map(g=>g.textContent.trim().slice(0,22)).join('|').slice(0,100));\nconst starterIdx=hdrs.findIndex(g=>g.textContent.indexOf('STARTER SHELF')>-1); const firstColl=hdrs.findIndex(g=>g.textContent.indexOf('PICKS')>-1);\npush('collections lead the generic starter shelf', firstColl>-1 && starterIdx>firstColl, firstColl+' vs '+starterIdx);\nconst seeAll=colls[0]?colls[0].querySelector('[data-tag]'):null; push('SEE ALL button carries data-tag', !!seeAll);\nif(seeAll){ const t=seeAll.getAttribute('data-tag'); seeAll.click(); await sleep(900); const flat=[...document.querySelectorAll('.spb-easy-finish-group')].some(g=>/MATCH/i.test(g.textContent)); push('SEE ALL applies its filter', flat, 'tag='+t); }\nreturn JSON.stringify(c); })()"
+ }
+]

@@ -57,10 +57,10 @@
     function openCommunityDropInstall(id, version) {
         var toast = (typeof showToast === 'function') ? showToast : function (m) { console.log(m); };
         if (!/^drp_[a-z0-9]{20,64}$/.test(String(id || '')) || Number(version || 1) !== 1) {
-            toast('That SHOKK DROP link is invalid', 'error');
-            return Promise.reject(new Error('Invalid SHOKK DROP link'));
+            toast('That Shokk Drop link is invalid', 'error');
+            return Promise.reject(new Error('Invalid Shokk Drop link'));
         }
-        toast('Verifying SHOKK DROP…', 'info');
+        toast('Verifying Shokk Drop…', 'info');
         return fetch('/api/user-imports/community-drop/' + encodeURIComponent(id))
             .then(function (r) { return r.json().then(function (body) { return { ok: r.ok, body: body }; }); })
             .then(function (result) {
@@ -71,17 +71,17 @@
                 modal.innerHTML =
                     '<div style="max-width:760px;margin:24px auto;background:var(--bg-panel,#171b23);border:1px solid var(--accent-cyan,#31d6ff);border-radius:12px;box-shadow:0 18px 80px #000;padding:18px;">' +
                     '<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">' +
-                    '<div style="flex:1;"><div style="font-size:9px;letter-spacing:.18em;color:var(--accent-cyan,#31d6ff);font-weight:800;">VERIFIED COMMUNITY SHOKK DROP</div>' +
+                    '<div style="flex:1;"><div style="font-size:9px;letter-spacing:.18em;color:var(--accent-cyan,#31d6ff);font-weight:800;">Verified community Shokk Drop</div>' +
                     '<h2 style="margin:5px 0 2px;font-size:21px;">' + _esc(drop.finish_name) + '</h2>' +
                     '<div style="font-size:11px;color:var(--text-dim,#9aa4b2);">by ' + _esc(drop.author_name) + '</div></div>' +
                     '<button type="button" id="communityDropClose" class="btn btn-sm">Close</button></div>' +
                     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
-                    '<figure style="margin:0;"><img src="' + _esc(drop.previews.paint) + '" alt="Base paint preview" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:7px;background:#090b0f;"><figcaption style="font-size:9px;margin-top:4px;color:var(--text-dim,#9aa4b2);">BASE PAINT</figcaption></figure>' +
+                    '<figure style="margin:0;"><img src="' + _esc(drop.previews.paint) + '" alt="Base paint preview" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:7px;background:#090b0f;"><figcaption style="font-size:9px;margin-top:4px;color:var(--text-dim,#9aa4b2);">Base paint</figcaption></figure>' +
                     '<figure style="margin:0;"><img src="' + _esc(drop.previews.spec) + '" alt="Spec preview" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:7px;background:#090b0f;"><figcaption style="font-size:9px;margin-top:4px;color:var(--text-dim,#9aa4b2);">SPEC MAP</figcaption></figure></div>' +
                     (drop.description ? '<p style="font-size:11px;line-height:1.5;color:var(--text-dim,#bac3ce);">' + _esc(drop.description) + '</p>' : '') +
                     (website ? '<button type="button" id="communityDropAuthorSite" class="btn btn-sm" style="margin-right:8px;">Author website</button>' : '') +
                     '<div style="margin-top:12px;padding:9px;border-radius:6px;background:#0c1118;font:9px monospace;color:#8da1b5;overflow-wrap:anywhere;">SHA-256 ' + _esc(drop.package.sha256) + '</div>' +
-                    '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;"><button type="button" id="communityDropInstall" class="btn btn-primary">Add to SHOKK DROP</button></div>' +
+                    '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;"><button type="button" id="communityDropInstall" class="btn btn-primary">Add to Shokk Drop</button></div>' +
                     '</div>';
                 modal.style.display = 'block';
                 modal.querySelector('#communityDropClose').addEventListener('click', function () { modal.style.display = 'none'; });
@@ -104,20 +104,20 @@
                             if (!installed.ok) throw new Error(installed.body.error || 'Install failed');
                             var entry = installed.body.imported && installed.body.imported[0];
                             modal.style.display = 'none';
-                            toast('Added “' + ((entry && entry.name) || drop.finish_name) + '” to SHOKK DROP', 'success');
+                            toast('Added “' + ((entry && entry.name) || drop.finish_name) + '” to Shokk Drop', 'success');
                             window._userImportsGalleryCache = null;
                             openUserImportGalleryFromApi();
                         })
                         .catch(function (err) {
                             button.disabled = false;
                             button.textContent = 'Try again';
-                            toast('SHOKK DROP install failed: ' + err.message, 'error');
+                            toast('Shokk Drop install failed: ' + err.message, 'error');
                         });
                 });
                 return drop;
             })
             .catch(function (err) {
-                toast('SHOKK DROP verification failed: ' + err.message, 'error');
+                toast('Shokk Drop verification failed: ' + err.message, 'error');
                 throw err;
             });
     }
@@ -129,7 +129,7 @@
             openCommunityDropInstall(parsed.searchParams.get('id'), Number(parsed.searchParams.get('version') || 1));
         } catch (_) {
             var toast = (typeof showToast === 'function') ? showToast : function () {};
-            toast('That SHOKK DROP link is invalid', 'error');
+            toast('That Shokk Drop link is invalid', 'error');
         }
     }
 
@@ -211,7 +211,7 @@
             toast('Share link copied', 'success');
             if (btn) {
                 var prev = btn.textContent;
-                btn.textContent = 'Copied!';
+                btn.textContent = 'Copied';
                 setTimeout(function () { btn.textContent = prev; }, 1600);
             }
         };
@@ -272,7 +272,7 @@
             modal.innerHTML =
                 '<div style="max-width:920px;margin:24px auto;background:var(--bg-panel,#1a1f28);border:1px solid var(--border-color,#333);border-radius:10px;">' +
                 '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border-color,#333);">' +
-                '<strong style="font-size:12px;flex:1;">SHOKK DROP</strong>' +
+                '<strong style="font-size:12px;flex:1;">Shokk Drop</strong>' +
                 '<button type="button" class="btn btn-sm" style="font-size:9px;border-color:var(--accent-cyan);color:var(--accent-cyan);" onclick="openCommunityDropsSite()">Browse Community Drops</button>' +
                 '<a href="/api/user-imports/export-all" download class="btn btn-sm" style="font-size:9px;border-color:var(--accent-cyan);color:var(--accent-cyan);">Export all' + DROP_PACK_EXT + '</a>' +
                 '<button type="button" class="btn btn-sm" style="font-size:9px;" onclick="closeUserImportGallery()">Close</button>' +

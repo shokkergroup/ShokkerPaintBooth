@@ -1,0 +1,25 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const root=path.resolve(__dirname,'../..'),w={console,Promise,Set,Map,Date,Uint8Array,localStorage:{getItem:()=>null},document:{getElementById:()=>null,addEventListener(){}}};w.window=w;vm.createContext(w);
+for(const f of ['mcp/chatgpt/named-pattern-refinement.js','mcp/chatgpt/candidates/spb-intent-frame.js','mcp/chatgpt/candidates/spb-intent-plan.js','mcp/chatgpt/candidates/spb-intent-model.js','mcp/chatgpt/candidates/spb-mcp-frames.js','mcp/chatgpt/candidates/spb-intent-report.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),w,{filename:f});
+const z={id:'target',name:'Everything Else',pattern:'checker',scale:0.6,sourceLayers:['body']},layers=[{id:'body',name:'Body',role:'body paint'},{id:'numbers',name:'Numbers',role:'numbers'},{id:'sponsors',name:'Sponsors',role:'sponsors'}];
+let epoch=1,entry=null,seen=[];w.zones=[z];w.SpbProCar={roles:()=>layers,parts:()=>[]};w.SpbConversationScope={status:()=>({available:true}),stamp:()=>epoch,current:s=>s===epoch};
+const frame=()=>({v:1,act:'change',decals:'protect',ops:[{verb:'adjust',target:{kind:'zone',zones:['target']},relative:{prop:'scale',dir:-1,amount:'little'}}]});
+const P=w.SpbNamedPatternRefinement,pl=w.SpbIntentPlan.plan(frame(),w.SpbIntentPlan.live());assert.equal(pl.ok,true);
+const r=P.captureFrame(frame(),pl,{zones:w.zones,current:true,documentStamp:epoch});assert.ok(r);z.scale=0.465;const diff={zdiff:{edited:[{id:z.id}],added:[]}};assert.equal(P.receipt(r,diff,{zones:w.zones,current:true}).source_layer_ids[0],'body');
+assert.equal(P.receipt(JSON.parse(JSON.stringify(r)),diff,{zones:w.zones,current:true}),null,'JSON cannot impersonate the pre-apply live target');
+z.sourceLayers=['numbers'];assert.equal(P.receipt(r,diff,{zones:w.zones,current:true}),null);z.sourceLayers=['body'];z.scale=0.6;
+for(const bad of [{...frame(),keep:[{kind:'part',parts:['roof']}]},{...frame(),decals:'include'},{...frame(),replace_last:true}])assert.equal(P.captureFrame(bad,pl,{zones:w.zones,current:true}),null);
+const recolour=JSON.parse(JSON.stringify(pl));recolour.steps[0].ops[0].spec.color='#ff0000';assert.equal(P.captureFrame(frame(),recolour,{zones:w.zones,current:true}),null);
+const extra=JSON.parse(JSON.stringify(pl));extra.steps[0].ops.push(extra.steps[0].ops[0]);assert.equal(P.captureFrame(frame(),extra,{zones:w.zones,current:true}),null);
+z.scale=0.8;assert.equal(P.captureFrame(frame(),pl,{zones:w.zones,current:true}),null,'Stale pre-scale cannot provide scope authority');z.scale=0.6;
+const scopeOf=w.SpbIntentReport.scopeOf;
+w.SpbIntentReport.check=(e,text,r)=>{const sc=scopeOf(text,r,e);seen.push(sc);return Promise.resolve({v:1,verdict:'ok',changed:1000,paint:1000,whole:sc.whole,layers:sc.layers,protect:sc.protect,findings:[],line:'Body changed.'});};
+const text='Make the Everything Else zone’s current checker pattern a little finer. Keep the Numbers and Sponsors layers unchanged.';
+const host={layers:()=>layers,planRun:true,last:()=>entry,log:()=>entry?[entry]:[],ctx:()=>({}),apply:q=>{const op=q._s5plan.steps[0].ops[0];z.scale=op.spec.pattern.scale;entry={role:'ai',id:2,lines:['pattern'],undoable:true,zdiff:{edited:[{id:z.id}],added:[]}};return Promise.resolve({ok:true,result:{applied:['pattern Checker']}});}};
+(async()=>{
+ const result=await w.SpbMcpFrames.doCall({text,frame:frame()},host);assert.equal(result.ok,true,JSON.stringify(result));assert.ok(entry._cxPatternReport,'Actual generated MCP dispatcher attaches local pre-apply evidence');assert.equal(seen[0].existing_pattern.zone_id,z.id);assert.deepEqual(Array.from(seen[0].layers),['Body']);assert.equal(seen[0].whole,false);assert.deepEqual(Array.from(seen[0].protect).sort(),['Numbers','Sponsors']);
+ epoch++;const stale=scopeOf(text,{queue:[]},entry);assert.equal(stale.existing_pattern,undefined);
+ epoch--;z.sourceLayers=['numbers'];assert.equal(scopeOf(text,{queue:[]},entry).existing_pattern,undefined);z.sourceLayers=['body'];w.SPB_CX3_OFF=true;assert.equal(scopeOf(text,{queue:[]},entry).existing_pattern,undefined);
+ console.log(JSON.stringify({pass:true,actual_MCP_dispatcher_and_report_scope:true,existing_body_pattern_named:true,artwork_protection_retained:true,JSON_extra_ops_recolour_selectors_document_and_kill_guards:true}));
+})().catch(e=>{console.error(e);process.exitCode=1;});

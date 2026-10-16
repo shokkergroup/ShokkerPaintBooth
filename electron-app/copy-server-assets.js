@@ -184,8 +184,9 @@ async function copyDirParallel(srcDir, destDir, concurrency = 8) {
         copiedBytes += size;
         count++;
       } catch (e) {
-        console.error(`[copy-server] copy fail ${src} -> ${dest}: ${e.message}`);
-        throw e;
+        // 11.00 baseline: parallel workers need the same mapped-file fallback
+        // as flat copies. Preserve the fatal error if every copy method fails.
+        count += copyFileTracked(src, dest);
       }
     }
   }
@@ -227,8 +228,8 @@ async function copyDirParallelSkip(srcDir, destDir, excludeTopLevelNames, concur
         copiedBytes += size;
         count++;
       } catch (e) {
-        console.error(`[copy-server] copy fail ${src} -> ${dest}: ${e.message}`);
-        throw e;
+        // Use the existing tracked fallback for Windows mapped destinations.
+        count += copyFileTracked(src, dest);
       }
     }
   }
@@ -415,6 +416,14 @@ async function bundleAllPremiumPacks(destAssetsDir, pythonExe) {
   ensureDir(SERVER_DIR);
   log('dirs', `server=${SERVER_DIR}`);
 
+  // 11.00: rebuild shipped provider briefing from the maintained source pair.
+  execFileSync(pickerPython, [path.join(REPO_ROOT, '_easy_claude_work/mcp_know/mk_knowledge.py')],
+    { cwd: REPO_ROOT, stdio: 'inherit', windowsHide: true });
+
+  // Bundled car facts must match reviewed canonical inputs before copying.
+  execFileSync(pickerPython, [path.join(REPO_ROOT, 'mcp/chatgpt/car-knowledge/build_knowledge.py'), '--check'],
+    { cwd: REPO_ROOT, stdio: 'inherit', windowsHide: true });
+
   const runtimeSync = syncRuntimeCopies({ write: true, verbose: true });
   if (runtimeSync.missingSources.length > 0) {
     console.error('[copy-server] FATAL: runtime sync is missing source files.');
@@ -481,7 +490,57 @@ async function bundleAllPremiumPacks(destAssetsDir, pythonExe) {
     const count = await copyDirParallelSkip(ENC_DIR, path.join(SERVER_DIR, 'data', 'encyclopedia'), ['_drafts'], 8);
     copied += count;
     log('encyclopedia', `${count} files`);
+  } else {
+    throw new Error('Required bundled Encyclopedia directory is missing');
   }
+
+  // Explicit browser helper shipment: no research folders, private fixtures or credentials.
+  const offlineHelperFiles = [
+    "mcp/chatgpt/car-knowledge/core.js",
+    "mcp/chatgpt/car-knowledge/layer-reading.js",
+    "mcp/chatgpt/car-knowledge/live-identity.js",
+    "mcp/chatgpt/car-knowledge/offline-answer.js",
+    "mcp/chatgpt/colour-report-scope.js",
+    "mcp/chatgpt/conversation-scope.js",
+    "mcp/chatgpt/design-brief.js",
+    "mcp/chatgpt/design-intent.js",
+    "mcp/chatgpt/editor-capabilities.js",
+    "mcp/chatgpt/element-resize-scope.js",
+    "mcp/chatgpt/layer-colour-followup.js",
+    "mcp/chatgpt/layer-targets.js",
+    "mcp/chatgpt/native-layer-colour.js",
+    "mcp/chatgpt/offline-ready.js",
+    "mcp/chatgpt/panel-location.js",
+    "mcp/chatgpt/preserved-colours.js",
+    "mcp/chatgpt/car-knowledge/build/manifest.json"
+];
+  for (const relative of offlineHelperFiles) {
+    const source = path.join(REPO_ROOT, relative), destination = path.join(SERVER_DIR, relative);
+    if (!fs.existsSync(source)) throw new Error('Required Offline Helper asset is missing: ' + relative);
+    ensureDir(path.dirname(destination));
+    fs.copyFileSync(source, destination);
+  }
+
+  // Compiled car articles are a prepared-runtime overlay; keep source Encyclopedia inputs unchanged.
+  fs.copyFileSync(path.join(REPO_ROOT, 'mcp/chatgpt/car-knowledge/build/cars.json'),
+    path.join(SERVER_DIR, 'data', 'encyclopedia', 'cars.json'));
+
+  // Generate names from the exact compiled overlay copied above. Missing/stale index fails the gate below.
+  execFileSync(process.execPath, [path.join(REPO_ROOT, 'scripts/generate-car-name-index.cjs'),
+    path.join(SERVER_DIR, 'data/encyclopedia/cars.json'),
+    path.join(SERVER_DIR, 'mcp/chatgpt/car-knowledge/identity-index.js')],
+    { cwd: REPO_ROOT, stdio: 'inherit', windowsHide: true,
+      env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' } });
+
+  // Generate current hashes from the prepared tree, then validate context delivery.
+  execFileSync(process.execPath, [path.join(REPO_ROOT, 'scripts/runtime-knowledge-gate.cjs'), SERVER_DIR],
+    { cwd: REPO_ROOT, stdio: 'inherit', windowsHide: true,
+      env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' } });
+
+  // Full Electron browser prerequisites; MCPB-only payloads use their separate gate.
+  execFileSync(process.execPath, [path.join(REPO_ROOT, 'scripts/offline-reference-payload-gate.cjs'), SERVER_DIR],
+    { cwd: REPO_ROOT, stdio: 'inherit', windowsHide: true,
+      env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' } });
 
   if (COPY_THUMBNAILS && fs.existsSync(THUMBNAILS_DIR)) {
     const destThumb = path.join(SERVER_DIR, 'thumbnails');

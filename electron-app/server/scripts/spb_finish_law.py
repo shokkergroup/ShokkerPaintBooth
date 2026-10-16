@@ -352,6 +352,16 @@ def measure(eng, fid, res=RES):
     paint, spec = render(eng, fid, res)
     if spec is None:
         return None
+    # [SPEC-DRIVEN FOLLOW EXEMPTION 2026-09-04] A finish whose paint_fn is paint_none
+    # (all of Foundation) has no artwork of its own — the CUSTOMER's paint is the
+    # artwork, and the spec cannot correlate with a field the finish never wrote.
+    # FOLLOW measured 0.000 for 23 of 25 Foundation entries for exactly that reason,
+    # which is the metric being undefined, not the finish being wrong. M7 already
+    # carries the same exemption in the other direction (SPB-95 drops M1 for
+    # spec_driven intent); this mirrors it so the law can actually gate Foundation.
+    # paint_none IS callable, so `paint` comes back as a CONSTANT field rather than
+    # None — detect the absence of artwork by its variance, not by identity.
+    spec_driven = paint is None or float(np.asarray(paint, np.float32).std()) < 1e-6
     ref = _luma(paint) if paint is not None else _luma(spec / 255.0)
     band, coarse = scale_axis(ref)
     sband, scoarse = scale_axis(_luma(spec / 255.0))
@@ -360,6 +370,7 @@ def measure(eng, fid, res=RES):
     dead = coverage_axis(paint)
     eff = richness_eff(spec)
     return {
+        "spec_driven": bool(spec_driven),
         "id": fid,
         "dead": round(dead, 4),
         "eff": round(eff, 3),
@@ -470,7 +481,10 @@ def verdict(rec, twin=None):
     if float(rec.get("dead", 0.0)) > MAX_DEAD:
         fails.append("COVERAGE dead %.2f > %.2f (canvas is mostly one dead tone)"
                      % (float(rec["dead"]), MAX_DEAD))
-    if rec["id"] not in exempt:
+    # A spec-driven finish (paint_fn is paint_none) writes no artwork of its own, so
+    # FOLLOW has nothing to correlate against and always reads 0.000. Skip it there —
+    # the same exemption M7 already grants spec_driven intent (SPB-95).
+    if rec["id"] not in exempt and not rec.get("spec_driven"):
         if float(rec["follow_edge"]) < MIN_FOLLOW:
             fails.append("FOLLOW %.3f < %.2f (spec does not follow the artwork)"
                          % (float(rec["follow_edge"]), MIN_FOLLOW))

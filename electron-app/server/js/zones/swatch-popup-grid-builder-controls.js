@@ -41,8 +41,9 @@
                     <div class="swatch-label">${item.colorSafe ? '<span style="color:#22c55e;font-size:8px;margin-right:2px;" title="Color-safe: won\'t change your car\'s base color">&#9679;</span>' : ''}${item.name}</div></div>`;
         }
 
-        function buildBaseSections(currentId) {
-            let html = `<div class="swatch-item${currentId === '' ? ' selected' : ''}" data-name="not set none clear" onclick="selectSwatchItem('')" style="margin-bottom:4px;">
+        function buildBaseSections(currentId, skipNone) {
+            // [SPECIAL-ALL 2026-10-12] skipNone: the layer-brush Choose Special picker has no "(not set)" card
+            let html = skipNone ? '' : `<div class="swatch-item${currentId === '' ? ' selected' : ''}" data-name="not set none clear" onclick="selectSwatchItem('')" style="margin-bottom:4px;">
             <div class="swatch-square" style="background:#333;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:10px;">&#8709;</div>
             <div class="swatch-label">(not set)</div></div>`;
             const bases = getBases();
@@ -105,7 +106,7 @@
             function renderGroupSection(groups, sectionLabel, sectionIcon) {
                 if (!groups || groups.length === 0) return '';
                 let sectionHtml = `<div class="swatch-section-divider" style="margin:10px 0 6px; padding:6px 8px; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; display:flex; align-items:center; gap:6px;">
-                <span style="font-size:12px;">${sectionIcon || '&#8226;'}</span>
+                
                 <span style="font-size:11px; font-weight:700; color:var(--accent-green); text-transform:uppercase; letter-spacing:1px;">${sectionLabel}</span>
                 <span style="font-size:9px; color:var(--text-dim); margin-left:auto;">${groups.reduce((n, g) => n + (specialGroups[g] || []).length, 0)} finishes</span>
             </div>`;
@@ -202,7 +203,8 @@
             const isLayerSpecialPaintPicker = (type === 'layerSpecialPaint');
             let html = '';
             if (type === 'base' || type === 'secondBase' || type === 'thirdBase' || type === 'fourthBase' || type === 'fifthBase' || type === 'baseColorSource' || isOverlaySpecialSourcePicker || isOverlayBaseColorPicker || isLayerSpecialPaintPicker) {
-                if (!isOverlaySpecialSourcePicker && !isLayerSpecialPaintPicker) html += buildBaseSections(currentId);
+                // [SPECIAL-ALL 2026-10-12] "Choose Special" lists every BASE group too (kill switch window.SPB_SPECIAL_ALL_OFF)
+                if (!isOverlaySpecialSourcePicker && (!isLayerSpecialPaintPicker || global.SPB_SPECIAL_ALL_OFF !== true)) html += buildBaseSections(currentId, isLayerSpecialPaintPicker);
                 if (type === 'base' || type === 'secondBase' || type === 'thirdBase' || type === 'fourthBase' || type === 'fifthBase' || type === 'baseColorSource' || isOverlaySpecialSourcePicker || isLayerSpecialPaintPicker) html += buildSpecialSections(currentId);
             }
             if (type === 'pattern' || type === 'stackPattern' || type === 'secondBasePattern' || type === 'thirdBasePattern') html += buildPatternSections(type, currentId);

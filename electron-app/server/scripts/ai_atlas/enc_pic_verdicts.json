@@ -1,0 +1,35 @@
+{
+ "note": "Pictures judged BY EYE (ENC_READER_FIX 2026-10-05). ok=false removes a picture from that page even when its finish belongs to the page; ok=true keeps it. enc_reader_fix.py reads this on every build.",
+ "verdicts": [
+  {
+   "article": "ideas.retro_90s",
+   "screen": "car_at_flannel_forest",
+   "ok": false,
+   "why": "green plaid; the page is teal, purple and magenta splashes"
+  },
+  {
+   "article": "ideas.black_gold_luxury",
+   "screen": "cat_gradient_extended",
+   "ok": false,
+   "why": "yellow-gold star sparkle all over; the page is a near-black body with gold hairlines"
+  },
+  {
+   "article": "patterns.nine_groups",
+   "screen": "r06_pattern_scale",
+   "ok": false,
+   "why": "diagram of pattern SCALE, not of the nine groups"
+  },
+  {
+   "article": "ideas.stand_out_in_pack",
+   "screen": "car_chameleon_fire",
+   "ok": false,
+   "why": "rusty red speckle; shows nothing about standing out in a pack"
+  },
+  {
+   "article": "ideas.colour_shift",
+   "screen": "car_chameleon_fire",
+   "ok": false,
+   "why": "reads as red-brown speckle; the colour shift cannot be seen in a still"
+  }
+ ]
+}

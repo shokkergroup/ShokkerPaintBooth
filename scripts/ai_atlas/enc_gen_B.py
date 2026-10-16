@@ -12,11 +12,17 @@ import enc_hidden as _H   # shared hidden-feature list (Easy mode is hidden, own
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import enc_gen_B_v3 as V3
+import enc_gen_B_text as T   # ENC-GEN 2026-10-10: Shine label (roughness AND clearcoat), clearcoat bands, spec-letter / dev-note / placeholder wording
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..'))
 OUT = os.path.join(ROOT, 'data', 'encyclopedia')
 DUMP = os.path.join(OUT, '_drafts', '_dumpB.json')
 FLAT = '--flat' in sys.argv
+# ENC-GEN 2026-10-10: --keep-layout re-uses the part files, article ids, article order and screens that are ALREADY on disk (data/encyclopedia/pages) and only
+# replaces the generated text. A plain run re-partitions by byte size, which renumbers ~270 ids (links from other data point at those ids) and drops the
+# post-pass 'screens' picks (enc_reader_fix). Use `python scripts/ai_atlas/enc_gen_B.py --keep-layout` for text-only regeneration.
+KEEP = '--keep-layout' in sys.argv
+DISK = os.path.join(ROOT, 'data', 'encyclopedia')   # the layout is always read from the real data dir, even when PAGES points to a scratch dir
 PAGES = OUT if FLAT else os.path.join(OUT, 'pages')
 MAXB = 95 * 1024
 TODAY = '2026-10-04'
@@ -173,6 +179,21 @@ def fnum(x, i=0):
 
 
 # ---------------- finish pages ----------------
+def _text_fixes(pg):
+    """per-finish wording fixes (enc_gen_B_text.TEXT_FIXES): text that contradicts the finish's own measured / registry spec"""
+    T.soften_gloss(pg)
+    rows = T.TEXT_FIXES.get(pg.get('key'))
+    if not rows: return
+    for old, new in rows:
+        hit = False
+        for f in ('summary', 'what'):
+            if old in pg.get(f, ''): pg[f] = pg[f].replace(old, new); hit = True
+        for f in ('tips', 'pitfalls', 'when'):
+            if any(old in x for x in pg.get(f, [])): pg[f] = [x.replace(old, new) for x in pg[f]]; hit = True
+        if not hit: print('TEXT_FIXES: no match for %r in %s' % (old[:50], pg.get('key')))
+
+
+# ---------------- finish pages ----------------
 def finish_page(it):
     it, c, ident, look = base_page(it, 'finish')
     kind, _ = it['k'].split('::', 1)
@@ -185,9 +206,18 @@ def finish_page(it):
     what = [clean(it.get('d') or '')]
     what += look_close_far(c)
     spec = 'Measured spec (average): metal %s, roughness %s, coat %s.' % (M, R, Cc) if M is not None else ''
-    if it.get('shine') or it.get('metal'): spec += ' Shine: %s. Metal: %s.' % (it.get('shine', 'n/a'), it.get('metal', 'n/a'))
-    what.append(spec.strip())
-    what.append('It brings its own colours.' if own else 'It takes the colour you give the zone.')
+    # ENC-GEN 2026-10-10 (fix 1): the Shine word came straight from the atlas, which looked at roughness only ("gloss" on 432 finishes whose clearcoat B is
+    # over 100 = dull). Now roughness AND clearcoat decide it (enc_gen_B_text.shine_label); a smooth surface with a weak/off clearcoat says so in a note.
+    _sh, _sh_note = T.shine_label(M, R, Cc) if (R is not None and Cc is not None) else (None, '')
+    if it.get('shine') or it.get('metal'): spec += ' Shine: %s. Metal: %s.' % (_sh or it.get('shine', 'n/a'), it.get('metal', 'n/a'))
+    if _sh_note: spec += ' ' + _sh_note
+    spec = spec.strip()
+    _own_line = 'It brings its own colours.' if own else 'It takes the colour you give the zone.'
+    _tail = ' '.join(x for x in (spec, _own_line) if x)
+    _head = ' '.join(w for w in what if w)
+    # the 1100-char cap used to cut from the END, which silently dropped the spec/Shine lines of long pages; trim the description instead
+    if len(clean(_head + ' ' + _tail)) <= 1100: _what = cap(_head + ' ' + _tail, 1100)
+    else: _what = (cap(_head, 1100 - len(clean(_tail)) - 1) + ' ' + clean(_tail)).strip()
     when = [x for x in (lst('Best on', c.get('use')), lst('Mood', c.get('mood')), lst('Era', c.get('era')), lst('Fits', c.get('fit'))) if x]
     nm = clean(it.get('n', ident))
     hidden = it['k'] in NOT_IN_PICKER
@@ -195,20 +225,29 @@ def finish_page(it):
         how = ['This finish is not listed in the Base Material picker, so you cannot pick it there.',
                'Open the AI copilot (the ✦ AI button, bottom right) and ask for it by name, for example "put %s on the hood".' % nm]
     else:
-        how = ['Click the zone you want to change.', 'Click the BASE MATERIAL box (it says "Click to choose a base") and type "%s" in the SEARCH FINISHES box.' % nm,
+        # ENC-GEN 2026-10-10 (fix 2): real on-screen text. The box shows the zone's current base name, or "Click to choose a base" only on an empty zone
+        # (paint-booth-2-state-zones.js:1840); the picker's search box says "Search titles, descriptions, ids, or #tags..." (paint-booth-v2.html:4964).
+        how = ['Click the zone you want to change.',
+               "Click the Base Material box under BASE (it shows the zone's current base, or \"Click to choose a base\" on an empty zone) and type \"%s\" in the search box at the top of the picker." % nm,
                'Click it to open the big preview, then click Apply.']  # UI audit 2026-10-05: Classic picker has Apply; USE IT only exists in the Live picker, which has no switch
-    how.append('Leave BASE COLOR on Use finish\'s own color to keep its colours.' if own else 'Pick your colour with BASE COLOR.')
+    how.append("Leave BASE COLOR on Use finish's own color to keep its colours." if own else 'Set BASE COLOR to Use solid color and pick your colour.')
     how.append('Render and judge it on the car, not on the swatch.')
     tips, pits = deep_bits(c)
     if c.get('scale'): tips.append('Texture size on the car: %s.' % c['scale'])
     shelves = [SECT[i] for i in it.get('s', []) if i < len(SECT)]
-    pg = dict(title=nm, summary=fit_summary(look), what=cap(' '.join(w for w in what if w), 1100), when=when, how=how, controls=[], tips=tips, pitfalls=pits,
+    pg = dict(title=nm, summary=fit_summary(look), what=_what, when=when, how=how, controls=[], tips=tips, pitfalls=pits,
               related=[], actions=[{'do': 'finish', 'id': it['k']}], figures=[], covers=[], sources=[ATLAS_SRC, CARDS_SRC], quick=False, lane='B', updated=TODAY, generated=True)
     pg.update(key=it['k'], type=kind, shelves=[clean(s) for s in shelves], metal=M, rough=R, coat=Cc, palette=it.get('c', [])[:4], own_colours=bool(own),
               quality=it.get('q'), loud=c.get('loud'), busy=c.get('busy'), ratings=c.get('ratings'), mood=c.get('mood'), era=c.get('era'), use=c.get('use'), tags=it.get('t', [])[:8])
     if _fixspec:
         pg['what'] = pg['what'].replace('roughness about %s, clearcoat at max gloss about %s' % (_fixspec[1], _fixspec[2]), 'roughness %s, clearcoat %s' % (R, Cc))
-    ex = V3.finish_extras(it, c, ident, shelves[0] if shelves else '', nm, bool(own), kind)
+    # ENC-GEN 2026-10-10 (fix 4): the spec sentence and the paint advice must use the SAME numbers as the page fields. A pinned Foundation base
+    # (engine registry, e.g. semi_gloss 0/55/40) used to print the atlas average (60/16) in spec_character while the field said 55/40.
+    _it3 = it
+    if _fixspec:
+        _it3 = dict(it)
+        for _k, _v in (('M', M), ('R', R), ('C', Cc)): _it3[_k] = [_v] + list((it.get(_k) or [_v])[1:])
+    ex = V3.finish_extras(_it3, c, ident, shelves[0] if shelves else '', nm, bool(own), kind)
     if hidden:
         ex['examples'] = [{'title': 'Ask for it by name', 'goal': 'See %s on the car.' % nm, 'settings': {'AI copilot (✦ AI button)': 'put %s on the hood' % nm},
                            'result': 'The copilot puts the finish on a zone. It is not in the picker, so this is the way in.'}]
@@ -219,7 +258,8 @@ def finish_page(it):
     th = thumb('base' if kind == 'base' else 'monolithic', ident)
     if th: pg['thumb'] = th
     pg['swatch'] = '/api/swatch/%s/%s' % (kind, ident)
-    return pg
+    _text_fixes(pg)
+    return T.fix_page(pg)
 
 
 def pattern_page(it):
@@ -241,7 +281,7 @@ def pattern_page(it):
     th = thumb('pattern', ident)
     if th: pg['thumb'] = th
     pg['swatch'] = '/api/swatch/pattern/' + ident
-    return pg
+    return T.fix_page(pg)
 
 
 def spec_page(it):
@@ -269,7 +309,7 @@ def spec_page(it):
     th = thumb('spec_patterns', ident)
     if th: pg['thumb'] = th
     pg['swatch'] = '/api/swatch/spec/' + ident
-    return pg
+    return T.fix_page(pg)
 
 
 # ---------------- partition + write ----------------
@@ -301,6 +341,39 @@ def write_atomic(path, text):
     return True
 
 
+def _disk_layout(domain):
+    """{'order': [stem], 'group': {stem: group}, 'keys': {stem: [key]}, 'art': {key: {'id','screens'}}} read from the manifest + part files on disk"""
+    mp = os.path.join(DISK, domain + '.json')
+    if not os.path.exists(mp): return None
+    man = json.load(open(mp, encoding='utf-8'))
+    lay = {'order': [], 'group': {}, 'keys': {}, 'art': {}}
+    for part in man['parts']:
+        st = part['domain']
+        j = json.load(open(os.path.join(DISK, 'pages', st + '.json'), encoding='utf-8'))
+        lay['order'].append(st); lay['group'][st] = part['group']; lay['keys'][st] = []
+        for a in j['articles']:
+            lay['keys'][st].append(a['key'])
+            lay['art'][a['key']] = {'id': a['id'], 'screens': a.get('screens', []), 'domain': st}
+    return lay
+
+
+def _keep_layout(parts, domain):
+    lay = _disk_layout(domain)
+    if not lay: return parts
+    bykey = {pg['key']: pg for p in parts for pg in p['items']}
+    out, used = [], set()
+    for st in lay['order']:
+        items = [bykey[k] for k in lay['keys'][st] if k in bykey]
+        used.update(lay['keys'][st])
+        if items: out.append(dict(stem=st, group=lay['group'][st], items=items))
+    missing = [k for k in bykey if k not in used]
+    if missing: raise SystemExit('keep-layout: %d generated pages have no slot on disk (first %s); run without --keep-layout' % (len(missing), missing[0]))
+    for p in out:
+        for pg in p['items']:
+            pg['_keep'] = lay['art'][pg['key']]
+    return out
+
+
 def build(domain, stem_prefix, items, builder, grouper, group_order, vec, k_rel, note):
     groups = {}
     for it in items: groups.setdefault(grouper(it), []).append(it)
@@ -325,13 +398,16 @@ def build(domain, stem_prefix, items, builder, grouper, group_order, vec, k_rel,
                 parts.append(dict(stem='%s_%s_%d' % (stem_prefix, gs, n), group=g, items=cur)); n += 1; cur, size = [], 0
             cur.append(pg); size += est
         if cur: parts.append(dict(stem='%s_%s_%d' % (stem_prefix, gs, n), group=g, items=cur))
+    if KEEP: parts = _keep_layout(parts, domain)
     # pass 2: ids + related
     key2id = {}
     for p in parts:
         for pg in p['items']:
             ident = pg['key'].split('::', 1)
             tag = ('mono' if pg.get('type') == 'monolithic' else ident[0]) if domain == 'finish_pages' else ident[0]
-            pg['id'] = '%s.%s.%s' % (p['stem'], tag, safe_id(ident[1])); pg['domain'] = p['stem']; key2id[pg['key']] = pg['id']
+            pg['id'] = '%s.%s.%s' % (p['stem'], tag, safe_id(ident[1])); pg['domain'] = p['stem']
+            if KEEP and pg.get('_keep'): pg['id'] = pg['_keep']['id']; pg['screens'] = pg['_keep']['screens']
+            pg.pop('_keep', None); key2id[pg['key']] = pg['id']
     mparts, total_bytes, written = [], 0, 0
     for p in parts:
         arts = []

@@ -13,7 +13,7 @@ const guardedFiles = [
   },
   {
     file: 'engine/spec_patterns.py',
-    maxLines: 13880,
+    maxLines: 38900, // [2026-09-05 owner: "Raise ceiling"] was 13880; file is 37007 lines after the 100 spec overlays + pattern families; re-baselined for the 10.0.1 beta,
     owner: 'spec/patterns',
     nextStep: 'Add new pattern families to smaller modules and import/register them instead of growing the central registry file.',
   },

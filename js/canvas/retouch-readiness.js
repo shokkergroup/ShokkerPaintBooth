@@ -34,7 +34,7 @@
         window.spbUpdateRetouchGate();
         const ready = !!layer && window.spbRetouchGateState().ok && window.canvasMode === 'colorbrush';
         if (typeof showToast === 'function') showToast(ready
-            ? 'Color Brush ready on the new blank layer. Drag on SOURCE to paint.'
+            ? 'Color Brush ready on the new blank layer. Drag on Source to paint.'
             : 'Color Brush is not ready. Select an unlocked layer with loaded pixels and try again.', !ready);
         if (ready) {
             const menu = document.getElementById('spbRetouchMenu');

@@ -57,7 +57,7 @@
 
     function saveConfig() {
       downloadJson(getConfig(), 'shokker_paintbooth_config_' + Date.now() + '.json');
-      showToast('Config saved!');
+      showToast('Config saved');
     }
 
     function exportPreset() {
@@ -243,7 +243,7 @@
     function loadConfig() {
       openJsonFile('.json', function (cfg) {
         loadConfigFromObj(cfg);
-        showToast('Config loaded!');
+        showToast('Config loaded');
       }, function () {
         showToast('Invalid config file', true);
       });

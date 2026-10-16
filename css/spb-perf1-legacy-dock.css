@@ -1,0 +1,9 @@
+/* [SPB-PERF1 2026-10-10 PERF-BOOT] KILL-SWITCH ONLY - loaded by the <head> script of paint-booth-v2.html when SPB_PERF1_OFF is on, never otherwise.
+   These are the two rules that used to live in paint-booth-v2.css (.eyedropper-dock-top block). A :has() that tests a style ATTRIBUTE makes the browser
+   re-check it after every inline-style write on the page (measured ~40 ms of style recalc per write on the 3,500-node page), so in the normal build
+   they are gone and js/spb-perf1-client.js toggles .spb-perf1-info on the dock instead. They must stay out of the main stylesheet: Blink collects the
+   invalidation features of a :has() rule even while its leading selector does not match, so merely gating them behind a class did not remove the cost. */
+.eyedropper-dock-top:has(#eyedropperInfo[style*="display: block"]),
+.eyedropper-dock-top:has(#eyedropperInfo:not([style*="display: none"])) {
+    display: flex;
+}

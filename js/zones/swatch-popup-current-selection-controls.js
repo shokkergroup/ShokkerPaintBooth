@@ -27,7 +27,9 @@
             if (type === 'thirdBasePattern') return zone.thirdBasePattern || 'none';
             if (type === 'layerSpecialPaint') {
                 const specialId = getLayerPaintSpecialId();
-                return specialId ? ('mono:' + specialId) : '';
+                // [SPECIAL-ALL 2026-10-12] a base-registered id is current as its raw id (the picker now lists bases too); everything else keeps 'mono:'
+                const isBaseOnly = !!specialId && (global.BASES || []).some(function(b) { return b.id === specialId; }) && !(global.MONOLITHICS || []).some(function(m) { return m.id === specialId; });
+                return specialId ? (isBaseOnly ? specialId : ('mono:' + specialId)) : '';
             }
             return '';
         }

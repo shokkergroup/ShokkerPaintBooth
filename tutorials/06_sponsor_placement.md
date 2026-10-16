@@ -31,7 +31,7 @@ Click the **Sponsors** layer to make it active.
 Most users want to add their own sponsor logos, not the placeholders. Two ways to do it.
 
 **Method A — the Layers panel (right column, LAYERS tab):**
-1. Click **+ Layer**.
+1. Open **Actions** in the layer list and click **Place image...**.
 2. Pick a PNG, JPG, WebP or GIF of your sponsor logo. PNG with transparency is best.
 3. The logo arrives as a new image layer, sized at original resolution.
 

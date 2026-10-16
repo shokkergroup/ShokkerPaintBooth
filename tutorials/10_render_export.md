@@ -91,7 +91,7 @@ Something not showing? Say **it does not show up in iRacing** in the chat and th
 
 Project saves (`.spb`) are self-contained but tied to a specific template. To share a **complete painting project** with a friend — including custom patterns, imported logos, reference images — use the `.shokker` export.
 
-`File → Export → Shokker Package` (or `Ctrl+Shift+E`).
+`File → Export → Shokker Package`.
 
 Pick an output filename. SPB bundles:
 

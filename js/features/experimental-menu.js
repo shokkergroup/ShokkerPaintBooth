@@ -42,19 +42,19 @@
   // expressions in priority order; the first that resolves to a function runs.
   var ITEMS = [
     {
-      icon: '✨',
+      icon: '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-2px"><path d="M8 2l1.4 4.2L14 8l-4.6 1.8L8 14l-1.4-4.2L2 8l4.6-1.8z"/></svg>',
       label: 'Design It',
       title: 'AI Livery Designer — describe a livery and auto-build the zones',
       fns: ['SPBLiveryDesigner.open']
     },
     {
-      icon: '🖼️',
+      icon: '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-2px"><rect x="2" y="2.6" width="12" height="10.8" rx="1.6"/><circle cx="5.8" cy="6.2" r="1.2"/><path d="M2.4 12l3.4-3.2 2.6 2.2 2.2-2 3 3"/></svg>',
       label: 'Photo → Livery',
       title: 'Photo to Livery — turn a reference photo into a zoned livery',
       fns: ['SPBPhotoLivery.open']
     },
     {
-      icon: '⚡',
+      icon: '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-2px"><path d="M9 1.8L3.8 9h3.6l-.8 5.2L12.2 7H8.6z"/></svg>',
       label: 'Shokker-ize',
       title: 'Shokker-ize — auto-generate an angle-reactive color-shift spec ' +
              'from the current paint',
@@ -144,7 +144,7 @@
 
     var ico = document.createElement('span');
     ico.className = 'spb-mi-ico';
-    ico.textContent = item.icon;
+    ico.innerHTML = item.icon;
     btn.appendChild(ico);
     btn.appendChild(document.createTextNode(' ' + item.label));
 

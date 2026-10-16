@@ -1,0 +1,25 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../..'),dir=path.join(root,'_codex_mcp_work/chatgpt-dev/59910'),projects=path.join(root,'_release_evidence/chatgpt-dev/59910/projects');
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),hash=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const modelName='context-session-probe-2026-10-10T00-53-40-390Z.json',model=read(path.join(dir,modelName));
+assert.equal(model.exitCode,0);assert.equal(model.authentication,'ChatGPT');assert.equal(model.apiFallback,false);assert.deepEqual(model.errors,[]);
+const writes=model.calls.filter(c=>!['spb_assistant_context','spb_wait_for_message','spb_get_state','spb_preview','spb_check','spb_reply','spb_car_knowledge'].includes(c.tool));
+assert.equal(writes.length,1);assert.equal(writes[0].tool,'spb_edit_layer');assert.equal(writes[0].status,'completed');assert.deepEqual(writes[0].arguments,{layer:'Paintable Area / Base Paint',colour:'#c8102e'});
+const replies=model.calls.filter(c=>c.tool==='spb_reply');assert.equal(replies.length,2);assert.match(replies[0].arguments.text,/four.*Base Paint/);assert.ok(model.calls.indexOf(replies[0])<model.calls.indexOf(writes[0]));
+const names=[model.fixtureReceipt,'paint-arca-online-colour-ask-2026-10-10T00-54-37-031Z.json','paint-arca-online-colour-post-2026-10-10T00-55-18-142Z.json','paint-arca-online-colour-undo-2026-10-10T00-55-47-941Z.json'];
+const rs=names.map(n=>read(path.join(dir,n))),ss=rs.map(r=>JSON.parse(r.calls.find(c=>c.tool==='spb_get_state').text));
+const pictures=r=>r.images.map(i=>({name:i.name,hash:hash(path.join(dir,i.file))}));
+assert.equal(ss[0].layers.length,42);assert.equal(ss[0].zones.length,5);
+assert.deepEqual(ss[0].layers,ss[1].layers);assert.deepEqual(ss[0].zones,ss[1].zones);assert.deepEqual(pictures(rs[0]),pictures(rs[1]));
+assert.deepEqual(ss[0].zones,ss[2].zones);assert.deepEqual(ss[0].layers.filter((l,i)=>JSON.stringify(l)!==JSON.stringify(ss[2].layers[i])).map(l=>l.id),['psd_0']);
+assert.notEqual(pictures(rs[0])[0].hash,pictures(rs[2])[0].hash);assert.deepEqual(pictures(rs[0]).at(-1),pictures(rs[2]).at(-1));
+assert.deepEqual(ss[0].layers,ss[3].layers);assert.deepEqual(ss[0].zones,ss[3].zones);assert.deepEqual(pictures(rs[0]),pictures(rs[3]));
+const projectNames=['ARCA exact-layer baseline - private59910.spbproj','ARCA subscription native colour - private59910.spbproj','ARCA subscription native colour Undo - private59910.spbproj'];
+const [before,after,undo]=projectNames.map(n=>read(path.join(projects,n)));
+assert.deepEqual(before.config.zones,after.config.zones);assert.deepEqual(before.config.zones,undo.config.zones);assert.deepEqual(before.layers,undo.layers);
+for(let i=0;i<42;i++){const a={...before.layers[i]},b={...after.layers[i]};if(i===0){delete a.effects;delete b.effects;}assert.deepEqual(a,b);}
+assert.equal(after.layers[0].effects.colorOverlay.color,'#c8102e');assert.equal(after.layers[0].effects.colorOverlay.opacity,1);
+const checked_at=new Date().toISOString(),receipt='online-native-colour-'+checked_at.replace(/[:.]/g,'-')+'.json';
+fs.writeFileSync(path.join(dir,receipt),JSON.stringify({pass:true,checked_at,model_receipt:modelName,receipts:names,projects:projectNames.map(n=>({name:n,sha256:hash(path.join(projects,n))})),authentication:'ChatGPT',apiFallback:false,actual_customer_messages:2,writes:1,exact_body_ID:'psd_0',clarification_no_edit:true,source_rasters_exact:42,other_saved_layer_records_exact:41,zones_exact:5,returned_spec_bytes_exact:true,native_Undo_saved_layers_zones_preview_exact:true,screenshot:'arca-subscription-native-colour.png',limits:'CachedJPEG and saved layer records; no full-resolution/export/UV proof, Claude parity, production promotion or customer52 gate.',candidate_manifest:model.candidateManifest},null,2)+'\n',{flag:'wx'});
+console.log(JSON.stringify({pass:true,receipt,authentication:'ChatGPT',apiFallback:false,messages:2,writes:1,native_Undo_exact:true}));

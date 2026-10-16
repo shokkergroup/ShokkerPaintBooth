@@ -23,7 +23,7 @@
      "label": "Export ZIP Package",
      "range": "on / off",
      "default": "off",
-     "effect": "Bundles paint TGA, spec TGA and preview into one ZIP on every render, in your output folder.",
+     "effect": "Builds one ZIP of paint TGA, spec TGA and preview on every render. The ZIP stays in that render's own job folder and is offered as a Download ZIP Package link under the render; it is never copied into the iRacing car folder, which only receives the TGA files.",
      "inv": "exportZipCheckbox"
     },
     {
@@ -37,7 +37,7 @@
      "label": "Auto-deploy after render",
      "range": "on / off",
      "default": "off",
-     "effect": "Copies each render to your iRacing car folder automatically.",
+     "effect": "A second, optional push of each render to the visible iRacing Car Folder or a saved active car; a car folder set in the header already receives every render without it.",
      "inv": "liveLinkCheckbox"
     },
     {
@@ -49,7 +49,7 @@
     }
    ],
    "tips": [
-    "Keep Auto-deploy off while experimenting and turn it on when you are happy, to avoid overwriting a paint you like in iRacing.",
+    "To avoid overwriting a paint you like in iRacing while you experiment, leave the iRacing Car Folder box in the header empty and Auto-deploy off. As soon as a car folder is set, every render is copied into it, whether Auto-deploy is on or not.",
     "The gear in the AI panel is separate: that one has the AI key and the Claude/ChatGPT connection."
    ],
    "pitfalls": [
@@ -81,9 +81,9 @@
     "doc.10.support_where_the_settings_are"
    ],
    "sources": [
-    "paint-booth-v2.html:1955",
-    "paint-booth-v2.html:1985-2020",
-    "paint-booth-v2.html:2192-2263"
+    "paint-booth-v2.html:1988",
+    "paint-booth-v2.html:2018-2053",
+    "paint-booth-v2.html:2225-2296"
    ],
    "quick": true,
    "lane": "C",
@@ -94,13 +94,19 @@
     "import spec map",
     "where are the settings",
     "cog",
-    "settings menu"
+    "settings menu",
+    "language",
+    "change language",
+    "app language",
+    "other languages",
+    "english only",
+    "translate the app"
    ],
    "level": "beginner",
    "deep": [
     {
      "heading": "The drop-down from top to bottom",
-     "body": "License shows your licence status. LOOKS changes the theme of the booth. Options holds Export ZIP Package, Training Wheels, the dark/light toggle, the File Picker choice and Report a Problem. Quick Tools holds Keyboard Shortcuts. Import Spec Map merges an existing shine file under your zones, with a Clear button. Auto-Deploy to iRacing copies each render into your car folder. Everything is remembered on this computer."
+     "body": "License shows your licence status. LOOKS changes the theme of the booth. Options holds Export ZIP Package, Training Wheels, the dark/light toggle, the File Picker choice and Report a Problem. Quick Tools holds Keyboard Shortcuts. Import Spec Map merges an existing shine file under your zones, with a Clear button. Auto-Deploy to iRacing is only a second, optional push of each render, to the visible iRacing Car Folder or a saved active car; a car folder set in the header is already filled by every render without it. Everything is remembered on this computer."
     },
     {
      "heading": "Two different gears",
@@ -108,7 +114,7 @@
     },
     {
      "heading": "Settings that change your files, and settings that do not",
-     "body": "Looks, light/dark, File Picker and Training Wheels only change how the booth behaves. Three options touch your output: Export ZIP Package adds a ZIP with the paint TGA, spec TGA and preview on every render; Auto-Deploy copies each render into your iRacing car folder; and an imported spec map stays under every render until you press Clear."
+     "body": "Looks, light/dark, File Picker and Training Wheels only change how the booth behaves. Three options touch your output: Export ZIP Package adds a ZIP with the paint TGA, spec TGA and preview on every render (kept in the render's job folder, with a download link); Auto-Deploy is only a second, optional push (an iRacing Car Folder set in the header already receives every render); and an imported spec map stays under every render until you press Clear."
     }
    ],
    "examples": [
@@ -117,10 +123,11 @@
      "goal": "Try ideas without overwriting a paint you like in iRacing",
      "settings": {
       "Auto-Deploy to iRacing": "Off",
+      "iRacing Car Folder": "Empty while you experiment",
       "Export ZIP Package": "On",
       "Training Wheels": "Your choice"
      },
-     "result": "Every render is bundled in a ZIP in your output folder, and nothing is copied into iRacing until you switch Auto-Deploy on."
+     "result": "Every render makes a ZIP in its own job folder, with a download link under the render. Nothing reaches iRacing while the iRacing Car Folder box in the header is empty; with a car folder set, every render copies its TGAs there whether Auto-Deploy is on or off."
     },
     {
      "title": "Ready to race",
@@ -149,13 +156,17 @@
     {
      "q": "Why is there an old spec showing in every render?",
      "a": "You imported a spec map. It stays under every render until you press Clear next to Import Spec Map."
+    },
+    {
+     "q": "Can I change the language of the app?",
+     "a": "No. Shokker Paint Booth is in English only and the Settings gear has no language option. The LOOKS choice changes the colours of the app, not the language."
     }
    ],
    "mistakes": [
     {
      "symptom": "Your iRacing paint was overwritten by an experiment",
-     "cause": "Auto-Deploy was on while you were testing",
-     "fix": "Turn Auto-Deploy off while experimenting and on when you are happy."
+     "cause": "The iRacing Car Folder was set while you were testing (every render is copied into it), or Auto-Deploy was on",
+     "fix": "Clear the iRacing Car Folder box and keep Auto-Deploy off while experimenting; set the folder again when you are happy."
     },
     {
      "symptom": "Every render has a strange shine you did not set",
@@ -343,8 +354,8 @@
    "figures": [],
    "covers": [],
    "sources": [
-    "paint-booth-v2.html:2017-2062",
-    "paint-booth-v2.html:2192-2213"
+    "paint-booth-v2.html:2050-2095",
+    "paint-booth-v2.html:2225-2246"
    ],
    "quick": false,
    "lane": "C",
@@ -359,7 +370,9 @@
     "turn off hints",
     "beginner hints",
     "theme",
-    "app theme"
+    "app theme",
+    "what is looks setting",
+    "light mode explained"
    ],
    "level": "beginner",
    "deep": [
@@ -502,7 +515,7 @@
     "electron-app/main.js:206-209",
     "electron-app/main.js:330-346",
     "electron-app/main.js:702-729",
-    "paint-booth-v2.html:4913-4980"
+    "paint-booth-v2.html:5075-5142"
    ],
    "quick": true,
    "lane": "C",
@@ -583,6 +596,10 @@
     {
      "q": "Is my key included in a problem report?",
      "a": "No. Report a Problem never includes it."
+    },
+    {
+     "q": "Is there a cracked or free version?",
+     "a": "I cannot help with cracked copies: the app checks your licence key online. Buy License opens the store page; licence and error message questions go to support (Settings gear > Report a Problem)."
     }
    ],
    "mistakes": [
@@ -603,6 +620,121 @@
    "screens": [
     "ui_settings_menu"
    ]
+  },
+  {
+   "id": "settings.edge_bleed",
+   "title": "Bleed Paint Past Panel Edges (Edge Bleed): fewer seams in iRacing",
+   "domain": "settings",
+   "summary": "Bleed Paint Past Panel Edges (Edge Bleed) is a checkbox in the Settings gear, under Options. It copies each panel’s edge paint and spec a few pixels into the gaps next to it, so far-away cars show fewer seam lines in iRacing; it is off by default and saves with your project.",
+   "what": "iRacing draws your paint from one flat sheet that holds the car cut into panels, with unused gaps between them. The sim shrinks that sheet for cars in the distance, so each panel’s edge picks up whatever sits in the gap next to it, and a faint line can show along the seams. Edge Bleed copies the paint and spec of each panel edge about 16 pixels into the gap beside it, so the shrunk sheet blends into your paint instead of the gap colour. Only gap pixels near a panel change; the panels themselves are never touched. It needs a car whose template has the panel outlines (the Wire layer). A flat picture with no outlines is left as it is, and the box says so.",
+   "when": [
+    "You see thin lines along the panel edges of your car in iRacing from a distance.",
+    "You want to switch Edge Bleed on or off, or check that it is saved with your project."
+   ],
+   "how": [
+    "1. Open the Settings gear at the top right and look under Options.",
+    "2. Tick Bleed Paint Past Panel Edges. The line under it says how many panels it found.",
+    "3. Render as usual. The paint and spec files carry the bleed.",
+    "4. Untick it to go back to plain gaps. The choice is remembered, and Save Project keeps it with the project."
+   ],
+   "controls": [
+    {
+     "label": "Bleed Paint Past Panel Edges",
+     "range": "on / off",
+     "default": "off",
+     "effect": "Copies each panel’s edge paint and spec a few pixels into the gaps beside it."
+    }
+   ],
+   "tips": [
+    "Turn it on once for a livery that shows thin lines along its panel edges in iRacing.",
+    "Judge it in iRacing from a distance, not up close."
+   ],
+   "pitfalls": [
+    "It does not fix a thin line where your zones leave the template’s own outline in the catch-all colour.",
+    "A flat picture with no panel outlines cannot be bled; the box says so and the render is unchanged."
+   ],
+   "related": [
+    "ui_shell.save_open_projects",
+    "settings.overview",
+    "support.recover_after_crash"
+   ],
+   "actions": [],
+   "figures": [],
+   "covers": [],
+   "sources": [
+    "js/rev/seam/seam.js:145"
+   ],
+   "aliases": [
+    "edge bleed",
+    "what is edge bleed",
+    "where is edge bleed",
+    "how do i use edge bleed",
+    "edge bleed checkbox",
+    "bleed paint past panel edges",
+    "bleed paint past the panel edges",
+    "panel edge bleed",
+    "fix seams in iracing",
+    "seam bleed",
+    "edge bleed setting"
+   ],
+   "quick": false,
+   "lane": "A",
+   "updated": "2026-10-10",
+   "level": "intermediate",
+   "deep": [
+    {
+     "heading": "What changes in the files",
+     "body": "Only gap pixels within about 16 pixels of a panel, in the paint file and the spec file (and the night spec if you render one). Panel pixels are never touched, and gap further than that from every panel stays as it was."
+    },
+    {
+     "heading": "Saved with the project",
+     "body": "Save Project keeps whether Edge Bleed is on and its pixel reach, and opening the project brings it back exactly, including off. A project saved before this simply opens without the setting. A crash restore keeps it too."
+    }
+   ],
+   "examples": [
+    {
+     "title": "Thin lines along the doors from far away",
+     "goal": "Hide the panel edge lines",
+     "settings": {
+      "Settings": "gear > Options",
+      "Checkbox": "Bleed Paint Past Panel Edges"
+     },
+     "result": "The next render copies each panel edge into the gap next to it, and the lines at a distance fade."
+    }
+   ],
+   "combos": [],
+   "faq": [
+    {
+     "q": "What is Edge Bleed?",
+     "a": "A checkbox in the Settings gear that copies each panel’s edge paint and spec a few pixels into the gaps beside it, so far-away cars show fewer seam lines in iRacing."
+    },
+    {
+     "q": "Where is Edge Bleed?",
+     "a": "Open the Settings gear at the top right and look under Options for Bleed Paint Past Panel Edges."
+    },
+    {
+     "q": "Is Edge Bleed on by default?",
+     "a": "No. It is off until you tick it, and Shokker remembers your choice."
+    },
+    {
+     "q": "Does Edge Bleed change my paint on the car?",
+     "a": "No. Only the gap pixels next to a panel change. The panels themselves are never touched."
+    },
+    {
+     "q": "Does Save Project keep Edge Bleed?",
+     "a": "Yes. Save Project keeps whether it is on and how far it reaches, and opening the project brings it back."
+    }
+   ],
+   "mistakes": [
+    {
+     "symptom": "Edge Bleed says it cannot read the panel outlines",
+     "cause": "The paint is a flat picture or a car without a Wire layer, so there are no outlines to read.",
+     "fix": "Open the layered template. Until then the render is unchanged."
+    }
+   ],
+   "protips": [],
+   "screens": [],
+   "screens_exempt": "New tool added 2026-10-10: no approved app screenshot of it exists yet."
   }
  ]
 }

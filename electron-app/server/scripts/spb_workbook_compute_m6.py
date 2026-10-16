@@ -27,11 +27,14 @@ from pathlib import Path
 # Defend against Windows cp1252 stdout when category names contain Unicode
 # like ★ ✨ — print statements with these would crash and the JSON write
 # would be skipped. Match the pattern used in spb_workbook_compute_m7.py.
-try:
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
-except Exception:
-    pass
+if __name__ == "__main__":
+    # Keep Windows CLI output Unicode-safe without replacing (and eventually
+    # closing) pytest's managed capture streams when this module is imported.
+    try:
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SCORECARD = PROJECT_ROOT / "paint-booth-0-catalog-scorecard.js"
@@ -66,6 +69,10 @@ DIRECTION_BAND = {
 # Direction reflects what the category SHOULD look like, not what the catalog
 # currently measures. This is the metric's whole job: catch the mismatch.
 CATEGORY_PROFILES: dict[str, dict[str, str]] = {
+    # SPB-105 / ASTRA A1: predeclared fine geometry, broad feature-owned materials.
+    "ASTRA": {"paintColorPopulation": HI,                       
+              "specMRange": HI, "specRRange": HI, "specCcRange": HI,
+              "specChannelIndependence": HI},
     # --- Candy / Pearl / Chameleon family ---
     "Candy & Pearl":      {"paintSaturationMean": HI, "specMRange": HI, "specCcRange": HI, "paintFineEnergy": LO},
     "Chameleon":          {"specCcRange": HI, "specChannelIndependence": HI, "paintColorPopulation": HI},
@@ -87,6 +94,10 @@ CATEGORY_PROFILES: dict[str, dict[str, str]] = {
     # paint saturation or color population. So we keep the fine-energy opinion
     # (real signal for "is there structure?") and drop color opinions.
     "Carbon & Weave":     {"paintFineEnergy": HI},
+    # [SPB ANIME OVERHAUL 2026-08-25] the rebuilt 25-design anime category: crushed fine detail
+    # + wide married-spec M/R ranges are its gate-enforced design intent (docs/ANIME_OVERHAUL_2026-08-25.md)
+    "Anime / Stylized":   {"specMRange": HI, "specRRange": HI},
+    "★ ANIME INSPIRED": {"specMRange": HI, "specRRange": HI},
     "Geometric":          {"paintFineEnergy": HI},
     "Guilloché":          {"paintFineEnergy": HI},
     "Brushed":            {"paintFineEnergy": MID, "specRRange": HI, "specChannelIndependence": HI},
@@ -109,9 +120,20 @@ CATEGORY_PROFILES: dict[str, dict[str, str]] = {
     "Ghost Geometry":     {"paintSaturationMean": LO, "paintFineEnergy": LO},
 
     # --- Gradient family ---
-    "Gradient Extended":  {"paintFineEnergy": LO, "paintColorPopulation": MID, "specCcRange": MID},
-    "Gradient Directional": {"paintFineEnergy": LO, "paintColorPopulation": MID},
-    "Gradient Vortex":    {"paintFineEnergy": MID, "paintColorPopulation": HI},
+    # SPB-GRADIENT-OVERHAUL-2026-08-23 / G-5: v3 deliberately targets the
+    # owner's fine-detail doctrine plus broad, independent eight-tier spec maps.
+    "Gradient Extended":  {"paintFineEnergy": HI, "paintColorPopulation": HI,
+                           "specMRange": HI, "specRRange": HI, "specCcRange": HI,
+                           "specChannelIndependence": HI},
+    "Gradient Directional": {"paintFineEnergy": HI, "paintColorPopulation": HI,
+                              "specMRange": HI, "specRRange": HI, "specCcRange": HI,
+                              "specChannelIndependence": HI},
+    "Gradient Vortex":    {"paintFineEnergy": HI, "paintColorPopulation": HI,
+                           "specMRange": HI, "specRRange": HI, "specCcRange": HI,
+                           "specChannelIndependence": HI},
+    "🌈 GRADIENTS":       {"paintFineEnergy": HI, "paintColorPopulation": HI,
+                           "specMRange": HI, "specRRange": HI, "specCcRange": HI,
+                           "specChannelIndependence": HI},
 
     # --- Sparkle / Effects ---
     "Sparkle":            {"specRRange": HI, "paintFineEnergy": HI},
@@ -187,6 +209,11 @@ CATEGORY_PROFILES: dict[str, dict[str, str]] = {
     # are honestly dark-bodied by name (Black Opal, Black Pearl, Luna Dust,
     # Paua Storm) and M2 already judges per-name saturation intent.
     "🦋 FRACTURED MORPHO":   {"specCcRange": HI, "specChannelIndependence": HI},
+    # SPB-WILDS 2026-08-23 tick 6: Cryptid now has its own shipping scorecard
+    # category instead of the isolated audit's Morpho alias. It uses the same
+    # structural-color material contract: independent channels exchange which
+    # fine creature marks lead as clearcoat response changes with angle.
+    "👣 FRACTURED CRYPTID":  {"specCcRange": HI, "specChannelIndependence": HI},
     # 🌋 FRACTURED MOLTEN (2026-07-30): same catlib thin-film machinery as
     # MORPHO -> same two axes (MORPHO precedent above).
     "🌋 FRACTURED MOLTEN":   {"specCcRange": HI, "specChannelIndependence": HI},
@@ -278,14 +305,26 @@ def main() -> int:
         s = by_axis[axis]
         if not s:
             return None
-        lo, hi = 0, len(s) - 1
-        while lo <= hi:
-            mid = (lo + hi) // 2
+        # G-5 metric correction: ties use their statistical midrank.  A
+        # lower-bound-only percentile incorrectly failed every renderer tied
+        # at a legitimate hard ceiling such as a full 8-bit spec span.
+        n = len(s)
+        left_lo, left_hi = 0, n
+        while left_lo < left_hi:
+            mid = (left_lo + left_hi) // 2
             if s[mid] < val:
-                lo = mid + 1
+                left_lo = mid + 1
             else:
-                hi = mid - 1
-        return lo / max(1, len(s) - 1)
+                left_hi = mid
+        right_lo, right_hi = left_lo, n
+        while right_lo < right_hi:
+            mid = (right_lo + right_hi) // 2
+            if s[mid] <= val:
+                right_lo = mid + 1
+            else:
+                right_hi = mid
+        midpoint = (left_lo + max(left_lo, right_lo - 1)) / 2.0
+        return midpoint / max(1, n - 1)
 
     scores: dict[str, dict] = {}
     cat_running: dict[str, list[float]] = {}

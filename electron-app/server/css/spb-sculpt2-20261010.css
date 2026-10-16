@@ -1,0 +1,56 @@
+/* [SPB-SCULPT2 2026-10-10] Spec Sculpt panel (js/spb-sculpt2-20261010.js). Frame, header, footer and the teal primary come from the
+   POLISH-H shell (.spb-ph-panel / .spb-ph-head / .spb-ph-foot / .spb-ph-x / .spb-ph-primary); this file only lays out the inside and
+   gives the panel a frame of its own when the shell is switched off. Kill switch: window.SPB_SCULPT2_OFF (no panel is ever built). */
+#spbSculpt2Panel {
+    position: fixed; z-index: 9600; display: flex; flex-direction: column; overflow: hidden;
+    width: 352px; max-width: calc(100vw - 12px); box-sizing: border-box;
+    background: var(--pl-panel, #232327); color: var(--pl-tx, #e8e8ea);
+    border: 1px solid var(--pl-bd, #3a3a42); border-radius: 8px; box-shadow: 0 14px 34px rgba(0, 0, 0, .55);
+    font-size: 12px; line-height: 1.35;
+}
+#spbSculpt2Panel[hidden] { display: none !important; }
+#spbSculpt2Panel .spb-s2-head { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 6px 0 12px; border-bottom: 1px solid rgba(255, 255, 255, .08); cursor: move; user-select: none; flex: 0 0 auto; }
+#spbSculpt2Panel .spb-s2-ico { display: inline-flex; color: #3fbab5; }
+#spbSculpt2Panel .spb-ph-ttl { flex: 1 1 auto; font-size: 13px; font-weight: 600; }
+#spbSculpt2Panel .spb-ph-x { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 0; border-radius: 6px; color: var(--pl-tx-dim, #9d9da6); cursor: pointer; }
+#spbSculpt2Panel .spb-ph-x svg { width: 14px; height: 14px; }
+#spbSculpt2Panel .spb-s2-body { flex: 1 1 auto; overflow-y: auto; padding: 10px 12px 6px; }
+#spbSculpt2Panel .spb-s2-lead { margin: 0 0 8px; color: var(--pl-tx-dim, #9d9da6); }
+#spbSculpt2Panel .spb-s2-sec { margin: 10px 0 6px; font-size: 11px; font-weight: 600; color: var(--pl-tx-dim, #9d9da6); }
+#spbSculpt2Panel .spb-s2-sec:first-of-type { margin-top: 2px; }
+#spbSculpt2Panel .spb-s2-looks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+#spbSculpt2Panel .spb-s2-look {
+    height: 30px; padding: 0 6px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    background: rgb(45, 45, 51); border: 1px solid rgba(255, 255, 255, .10); color: var(--pl-tx, #e8e8ea);
+}
+#spbSculpt2Panel .spb-s2-look:hover { border-color: rgba(63, 186, 181, .55); }
+#spbSculpt2Panel .spb-s2-look.on { background: rgba(63, 186, 181, .20); border-color: rgba(63, 186, 181, .85); color: #9be9e4; font-weight: 600; }
+#spbSculpt2Panel .spb-s2-tip { min-height: 30px; margin-top: 6px; color: var(--pl-tx-dim, #9d9da6); font-size: 11px; }
+#spbSculpt2Panel .spb-s2-cols { display: flex; flex-direction: column; gap: 4px; }
+#spbSculpt2Panel .spb-s2-col { display: grid; grid-template-columns: 22px 64px 1fr; align-items: center; gap: 8px; }
+#spbSculpt2Panel .spb-s2-sw { width: 22px; height: 22px; border-radius: 5px; border: 1px solid rgba(255, 255, 255, .25); box-sizing: border-box; }
+#spbSculpt2Panel .spb-s2-pc { font-variant-numeric: tabular-nums; color: var(--pl-tx-dim, #9d9da6); font-size: 11px; white-space: nowrap; }
+#spbSculpt2Panel .spb-s2-col select { width: 100%; height: 26px; min-width: 0; font-size: 12px; border-radius: 5px; background: rgb(38, 38, 43); color: var(--pl-tx, #e8e8ea); border: 1px solid rgba(255, 255, 255, .12); }
+#spbSculpt2Panel .spb-s2-light { display: grid; grid-template-columns: 56px 1fr; grid-template-rows: auto auto; gap: 4px 10px; align-items: center; }
+#spbSculpt2Panel .spb-s2-puck { grid-row: span 2; width: 56px; height: 56px; cursor: grab; border-radius: 50%; touch-action: none; }
+#spbSculpt2Panel .spb-s2-puck:focus-visible { outline: 2px solid #3fbab5; outline-offset: 2px; }
+#spbSculpt2Panel .spb-s2-lbtns { display: flex; gap: 6px; }
+#spbSculpt2Panel .spb-s2-lbtns button { height: 26px; padding: 0 10px; border-radius: 6px; font-size: 12px; cursor: pointer; background: rgb(45, 45, 51); border: 1px solid rgba(255, 255, 255, .10); color: var(--pl-tx, #e8e8ea); }
+#spbSculpt2Panel .spb-s2-lbtns button.on { border-color: rgba(63, 186, 181, .85); color: #9be9e4; }
+#spbSculpt2Panel .spb-s2-lbtns button:disabled { opacity: .45; cursor: default; }
+#spbSculpt2Panel .spb-s2-lhint { color: var(--pl-tx-dim, #9d9da6); font-size: 11px; }
+#spbSculpt2Panel .spb-s2-bar { display: flex; height: 12px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255, 255, 255, .12); }
+#spbSculpt2Panel .spb-s2-bar span { display: block; min-width: 2px; }
+#spbSculpt2Panel .spb-s2-leg { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 5px; font-size: 11px; color: var(--pl-tx-dim, #9d9da6); }
+#spbSculpt2Panel .spb-s2-leg i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; vertical-align: 0; }
+#spbSculpt2Panel .spb-s2-status { min-height: 16px; margin-top: 8px; font-size: 11px; color: #9be9e4; }
+#spbSculpt2Panel .spb-s2-empty { color: var(--pl-tx-dim, #9d9da6); font-size: 11px; }
+#spbSculpt2Panel .spb-s2-foot { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-top: 1px solid rgba(255, 255, 255, .08); flex: 0 0 auto; }
+#spbSculpt2Panel .spb-s2-foot > button { height: 30px; padding: 0 14px; border-radius: 6px; font-size: 12px; cursor: pointer; white-space: nowrap; background: rgb(45, 45, 51); border: 1px solid rgba(255, 255, 255, .10); color: var(--pl-tx, #e8e8ea); }
+#spbSculpt2Panel .spb-s2-foot > .spb-ph-primary { background: rgba(63, 186, 181, .20); border-color: rgba(63, 186, 181, .75); color: #9be9e4; font-weight: 600; }
+#spbSculpt2Panel .spb-s2-foot > .spb-s2-lab { padding: 0 10px; background: transparent; color: var(--pl-tx-dim, #9d9da6); }
+#spbSculpt2Panel .spb-s2-sp { flex: 1 1 auto; }
+/* [TICKETS-4 2026-10-10 item 3] the Light block (label + puck + Studio / Sweep / Off) is pinned to the bottom of the scrolling body: the footer never cuts it, at any window height.
+   Kill switch: window.SPB_T4_OFF / SPB_T4_3_OFF adds body.spb-t4-3-off (see js). */
+body:not(.spb-t4-3-off) #spbSculpt2Panel .spb-s2-lightwrap { position: sticky; bottom: -6px; z-index: 2; margin: 8px -12px -6px; padding: 0 12px 8px; background: var(--pl-panel, #232327); box-shadow: 0 -8px 10px -4px rgba(0, 0, 0, .35); border-top: 1px solid rgba(255, 255, 255, .06); }
+body:not(.spb-t4-3-off) #spbSculpt2Panel .spb-s2-lightwrap > .spb-s2-sec { margin-top: 8px; }

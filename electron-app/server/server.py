@@ -592,6 +592,102 @@ def _decode_cached_source_layer_rgb(zone, label, *, expected_shape=None):
         _memo[payload_key] = decoded
     return _cache_put(_source_layer_rgb_decode_cache, payload_key, decoded, _SOURCE_LAYER_PAYLOAD_CACHE_LIMIT)
 
+
+# [PERF-3 2026-10-10] Layer payloads by reference (kill switch: env SPB_PERF3_OFF=1 on the
+# server, window.SPB_PERF3_OFF / localStorage.SPB_PERF3_OFF='1' in the page).
+# PERF-2 capture: every /preview-render carried 3.7 MB (5 zones) to 8.2 MB (8 zones), ~85 % of
+# it the per-zone source_layer_rgb_png + source_layer_mask payloads that had not changed since
+# the last request. js/spb-perf3-client.js now sends "<field>_ref": sha256(payload text) for
+# payloads this server already holds; full payloads sent with "perf3_refs": 1 are stored here
+# under the sha256 the SERVER computes from their text, so a ref can only ever resolve to the
+# exact text it names. Resolution happens before anything else reads the body: from there on
+# the request is the same dict the full upload would have produced (identical pixels by
+# construction; ON/OFF bytes compared in _easy_claude_work/perf2/PERF3_PROGRESS.md). An unknown
+# ref answers 409 {"error": "perf3_need_payloads"} and the page re-sends the full body.
+# Measured (owner ARCA car, 5 zones, real page, 8 finish edits): body per edit 3.65 MB -> 23 KB;
+# caller-visible TTFB median 5014 -> 1095 ms together with the engine zone-mask memo.
+_PERF3_PAYLOAD_FIELDS = ("source_layer_mask", "source_layer_rgb_png")
+_perf3_payload_store = OrderedDict()
+_perf3_payload_store_bytes = [0]
+_PERF3_PAYLOAD_STORE_BUDGET = 192 * 1024 * 1024
+_perf3_payload_lock = threading.Lock()
+
+
+def _perf3_server_off():
+    return str(os.environ.get("SPB_PERF3_OFF", "")).strip().lower() in ("1", "true", "yes", "on")
+
+
+def _perf3_payload_text(value):
+    if isinstance(value, str):
+        return value
+    return json.dumps(value, separators=(",", ":"), ensure_ascii=False)
+
+
+def _perf3_payload_put(key, text, is_str):
+    nbytes = len(text)
+    if nbytes > _PERF3_PAYLOAD_STORE_BUDGET:
+        return
+    with _perf3_payload_lock:
+        old = _perf3_payload_store.pop(key, None)
+        if old is not None:
+            _perf3_payload_store_bytes[0] -= len(old[0])
+        _perf3_payload_store[key] = (text, is_str)
+        _perf3_payload_store_bytes[0] += nbytes
+        while _perf3_payload_store and _perf3_payload_store_bytes[0] > _PERF3_PAYLOAD_STORE_BUDGET:
+            _k, _old = _perf3_payload_store.popitem(last=False)
+            _perf3_payload_store_bytes[0] -= len(_old[0])
+
+
+def _perf3_resolve_payload_refs(data):
+    """Resolve "<field>_ref" entries in data["zones"] in place. Returns a list of missing refs
+    (non-empty = the caller must answer 409) or None."""
+    zones = data.get("zones") if isinstance(data, dict) else None
+    wants_store = bool(data.pop("perf3_refs", None)) if isinstance(data, dict) else False
+    if not isinstance(zones, list):
+        return None
+    has_refs = any(
+        isinstance(z, dict) and any((f + "_ref") in z for f in _PERF3_PAYLOAD_FIELDS) for z in zones
+    )
+    if not has_refs and not wants_store:
+        return None
+    if _perf3_server_off():
+        return ["perf3_off"] if has_refs else None
+    missing = []
+    for zi, z in enumerate(zones):
+        if not isinstance(z, dict):
+            continue
+        resolved = {}
+        for f in _PERF3_PAYLOAD_FIELDS:
+            ref = z.get(f + "_ref")
+            if ref is not None:
+                with _perf3_payload_lock:
+                    ent = _perf3_payload_store.get(str(ref))
+                    if ent is not None:
+                        _perf3_payload_store.move_to_end(str(ref))
+                if ent is None:
+                    missing.append(f"{zi}:{f}")
+                    continue
+                text, is_str = ent
+                # A fresh object per request, exactly what json parsing the full upload gives.
+                resolved[f + "_ref"] = (f, text if is_str else json.loads(text))
+            elif wants_store and z.get(f) is not None:
+                try:
+                    text = _perf3_payload_text(z[f])
+                    key = hashlib.sha256(text.encode("utf-8")).hexdigest()
+                    _perf3_payload_put(key, text, isinstance(z[f], str))
+                except Exception as _p3_err:
+                    logger.debug(f"[PERF-3] payload store skipped: {_p3_err}")
+        if resolved:
+            # Put "<field>" back where "<field>_ref" was: same key order as the full upload.
+            items = list(z.items())
+            z.clear()
+            for k, v in items:
+                if k in resolved:
+                    z[resolved[k][0]] = resolved[k][1]
+                else:
+                    z[k] = v
+    return missing or None
+
 # ----------------------------------------------------------------
 # HARDENING: extra validators, rate limiter, request log ring,
 # memoised registry helpers. All purely additive ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â existing
@@ -1148,7 +1244,7 @@ def _spb_before_request():
         # Flask 3.1 supports a per-request upload cap. Keep the conservative
         # app-wide ceiling, while allowing the local PSD/material workflows to
         # accept real layered 2048 templates instead of failing at 16 MB.
-        if request.path == "/api/psd-import" or request.path.startswith("/api/spec-sculpt/"):
+        if request.path == "/api/psd-import" or request.path.startswith(("/api/spec-sculpt/", "/api/photocraft/")):
             request.max_content_length = SPEC_SCULPT_MAX_CONTENT_LENGTH_BYTES
         g._t0 = time.perf_counter()
         g._rid = request.headers.get("X-Request-ID") or _new_request_id()
@@ -1344,6 +1440,55 @@ from server_routes.static_pages import register_static_page_routes
 register_static_page_routes(app, server_dir=SERVER_DIR, bundle_dir=BUNDLE_DIR)
 from server_routes.spec_overlay_routes import register_spec_overlay_routes
 register_spec_overlay_routes(app)
+# [SPB-REV-WEAR2 2026-10-10] Race Wear layer store (upload once, render/preview by reference). Kill switch: env SPB_REV_WEAR2_OFF=1. Never blocks boot.
+try:
+    from server_routes.rev_wear_routes import register_rev_wear_routes
+    register_rev_wear_routes(app)
+except Exception as _rev_wear2_err:
+    print(f"  [REV-WEAR2] layer routes not registered: {_rev_wear2_err}")
+
+# [SPB-REV-LEAGUE 2026-10-10] League Pack folder bookkeeping (server_routes/rev_league_routes.py): prepare / status / mark / finish. Additive; kill switch env SPB_REV_LEAGUE_OFF=1. Never blocks boot.
+try:
+    from server_routes.rev_league_routes import register_rev_league_routes
+    register_rev_league_routes(app, denial=_external_write_denial)
+except Exception as _rev_league_err:
+    print(f"  [REV-LEAGUE] routes not registered: {_rev_league_err}")
+
+# [SPB-REV-FLAKE 2026-10-10] Flake Studio preview / sim-safe fit / info (server_routes/rev_flake_routes.py): read-only maths over engine/rev_flake.py,
+# the same code the render's `spb_flake` zone hook runs. Additive; kill switch env SPB_FLAKE_OFF=1. Never blocks boot.
+try:
+    from server_routes.rev_flake_routes import register_rev_flake_routes
+    register_rev_flake_routes(app)
+except Exception as _rev_flake_err:
+    print(f"  [REV-FLAKE] routes not registered: {_rev_flake_err}")
+
+# [PERF-4 2026-10-10] warm a brush coat's full-canvas render before the first stroke needs it (server_routes/perf4_warm_routes.py). Kill switch: env SPB_PERF4_OFF=1 / SPB_PERF4_2_OFF=1.
+try:
+    from server_routes.perf4_warm_routes import (register_perf4_warm_routes, note_user_request as _p4_note_user_request,
+                                                 acquire_preview_lock as _p4_acquire_preview_lock)
+    register_perf4_warm_routes(app, engine=engine, preview_lock=_preview_render_lock, source_cache=preview_source_cache, logger=logging.getLogger('shokker'))
+except Exception as _p4_err:
+    print(f"  [PERF-4] warm routes not registered: {_p4_err}")
+    def _p4_note_user_request():
+        return None
+    def _p4_acquire_preview_lock(_lock, _timeout):
+        return _lock.acquire(timeout=_timeout)
+
+# [TICKETS-4 2026-10-10 item 7] POST /api/render-pattern-tile - the canvas Pattern Brush asked for it and no route existed (server_routes/pattern_tile_routes.py). Kill switch: env SPB_T4_OFF=1 / SPB_T4_7_OFF=1.
+try:
+    from server_routes.pattern_tile_routes import register_pattern_tile_routes
+    register_pattern_tile_routes(app, engine=engine, logger=logging.getLogger('shokker'))
+except Exception as _t4_pt_err:
+    print(f"  [TICKETS-4] pattern tile route not registered: {_t4_pt_err}")
+
+# [CONNECT-CLAUDE 2026-10-10] /api/claude-connect/* - the AI panel's Claude card: open/reveal the newest .mcpb, reveal the shipped skill zip,
+# install the skill for Claude Code (%USERPROFILE%\.claude\skills\shokker-paint-booth, buyer's click only) and a read-only "what is done" check
+# (server_routes/claude_connect_routes.py). Kill switch: env SPB_CLAUDE_CONNECT_OFF=1.
+try:
+    from server_routes.claude_connect_routes import register_claude_connect_routes
+    register_claude_connect_routes(app, logger=logging.getLogger('shokker'))
+except Exception as _cc_err:
+    print(f"  [CONNECT-CLAUDE] claude connect routes not registered: {_cc_err}")
 
 # Windows temp can become unavailable under sandboxing, permissions changes, or
 # stale short-path env values. Keep all SPB scratch files under the app output
@@ -3526,6 +3671,18 @@ def _render_swatch_bytes(finish_type, finish_key, color_hex, size, seed):
     if finish_type == 'base' and finish_key not in engine.BASE_REGISTRY and finish_key in engine.MONOLITHIC_REGISTRY:
         finish_type = 'monolithic'
 
+    # [FLAMES-FIX 2026-10-07 — owner: "Blue Flame, Candy Flame, Cold Fire ... none of those are working
+    # at all"] Bases flagged authored_color=True (the 40 Flames-group finishes) paint their OWN colours over
+    # the whole plate. This square swatch then darkened them by the roughness map (x0.35..1.0) and pulled
+    # them 38% toward the per-finish palette hue that a neutral ?color=888888 maps to (_swatch_display_color)
+    # -> Blue Flame teal, Pink Flame dark green, True Fire purple on the encyclopedia / AI-card / builder
+    # thumbnails. For those finishes the paint_fn output IS the swatch: no tint, no spec-visual dimming.
+    # Opt-in flag only: every other base's swatch is unchanged.
+    _authored_color_swatch = bool(
+        finish_type == 'base'
+        and (getattr(engine, 'BASE_REGISTRY', {}).get(finish_key) or {}).get('authored_color')
+    )
+
     try:
         # ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ BASE: dict with M, R, CC, paint_fn, optional base_spec_fn ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
         # NOTE: BASE_REGISTRY does NOT have spec_fn - spec is built from M/R/CC
@@ -3556,7 +3713,8 @@ def _render_swatch_bytes(finish_type, finish_key, color_hex, size, seed):
                         raise RuntimeError(f"Base swatch paint_fn failed [{finish_key}]: {paint_err}") from paint_err
                 _used_spatial_spec = False
                 # Carbon & Composite: run base_spec_fn to get spatial M/R pattern and show weave on swatch
-                if base_spec_fn and callable(base_spec_fn):
+                # (FLAMES-FIX 2026-10-07: skipped for authored_color bases, see _authored_color_swatch)
+                if base_spec_fn and callable(base_spec_fn) and not _authored_color_swatch:
                     try:
                         spec_seed = seed + abs(hash(finish_key)) % 10000
                         spec_result = _invoke_base_spec_fn(base_spec_fn, shape, spec_seed, 1.0, M_val, R_val)
@@ -3588,7 +3746,7 @@ def _render_swatch_bytes(finish_type, finish_key, color_hex, size, seed):
                     except Exception as _bs_err:
                         raise RuntimeError(f"Base swatch base_spec_fn failed [{finish_key}]: {_bs_err}") from _bs_err
                 # Overlay spec-map visual so chrome vs matte vs metallic are distinct
-                if not _used_spatial_spec:
+                if not _used_spatial_spec and not _authored_color_swatch:
                     paint = _apply_spec_visual(paint, M_val, R_val, CC_val)
 
         # ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ PATTERN: dict with texture_fn + paint_fn, or image_path ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
@@ -3789,7 +3947,7 @@ def _render_swatch_bytes(finish_type, finish_key, color_hex, size, seed):
     # Color identity blend for BASES and PATTERNS only - keeps a single hue visible so they
     # don't all read as silver/gray. Skip for MONOLITHICS: chameleon, gradients, color-shift,
     # fusions, etc. paint_fn outputs multi-color; blending with one tint would wash them out.
-    if finish_type != 'monolithic':
+    if finish_type != 'monolithic' and not _authored_color_swatch:  # FLAMES-FIX 2026-10-07
         tint_strength = 0.38
         tint_rgb = np.array([r, g, b], dtype=np.float32).reshape(1, 1, 3)
         paint[:, :, :3] = np.clip(
@@ -4763,8 +4921,9 @@ def preview_render_endpoint():
     # If the previous render is still finishing after 2 s, reject this
     # request with 429 so the UI can retry rather than pile up renders.
     _touch_user_active_heartbeat()
+    _p4_note_user_request()   # [PERF-4 2026-10-10] a brush-coat warm only starts when the server is idle
     _preview_abort.set()
-    acquired = _preview_render_lock.acquire(timeout=2.0)
+    acquired = _p4_acquire_preview_lock(_preview_render_lock, 2.0)   # [PERF-4] waits (instead of 429) while a warm holds the lock; = acquire(timeout=2.0) otherwise
     if not acquired:
         return jsonify({"error": "Preview busy ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â previous render still finishing"}), 429
     _preview_abort.clear()
@@ -4775,6 +4934,11 @@ def preview_render_endpoint():
         data = request.get_json()
         if not data:
             return jsonify({"error": "No JSON body provided"}), 400
+        # [PERF-3 2026-10-10] resolve layer payloads sent by reference (see _perf3_resolve_payload_refs).
+        _p3_missing = _perf3_resolve_payload_refs(data)
+        if _p3_missing:
+            return jsonify({"error": "perf3_need_payloads", "missing": _p3_missing,
+                            "perf3": "off" if _p3_missing == ["perf3_off"] else "on"}), 409
 
         paint_file = data.get("paint_file")
         paint_image_base64_early = data.get("paint_image_base64")
@@ -4954,6 +5118,9 @@ def preview_render_endpoint():
             _render_seed_index = z.get("render_seed_index")
             if isinstance(_render_seed_index, int) and not isinstance(_render_seed_index, bool) and 0 <= _render_seed_index <= 0xFFFFFFFF:
                 zone_obj["render_seed_index"] = _render_seed_index
+            # [ENGINE_TEXTURE_ANCHOR 2026-10-06] opt-in canvas-anchored texture (copies of a whole-car zone)
+            if isinstance(z.get("texture_anchor"), str) and z.get("texture_anchor").strip().lower() == "canvas":
+                zone_obj["texture_anchor"] = "canvas"
             # SPB-EASY-WHOLE-MIX-20260721 (owner: "pick up to 4 max finishes"
             # with a slider for each): the browser already sends a validated,
             # typed material plan, but this preview-only compatibility bridge
@@ -5117,6 +5284,10 @@ def preview_render_endpoint():
                 zone_obj["spec_lighting_mask"] = int(round(_clamp(
                     z.get("spec_lighting_mask"), 0.0, 255.0, 255.0
                 )))
+            # [SPB-REV-FLAKE 2026-10-10] Flake Studio: carry the zone's flake recipe (engine/rev_flake.py norm() clamps it) so the
+            # live preview runs the same per-zone flake hook as RENDER (this whitelist dropped it: preview had no flake).
+            if isinstance(z.get("spb_flake"), dict):
+                zone_obj["spb_flake"] = z.get("spb_flake")
             _material_remap = z.get("spec_material_remap")
             if isinstance(_material_remap, dict):
                 try:
@@ -5194,6 +5365,10 @@ def preview_render_endpoint():
             # SPB-93: preview must retain the same rendered-material records as full output.
             if isinstance(z.get("material_instances"), list):
                 zone_obj["material_instances"] = z["material_instances"]
+            # [SPB-REV-MATERIAL 2026-10-10] Material/Spec/Wear brush layer (js/rev/material,
+            # engine/rev_material_layer.py); optional, env SPB_REV_MAT_OFF=1 drops it.
+            if isinstance(z.get("_spb_rev_material"), dict) and not os.environ.get("SPB_REV_MAT_OFF"):
+                zone_obj["_spb_rev_material"] = z["_spb_rev_material"]
             if z.get("spec_pattern_stack"):
                 zone_obj["spec_pattern_stack"] = z.get("spec_pattern_stack", [])
             if z.get("overlay_spec_pattern_stack"):
@@ -5578,10 +5753,11 @@ def render():
 
     # Cancel any in-flight preview render so it doesn't compete for CPU
     _touch_user_active_heartbeat()
+    _p4_note_user_request()   # [PERF-4 2026-10-10]
     _preview_abort.set()
     # Acquire render lock to prevent preview and full render from running simultaneously
     # SERVERCORE-1 fix: track lock ownership; never force-release an unowned lock.
-    have_lock = _preview_render_lock.acquire(timeout=5.0)
+    have_lock = _p4_acquire_preview_lock(_preview_render_lock, 5.0)   # [PERF-4 2026-10-10] = acquire(timeout=5.0) unless a brush-coat warm holds the lock
     if not have_lock:
         logger.warning("Render lock busy after 5s - returning 429 (no force-release)")
         return jsonify({"error": "render_busy"}), 429
@@ -5650,6 +5826,18 @@ def render():
         export_zip = data.get("export_zip", False)
         dual_spec = data.get("dual_spec", False)
         night_boost = _safe_float(data.get("night_boost"), NIGHT_BOOST_DEFAULT)
+        # [SPB-REV-SEAM 2026-10-10] optional Edge Bleed field (engine/rev_seam_bleed.py): validated here and its nearest-island map prewarmed in the
+        # background while the zones render. Absent field / env SPB_REV_SEAM_OFF=1 = nothing below runs and every output is byte-identical.
+        edge_bleed = None
+        if data.get("edge_bleed"):
+            try:
+                from engine import rev_seam_bleed as _seam_bleed
+                edge_bleed = _seam_bleed.normalize_request(data.get("edge_bleed"))
+                if edge_bleed:
+                    _seam_bleed.prewarm(edge_bleed)
+            except Exception as _seam_err:
+                logger.warning(f"Edge Bleed request ignored: {_seam_err}")
+                edge_bleed = None
         import_spec_map = data.get("import_spec_map")
         if import_spec_map and not os.path.exists(import_spec_map):
             logger.warning(f"Import spec map not found: {import_spec_map}")
@@ -5888,6 +6076,7 @@ def render():
             decal_paint_path=decal_paint_path,
             decal_mask_base64=decal_mask_base64 or None,
             progress_callback=_progress_cb,
+            **({"edge_bleed": edge_bleed} if edge_bleed else {}),   # [SPB-REV-SEAM 2026-10-10]
         )
 
         _render_progress["phase"] = "encoding"
@@ -6168,6 +6357,8 @@ def render():
             result["output_dir"] = output_dir_status
         if live_link_status:
             result["live_link"] = live_link_status
+        if edge_bleed and edge_bleed.get("stats"):
+            result["edge_bleed"] = edge_bleed["stats"]          # [SPB-REV-SEAM 2026-10-10] {applied, px, ring_px, plan_ms, apply_ms, ...}
 
         # Cleanup: delete only unadvertised helper TGAs from the job dir.
         # Returned download_urls must remain valid until normal job cleanup.
@@ -6238,6 +6429,27 @@ register_photoshop_import_routes(
     exchange_root_getter=_photoshop_exchange_root,
     output_folder=OUTPUT_FOLDER,
     require_internal_request=_require_spb_internal_request,
+    logger=logger,
+)
+
+# [2026-10-09 W12] Edit in PhotoCraft: SPB layers <-> layered PSD round trip (optional external editor).
+def _photocraft_work_root():
+    return os.environ.get("SPB_PHOTOCRAFT_WORK") or os.path.join(os.path.expanduser("~"), "Documents", "ShokkerPaintBooth", "PhotoCraft")
+
+
+def _photocraft_settings_path():
+    return os.path.join(os.path.expanduser("~"), "Documents", "ShokkerPaintBooth", "photocraft_settings.json")
+
+
+from server_routes.photocraft_routes import register_photocraft_routes
+register_photocraft_routes(
+    app,
+    require_internal_request=_require_spb_internal_request,
+    work_root_getter=_photocraft_work_root,
+    settings_path_getter=_photocraft_settings_path,
+    project_root=os.path.dirname(os.path.abspath(__file__)),
+    output_folder=OUTPUT_FOLDER,
+    external_write_guard=lambda path, operation: _external_write_denial(path, operation),
     logger=logger,
 )
 

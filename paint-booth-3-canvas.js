@@ -1,4 +1,8 @@
 
+// [SPB-TFX1 2026-10-09] kill switch for the tools-fix lane: `window.SPB_TFX1_OFF = true` (or localStorage SPB_TFX1_OFF = '1')
+// restores the pre-TFX1 behaviour of every change tagged "[SPB-TFX1 2026-10-09 TA-xxx]". Resolved once at load so hot paths only read the window flag.
+try { if (window.SPB_TFX1_OFF !== true && localStorage.getItem('SPB_TFX1_OFF') === '1') window.SPB_TFX1_OFF = true; } catch (_e) { }
+
 // ===== FAST MASK STATS (2026-07-30) =====
 // These used to be `mask.some(v => v > 0)` and `mask.reduce(...)` inline, i.e. one
 // or two full scans of a 4,194,304-entry mask per call — and the same mask got
@@ -177,19 +181,19 @@ function _maskCount(m) {
             const hasLiveFlatSource = !!(typeof window !== 'undefined' && window._spbFlatPaintLiveSource);
 
             if (hasLiveFlatSource) {
-                showToast('Python script export needs a real disk TGA Source Paint. Use Full Render or Photoshop TGA Round Trip for the Change File live canvas, or browse/set a TGA source first.', true);
+                showToast('Script export needs a TGA Source Paint file on disk. Use Full Render or the Photoshop round trip, or set a TGA source first.', true);
                 return;
             }
-            if (!paintFile) { showToast('Set the Source Paint path in the header bar!', true); return; }
-            if (!outputDir) { showToast('Set the iRacing Paint Folder path in Car Info!', true); return; }
+            if (!paintFile) { showToast('Set the Source Paint path in the header bar', true); return; }
+            if (!outputDir) { showToast('Set the iRacing Paint Folder path in Car Info', true); return; }
 
             const validZones = zones.filter(z => !z.muted && _zoneHasRenderableMaterialClient(z) && (z.color !== null || z.colorMode === 'multi' || (z.regionMask && _maskAny(z.regionMask))));
-            if (validZones.length === 0) { showToast('At least one zone needs a base/finish AND a color or drawn region!', true); return; }
+            if (validZones.length === 0) { showToast('At least one zone needs a base/finish and a color or drawn region', true); return; }
             const materialStackZone = validZones.find(z => {
                 return _getZoneMaterialStackClient(z).length > 0;
             });
             if (materialStackZone) {
-                showToast('Whole Car material mixes cannot use the legacy Python script export yet. Use Full Render or Save to iRacing so every selected finish and mix share is preserved.', true);
+                showToast('Whole Car mixes can\'t use script export yet. Use Full Render or Save to iRacing to keep every selected finish and mix.', true);
                 return;
             }
 
@@ -433,7 +437,7 @@ if __name__ == '__main__':
                 input.classList.remove('path-valid', 'path-invalid');
                 status.textContent = '';
                 status.className = 'header-path-status';
-                if (hint) hint.textContent = 'Paste the FULL Windows path to the paint TGA the engine should read';
+                if (hint) hint.textContent = 'Paste the full Windows path to the paint TGA the engine should read';
                 return;
             }
 
@@ -460,20 +464,20 @@ if __name__ == '__main__':
                     // SPB-SIMPLIFY-2026-07-18 (owner): checkmark only, no file size in the header
                     status.textContent = '\u2713';
                     status.className = 'header-path-status valid';
-                    if (hint) { hint.textContent = `File found! (${data.size_human})`; hint.style.color = 'var(--accent-green)'; }
+                    if (hint) { hint.textContent = `File found (${data.size_human})`; hint.style.color = 'var(--accent-green)'; }
                     addRecentPath(path);
                 } else if (data.exists) {
                     input.classList.remove('path-valid');
                     input.classList.add('path-invalid');
-                    status.textContent = '\u2717 directory';
+                    status.textContent = 'Directory';
                     status.className = 'header-path-status invalid';
                     if (hint) { hint.textContent = 'That path is a directory, not a file.'; hint.style.color = '#ff4444'; }
                 } else {
                     input.classList.remove('path-valid');
                     input.classList.add('path-invalid');
-                    status.textContent = '\u2717 not found';
+                    status.textContent = 'Not found';
                     status.className = 'header-path-status invalid';
-                    if (hint) { hint.textContent = 'File not found!'; hint.style.color = '#ff4444'; }
+                    if (hint) { hint.textContent = 'File not found'; hint.style.color = '#ff4444'; }
                 }
             } catch (e) {
                 status.textContent = '(error)';
@@ -556,7 +560,7 @@ if __name__ == '__main__':
             } else {
                 // Just show the filename - user can adjust the full path
                 document.getElementById('paintFile').value = tgaFileName;
-                showToast('Paste the FULL path to the paint TGA - browser can\'t detect it automatically', true);
+                showToast('Paste the full path to the paint TGA - browser can\'t detect it automatically', true);
             }
 
             // Validate the path against the server
@@ -606,7 +610,7 @@ if __name__ == '__main__':
                         if (!currentSource()) return;
                         try {
                             const canvas = document.getElementById('paintCanvas');
-                            if (!canvas) { showToast('Paint canvas element missing — cannot load', true); return; }
+                            if (!canvas) { showToast('Could not load the paint canvas. Restart Shokker Paint Booth and try again.', true); return; }
                             _spbCommitSourceFile(img.width, img.height, ctx => ctx.drawImage(img, 0, 0));
                             markFlatPaintLiveSource(file, 'browse-file-flat');
                             // Also size region canvas
@@ -643,7 +647,7 @@ if __name__ == '__main__':
                                 if (!splitViewActive) { toggleSplitView(); }
                                 else if (typeof triggerPreviewRender === 'function') { triggerPreviewRender(); }
                             }, 200);
-                            showToast(`Loaded ${fileName} as source paint + preview!`);
+                            showToast(`Loaded ${fileName} as source paint and preview`);
                         } catch (loadErr) {
                             console.error('[paint load] img.onload error:', loadErr);
                             showToast(`Error loading ${fileName}: ${loadErr.message}`, true);
@@ -665,7 +669,7 @@ if __name__ == '__main__':
             if (folderName) {
                 // We can't get the real absolute path from a browser picker, so show a hint
                 document.getElementById('outputDir').value = folderName;
-                showToast(`Folder selected: "${folderName}" - paste the FULL path (e.g. C:\\Users\\...\\iRacing\\paint\\${folderName})`, true);
+                showToast(`Folder selected: "${folderName}" - paste the full path (e.g. C:\\Users\\...\\iRacing\\paint\\${folderName})`, true);
             }
         }
 
@@ -926,7 +930,7 @@ if __name__ == '__main__':
                 // Build breadcrumb
                 if (data.path) {
                     const parts = data.path.split('/').filter(Boolean);
-                    let crumbs = '<span data-fp-action="navigate" data-fp-path="" title="Root / Drives">&#128187;</span>';
+                    let crumbs = '<span data-fp-action="navigate" data-fp-path="" title="Root / Drives">Drives</span>';
                     let accumulated = '';
                     for (let i = 0; i < parts.length; i++) {
                         accumulated += parts[i] + '/';
@@ -946,13 +950,13 @@ if __name__ == '__main__':
                     if (data.quick_navs) {
                         data.quick_navs.forEach(q => {
                             const ep = _spbEscapeFilePickerAttr(q.path || '');
-                            qhtml += `<button type="button" data-fp-action="navigate" data-fp-path="${ep}" title="${_spbEscapeFilePickerAttr(q.path || '')}">&#9889; ${_spbEscapeFilePickerHtml(q.name || 'Shortcut')}</button>`;
+                            qhtml += `<button type="button" data-fp-action="navigate" data-fp-path="${ep}" title="${_spbEscapeFilePickerAttr(q.path || '')}">${_spbEscapeFilePickerHtml(q.name || 'Shortcut')}</button>`;
                         });
                     }
                     if (data.drives) {
                         data.drives.forEach(d => {
                             const ep = _spbEscapeFilePickerAttr(d.path || '');
-                            qhtml += `<button type="button" data-fp-action="navigate" data-fp-path="${ep}" title="${_spbEscapeFilePickerAttr(d.path || '')}">&#128190; ${_spbEscapeFilePickerHtml(d.name || 'Drive')}</button>`;
+                            qhtml += `<button type="button" data-fp-action="navigate" data-fp-path="${ep}" title="${_spbEscapeFilePickerAttr(d.path || '')}">${_spbEscapeFilePickerHtml(d.name || 'Drive')}</button>`;
                         });
                     }
                     quickNavEl.innerHTML = qhtml;
@@ -969,13 +973,24 @@ if __name__ == '__main__':
                 // "Select this folder" instead of trying to pick a .tga file.
                 const _fpFolderMode = (_filePickerMode === 'folder');
                 if (_fpFolderMode) {
-                    html += `<div class="file-picker-folder-hint" style="padding:9px 12px;margin-bottom:4px;background:rgba(255,170,0,0.10);border:1px solid rgba(255,170,0,0.35);border-radius:6px;color:#ffcf66;font-size:12px;line-height:1.45;">&#128193; Choose the car <b>FOLDER</b> &mdash; do not pick a <b>.tga</b> file.<br>Open your car&rsquo;s folder, then click <b>&lsquo;Select this folder&rsquo;</b> below.</div>`;
+                    html += `<div class="file-picker-folder-hint" style="padding:9px 12px;margin-bottom:4px;background:rgba(255,170,0,0.10);border:1px solid rgba(255,170,0,0.35);border-radius:6px;color:#ffcf66;font-size:12px;line-height:1.45;">Choose the car <b>folder</b> &mdash; do not pick a <b>.tga</b> file.<br>Open your car&rsquo;s folder, then click <b>&lsquo;Select this folder&rsquo;</b> below.</div>`;
                 }
+
+                // [S10 2026-10-12 owner: "lose this vibecoded look"] file picker icons: inline SVG (16px, currentColor) incl. the new 'up' icon; hoisted above the
+                // parent-directory row so '..' no longer uses the emoji arrow.
+                const _fpSvg = (inner) => '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-3px">' + inner + '</svg>';
+                const _fpIcon = {
+                    folder: _fpSvg('<path d="M1.8 4.4A1.2 1.2 0 0 1 3 3.2h3l1.4 1.6H13a1.2 1.2 0 0 1 1.2 1.2v6a1.2 1.2 0 0 1-1.2 1.2H3a1.2 1.2 0 0 1-1.2-1.2z"/>'),
+                    drive: _fpSvg('<rect x="2" y="4.5" width="12" height="7" rx="1.6"/><path d="M2 8.5h12"/><circle cx="11.6" cy="10" r=".5"/>'),
+                    file: _fpSvg('<path d="M4 1.8h5.2L12.4 5v8.2H4z"/><path d="M9.2 1.8V5h3.2"/>'),
+                    image: _fpSvg('<rect x="2" y="2.6" width="12" height="10.8" rx="1.6"/><circle cx="5.8" cy="6.2" r="1.2"/><path d="M2.4 12l3.4-3.2 2.6 2.2 2.2-2 3 3"/>'),
+                    up: _fpSvg('<path d="M8 13V3.8"/><path d="M4.2 7.4L8 3.6l3.8 3.8"/>')
+                };
 
                 // Parent directory link
                 if (data.parent) {
                     html += `<div class="file-picker-item folder" data-fp-action="navigate" data-fp-path="${_spbEscapeFilePickerAttr(data.parent)}">
-                <span class="fp-icon">&#128281;</span>
+                <span class="fp-icon">${_fpIcon.up}</span>
                 <span class="fp-name">..</span>
             </div>`;
                 }
@@ -996,10 +1011,10 @@ if __name__ == '__main__':
                         const rawName = item.name || '';
                         const safeP = _spbEscapeFilePickerAttr(item.path || '');
                         const safeName = _spbEscapeFilePickerHtml(rawName);
-                        const fileIcon = rawName.toLowerCase().endsWith('.tga') ? '&#127912;' : '&#128196;';
+                        const fileIcon = rawName.toLowerCase().endsWith('.tga') ? _fpIcon.image : _fpIcon.file;
                         if (item.type === 'folder' || item.type === 'drive') {
                             html += `<div class="file-picker-item ${item.type}" data-fp-action="navigate" data-fp-path="${safeP}">
-                        <span class="fp-icon">${item.type === 'drive' ? '&#128190;' : '&#128193;'}</span>
+                        <span class="fp-icon">${item.type === 'drive' ? _fpIcon.drive : _fpIcon.folder}</span>
                         <span class="fp-name">${safeName}</span>
                     </div>`;
                         } else if (_fpThumbable(rawName)) {
@@ -1029,9 +1044,9 @@ if __name__ == '__main__':
 
                 // Show overflow warning if server truncated or skipped files
                 if (data.large_dir) {
-                    html += `<div style="padding:8px 12px;color:#ffaa00;font-size:12px;border-top:1px solid #333;margin-top:4px;">&#128193; Large folder (${data.entry_count?.toLocaleString() || 'many'} entries) - showing folders only. Click a car folder to see paint files.</div>`;
+                    html += `<div style="padding:8px 12px;color:#ffaa00;font-size:12px;border-top:1px solid #333;margin-top:4px;">Large folder (${data.entry_count?.toLocaleString() || 'many'} entries) - showing folders only. Click a car folder to see paint files.</div>`;
                 } else if (data.hidden_files && data.hidden_files > 0) {
-                    html += `<div style="padding:8px 12px;color:#ffaa00;font-size:12px;border-top:1px solid #333;margin-top:4px;">&#9888; ${data.hidden_files.toLocaleString()} files not shown (${data.total_files.toLocaleString()} total). Navigate into a car folder to find your paint file.</div>`;
+                    html += `<div style="padding:8px 12px;color:#ffaa00;font-size:12px;border-top:1px solid #333;margin-top:4px;">${data.hidden_files.toLocaleString()} files not shown (${data.total_files.toLocaleString()} total). Navigate into a car folder to find your paint file.</div>`;
                 }
 
                 // Use rAF to render so the browser can paint between fetch and DOM update
@@ -1077,11 +1092,12 @@ if __name__ == '__main__':
             const paintFile = document.getElementById('paintFile').value.trim();
             const iracingId = document.getElementById('iracingId').value.trim();
             if (typeof window !== 'undefined' && window._spbFlatPaintLiveSource) {
-                showToast('Reset Source Backup needs a real disk Source Paint path. Change File live-canvas renders do not have a backup file to reset.', true);
+                showToast('Reset Source Backup needs a Source Paint file on disk. Renders from Change File have no backup to reset.', true);
                 return;
             }
             if (!paintFile) { showToast('Set the Source Paint path first', true); return; }
-            if (!confirm('Reset source backup? This forces the next render to re-read the current source file as the clean original. Use this if renders seem stuck or unchanged.')) return;
+            // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+            if (!(await SpbDialog.ask('Reset Source Backup?', { message: 'The next render re-reads the current source file as the clean original. Use this if renders seem stuck or unchanged.', okLabel: 'Reset Backup', danger: true, nativeText: 'Reset source backup? This forces the next render to re-read the current source file as the clean original. Use this if renders seem stuck or unchanged.' }))) return;
             try {
                 const result = await ShokkerAPI.resetBackup(paintFile, iracingId);
                 if (result.success) {
@@ -1139,6 +1155,12 @@ if __name__ == '__main__':
         function _spbSourceLoadResult(transaction, ok, details) {
             const tx = transaction || { requestedPath: '', generation: _spbSourceLoadGeneration };
             const info = details || {};
+            if (ok && typeof window !== 'undefined' && window.SpbConversationScope) window.SpbConversationScope.sourceCommitted();
+            if (ok && typeof window !== 'undefined' && window.SpbTemplateIdentity && typeof window.SpbTemplateIdentity.recoverSource === 'function') {
+                try { Promise.resolve(window.SpbTemplateIdentity.recoverSource()).catch(function () {}); } catch (_) {}
+            }
+            if (ok && typeof window !== 'undefined' && window.SpbDesignBrief) window.SpbDesignBrief.sourceCommitted();
+            if (ok && typeof window !== 'undefined' && window.SpbConversationScope && window.spbProAI) window.spbProAI.refresh();
             return {
                 ok: !!ok,
                 requestedPath: tx.requestedPath,
@@ -1348,7 +1370,7 @@ if __name__ == '__main__':
             _spbEnsureOutputDirFolderGuard();
             const outputEl = document.getElementById('outputDir');
             if (outputEl && !outputEl.title) {
-                outputEl.title = 'Pick the car FOLDER (the folder iRacing reads paints from), not a .tga file.';
+                outputEl.title = 'Pick the car folder (the folder iRacing reads paints from), not a .tga file.';
             }
             let startPath = '';
             let currentPath = outputEl ? outputEl.value.trim() : '';
@@ -1372,17 +1394,17 @@ if __name__ == '__main__':
                     }
                     document.getElementById('outputDir').value = chosen;
                     updateOutputPath();
-                    if (!_spbLooksLikeFilePath(path)) showToast('iRacing folder set!');
+                    if (!_spbLooksLikeFilePath(path)) showToast('iRacing folder set');
                 }
             });
         }
 
         function openHelmetFilePicker() {
-            showToast('Helmet output is not available in this SPB build.', true);
+            showToast('Helmet output isn\'t available yet.', true);
         }
 
         function openSuitFilePicker() {
-            showToast('Suit output is not available in this SPB build.', true);
+            showToast('Suit output isn\'t available yet.', true);
         }
 
         function _getPlacementTargetState(zone, target) {
@@ -1794,15 +1816,23 @@ if __name__ == '__main__':
             // events AND capped at one frame, so the worst possible staleness is
             // ~16ms — shorter than the gap between a layout change and the next
             // mouse event in any real interaction.
-            let _canvasRectCache = null, _canvasRectAt = 0;
+            let _canvasRectCache = null, _canvasRectAt = 0, _canvasRectDragKey = null;
             function canvasRect() {
                 const now = (typeof performance !== 'undefined') ? performance.now() : Date.now();
                 if (_canvasRectCache && (now - _canvasRectAt) < 16) return _canvasRectCache;
+                // [SPB-TFX1 2026-10-09 TA-030] while a transform handle/piece is being dragged the pane cannot move or resize, but every move
+                // re-wrote the preview/quickbar and then read this rect = one forced layout flush per move (measured 17 ms of the
+                // 20-25 ms handler, 443 of 887 ms over 25 moves). Measure once per drag (key = drag kind + start point), reuse after.
+                let dragKey = null;
+                if (!window.SPB_TFX1_OFF && typeof freeTransformState !== 'undefined' && freeTransformState && freeTransformState.dragging)
+                    dragKey = freeTransformState.dragging + ':' + freeTransformState.dragStartX + ',' + freeTransformState.dragStartY;
+                if (dragKey && _canvasRectCache && dragKey === _canvasRectDragKey) return _canvasRectCache;
                 _canvasRectCache = canvas.getBoundingClientRect();
                 _canvasRectAt = now;
+                _canvasRectDragKey = dragKey;
                 return _canvasRectCache;
             }
-            function invalidateCanvasRect() { _canvasRectCache = null; }
+            function invalidateCanvasRect() { _canvasRectCache = null; _canvasRectDragKey = null; }
             window.invalidateCanvasRect = invalidateCanvasRect;
             // Exposed for the document-level mousemove handlers (cursor circle,
             // coordinate readout) that also read this rect once per event — the
@@ -1812,6 +1842,12 @@ if __name__ == '__main__':
             window.addEventListener('resize', invalidateCanvasRect);
             window.addEventListener('wheel', invalidateCanvasRect, true);
 
+            // [SPB-TFX2 2026-10-09 TA-012] half a DEVICE pixel (in CSS px) for mouse-class input; pen/touch already report true sub-pixel positions
+            window._spbPtrBias = window._spbPtrBias || function (e) {
+                if (e && e.pointerType && e.pointerType !== 'mouse') return 0;
+                const d = window.devicePixelRatio || 1;
+                return 0.5 / d;
+            };
             function getPixelAt(e) {
                 const rect = canvasRect();
                 const scaleX = canvas.width / rect.width;
@@ -1819,7 +1855,12 @@ if __name__ == '__main__':
                 const x = Math.floor((e.clientX - rect.left) * scaleX);
                 const y = Math.floor((e.clientY - rect.top) * scaleY);
                 if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) return null;
-                return { x, y };
+                // PORT-W5: fx/fy = the pointer's exact position in pixel-index space (pixel centres at +0.5), for sub-pixel dabs
+                // [SPB-TFX2 2026-10-09 TA-012] a mouse event reports the TOP-LEFT of the device pixel under the cursor, but the cursor sits on the pixel's
+                // centre (Photoshop paints a 1 px pencil click into exactly the pixel under the hotspot): +0.5 device px. Measured dab-centre error
+                // (1 px = canvas px): 100 %: -0.50 -> 0.00, 300 %: -0.50 -> -0.17..0.0 (see fix2 PROGRESS).
+                const _b5 = window.SPB_TFX2_OFF ? 0 : window._spbPtrBias(e);
+                return { x, y, fx: (e.clientX + _b5 - rect.left) * scaleX - 0.5, fy: (e.clientY + _b5 - rect.top) * scaleY - 0.5 };
             }
             // Exposed so the Grab Object hover preview uses THIS mapping rather than
             // duplicating it. Its own copy used Math.round where this uses floor,
@@ -1836,7 +1877,10 @@ if __name__ == '__main__':
                 const scaleY = canvas.height / rect.height;
                 const x = Math.max(0, Math.min(canvas.width - 1, Math.floor((e.clientX - rect.left) * scaleX)));
                 const y = Math.max(0, Math.min(canvas.height - 1, Math.floor((e.clientY - rect.top) * scaleY)));
-                return { x, y };
+                // PORT-W5: exact pointer position (clamped) for sub-pixel dabs
+                return { x, y,
+                    fx: Math.max(0, Math.min(canvas.width - 1, (e.clientX + (window.SPB_TFX2_OFF ? 0 : window._spbPtrBias(e)) - rect.left) * scaleX - 0.5)),
+                    fy: Math.max(0, Math.min(canvas.height - 1, (e.clientY + (window.SPB_TFX2_OFF ? 0 : window._spbPtrBias(e)) - rect.top) * scaleY - 0.5)) };
             }
 
             function getColorAt(x, y) {
@@ -1853,7 +1897,16 @@ if __name__ == '__main__':
                 };
             }
 
+            // [SPB-TFX1 2026-10-09 TA-029] the eyedropper has its own Sample Size select (#spbEyeSampleSize, Point Sample default). It used to read the
+            // Wand's #wandSampleSize (default 3x3 average, display:none while the eyedropper is active): a pixel next to an edge returned
+            // a blend (#0a0900 on canvas -> swatch #2f2a00). SPB_TFX1_OFF restores the old read.
+            function _tfx1EyeSize() {
+                if (window.SPB_TFX1_OFF) return null;
+                const n = parseInt(document.getElementById('spbEyeSampleSize')?.value || '1', 10);
+                return [1, 3, 5, 11].includes(n) ? n : 1;
+            }
             function getEyedropperSampleSize() {
+                const _tfxN = _tfx1EyeSize(); if (_tfxN != null) return _tfxN;
                 const selected = parseInt(document.getElementById('wandSampleSize')?.value || '', 10);
                 const fallback = parseInt(window.eyedropperSampleSize || 1, 10);
                 return [1, 3, 5, 11].includes(selected) ? selected : ([1, 3, 5, 11].includes(fallback) ? fallback : 1);
@@ -2070,6 +2123,42 @@ if __name__ == '__main__':
                 const useHardBrush = (hardness >= 0.99 && opacity >= 0.99);
                 const footprint = _createBrushFootprint(radius, shapeOverride);
 
+                // PORT-W5: soft/partial-opacity ERASE on a zone mask through the stroke coverage buffer (opacity = cap for the
+                // stroke; before: every overlapping dab subtracted again, so a 50% eraser emptied the mask in a few dabs).
+                if (value === 0 && !useHardBrush && !window.SPB_PC_W5_OFF && window.SPBPcStroke && window.SPBPcStroke.maskDab && window._spbZoneKey) {
+                    const _c5 = _pcSubCentre(x, y);
+                    window.SPBPcStroke.maskDab(mask, w, h, window._spbZoneKey, { x: _c5.x, y: _c5.y, radius, hardness, cap: opacity, erase: true, footprint });
+                    return;
+                }
+
+                // PORT-W5B (2026-10-09, SPB_W5B_OFF): round tips on a zone REGION mask. (a) the hard brush/eraser (opacity+hardness 100%) wrote
+                // 255/0 on an aliased integer disc (stair-stepped zone edge, unlike the layer brush) -> anti-aliased coverage through the same
+                // stroke coverage buffer as the soft eraser; (b) soft paint used the integer centre -> sub-pixel centre (the pointer's exact
+                // position via _spbDabSub) with the layer brush's dabCoverage; max() semantics kept, so overlapping dabs still do not compound.
+                // Block/Square/Diamond/Slash/Noise tips and symmetry mirrors (integer centres) keep the old loop below.
+                if (!window.SPB_W5B_OFF && !window.SPB_PC_W5_OFF && footprint.shape === 'round' && window.SPBPcStroke && window.SPBPcStroke.maskDab && window._spbZoneKey) {
+                    const _c6 = _pcSubCentre(x, y);
+                    if (useHardBrush) {
+                        window.SPBPcStroke.maskDab(mask, w, h, window._spbZoneKey, { x: _c6.x, y: _c6.y, radius, hardness, cap: 1, erase: !value, footprint });
+                        return;
+                    }
+                    if (value) {
+                        const _r6 = Math.max(0.5, +radius || 1), _dc = window.SPBPcStroke.dabCoverage;
+                        const _x0 = Math.max(0, Math.floor(_c6.x - _r6 - 1)), _y0 = Math.max(0, Math.floor(_c6.y - _r6 - 1));
+                        const _x1 = Math.min(w - 1, Math.ceil(_c6.x + _r6 + 1)), _y1 = Math.min(h - 1, Math.ceil(_c6.y + _r6 + 1));
+                        for (let py = _y0; py <= _y1; py++) {
+                            const ddy = py - _c6.y;
+                            for (let px = _x0; px <= _x1; px++) {
+                                const ddx = px - _c6.x, v = _dc(Math.sqrt(ddx * ddx + ddy * ddy), _r6, hardness);
+                                if (v <= 0) continue;
+                                const pv = Math.round(v * opacity * 255), idx = py * w + px;
+                                if (pv > mask[idx]) mask[idx] = pv;
+                            }
+                        }
+                        return;
+                    }
+                }
+
                 for (let dy = -radius; dy <= radius; dy++) {
                     for (let dx = -radius; dx <= radius; dx++) {
                         const dist2 = dx * dx + dy * dy;
@@ -2122,8 +2211,19 @@ if __name__ == '__main__':
             }
             window._zoneShouldRequestPriorityOverride = _zoneShouldRequestPriorityOverride;
 
+            // [SPB-TFX4 2026-10-10 item 5, lane TOOLS-FIX-4] was `zone.spatialMask.some(v => v === 1)`: a JS callback over up to 4.2 M entries on EVERY dab of a
+            // colour-restricted ("scoped") zone stroke (CPU profile of a scoped stroke: 11.5 % of ALL samples, the biggest JS function).  Same answer, cheaper: re-check
+            // the index of a mark found earlier (WeakMap, never stored on the zone: zones are serialised), else the native typed-array indexOf.  SPB_TFX4_OFF = old code.
+            const _tfx4KeepIdx = new WeakMap();
             function _zoneHasScopedKeepMarks(zone) {
-                return !!(zone && zone.spatialMask && zone.spatialMask.some(v => v === 1));
+                if (!(zone && zone.spatialMask)) return false;
+                const m = zone.spatialMask;
+                if (window.SPB_TFX4_OFF || typeof m.indexOf !== 'function') return !!m.some(v => v === 1);
+                const c = _tfx4KeepIdx.get(zone);
+                if (c && c.m === m && c.i >= 0 && m[c.i] === 1) return true;
+                const i = m.indexOf(1);
+                _tfx4KeepIdx.set(zone, { m: m, i: i });
+                return i !== -1;
             }
 
             function _zoneHasActiveBaseOverlayClient(zone) {
@@ -2283,6 +2383,23 @@ if __name__ == '__main__':
             }
             window._buildZoneScopedSelectorMask = _buildZoneScopedSelectorMask;
 
+            // [SPB-TFX4 2026-10-10 item 5 lane TOOLS-FIX-4] HOT SPOT: paintRegionCircle() rebuilt the scope mask (new 4 Mpx Uint8Array + a full pass over every pixel and every
+            // colour target / layer mask) on EVERY dab of a colour- or layer-restricted zone. The scope cannot change while one stroke is in progress (same zone, same source
+            // pixels, same layer revision), so it is built once per stroke: keyed by the stroke identity window._spbZoneKey (new object on every brush mousedown) + zone +
+            // paintImageData + canvas size + layer revision. Anything else (no stroke key, key/zone/pixels changed) rebuilds exactly as before. Kill switch SPB_TFX4_OFF.
+            let _tfx4ScopeCache = null;
+            function _tfx4StrokeScopeMask(zone, w, h) {
+                if (window.SPB_TFX4_OFF || !window._spbZoneKey) return _buildZoneScopedSelectorMask(zone, w, h);
+                const c = _tfx4ScopeCache, rev = window._spbLayerRev || 0;
+                // cheap selector signature (a few short strings): a zone edited between two programmatic dabs of the same key can never reuse an old mask
+                const sig = [zone.colorMode, zone.pickerColor, zone.pickerTolerance, zone.sourceLayer, Array.isArray(zone.sourceLayers) ? zone.sourceLayers.join(',') : '',
+                    Array.isArray(zone.colors) ? JSON.stringify(zone.colors) : '', (zone.color && Array.isArray(zone.color.color_rgb)) ? zone.color.color_rgb.join(',') : ''].join('|');
+                if (c && c.key === window._spbZoneKey && c.zone === zone && c.w === w && c.h === h && c.pid === paintImageData && c.rev === rev && c.sig === sig) return c.mask;
+                const mask = _buildZoneScopedSelectorMask(zone, w, h);
+                _tfx4ScopeCache = { key: window._spbZoneKey, zone: zone, w: w, h: h, pid: paintImageData, rev: rev, sig: sig, mask: mask };
+                return mask;
+            }
+
             function _paintScopedSpatialCircle(zone, scopeMask, w, h, cx, cy, radius, value, shapeOverride) {
                 if (!zone) return false;
                 if (!zone.spatialMask) {
@@ -2318,7 +2435,7 @@ if __name__ == '__main__':
                 const shapeOverride = blockEraser ? 'square' : null;
                 const useScopedRefinement = _zoneBrushUsesScopedRefinement(zone);
                 if (useScopedRefinement) {
-                    const scopeMask = _buildZoneScopedSelectorMask(zone, w, h);
+                    const scopeMask = _tfx4StrokeScopeMask(zone, w, h);   // [SPB-TFX4 item 5] was _buildZoneScopedSelectorMask(zone, w, h) on every dab
                     if (!scopeMask) return 'spatial';
                     const spatialValue = value ? 1 : 0;
                     const touched = _paintScopedSpatialCircle(zone, scopeMask, w, h, x, y, radius, spatialValue, shapeOverride);
@@ -2375,6 +2492,20 @@ if __name__ == '__main__':
                 }
                 return 'region';
             }
+
+            // [SPB-TFX4 2026-10-10 item 1, lane TOOLS-FIX-4] ONE entry point for a dab of the ZONE brush (mask + live overlay arc), exposed as window._zoneBrushDab
+            // exactly like window._paintOnLayerAt is for the layer brush, so Brush Dynamics (js/canvas/tfx3-dynamics.js) can wrap it (scatter, size / count / flow
+            // jitter, taper).  Behaviour is identical to the three inline calls it replaces (mousemove dab, opening dab, Shift-click line dab); meta.open = the
+            // opening dab, which has no overlay arc because _doRenderRegionOverlay() follows it.  Before: the zone brush had no hookable dab function.
+            function _zoneBrushDab(x, y, radius, val, opacity, meta) {
+                const strokeTarget = paintRegionCircle(x, y, radius, val, opacity);
+                if (!(meta && meta.open)) {
+                    if (strokeTarget === 'spatial') _fastSpatialOverlayArc(x, y, radius, val);
+                    else _fastOverlayArc(x, y, radius, val);
+                }
+                return strokeTarget;
+            }
+            window._zoneBrushDab = _zoneBrushDab;
 
             // ── GRADIENT FILL ────────────────────────────────────────────────────────
             // Fill the current zone's regionMask with a gradient between two points
@@ -2435,7 +2566,7 @@ if __name__ == '__main__':
                         document.getElementById('selectionMode')?.value || 'add'
                     );
                     if (!result.valid) {
-                        if (typeof showToast === 'function') showToast('Gradient: click and DRAG to set the direction');
+                        if (typeof showToast === 'function') showToast('Gradient: click and drag to set the direction');
                         return false;
                     }
                     if (!result.changed) {
@@ -2454,7 +2585,7 @@ if __name__ == '__main__':
                 }
                 const dx = x2 - x1, dy = y2 - y1;
                 const len = Math.sqrt(dx * dx + dy * dy);
-                if (len < 2) { if (typeof showToast === 'function') showToast('Gradient: click and DRAG to set the direction'); return; }
+                if (len < 2) { if (typeof showToast === 'function') showToast('Gradient: click and drag to set the direction'); return; }
                 const selMode = document.getElementById('selectionMode')?.value || 'add';
                 const nx = dx / len, ny = dy / len; // unit vector start→end
 
@@ -2542,7 +2673,7 @@ if __name__ == '__main__':
                 const gx1 = x1 - lx, gy1 = y1 - ly, gx2 = x2 - lx, gy2 = y2 - ly;
                 const gdx = gx2 - gx1, gdy = gy2 - gy1;
                 const glen = Math.sqrt(gdx * gdx + gdy * gdy);
-                if (glen < 2) { if (typeof showToast === 'function') showToast('Gradient: click and DRAG to set the direction'); return false; } // degenerate drag → do nothing (don't flood the layer)
+                if (glen < 2) { if (typeof showToast === 'function') showToast('Gradient: click and drag to set the direction'); return false; } // degenerate drag → do nothing (don't flood the layer)
                 const gnx = gdx / glen, gny = gdy / glen;
                 // Resolve start/end colors as RGBA quads (supports FG→transparent + reverse).
                 const fg = typeof _foregroundColor === 'string' ? _foregroundColor : '#000000';
@@ -2571,7 +2702,19 @@ if __name__ == '__main__':
                 // — they no longer silently render as plain linear on a layer.
                 const procedural = gradientType && gradientType !== 'linear' && gradientType !== 'radial';
                 let didProcedural = false;
-                if (procedural) {
+                // [SPB-TFX3 2026-10-10 PORT-2 lane TOOLS-FIX-3] the Gradient tool's colour ramp (stops + opacity + midpoints + dither, js/canvas/tfx3-gradient.js): every
+                // gradient type paints through the ramp when the painter picked a preset / stop. rampFor() is null for the default Foreground->Background, for programmatic
+                // callers and when SPB_TFX3_OFF is set, so the code below runs exactly as before. Before: only FG->BG (two colours); after: any number of stops.
+                const _tfx3Ramp = (!window.SPB_TFX3_OFF && window.SPBTfx3Gradient && typeof window.SPBTfx3Gradient.rampFor === 'function') ? window.SPBTfx3Gradient.rampFor() : null;
+                if (_tfx3Ramp) {
+                    try {
+                        const _tfx3Out = tctx.getImageData(0, 0, lw, lh);
+                        window.SPBTfx3Gradient.paint(_tfx3Out.data, lw, lh, gx1, gy1, gx2, gy2, gradientType || 'linear', layerAlpha, !!reverse, { lx: lx, ly: ly });
+                        tctx.putImageData(_tfx3Out, 0, 0);
+                        didProcedural = true;
+                    } catch (e) { console.warn('[gradient] colour-stop ramp failed, falling back to the two-colour gradient:', e); }
+                }
+                if (procedural && !didProcedural) {
                     try {
                         const out = tctx.getImageData(0, 0, lw, lh);
                         const od = out.data;
@@ -2656,7 +2799,7 @@ if __name__ == '__main__':
                 let candidateImageData = null;
                 try { candidateImageData = tctx.getImageData(0, 0, lw, lh); } catch (_) {}
                 const paintCanvas = document.getElementById('paintCanvas');
-                const selectionMask = paintCanvas ? _activeSelectionMask(paintCanvas.width, paintCanvas.height) : null;
+                const selectionMask = paintCanvas ? _activeSelectionMask(paintCanvas.width, paintCanvas.height, true) : null; // PORT-W5B: layer gradient clips to the zone area too
                 if (selectionMask) {
                     const applyMask = window.SPBSelectionClip?.applyMask;
                     if (!beforePixels || !candidateImageData || typeof applyMask !== 'function') {
@@ -2718,7 +2861,7 @@ if __name__ == '__main__':
             // Flood-fills the selected PSD layer at a point with the FG color
             function _getLayerFillSelectionFingerprint() {
                 const pc = document.getElementById('paintCanvas');
-                const mask = pc ? _activeSelectionMask(pc.width, pc.height) : null;
+                const mask = pc ? _activeSelectionMask(pc.width, pc.height, true) : null; // PORT-W5B: fingerprint includes the zone clip
                 if (!mask) return 'none';
                 let hash = 2166136261;
                 for (let i = 0; i < mask.length; i++) {
@@ -2819,7 +2962,7 @@ if __name__ == '__main__':
                 // code always wrote 100% opaque pixels regardless of slider.
                 const opacity = Math.max(0, Math.min(1, parseInt(document.getElementById('brushOpacity')?.value || '100', 10) / 100));
                 const selectionMask = paintCanvas
-                    ? _activeSelectionMask(paintCanvas.width, paintCanvas.height)
+                    ? _activeSelectionMask(paintCanvas.width, paintCanvas.height, true) // PORT-W5B: layer fill clips to the zone area too
                     : null;
                 const applyMask = window.SPBSelectionClip?.applyMask;
                 if (selectionMask && typeof applyMask !== 'function') {
@@ -2844,6 +2987,14 @@ if __name__ == '__main__':
                         );
                     }
                     if (!fillMath.hasMaskedDifference(data, fillCandidate, matched.matches)) {
+                        // [SPB-TFX3 2026-10-09 AUDIT2-F3 lane TOOLS-FIX-3] a click OUTSIDE the active selection was reported as "already use the
+                        // foreground colour" (false: nothing was tested, the selection simply clipped the fill away). Say the real reason.
+                        // BEFORE: 'Fill skipped: selected matching pixels already use the foreground colour'; AFTER: names the selection. Kill switch SPB_TFX3_OFF.
+                        if (!window.SPB_TFX3_OFF && selectionMask && paintCanvas
+                                && !selectionMask[Math.floor(startY) * paintCanvas.width + Math.floor(startX)]) {
+                            if (typeof showToast === 'function') showToast('Fill skipped: that spot is outside the active selection — click inside it, or clear the selection (Ctrl+D)', 'info');
+                            return false;
+                        }
                         if (typeof showToast === 'function') {
                             showToast(useSpecialBaked
                                 ? 'Fill skipped: selected matching pixels already have that appearance'
@@ -2856,18 +3007,50 @@ if __name__ == '__main__':
                     return false;
                 }
 
+                if (useSpecialBaked && fillCandidate && window.SPBSpecialZone && window.SPBSpecialZone.effective()) {   // [SPECIAL-ZONE 2026-10-11] Special Fill -> the zone's Base + footprint, layer untouched
+                    const _zw = new Float32Array(lw * lh); let _zany = false;
+                    for (let _i = 0; _i < _zw.length; _i++) {
+                        const _o = _i * 4;
+                        if (fillCandidate[_o] !== data[_o] || fillCandidate[_o + 1] !== data[_o + 1] || fillCandidate[_o + 2] !== data[_o + 2] || fillCandidate[_o + 3] !== data[_o + 3]) { _zw[_i] = opacity; _zany = true; }
+                    }
+                    if (_zany && window.SPBSpecialZone.commitFill(getLayerPaintSpecialId() || _getDefaultLayerPaintSpecialId(), paintCanvas.width, paintCanvas.height, lx, ly, lw, lh, _zw)) return true;
+                }
                 if (typeof _pushLayerUndo !== 'function' || typeof commitLayerCanvasUpdate !== 'function') return false;
                 // SPB-93 tick 17, owner verdict "jinky/off": validation now precedes
                 // history. Outside-layer and same-colour clicks no longer create fake undo.
                 _pushLayerUndo(layer, 'fill bucket on layer');
+                // [SPB-TFX3 2026-10-09 AUDIT2-F2 lane TOOLS-FIX-3] the toast quoted the whole flood region (e.g. 4,193,050 px on an empty layer)
+                // even when a selection clipped the fill to 59,598 px. Count the pixels that really changed. Kill switch SPB_TFX3_OFF.
+                let _tfx3Shown = matched.count;
+                if (!window.SPB_TFX3_OFF && fillCandidate) {
+                    let _c = 0; const _m = matched.matches;
+                    for (let _i = 0; _i < _m.length; _i++) {
+                        if (_m[_i] !== 2) continue;
+                        const _o = _i * 4;
+                        if (data[_o] !== fillCandidate[_o] || data[_o + 1] !== fillCandidate[_o + 1] || data[_o + 2] !== fillCandidate[_o + 2] || data[_o + 3] !== fillCandidate[_o + 3]) _c++;
+                    }
+                    _tfx3Shown = _c;
+                }
+                // [SPECIAL-SPEC 2026-10-11] Special Fill: the spec goes over exactly the pixels the fill changed (weight = Opacity)
+                let _spFill = null;
+                if (useSpecialBaked && fillCandidate && isSpecialSpecOn()) {
+                    const _wt = new Float32Array(lw * lh); let _any = false;
+                    for (let _i = 0; _i < _wt.length; _i++) {
+                        const _o = _i * 4;
+                        if (fillCandidate[_o] !== data[_o] || fillCandidate[_o + 1] !== data[_o + 1] || fillCandidate[_o + 2] !== data[_o + 2] || fillCandidate[_o + 3] !== data[_o + 3]) { _wt[_i] = opacity; _any = true; }
+                    }
+                    if (_any) _spFill = { id: getLayerPaintSpecialId() || _getDefaultLayerPaintSpecialId(), x: lx, y: ly, w: lw, h: lh, wt: _wt };
+                }
                 if (fillCandidate) data.set(fillCandidate);
                 else fillMath.applySolidFill(data, matched.matches, fr, fgv, fb, opacity);
                 tctx.putImageData(imgData, 0, 0);
-                return commitLayerCanvasUpdate(
+                const _fillRes = commitLayerCanvasUpdate(
                     layer,
                     tc,
-                    (useSpecialBaked ? 'Baked Special fill' : 'Fill') + ' applied to layer (' + matched.count + ' pixels): ' + (layer.name || 'Layer')
+                    (useSpecialBaked ? 'Baked Special fill' : 'Fill') + ' applied to layer (' + _tfx3Shown + ' pixels): ' + (layer.name || 'Layer')
                 );
+                if (_spFill && _fillRes !== false) _spbSpecialSpecApply(_spFill);   // [SPECIAL-SPEC 2026-10-11]
+                return _fillRes;
             }
             window.fillGradientOnLayer = fillGradientOnLayer;
             window.fillBucketOnLayer = fillBucketOnLayer;
@@ -2998,6 +3181,37 @@ if __name__ == '__main__':
                     : new Uint8Array(currentRegionMask);
                 const fillVal = (selMode === 'subtract') ? 0 : 255;
 
+                // PORT-W5 (2026-10-09, owner "tools basically SUCK"): Zone Fill Bucket shares the Magic Wand's region maths
+                // (SPBPcSelection.wandRegion: per-channel tolerance exactly like the Wand, 4-connected flood, AA rim).  The old
+                // test was Euclidean RGB at tol*sqrt(3), i.e. a fill and a wand click with the same Tolerance picked
+                // different pixels.  Add = union, Subtract = remove, Replace = new mask.
+                if (!window.SPB_PC_W5_OFF && !window.SPB_PC_W1_OFF && window.SPBPcSelection && window.SPBPcSelection.wandRegion) {
+                    const _aa5 = document.getElementById('wandAntiAlias')?.checked !== false;
+                    const _reg5 = window.SPBPcSelection.wandRegion(data, w, h, startX, startY, { tolerance, contiguous, antiAlias: _aa5 });
+                    const _m5 = _reg5.mask;
+                    const _b5 = _reg5.bbox || { x0: 0, y0: 0, x1: 0, y1: 0 };
+                    if (selMode === 'replace') {
+                        for (let y = _b5.y0; y < _b5.y1; y++) for (let x = _b5.x0; x < _b5.x1; x++) nextRegionMask[y * w + x] = _m5[y * w + x];
+                    } else if (selMode === 'subtract') {
+                        for (let y = _b5.y0; y < _b5.y1; y++) for (let x = _b5.x0; x < _b5.x1; x++) {
+                            const i = y * w + x, m = _m5[i];
+                            if (m) nextRegionMask[i] = Math.round(currentRegionMask[i] * (255 - m) / 255);
+                        }
+                    } else {
+                        for (let y = _b5.y0; y < _b5.y1; y++) for (let x = _b5.x0; x < _b5.x1; x++) {
+                            const i = y * w + x, m = _m5[i];
+                            if (m > nextRegionMask[i]) nextRegionMask[i] = m;
+                        }
+                    }
+                    if (_fillMasksEqual(currentRegionMask, nextRegionMask)) {
+                        if (typeof showToast === 'function') showToast('Fill skipped: target mask already matches this result', 'info');
+                        return false;
+                    }
+                    if (typeof pushUndo === 'function') pushUndo(selectedZoneIndex);
+                    zone.regionMask = nextRegionMask;
+                    return true;
+                }
+
                 if (contiguous) {
                     // SPB-93 tick 17, owner verdict "jinky/off": Fill begins at the
                     // exact clicked pixel. Magnetic edge snapping belongs to Wand.
@@ -3104,13 +3318,25 @@ if __name__ == '__main__':
                 if (layerSubRectDragActive && freeTransformState?.target === 'layer') return;
 
                 // Pan mode - don't draw while panning
-                if (isPanning || spaceHeld) return;
+                if (isPanning || spaceHeld || _tfxHandOn()) return;   // [SPB-TFX1 2026-10-09 TA-033] sticky Hand tool
 
                 // GRAB OBJECT live preview: show exactly what a click would take.
                 // Runs before the other hover paths and returns, because those are
                 // for Layer-mode element detection and would fight it.
                 if (canvasMode === 'grab-object') {
                     if (typeof scheduleGrabPreview === 'function') scheduleGrabPreview(e);
+                    return;
+                }
+                // PORT-W6: Quick Select brush stroke / hover ring (Wand option).
+                if (canvasMode === 'wand' && !window.SPB_PC_W6_OFF && window._spbPcQuick && window._spbPcQuick()) {
+                    const _qp = getPixelAtClamped(e);
+                    if (_qp) window.SPBPcQuick.move(_qp);
+                    if (window.SPBPcQuick.active()) return;
+                }
+                // PORT-W4: Magnetic Lasso live wire follows the pointer (button up or down).
+                if (canvasMode === 'lasso' && window.SPBPcMagnetic && window.SPBPcMagnetic.active()) {
+                    const _mp = getPixelAtClamped(e);
+                    if (_mp) window.SPBPcMagnetic.move(_mp, e);
                     return;
                 }
 
@@ -3139,18 +3365,20 @@ if __name__ == '__main__':
                         stpPill.onclick = (ev) => {
                             ev.stopImmediatePropagation();
                             window._spbSmartTextPick = !window._spbSmartTextPick;
-                            stpPill.textContent = window._spbSmartTextPick ? 'Smart Text Pick: ON' : 'Smart Text Pick: OFF';
+                            stpPill.textContent = window._spbSmartTextPick ? 'Smart Text Pick: ON' : 'Smart Text Pick: off';
                             stpPill.style.background = window._spbSmartTextPick ? '#166534' : '#334155';
                             stpPill.style.color = '#e0f2fe';
                             if (typeof _refreshLayerTransformQuickbarNumerics === 'function') _refreshLayerTransformQuickbarNumerics();
-                            if (typeof showToast === 'function') showToast(window._spbSmartTextPick ? 'Smart Text Pick: ON (global)' : 'Smart Text Pick: OFF', 'info');
+                            if (typeof showToast === 'function') showToast(window._spbSmartTextPick ? 'Smart Text Pick: ON (global)' : 'Smart Text Pick: off', 'info');
                         };
                     }
                     const isOn = !!window._spbSmartTextPick;
-                    stpPill.textContent = isOn ? 'Smart Text Pick: ON' : 'Smart Text Pick: OFF';
-                    stpPill.style.background = isOn ? '#166534' : '#334155';
-                    stpPill.style.color = '#e0f2fe';
-                    stpPill.style.display = 'block';
+                    // [SPB-TFX1 2026-10-09 TA-027] these four writes ran on EVERY mouse move and the textContent assignment (a new text node) dirtied layout, so the
+                    // very next getBoundingClientRect (getPixelAt) paid a ~13 ms forced reflow per hover tick. Write only when the value actually changes.
+                    const _pillText = isOn ? 'Smart Text Pick: ON' : 'Smart Text Pick: off';
+                    if (window.SPB_TFX1_OFF || stpPill.textContent !== _pillText) stpPill.textContent = _pillText;
+                    if (window.SPB_TFX1_OFF || stpPill._spbOn !== isOn) { stpPill.style.background = isOn ? '#166534' : '#334155'; stpPill.style.color = '#e0f2fe'; stpPill._spbOn = isOn; }
+                    if (window.SPB_TFX1_OFF || stpPill.style.display !== 'block') stpPill.style.display = 'block';
                     const now = Date.now();
                     if (!window._spbLastLayerHoverCheck || (now - window._spbLastLayerHoverCheck) > 90) {  // ~11 fps throttle for hover (safe)
                         window._spbLastLayerHoverCheck = now;
@@ -3161,9 +3389,11 @@ if __name__ == '__main__':
                             // artwork, not require the painter to guess its Layer.
                             const hLayer = ['layer-pick', 'pick-item'].includes(canvasMode)
                                 && typeof getTopmostVisibleLayerAtCanvasPoint === 'function'
-                                ? getTopmostVisibleLayerAtCanvasPoint(hpos.x, hpos.y, {editableOnly:true, includeLocked:true})
+                                ? getTopmostVisibleLayerAtCanvasPoint(hpos.x, hpos.y, {editableOnly:true, includeLocked:true, hover:true}) // [SPB-TFX1 TA-027] hover:true -> cached alpha
                                 : (typeof getSelectedLayer === 'function' ? getSelectedLayer() : null);
-                            if (hLayer && hLayer.visible && !hLayer.locked) {
+                            if (hLayer && _tfx3LiveText(hLayer)) {   // [SPB-TFX3 AUDIT2-F5] live text = one object: no per-letter hover outline
+                                window._spbHoverElementBbox = null;
+                            } else if (hLayer && hLayer.visible && !hLayer.locked) {
                                 // Lightweight check: try connected component at hover point
                                 if (typeof selectConnectedLayerPixelsAtPoint === 'function') {
                                     // v91: Use previewOnly to avoid mutating zone.regionMask or pushing undo during hover
@@ -3324,16 +3554,19 @@ if __name__ == '__main__':
                     document.getElementById('hoverRGB').textContent = `RGB(${px.r}, ${px.g}, ${px.b})`;
                 } else if ((canvasMode === 'brush' || canvasMode === 'erase') && isDrawing) {
                     let _paintPos = pos;
+                    // PORT-W5: sub-pixel pointer (pos.fx/fy) through the smoothing/stabilizer; dabs keep the fraction (fx/fy)
+                    const _w5sub = !window.SPB_PC_W5_OFF && Number.isFinite(pos.fx);
+                    if (_w5sub) _paintPos = { x: pos.fx, y: pos.fy };
                     // Wire Platinum smoothing + stabilizer (Bockwinkel audit: functions existed at 17616+ but had ZERO call sites — now live)
                     if (typeof window.smoothBrushPoint === 'function') {
-                        const s = window.smoothBrushPoint(pos.x, pos.y);
+                        const s = window.smoothBrushPoint(_paintPos.x, _paintPos.y, _w5sub);
                         _paintPos = { x: s.x, y: s.y };
                     }
                     if (typeof window.stabilizeBrushPoint === 'function') {
-                        const st = window.stabilizeBrushPoint(_paintPos.x, _paintPos.y);
+                        const st = window.stabilizeBrushPoint(_paintPos.x, _paintPos.y, _w5sub);
                         _paintPos = { x: st.x, y: st.y };
                     }
-                    _rememberBrushStrokeEndpoint(_paintPos.x, _paintPos.y, canvasMode);
+                    _rememberBrushStrokeEndpoint(Math.round(_paintPos.x), Math.round(_paintPos.y), canvasMode);
                     // SPB-93 tick 45: distance-resample every segment so fast
                     // events cannot create dotted gaps. Pressure is interpolated
                     // between events and never exceeds the configured maxima.
@@ -3345,12 +3578,11 @@ if __name__ == '__main__':
                     _forEachContinuousBrushDab(_paintPos.x, _paintPos.y, _pressure, _bRadiusBase, (dab) => {
                         const dynamics = _resolveBrushDynamics(_bRadiusBase, _baseOpacity, flow, dab.pressure);
                         if (_activeLayerCanvas) {
-                            _paintOnLayerAt(dab.x, dab.y, dynamics.radius, canvasMode === 'erase' ? '#000000' : _foregroundColor, dynamics.opacity, hardness, canvasMode === 'erase');
+                            _paintOnLayerAt(dab.x, dab.y, dynamics.radius, canvasMode === 'erase' ? '#000000' : _foregroundColor, dynamics.opacity, hardness, canvasMode === 'erase', { cap: _baseOpacity, flow: _resolveBrushDynamics(_bRadiusBase, 1, flow, dab.pressure).opacity, fx: dab.fx, fy: dab.fy }); // PORT-W2: cap/flow split -> SPBPcStroke coverage buffer
                         } else {
                             const val = canvasMode === 'brush' ? 1 : 0;
-                            const strokeTarget = paintRegionCircle(dab.x, dab.y, dynamics.radius, val, dynamics.opacity);
-                            if (strokeTarget === 'spatial') _fastSpatialOverlayArc(dab.x, dab.y, dynamics.radius, val);
-                            else _fastOverlayArc(dab.x, dab.y, dynamics.radius, val);
+                            // [SPB-TFX4 2026-10-10 item 1] the zone dab goes through window._zoneBrushDab (same paint + overlay arc as before) so Brush Dynamics can wrap it
+                            window._zoneBrushDab(dab.x, dab.y, dynamics.radius, val, dynamics.opacity);
                         }
                     });
                 } else if ((canvasMode === 'spatial-include' || canvasMode === 'spatial-exclude' || canvasMode === 'spatial-erase') && isDrawing) {
@@ -3585,7 +3817,7 @@ if __name__ == '__main__':
                 }
 
                 // Pan mode intercept - space+drag, middle-click, right-click, or active pan
-                if (spaceHeld || e.button === 1 || e.button === 2 || isPanning) return;
+                if (spaceHeld || _tfxHandOn() || e.button === 1 || e.button === 2 || isPanning) return;   // [SPB-TFX1 2026-10-09 TA-033] sticky Hand tool
 
                 // Compare mode intercept
                 if (compareMode) { onCompareMouseDown(e); return; }
@@ -3726,6 +3958,17 @@ if __name__ == '__main__':
                             typeof isPointInLayerBbox === 'function' &&
                             isPointInLayerBbox(selLayer, layerPos.x, layerPos.y);
 
+                        // [SPB-TFX1 2026-10-09 TA-026] Move on a hidden layer, a locked layer outside its box, or empty space of the layer was a silent no-op (no toast in 0.4 s):
+                        // say why (one toast per 1.5 s; behaviour otherwise unchanged - no return / preventDefault here).
+                        if (!hasValidLayer && !window.SPB_TFX1_OFF && selLayer && _spbExplicitLayerManipulation && typeof showToast === 'function') {
+                            const _nm = selLayer.name || 'Selected layer', _t = Date.now();
+                            let _m = null;
+                            if (selLayer.locked) _m = `"${_nm}" is locked — unlock it before moving or transforming`;
+                            else if (!selLayer.visible) _m = `"${_nm}" is hidden — turn it on in the Layers panel to move it`;
+                            else if (!freeTransformState) _m = `Nothing of "${_nm}" under the cursor — click the piece you want to move (Alt-drag moves the whole layer)`;
+                            if (_m && _t - (window.__spbTfx1MoveToastAt || 0) > 1500) { window.__spbTfx1MoveToastAt = _t; showToast(_m, 'warn'); }
+                        }
+
                         if (hasValidLayer) {
                             const inLayerMode = typeof isLayerToolbarMode === 'function' && isLayerToolbarMode();
                             const forceWholeLayer = e.altKey;   // v89: Alt = force whole-layer move (user request for sponsor layers)
@@ -3744,7 +3987,7 @@ if __name__ == '__main__':
                             // v89 Smart Layer Move (Hall + user feedback): In Layer mode the Move tool now prefers per-element direct manipulation.
                             // Click a sponsor/number on a busy layer → tight bbox + independent transform (the long-requested behavior).
                             // Hold Alt while clicking to force classic whole-layer move.
-                            if (inLayerMode && !forceWholeLayer) {
+                            if (inLayerMode && !forceWholeLayer && !_tfx3LiveText(selLayer)) {   // [SPB-TFX3 AUDIT2-F5] live text goes straight to the whole-layer drag below
                                 // SPB-93: committed linked bounds are the object identity.
                                 // Re-picking antialiased pixels must not lift a new unlinked
                                 // selection because its tight alpha bbox differs by a pixel.
@@ -3808,7 +4051,7 @@ if __name__ == '__main__':
                                 }
 
                                 if (typeof selectConnectedLayerPixelsAtPoint === 'function') {
-                                    const pickedElement = selectConnectedLayerPixelsAtPoint(selLayer.id, layerPos.x, layerPos.y, { autoTransform: true });
+                                    const pickedElement = selectConnectedLayerPixelsAtPoint(selLayer.id, layerPos.x, layerPos.y, { autoTransform: true, quietMiss: !window.SPB_TFX1_OFF });   // [SPB-TFX1 2026-10-09 TA-026] a miss falls through to the whole-layer move: no "No opaque pixels" toast first
                                     if (pickedElement) {
                                         // Success: the existing per-element machinery (tight bbox, subRect, handles, custom pivot, live HUD) is now active.
                                         e.preventDefault();
@@ -4153,7 +4396,7 @@ if __name__ == '__main__':
                                     x1: useBbox.x1, y1: useBbox.y1,
                                     x2: useBbox.x2, y2: useBbox.y2,
                                     until: Date.now() + 1650,
-                                    label: tightBbox ? 'ISOLATED ELEMENT' : 'LAYER SELECTION'
+                                    label: tightBbox ? 'Isolated element' : 'Layer selection'
                                 };
                                 // 2026-06-01 (owner: "the box came up very small and basically broke the
                                 // screen"): auto zoom + CENTER the view on a TIGHT isolated glyph so the
@@ -4286,7 +4529,7 @@ if __name__ == '__main__':
                     e.preventDefault(); return;
                 }
                 if (canvasMode === 'ellipse-marquee') {
-                    if (typeof _beginEllipseGesture === 'function') _beginEllipseGesture(pos);
+                    if (typeof _beginEllipseGesture === 'function') _beginEllipseGesture(pos, e);
                     else { _ellipseStart = pos; isDrawing = true; }
                     e.preventDefault(); return;
                 }
@@ -4432,7 +4675,8 @@ if __name__ == '__main__':
                     // layer's pixels (Photoshop's "Sample: Current Layer" mode).
                     // Plain click samples the composite as before.
                     var px;
-                    if (e.shiftKey && typeof _selectedLayerId !== 'undefined' && _selectedLayerId
+                    if ((e.shiftKey || (!window.SPB_TFX1_OFF && document.getElementById('spbEyeSampleSrc')?.value === 'layer'))   // [SPB-TFX1 2026-10-09 TA-029] options-band "Sample: Current Layer"
+                        && typeof _selectedLayerId !== 'undefined' && _selectedLayerId
                         && typeof _psdLayers !== 'undefined') {
                         var srcLayer = _psdLayers.find(function(l) { return l.id === _selectedLayerId; });
                         if (srcLayer && srcLayer.img) {
@@ -4557,7 +4801,10 @@ if __name__ == '__main__':
                         if (!inited || !_activeLayerCanvas) {
                             isDrawing = false;
                             const reason = (typeof _diagnoseLayerPaintFail === 'function' && _diagnoseLayerPaintFail()) || 'layer not ready';
-                            if (typeof showToast === 'function') showToast(`${canvasMode === 'erase' ? 'Erase' : 'Brush'} aborted — ${reason}`, 'warn');
+                            // [SPB-TFX2 2026-10-09 TA-011] _beginLayerPixelStroke already toasted "Alpha Lock protects this Layer" for an alpha-locked layer;
+                            // this second toast replaced it with the misleading "Erase aborted - layer not ready" (painter hunted for a loading problem).
+                            const _tfx2AlphaErase = !window.SPB_TFX2_OFF && canvasMode === 'erase' && (() => { const _l = (typeof getSelectedEditableLayer === 'function') ? getSelectedEditableLayer() : null; return !!(_l && _l.alphaLock); })();
+                            if (!_tfx2AlphaErase && typeof showToast === 'function') showToast(`${canvasMode === 'erase' ? 'Erase' : 'Brush'} aborted — ${reason}`, 'warn');
                             e.preventDefault(); return;
                         }
                         const radiusBase = parseInt(document.getElementById('brushSize')?.value || 20);
@@ -4572,12 +4819,15 @@ if __name__ == '__main__':
                         const radius = _dynamicsL.radius;
                         const opacity = _dynamicsL.opacity;
                         const _lineAnchorL = e.shiftKey ? _getBrushLineAnchor(canvasMode) : null;
-                        const _paintLayerLineDab = (x, y) => _paintOnLayerAt(
+                        const _pcFlowL = _resolveBrushDynamics(radiusBase, 1, _flowL, _pressureL).opacity; // PORT-W2
+                        const _paintLayerLineDab = (x, y, _fx, _fy) => _paintOnLayerAt(
                             x, y, radius,
                             canvasMode === 'erase' ? '#000000' : _foregroundColor,
-                            opacity, hardness, canvasMode === 'erase'
+                            opacity, hardness, canvasMode === 'erase',
+                            { cap: _oBaseL, flow: _pcFlowL, fx: _fx, fy: _fy } // PORT-W5: fx/fy = exact pointer for the opening dab
                         );
                         if (_lineAnchorL) _forEachBrushLineDab(_lineAnchorL, pos, radius, _paintLayerLineDab);
+                        else if (!window.SPB_PC_W5_OFF && Number.isFinite(pos.fx)) _paintLayerLineDab(pos.x, pos.y, pos.fx, pos.fy);
                         else _paintLayerLineDab(pos.x, pos.y);
                         _seedBrushSpacing(pos.x, pos.y, _dynamicsL.pressure);
                         _rememberBrushStrokeEndpoint(pos.x, pos.y, canvasMode);
@@ -4597,13 +4847,17 @@ if __name__ == '__main__':
                     // Reset Platinum smoothing/stabilizer at stroke start (Bockwinkel/Nash)
                     if (typeof window.resetBrushSmoothing === 'function') window.resetBrushSmoothing();
                     if (typeof window.resetBrushStabilizer === 'function') window.resetBrushStabilizer();
-                    let _startPos = pos;
+                    // PORT-W5B (SPB_W5B_OFF): the opening dab of a ZONE-mask stroke used the integer pointer; run it sub-pixel like mousemove.
+                    const _zsub = !window.SPB_W5B_OFF && !window.SPB_PC_W5_OFF && Number.isFinite(pos.fx) && Number.isFinite(pos.fy);
+                    let _startPos = _zsub ? { x: pos.fx, y: pos.fy } : pos;
                     if (typeof window.smoothBrushPoint === 'function') {
-                        const s = window.smoothBrushPoint(pos.x, pos.y); _startPos = {x:s.x, y:s.y};
+                        const s = window.smoothBrushPoint(_startPos.x, _startPos.y, _zsub); _startPos = {x:s.x, y:s.y};
                     }
                     if (typeof window.stabilizeBrushPoint === 'function') {
-                        const st = window.stabilizeBrushPoint(_startPos.x, _startPos.y); _startPos = {x:st.x, y:st.y};
+                        const st = window.stabilizeBrushPoint(_startPos.x, _startPos.y, _zsub); _startPos = {x:st.x, y:st.y};
                     }
+                    let _startSub = null;
+                    if (_zsub) { _startSub = { x: _startPos.x, y: _startPos.y }; _startPos = { x: Math.round(_startPos.x), y: Math.round(_startPos.y) }; }
                     const _pressure0 = (typeof window._lastPointerPressure === 'number') ? window._lastPointerPressure : 0.5;
                     const _rBase = getBrushSize();
                     const _oBase = parseInt(document.getElementById('brushOpacity')?.value || 100) / 100;
@@ -4614,12 +4868,14 @@ if __name__ == '__main__':
                     const _rStart = _dynamics0.radius;
                     const _oStart = _dynamics0.opacity;
                     const _lineAnchorZ = e.shiftKey ? _getBrushLineAnchor(canvasMode) : null;
-                    const _paintZoneLineDab = (x, y) => paintRegionCircle(
-                        x, y, _rStart, canvasMode === 'brush' ? 1 : 0, _oStart
+                    // [SPB-TFX4 2026-10-10 item 1] opening / Shift-line zone dabs go through window._zoneBrushDab too (open = no overlay arc: _doRenderRegionOverlay() follows)
+                    const _paintZoneLineDab = (x, y) => window._zoneBrushDab(
+                        x, y, _rStart, canvasMode === 'brush' ? 1 : 0, _oStart, { open: true }
                     );
                     if (_lineAnchorZ) _forEachBrushLineDab(_lineAnchorZ, _startPos, _rStart, _paintZoneLineDab);
+                    else if (_startSub) { window._spbDabSub = _startSub; try { _paintZoneLineDab(_startPos.x, _startPos.y); } finally { window._spbDabSub = null; } }
                     else _paintZoneLineDab(_startPos.x, _startPos.y);
-                    _seedBrushSpacing(_startPos.x, _startPos.y, _dynamics0.pressure);
+                    _seedBrushSpacing(_startSub ? _startSub.x : _startPos.x, _startSub ? _startSub.y : _startPos.y, _dynamics0.pressure);
                     _rememberBrushStrokeEndpoint(_startPos.x, _startPos.y, canvasMode);
                     // SYNC render - must complete before first mousemove fires _fastOverlayArc()
                     // (RAF-wrapped renderRegionOverlay() is async and may not run in time,
@@ -4638,6 +4894,10 @@ if __name__ == '__main__':
                     const val = canvasMode === 'spatial-include' ? 1 : (canvasMode === 'spatial-exclude' ? 2 : 0);
                     paintSpatialCircle(pos.x, pos.y, spatialBrushRadius, val);
                     _doRenderRegionOverlay();
+                } else if (canvasMode === 'lasso' && _pcMagnetic() && window.SPBPcMagnetic.enabled()) {
+                    // PORT-W4 (2026-10-09, owner: "our tools basically SUCK"): Magnetic Lasso option
+                    // (PhotoCraft magnetic.rs live-wire). Off => the legacy Lasso branch below.
+                    window.SPBPcMagnetic.down(pos, e);
                 } else if (canvasMode === 'lasso') {
                     if (!lassoActive && lassoPoints.length === 0) lassoActive = true;
                     // Save mousedown position for drag-vs-click detection
@@ -4651,7 +4911,13 @@ if __name__ == '__main__':
                         e.preventDefault();
                         return;
                     }
-                    _beginRectGesture(pos);
+                    // [SPB-TFX2 2026-10-09 TA-018] the START used getPixelAt's floor() while the END (_rectCanvasPointFromEvent) rounds, so every drag came out up
+                    // to 1 px wider/taller on the side where the fractional part is >= .5; start and end now use the same (rounded) boundary.
+                    _beginRectGesture(window.SPB_TFX2_OFF ? pos : (_rectCanvasPointFromEvent(e) || pos), e);
+                } else if (canvasMode === 'wand' && _pcQuick() && window.SPBPcQuick.enabled()) {
+                    // PORT-W6 (2026-10-09): Quick Select option of the Wand (PhotoCraft segment/quick.rs).
+                    // Off => the legacy wand branch below.
+                    window.SPBPcQuick.down(pos, e);
                 } else if (canvasMode === 'wand') {
                     const tolerance = _readCanvasTolerance();
                     applyMagicWandSelection(pos.x, pos.y, tolerance, e);
@@ -4828,6 +5094,8 @@ if __name__ == '__main__':
                     // from the mouseup branch.
                     if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
                 }
+                if (canvasMode === 'wand' && window.SPBPcQuick && window.SPBPcQuick.active()) window.SPBPcQuick.up(e); // PORT-W6
+                if (canvasMode === 'lasso' && window.SPBPcMagnetic && window.SPBPcMagnetic.active()) window.SPBPcMagnetic.up(e); // PORT-W4
                 if (canvasMode === 'lasso' && isDrawing) {
                     if (lassoFreehandDrawing) {
                         // Freehand drag always terminates here. closeLasso rejects a
@@ -4862,7 +5130,7 @@ if __name__ == '__main__':
                         const _gdx = pos.x - window._gradientStart.x, _gdy = pos.y - window._gradientStart.y;
                         if (_gdx * _gdx + _gdy * _gdy < 4) {
                             // 2026-06-20: click-without-drag — no undo pushed, no fill (was leaving a useless undo entry)
-                            if (typeof showToast === 'function') showToast('Gradient: click and DRAG to set the direction');
+                            if (typeof showToast === 'function') showToast('Gradient: click and drag to set the direction');
                         } else {
                             const gradType = document.getElementById('gradientType')?.value || 'linear';
                             const target = window._gradientTarget;
@@ -4992,7 +5260,7 @@ if __name__ == '__main__':
 
             // Document-level mousemove for rect/gradient preview during drag.
             document.addEventListener('mousemove', function _rectGradDocMove(e) {
-                if (isPanning || spaceHeld) return;
+                if (isPanning || spaceHeld || _tfxHandOn()) return;
                 if (canvasMode === 'selection-move' && isDrawing && _selectionMoveDrag) {
                     const pos = getPixelAtClamped(e);
                     updateSelectionMovePreview(pos, e);
@@ -5079,8 +5347,10 @@ if __name__ == '__main__':
             if (typeof window.alignToolbarModeForToolActivation === 'function') {
                 window.alignToolbarModeForToolActivation(mode);
             }
+            if (navTool && !window.SPB_TFX1_OFF && mode !== canvasMode) _tfxNavExit(true);   // [SPB-TFX1 2026-10-09 TA-033] choosing a real tool leaves the sticky Hand / Zoom
             canvasMode = mode;
             if (typeof window !== 'undefined') window.canvasMode = mode;
+            try { if (window.SPBStrokeHL) window.SPBStrokeHL.onTool(mode); } catch (_) {}   // [STROKE-HL 2026-10-12] highlight clears when the tool changes
             // [SPB pick-from-car 2026-07-04] leaving the eyedropper disarms the zone
             // panel's 🎯 auto-apply so casual sampling later never mutates a zone.
             if (mode !== 'eyedropper' && typeof window !== 'undefined' && window._spbPickFromCarZone) {
@@ -5115,7 +5385,7 @@ if __name__ == '__main__':
                 var _toolHints = {
                     brush: 'Drag to paint · Shift+click connects from the previous endpoint · Alt+click samples color',
                     erase: 'Drag to erase · Shift+click connects from the previous endpoint · choose Soft / Block / Clear Target',
-                    eyedropper: 'Click the paint to grab its colour',
+                    eyedropper: 'Click the paint to grab its color',
                     wand: 'Click sample · Shift=add · Alt=subtract · Sample/Tolerance/Contiguous shape the match',
                     selectall: 'Click sample · full-source RGBA match · Shift=add · Alt=subtract · Sample/Tolerance refine',
                     edge: 'Click inside a bounded region · Shift=add · Alt=subtract · Tolerance controls boundary sensitivity',
@@ -5125,7 +5395,7 @@ if __name__ == '__main__':
                     lasso: 'Drag freehand and release to close · or click polygon points, then double-click / Enter · Backspace removes last point',
                     pen: 'Click = anchor · drag = curve · Shift = 45° · Alt = break handles · Enter / Path→Selection = close + select · Esc = clear',
                     colorbrush: 'Paint foreground RGB directly onto the selected Layer',
-                    clone: 'Selected Layer only · Alt+click sets the SOURCE, then paint to clone it',
+                    clone: 'Selected Layer only · Alt+click sets the Source, then paint to clone it',
                     heal: 'Selected Layer only · Alt+click samples clean texture, then paint to blend its detail into the target tone',
                     recolor: 'Selected Layer only · first click samples the source colour · paint foreground hue/chroma while preserving light and texture',
                     smudge: 'Drag to smear selected Layer pixels in the drag direction',
@@ -5192,6 +5462,8 @@ if __name__ == '__main__':
             document.getElementById(vtBtnId)?.classList.add('active');
             // Reset tool state when switching away — prevents stale state from leaking between tools
             if (mode !== 'lasso' && lassoActive) { lassoActive = false; lassoPoints = []; hideLassoPreview(); }
+            if (mode !== 'lasso' && window.SPBPcMagnetic) window.SPBPcMagnetic.cancel(); // PORT-W4
+            if (mode !== 'wand' && window.SPBPcQuick) window.SPBPcQuick.cancel(); // PORT-W6
             if (mode !== 'pen' && typeof penPoints !== 'undefined' && penPoints.length > 0) { clearPenPath({ silent: true }); }
             if (mode !== 'clone') { _cloneOffset = null; }
             if (mode !== 'heal' && typeof window.resetHealingStroke === 'function') window.resetHealingStroke();
@@ -5395,7 +5667,7 @@ if __name__ == '__main__':
                         ? 'Shift: add · Alt: subtract · Sample + Tolerance match the full source'
                         : 'Shift: add · Alt: subtract · Sample + Tolerance control the match')
                     : mode === 'ellipse-marquee' || mode === 'rect'
-                    ? (mode === 'rect' ? 'Shift: square · Alt: from center · Esc: cancel' : 'Shift: circle · Alt: from center · Esc: cancel')
+                    ? (window.SPB_TFX3_OFF ? (mode === 'rect' ? 'Shift: square · Alt: from center · Esc: cancel' : 'Shift: circle · Alt: from center · Esc: cancel') : (mode === 'rect' ? 'Shift: add · Alt: subtract · mid-drag: Shift square, Alt from center · Esc: cancel' : 'Shift: add · Alt: subtract · mid-drag: Shift circle, Alt from center · Esc: cancel'))   // [SPB-TFX3 2026-10-09 TA-017] hint follows the new modifier rule
                     : 'Shift+click add, Alt+click subtract';
             }
             if (typeof syncLayerPaintSourceUI === 'function') syncLayerPaintSourceUI();
@@ -5459,8 +5731,10 @@ if __name__ == '__main__':
             // Wand/Eyedropper sample size; anti-alias belongs only to selection.
             const showWandExtras = (mode === 'wand' || mode === 'selectall');
             const sampleSizeEl = document.getElementById('wandSampleSize');
+            const _tfxEyeWrap = document.getElementById('spbEyeOptsWrap');   // [SPB-TFX1 2026-10-09 TA-029]
+            if (_tfxEyeWrap) _tfxEyeWrap.style.display = (mode === 'eyedropper' && !window.SPB_TFX1_OFF) ? 'inline-flex' : 'none';
             if (sampleSizeEl) {
-                sampleSizeEl.style.display = (showWandExtras || mode === 'eyedropper') ? '' : 'none';
+                sampleSizeEl.style.display = (showWandExtras || (mode === 'eyedropper' && window.SPB_TFX1_OFF)) ? '' : 'none';
                 sampleSizeEl.title = mode === 'eyedropper'
                     ? 'Eyedropper sample area — alpha-aware average around the cursor'
                     : 'Sample area — averages color under cursor for more forgiving selection';
@@ -5472,6 +5746,14 @@ if __name__ == '__main__':
             const showFeather = (mode === 'wand' || mode === 'selectall' || mode === 'rect' || mode === 'lasso' || mode === 'ellipse-marquee' || mode === 'edge' || mode === 'pen');
             const featherEl = document.getElementById('selectionFeatherLabel');
             if (featherEl) featherEl.style.display = showFeather ? 'inline-flex' : 'none';
+            // PORT-W4: Magnetic Lasso options (Lasso only) + Smooth radius (next to Feather).
+            const magEl = document.getElementById('spbMagneticLabel');
+            if (magEl) magEl.style.display = (mode === 'lasso' && !window.SPB_PC_W4_OFF) ? 'inline-flex' : 'none';
+            // PORT-W6: Quick Select options (Wand only).
+            const quickEl = document.getElementById('spbQuickLabel');
+            if (quickEl) quickEl.style.display = (mode === 'wand' && !window.SPB_PC_W6_OFF) ? 'inline-flex' : 'none';
+            const smoothEl = document.getElementById('selectionSmoothLabel');
+            if (smoothEl) smoothEl.style.display = showFeather ? 'inline-flex' : 'none';
 
             // Update cursor
             const viewport = document.getElementById('canvasViewport');
@@ -5644,7 +5926,7 @@ if __name__ == '__main__':
             }
             const _hintsHidden = (function () { try { return localStorage.getItem('spb_hints_hidden') === '1'; } catch (e) { return false; } })();
             if (_hintsBtn) {
-                _hintsBtn.textContent = _hintsHidden ? '💡' : '✕';
+                _hintsBtn.textContent = _hintsHidden ? 'Show hints' : '✕';
                 _hintsBtn.title = _hintsHidden ? 'Show tool hints again' : 'Hide tool hints (the bar stays — the screen never shifts)';
             }
             if (_hintsHidden) {
@@ -5667,7 +5949,7 @@ if __name__ == '__main__':
                     label.textContent = '🎯 Pick colors for: ' + (zones[selectedZoneIndex]?.name || ('Zone ' + (selectedZoneIndex + 1)));
                     label.style.color = 'var(--accent-cyan, #37e6ff)';
                 }
-                if (hint) hint.textContent = '(SELECT A COLOR FROM THE SOURCE OR LIVE PREVIEW — every click ADDS it to this zone; stack as many colors as you like)';
+                if (hint) hint.textContent = '(Select a color from the Source or live preview — every click adds it to this zone; stack as many colors as you like)';
                 return;
             }
             if (typeof freeTransformState !== 'undefined' && freeTransformState && freeTransformState.target === 'layer') {
@@ -5675,7 +5957,8 @@ if __name__ == '__main__':
                 label.style.color = '#00e5ff';
                 hint.textContent = freeTransformState.sessionScopeLabel === 'Transform Selection'
                     ? '(live handles are editing the picked object only)'
-                    : '(live handles are editing the selected layer)';
+                    : (window.SPB_TFX1_OFF ? '(live handles are editing the selected layer)'
+                        : '(Shift = keep proportions - Ctrl+corner = distort - Ctrl+Shift+edge = skew - Ctrl+Shift+Alt+corner = perspective)');   // [SPB-TFX1 2026-10-09 TA-031]
                 return;
             }
             if (layerMode && (canvasMode === 'shape' || canvasMode === 'text')) {
@@ -5689,7 +5972,7 @@ if __name__ == '__main__':
             if (layerMode && !selectedLayer) {
                 label.textContent = 'Layer mode:';
                 label.style.color = '#00e5ff';
-                hint.textContent = '(choose an editable layer on the right, or switch to ZONE above to apply a finish)';
+                hint.textContent = '(choose an editable layer on the right, or switch to Zone above to apply a finish)';
                 return;
             }
             if (layerMode && selectedLayer) {
@@ -5704,7 +5987,7 @@ if __name__ == '__main__':
                     label.textContent = canvasMode === 'erase' ? 'Erasing layer:' : 'Painting layer:';
                     label.style.color = '#00e5ff';
                     hint.textContent = selectedZoneMatchesLayer && scopedZoneBrush
-                        ? '(this paints raw layer pixels across the layer — switch to ZONE to stay inside the current zone selector)'
+                        ? '(this paints raw layer pixels across the layer — switch to Zone to stay inside the current zone selector)'
                         : '(toolbar is locked to the selected layer — zone masks will not change)';
                     return;
                 }
@@ -5718,14 +6001,14 @@ if __name__ == '__main__':
                     label.textContent = 'Layer tool on:';
                     label.style.color = '#00e5ff';
                     hint.textContent = selectedZoneMatchesLayer && scopedZoneBrush
-                        ? '(this edits raw layer pixels on the selected layer — switch to ZONE to scope it to the active zone selector)'
-                        : '(toolbar is locked to the selected layer — switch to ZONE for mask tools)';
+                        ? '(this edits raw layer pixels on the selected layer — switch to Zone to scope it to the active zone selector)'
+                        : '(toolbar is locked to the selected layer — switch to Zone for mask tools)';
                     return;
                 }
                 if (['wand', 'selectall', 'edge', 'rect', 'lasso', 'ellipse-marquee', 'pen', 'selection-move', 'spatial-include', 'spatial-exclude', 'spatial-erase'].includes(canvasMode)) {
                     label.textContent = 'Zone-only tool:';
                     label.style.color = '#ffb347';
-                    hint.textContent = '(switch the toolbar to ZONE to use this tool on masks and restrictions)';
+                    hint.textContent = '(switch the toolbar to Zone to use this tool on masks and restrictions)';
                     return;
                 }
             }
@@ -5735,7 +6018,7 @@ if __name__ == '__main__':
             } else if (canvasMode === 'brush' && scopedZoneBrush) {
                 label.textContent = 'Refining zone:';
                 label.style.color = 'var(--accent-green)';
-                hint.textContent = '(paint to KEEP this zone only inside its current color/layer selection — kept marks should now win locally in preview)';
+                hint.textContent = '(paint to keep this zone only inside its current color/layer selection — kept marks should now win locally in preview)';
             } else if (canvasMode === 'erase') {
                 const eraserMode = _getEraserMode();
                 if (eraserMode === 'all') {
@@ -5755,15 +6038,15 @@ if __name__ == '__main__':
                     hint.textContent = '(paint over drawn areas to remove them)';
                 }
             } else if (canvasMode === 'spatial-include') {
-                label.textContent = '✅ Including for:';
+                label.textContent = 'Including for:';
                 label.style.color = 'var(--accent-green)';
-                hint.textContent = '(paint green areas to KEEP in this zone\'s color match)';
+                hint.textContent = '(paint green areas to keep in this zone\'s color match)';
             } else if (canvasMode === 'spatial-exclude') {
-                label.textContent = '❌ Excluding from:';
+                label.textContent = 'Excluding from:';
                 label.style.color = '#ff4444';
-                hint.textContent = '(paint red areas to REMOVE from this zone\'s color match)';
+                hint.textContent = '(paint red areas to remove from this zone\'s color match)';
             } else if (canvasMode === 'spatial-erase') {
-                label.textContent = '🧹 Erasing spatial marks:';
+                label.textContent = 'Erasing spatial marks:';
                 label.style.color = '#ffb347';
                 hint.textContent = '(erase include/exclude marks without touching the art)';
             } else if (canvasMode === 'lasso') {
@@ -5873,7 +6156,7 @@ if __name__ == '__main__':
                 label.textContent = 'Active target:';
                 label.style.color = '';
                 hint.textContent = layerMode
-                    ? '(choose a layer on the right; switch to ZONE above to apply a finish)'
+                    ? '(choose a layer on the right; switch to Zone above to apply a finish)'
                     : '(choose a zone on the left; pick a color or draw an area, then choose a base finish)';
             }
         }
@@ -5924,6 +6207,13 @@ if __name__ == '__main__':
             if (!point || typeof paintDab !== 'function') return null;
             const anchor = event?.shiftKey ? _getBrushLineAnchor(canvasMode) : null;
             if (anchor) _forEachBrushLineDab(anchor, point, radius, paintDab);
+            else if (!window.SPB_W5B_OFF && !window.SPB_PC_W5_OFF && Number.isFinite(point.fx) && Number.isFinite(point.fy)) {
+                // PORT-W5B (SPB_W5B_OFF): the opening dab of clone/heal/colour/recolor/smudge/history/pencil/dodge/burn/blur/sharpen was
+                // integer-centred (only mousemove dabs saw _spbDabSub); hand it the filtered sub-pixel pointer like every later dab.
+                const _prevSub = window._spbDabSub;
+                window._spbDabSub = { x: point.fx, y: point.fy };
+                try { paintDab(point.x, point.y); } finally { window._spbDabSub = _prevSub; }
+            }
             else paintDab(point.x, point.y);
             _rememberBrushStrokeEndpoint(point.x, point.y, canvasMode);
             return anchor;
@@ -5955,14 +6245,23 @@ if __name__ == '__main__':
         }
         function _filterContinuousBrushPoint(point) {
             if (!point) return null;
-            let filtered = { x: point.x, y: point.y };
+            // PORT-W5: run the input filters on the pointer's EXACT position (point.fx/fy) so strokes are sub-pixel;
+            // the returned x/y stay integer for every legacy consumer, and the exact centre rides in _spbPtrSub
+            // (consumed by _forEachContinuousBrushDab).  SPB_PC_W5_OFF restores the integer-only behaviour.
+            const _sub = !window.SPB_PC_W5_OFF && Number.isFinite(point.fx) && Number.isFinite(point.fy);
+            let filtered = _sub ? { x: point.fx, y: point.fy } : { x: point.x, y: point.y };
             if (typeof window.smoothBrushPoint === 'function') {
-                const smoothed = window.smoothBrushPoint(filtered.x, filtered.y);
+                const smoothed = window.smoothBrushPoint(filtered.x, filtered.y, _sub);
                 filtered = { x: smoothed.x, y: smoothed.y };
             }
             if (typeof window.stabilizeBrushPoint === 'function') {
-                const stabilized = window.stabilizeBrushPoint(filtered.x, filtered.y);
+                const stabilized = window.stabilizeBrushPoint(filtered.x, filtered.y, _sub);
                 filtered = { x: stabilized.x, y: stabilized.y };
+            }
+            if (_sub) {
+                const ix = Math.round(filtered.x), iy = Math.round(filtered.y);
+                window._spbPtrSub = { x: ix, y: iy, fx: filtered.x, fy: filtered.y };
+                return { x: ix, y: iy, fx: filtered.x, fy: filtered.y };
             }
             return filtered;
         }
@@ -5978,6 +6277,7 @@ if __name__ == '__main__':
         // filters and an explicit spacing seed, so a prior stroke cannot tug,
         // skip, or double-stamp the opening movement of the next stroke.
         function _beginContinuousBrushStroke(point) {
+            window._spbW5Key = {}; // PORT-W5: new identity => fresh stroke coverage buffer for pencil/colour/history brush
             _resetBrushSpacing();
             if (typeof window.resetBrushSmoothing === 'function') window.resetBrushSmoothing();
             if (typeof window.resetBrushStabilizer === 'function') window.resetBrushStabilizer();
@@ -5988,9 +6288,11 @@ if __name__ == '__main__':
         function _paintContinuousBrushDab(dab, paintDab) {
             const priorPressure = window._lastPointerPressure;
             window._lastPointerPressure = Number.isFinite(Number(dab?.pressure)) ? Number(dab.pressure) : 1;
+            window._spbDabSub = { x: Number(dab?.x) || 0, y: Number(dab?.y) || 0 }; // PORT-W2: sub-pixel centre for pc-stroke tools
             try {
-                paintDab({ ...dab, x: Math.round(Number(dab?.x) || 0), y: Math.round(Number(dab?.y) || 0) });
+                paintDab({ ...dab, x: Math.round(Number(dab?.x) || 0), y: Math.round(Number(dab?.y) || 0), fx: Number(dab?.x) || 0, fy: Number(dab?.y) || 0 }); // PORT-W2 2026-10-09: fx/fy keep the sub-pixel centre for SPBPcStroke
             } finally {
+                window._spbDabSub = null;
                 window._lastPointerPressure = priorPressure;
             }
         }
@@ -6014,28 +6316,33 @@ if __name__ == '__main__':
         }
         function _forEachContinuousBrushDab(x, y, pressure, baseRadius, paintDab) {
             if (typeof paintDab !== 'function') return 0;
+            // PORT-W5: the pointer's exact (sub-pixel) centre from _filterContinuousBrushPoint, if it belongs to this x/y
+            const _ix = Math.round(x), _iy = Math.round(y);
+            const _ps = window._spbPtrSub; window._spbPtrSub = null;
+            if (_ps && _ps.x === x && _ps.y === y && !window.SPB_PC_W5_OFF) { x = _ps.fx; y = _ps.fy; }
             const spacingPct = parseInt(document.getElementById('brushSpacing')?.value || 25, 10);
             const spacing = Math.max(1, Math.max(1, Number(baseRadius) || 1) * spacingPct / 100);
             const dynamics = window.SPBStrokeDynamics;
             let painted = 0;
             if (!dynamics?.sampleSegment || !dynamics?.beginStroke) {
                 if (_checkBrushSpacing(x, y, baseRadius)) painted = _paintContinuousBrushDabs([{ x, y, pressure }], paintDab);
-                _rememberBrushStrokeEndpoint(x, y, canvasMode);
+                _rememberBrushStrokeEndpoint(_ix, _iy, canvasMode);
                 return painted;
             }
             if (!_brushSpacingState) {
                 _brushSpacingState = dynamics.beginStroke({ x, y, pressure });
                 painted = _paintContinuousBrushDabs([{ x, y, pressure }], paintDab);
-                _rememberBrushStrokeEndpoint(x, y, canvasMode);
+                _rememberBrushStrokeEndpoint(_ix, _iy, canvasMode);
                 return painted;
             }
             const result = dynamics.sampleSegment(_brushSpacingState, { x, y, pressure }, spacing);
             _brushSpacingState = result.state;
             painted = _paintContinuousBrushDabs(result.points, paintDab);
-            _rememberBrushStrokeEndpoint(x, y, canvasMode);
+            _rememberBrushStrokeEndpoint(_ix, _iy, canvasMode);
             return painted;
         }
         function _resetBrushSpacing() {
+            window._spbZoneKey = {}; // PORT-W5: new stroke identity for the zone-mask coverage buffer
             _lastDabX = -9999; _lastDabY = -9999;
             _brushSpacingState = null;
             // 2026-04-18 MARATHON bug #33: capture symmetry mode at the
@@ -6355,6 +6662,7 @@ if __name__ == '__main__':
             }
             const ctx = regionCanvas.getContext('2d');
             ctx.clearRect(0, 0, regionCanvas.width, regionCanvas.height);
+            { const _oz = zones[selectedZoneIndex]; if (_oz && _oz._spzOwned && !window.SPB_SPECIAL_ZONE_OFF) return; }   // [SPECIAL-ZONE 2026-10-11 owner bug] a Special footprint is render coverage, not a selection: never draw the red region overlay for it
             // 2026-08-05 perf: this ran FOUR full sweeps of all 4,194,304 pixels
             // (region fill, spatial fill, region edges, spatial edges) on every
             // frame of every stroke — ~181ms per render measured. Nothing outside a
@@ -6559,7 +6867,8 @@ if __name__ == '__main__':
                 case 'zone-config':
                     return (typeof zoneUndoStack !== 'undefined' && Array.isArray(zoneUndoStack) && zoneUndoStack.length > 0);
                 default:
-                    return false;
+                    // [SPB-REV-MATERIAL 2026-10-10] add-on undo kinds (window.SPBUndoExt; kill: SPB_UNDOEXT_OFF)
+                    return !!(window.SPBUndoExt && window.SPBUndoExt.has(kind, 'undo'));
             }
         }
 
@@ -6577,7 +6886,8 @@ if __name__ == '__main__':
                 case 'zone-config':
                     return (typeof zoneRedoStack !== 'undefined' && Array.isArray(zoneRedoStack) && zoneRedoStack.length > 0);
                 default:
-                    return false;
+                    // [SPB-REV-MATERIAL 2026-10-10] add-on undo kinds (window.SPBUndoExt; kill: SPB_UNDOEXT_OFF)
+                    return !!(window.SPBUndoExt && window.SPBUndoExt.has(kind, 'redo'));
             }
         }
 
@@ -6593,6 +6903,7 @@ if __name__ == '__main__':
             else if (kind === 'zone-mask' && typeof undoStack !== 'undefined') entry = undoStack[undoStack.length - 1];
             else if (kind === 'zone-config' && typeof zoneUndoStack !== 'undefined') entry = zoneUndoStack[zoneUndoStack.length - 1];
             let label = entry?.label || '';
+            if (!label && window.SPBUndoExt && window.SPBUndoExt.owns(kind)) label = window.SPBUndoExt.label(kind); // [SPB-REV-MATERIAL 2026-10-10]
             if (!label && kind === 'zone-mask') label = entry?.batchMasks ? 'Zone mask change' : `Zone ${(entry?.zoneIndex || 0) + 1} edit`;
             if (!label) label = kind === 'decal' ? 'decal edit' : kind.replace('-', ' ') + ' edit';
             return { label, timestamp: Number(entry?.timestamp) || Date.now() };
@@ -6630,6 +6941,18 @@ if __name__ == '__main__':
             if (typeof window.renderUndoHistoryPanel === 'function') window.renderUndoHistoryPanel();
         }
         window._discardOldestUndoAction = _discardOldestUndoAction;
+
+        // An AI exact restore consumes identified stack tails, without creating
+        // native Redo entries: its own redo snapshot remains in the AI log.
+        function _discardNewestUndoAction(kind) {
+            for (let i = _undoActionTrail.length - 1; i >= 0; i--) {
+                if (_undoActionTrail[i] === kind) { _undoActionTrail.splice(i, 1); break; }
+            }
+            for (let i = _undoHistoryView.length - 1; i >= 0; i--) {
+                if (_undoHistoryView[i].kind === kind) { _undoHistoryView.splice(i, 1); break; }
+            }
+        }
+        window._discardNewestUndoAction = _discardNewestUndoAction;
 
         function _recordRedoAction(kind) {
             if (!kind) return;
@@ -6703,6 +7026,7 @@ if __name__ == '__main__':
                 if (Array.isArray(window._layerRedoStack)) window._layerRedoStack.length = 0;
                 if (typeof zoneRedoStack !== 'undefined' && zoneRedoStack) zoneRedoStack.length = 0;
                 if (typeof window !== 'undefined' && typeof window.clearDecalRedo === 'function') window.clearDecalRedo();
+                if (window.SPBUndoExt && !window.SPB_UNDOEXT_OFF) window.SPBUndoExt.clearRedo(); // [SPB-REV-MATERIAL 2026-10-10]
                 if (typeof _redoActionTrail !== 'undefined' && _redoActionTrail) _redoActionTrail.length = 0;
             } catch (_) { /* defensive — never block an undo push */ }
         }
@@ -6944,6 +7268,11 @@ if __name__ == '__main__':
             // A stale pixel snapshot must never outrank the fresh zone fill the
             // painter just made, or Ctrl+Z can replay garbage into source paint.
             const trackedKind = _popLatestTrackedUndoKind();
+            // [SPB-REV-MATERIAL 2026-10-10] add-on undo kinds (Material/Spec/Wear brush); kill: SPB_UNDOEXT_OFF
+            if (trackedKind && window.SPBUndoExt && window.SPBUndoExt.owns(trackedKind)) {
+                if (window.SPBUndoExt.undo(trackedKind)) _recordRedoAction(trackedKind);
+                return;
+            }
             if (trackedKind === 'layer') {
                 if (typeof undoLayerEdit === 'function' && undoLayerEdit()) {
                     _recordRedoAction('layer');
@@ -7098,6 +7427,11 @@ if __name__ == '__main__':
                 _finishSelectionNudgeBurst({ silent: true, render: false });
             }
             const trackedKind = _popLatestTrackedRedoKind();
+            // [SPB-REV-MATERIAL 2026-10-10] add-on undo kinds (Material/Spec/Wear brush); kill: SPB_UNDOEXT_OFF
+            if (trackedKind && window.SPBUndoExt && window.SPBUndoExt.owns(trackedKind)) {
+                if (window.SPBUndoExt.redo(trackedKind)) _recordRestoredUndoAction(trackedKind);
+                return;
+            }
             if (trackedKind === 'layer') {
                 if (typeof redoLayerEdit === 'function' && redoLayerEdit()) {
                     _recordRestoredUndoAction('layer');
@@ -7237,7 +7571,7 @@ if __name__ == '__main__':
             if (typeof window.ensureCompositePaintSourceForZoneTool === 'function') {
                 window.ensureCompositePaintSourceForZoneTool(selectionOptions.reason || 'sampled color selection');
             }
-            if (!paintImageData?.data) { showToast('Load a paint image first!', true); return false; }
+            if (!paintImageData?.data) { showToast('Load a paint image first', true); return false; }
             const canvas = document.getElementById('paintCanvas');
             if (!canvas || !window.SPBWandSelection?.select) return false;
 
@@ -7314,7 +7648,7 @@ if __name__ == '__main__':
             if (typeof window.ensureCompositePaintSourceForZoneTool === 'function') {
                 window.ensureCompositePaintSourceForZoneTool('smart region fill');
             }
-            if (!paintImageData?.data) { showToast('Load a paint image first!', true); return false; }
+            if (!paintImageData?.data) { showToast('Load a paint image first', true); return false; }
             const canvas = document.getElementById('paintCanvas');
             if (!canvas || !window.SPBEdgeRegion?.select || !window.SPBWandSelection?.resolveMode) return false;
 
@@ -7381,7 +7715,7 @@ if __name__ == '__main__':
             if (typeof window.ensureCompositePaintSourceForZoneTool === 'function') {
                 window.ensureCompositePaintSourceForZoneTool('grab object');
             }
-            if (!paintImageData?.data) { showToast('Load a paint image first!', true); return false; }
+            if (!paintImageData?.data) { showToast('Load a paint image first', true); return false; }
             const canvas = document.getElementById('paintCanvas');
             if (!canvas || !window.SPBObjectGrab?.select || !window.SPBWandSelection?.resolveMode) return false;
 
@@ -7659,7 +7993,7 @@ if __name__ == '__main__':
             const zone = zones[selectedZoneIndex];
             if (!zone) return;
             if (!paintImageData) {
-                showToast('Load a paint image first!');
+                showToast('Load a paint image first');
                 return;
             }
 
@@ -7781,7 +8115,7 @@ if __name__ == '__main__':
         // ===== SUBTRACT WAND SELECTION - Alt+click removes matching pixels =====
         function subtractWandSelection(startX, startY, tolerance, contiguous) {
             const zone = zones[selectedZoneIndex];
-            if (!paintImageData) { showToast('Load a paint image first!', true); return; }
+            if (!paintImageData) { showToast('Load a paint image first', true); return; }
             if (!zone) { showToast('Select a zone first', true); return; }
             if (!zone.regionMask) { showToast('No selection to subtract from'); return; }
             const canvas = document.getElementById('paintCanvas');
@@ -7836,7 +8170,7 @@ if __name__ == '__main__':
         // Select ALL pixels of clicked color everywhere (not just connected)
         function selectAllColor(startX, startY, tolerance, addToExisting) {
             const zone = zones[selectedZoneIndex];
-            if (!paintImageData) { showToast('Load a paint image first!', true); return; }
+            if (!paintImageData) { showToast('Load a paint image first', true); return; }
             if (!zone) { showToast('Select a zone first', true); return; }
             const canvas = document.getElementById('paintCanvas');
             const w = canvas.width, h = canvas.height;
@@ -7865,7 +8199,7 @@ if __name__ == '__main__':
         // Edge-aware flood fill - stops at hard color boundaries. subtractMode: remove from selection (Alt+click).
         function edgeDetectFill(startX, startY, tolerance, addToExisting, subtractMode) {
             const zone = zones[selectedZoneIndex];
-            if (!paintImageData) { showToast('Load a paint image first!', true); return; }
+            if (!paintImageData) { showToast('Load a paint image first', true); return; }
             if (!zone) { showToast('Select a zone first', true); return; }
             const canvas = document.getElementById('paintCanvas');
             const w = canvas.width, h = canvas.height;
@@ -8160,11 +8494,11 @@ if __name__ == '__main__':
             if (mode === 'include') {
                 setCanvasMode('spatial-include');
                 if (cvs) cvs.style.cursor = getBrushNativeCursor();
-                showToast('Spatial Include: paint areas to KEEP in this zone (green)');
+                showToast('Spatial Include: paint areas to keep in this zone (green)');
             } else if (mode === 'exclude') {
                 setCanvasMode('spatial-exclude');
                 if (cvs) cvs.style.cursor = getBrushNativeCursor();
-                showToast('Spatial Exclude: paint areas to REMOVE from this zone (red)');
+                showToast('Spatial Exclude: paint areas to remove from this zone (red)');
             } else if (mode === 'erase-spatial') {
                 setCanvasMode('spatial-erase');
                 if (cvs) cvs.style.cursor = getBrushNativeCursor();
@@ -8312,7 +8646,8 @@ if __name__ == '__main__':
         function featherRegionMask(px) {
             const context = _selectionRefineContext('No region to feather - draw one first');
             if (!context) return false;
-            const n = Math.max(1, Math.min(12, parseInt(px, 10) || 2));
+            // PORT-W4 (2026-10-09): the 12 px clamp is gone (PhotoCraft Gaussian feather has no cap; core allows 500).
+            const n = window.SPB_PC_W4_OFF ? Math.max(1, Math.min(12, parseInt(px, 10) || 2)) : Math.max(1, Math.min(500, parseInt(px, 10) || 2));
             const startedAt = performance.now();
             const result = window.SPBSelectionRefine.feather(
                 context.zone.regionMask, context.canvas.width, context.canvas.height, n
@@ -8326,12 +8661,15 @@ if __name__ == '__main__':
             );
         }
 
-        function smoothRegionMask() {
+        function smoothRegionMask(radiusArg) {
             const context = _selectionRefineContext('No region to smooth');
             if (!context) return false;
             const startedAt = performance.now();
+            // PORT-W4: Smooth radius from the options row (default 2, as before).
+            const _smR = window.SPB_PC_W4_OFF ? undefined
+                : (parseInt(radiusArg, 10) || parseInt(document.getElementById('selectionSmoothRadius')?.value, 10) || 2);
             const result = window.SPBSelectionRefine.smooth(
-                context.zone.regionMask, context.canvas.width, context.canvas.height
+                context.zone.regionMask, context.canvas.width, context.canvas.height, _smR
             );
             result.startedAt = startedAt;
             result.computeMs = performance.now() - startedAt;
@@ -8341,6 +8679,21 @@ if __name__ == '__main__':
                 'Selection edge is already smooth'
             );
         }
+
+        // [SPB-TFX3 2026-10-10 PORT-3 lane TOOLS-FIX-3] Refine Edge (js/canvas/tfx3-refine.js) commits its refined mask through the same transaction as Grow / Feather /
+        // Smooth: one undo step on the captured Zone, mask replaced, mask history UI refreshed.
+        window.__tfx3RefineCommit = function (mask, message) {
+            const context = _selectionRefineContext('Make a selection first, then refine its edge');
+            if (!context || !mask || mask.length !== context.zone.regionMask.length) return false;
+            const old = context.zone.regionMask;
+            let changed = 0;
+            for (let i = 0; i < mask.length; i++) if (mask[i] !== old[i]) changed++;
+            return _commitSelectionRefine(
+                context, { mask: mask, changedPixels: changed, startedAt: performance.now(), computeMs: 0 },
+                function () { return message || 'Refined the selection edge'; },
+                'The refined edge is the same as the current selection'
+            );
+        };
 
         // --- DESELECT --- clear current zone's drawn region and keep the
         // painter on their current tool. Deselect should not silently switch
@@ -8707,6 +9060,27 @@ function closeLasso(e) {
 
             // Point-in-polygon test (ray casting)
             let filled = 0;
+            // PORT-W1 (2026-10-09, owner: "our tools basically SUCK"): anti-aliased
+            // scanline coverage (PhotoCraft selection.rs polygon, via
+            // js/canvas/pc-selection-core.js) replaces the hard per-pixel ray cast
+            // (O(pixels*vertices), half-pixel offset). window.SPB_PC_W1_OFF = true
+            // restores the legacy loop below.
+            const pcLasso = (!window.SPB_PC_W1_OFF && window.SPBPcSelection)
+                ? window.SPBPcSelection.polygon(pts, w, h, true) : null;
+            if (pcLasso) {
+                const lb = pcLasso.bbox;
+                if (lb) {
+                    for (let y = lb.y0; y < lb.y1; y++) {
+                        for (let x = lb.x0, i = y * w + lb.x0; x < lb.x1; x++, i++) {
+                            const c = pcLasso.mask[i];
+                            if (!c) continue;
+                            if (subtractMode) { const v = nextMask[i] - c; nextMask[i] = v > 0 ? v : 0; }
+                            else if (c > nextMask[i]) nextMask[i] = c;
+                            if (c > 127) filled++;
+                        }
+                    }
+                }
+            } else
             for (let y = minY; y <= maxY; y++) {
                 for (let x = minX; x <= maxX; x++) {
                     let inside = false;
@@ -8872,7 +9246,134 @@ function closeLasso(e) {
         }
 
         // Expose for Escape key: cancel active lasso (used by cancelCanvasOperation in 2-state-zones)
+        // PORT-W4 (2026-10-09): host bridge for js/canvas/zone/pc-magnetic.js. The module keeps its
+        // own fastening-point state; on close it hands back the finished outline and closeLasso()
+        // rasterises it exactly like a hand-drawn lasso (AA, Feather, modes, undo, apply-area).
+        function _pcMagnetic() {
+            const M = window.SPBPcMagnetic;
+            if (!M || window.SPB_PC_W4_OFF) return null;
+            if (!M._ctl.host) {
+                M.setHost({
+                    getImage(fresh) {
+                        if (fresh && typeof window.ensureCompositePaintSourceForZoneTool === 'function') {
+                            try { window.ensureCompositePaintSourceForZoneTool('magnetic lasso'); } catch (err) {}
+                        }
+                        const c = document.getElementById('paintCanvas');
+                        return (c && paintImageData && paintImageData.data)
+                            ? { data: paintImageData.data, w: c.width, h: c.height } : null;
+                    },
+                    scale() { return _lassoCanvasDistance(1); },
+                    toast(msg) { showToast(msg); },
+                    commit(points, ev) {
+                        lassoPoints = points.map(function (q) { return { x: q[0], y: q[1] }; });
+                        lassoActive = true;
+                        lassoFreehandDrawing = false;
+                        lassoMouseDownPos = null;
+                        return closeLasso({ shiftKey: !!(ev && ev.shiftKey), altKey: false });
+                    }
+                });
+            }
+            return M;
+        }
+        window._spbPcMagnetic = _pcMagnetic;
+
+        // PORT-W6 (2026-10-09): host bridge for js/canvas/zone/pc-quickselect.js. The module returns the
+        // stroke's region (bbox + 0..255 mask); it is pasted into a full-size candidate and committed
+        // exactly like Grab Object / Wand (mode replace/add/subtract, feather, one undo, apply-area).
+        function _pcQuick() {
+            const Q = window.SPBPcQuick;
+            if (!Q || window.SPB_PC_W6_OFF) return null;
+            if (!Q._ctl.host) {
+                Q.setHost({
+                    getImage(fresh) {
+                        if (fresh && typeof window.ensureCompositePaintSourceForZoneTool === 'function') {
+                            try { window.ensureCompositePaintSourceForZoneTool('quick select'); } catch (err) {}
+                        }
+                        const c = document.getElementById('paintCanvas');
+                        return (c && paintImageData && paintImageData.data)
+                            ? { data: paintImageData.data, w: c.width, h: c.height } : null;
+                    },
+                    resolveMode(ev) {
+                        const uiMode = document.getElementById('selectionMode')?.value || 'replace';
+                        return window.SPBWandSelection.resolveMode(uiMode, ev);
+                    },
+                    toast(msg) { showToast(msg); },
+                    commit(region, mode, ev) {
+                        const targetIndex = selectedZoneIndex;
+                        const zone = zones[targetIndex];
+                        if (!zone) { showToast('Select a Zone before using Quick Select', true); return false; }
+                        const canvas = document.getElementById('paintCanvas');
+                        const cw = canvas.width, ch = canvas.height;
+                        const cand = new Uint8Array(cw * ch);
+                        const b = region.bbox, bw = b.x1 - b.x0;
+                        for (let y = b.y0; y < b.y1; y++) cand.set(region.mask.subarray((y - b.y0) * bw, (y - b.y0 + 1) * bw), y * cw + b.x0);
+                        const currentMask = zone.regionMask instanceof Uint8Array && zone.regionMask.length === cw * ch
+                            ? zone.regionMask : new Uint8Array(cw * ch);
+                        const composed = window.SPBWandSelection.composeMask(currentMask, cand, mode);
+                        const featherPx = parseInt(document.getElementById('selectionFeather')?.value || 0, 10) || 0;
+                        const nextMask = featherPx > 0 && window.SPBPenPath?.featherMask
+                            ? window.SPBPenPath.featherMask(composed.nextMask, cw, ch, featherPx)
+                            : composed.nextMask;
+                        if (!window.SPBWandSelection.countDifferences(currentMask, nextMask)) {
+                            showToast(mode === 'subtract' ? 'Quick Select skipped: nothing to subtract there' : 'Quick Select skipped: already selected', 'info');
+                            return false;
+                        }
+                        if (typeof pushUndo === 'function') pushUndo(targetIndex);
+                        zone.regionMask = nextMask;
+                        if (typeof renderRegionOverlay === 'function') renderRegionOverlay();
+                        _settleSampledZoneSelection(targetIndex, 'wand', composed.selectedPixels);
+                        showToast('Quick Select ' + mode.charAt(0).toUpperCase() + mode.slice(1) + ': ' + composed.candidatePixels.toLocaleString() + ' px', 'success');
+                        return true;
+                    }
+                });
+            }
+            return Q;
+        }
+        window._spbPcQuick = _pcQuick;
+
+        // PORT-W4 (2026-10-09): Color Range (Select menu) -> js/canvas/zone/pc-colorrange.js.
+        // Lab-distance selection with Fuzziness, +/- eyedroppers, Localized clusters, Invert.
+        // The dialog hands back a 0..255 coverage mask; this commits it like every other
+        // selection tool: one undo entry, Feather from the options row, apply-area settle.
+        window.spbOpenColorRange = function () {
+            const CR = window.SPBPcColorRange;
+            if (!CR || window.SPB_PC_W4_OFF) { showToast('Color Range is unavailable - reload the booth', true); return false; }
+            if (!zones[selectedZoneIndex]) { showToast('Select a Zone before using Color Range', true); return false; }
+            return CR.open({
+                getImage(fresh) {
+                    if (fresh && typeof window.ensureCompositePaintSourceForZoneTool === 'function') {
+                        try { window.ensureCompositePaintSourceForZoneTool('color range'); } catch (err) {}
+                    }
+                    const c = document.getElementById('paintCanvas');
+                    return (c && paintImageData && paintImageData.data) ? { data: paintImageData.data, w: c.width, h: c.height } : null;
+                },
+                pixelAt(ev) { return window.getPixelAt(ev); },
+                toast(msg) { showToast(msg); },
+                commit(cover, mode) {
+                    const targetIndex = selectedZoneIndex;
+                    const zone = zones[targetIndex];
+                    const c = document.getElementById('paintCanvas');
+                    if (!zone || !c) return false;
+                    const n = c.width * c.height;
+                    const cur = zone.regionMask instanceof Uint8Array && zone.regionMask.length === n ? zone.regionMask : new Uint8Array(n);
+                    let next = window.SPBPcSelection.compose(cur, cover, mode || 'replace');
+                    const featherPx = parseInt(document.getElementById('selectionFeather')?.value || 0, 10) || 0;
+                    if (featherPx > 0 && window.SPBPenPath?.featherMask) next = window.SPBPenPath.featherMask(next, c.width, c.height, featherPx);
+                    let changed = 0, sel = 0;
+                    for (let i = 0; i < n; i++) { if (next[i] !== cur[i]) changed++; if (next[i] > 127) sel++; }
+                    if (!changed) { showToast('Color Range skipped: selection already matches this result', 'info'); return false; }
+                    pushUndo(targetIndex);
+                    zone.regionMask = next;
+                    if (typeof renderRegionOverlay === 'function') renderRegionOverlay();
+                    _settleSampledZoneSelection(targetIndex, 'wand', sel);
+                    showToast('Color Range ' + (mode || 'replace') + ': ' + sel.toLocaleString() + ' pixels', 'success');
+                    return true;
+                }
+            });
+        };
+
         window.cancelLasso = function () {
+            if (window.SPBPcMagnetic && window.SPBPcMagnetic.cancel()) { lassoActive = false; return true; }
             if (!lassoActive && lassoPoints.length === 0 && !lassoFreehandDrawing) return false;
             lassoActive = false;
             lassoPoints = [];
@@ -9034,7 +9535,7 @@ function closeLasso(e) {
                     // a truthy isError flag (correct outcome by accident) but the
                     // `true` ended up as the `details` string, so the error toast
                     // showed a meaningless "true" subline under the real message.
-                    if (typeof showToast === 'function') showToast('Failed to load paint from SHOKK: ' + e.message, true);
+                    if (typeof showToast === 'function') showToast('Failed to load paint from Shokk: ' + e.message, true);
                     throw e; // Re-throw so callers' await/catch can handle it
                 });
         }
@@ -9384,7 +9885,7 @@ function closeLasso(e) {
 
         function addEyedropperColorToZone() {
             // "+ Add to Zone" - stacks this color into the zone's multi-color array
-            if (!lastEyedropperColor) { showToast('Click a color on the paint first!', true); return false; }
+            if (!lastEyedropperColor) { showToast('Click a color on the paint first', true); return false; }
             const { r, g, b } = lastEyedropperColor;
 
             const sel = document.getElementById('eyedropperZoneSelect');
@@ -9473,7 +9974,7 @@ function closeLasso(e) {
             // Keep bottom bar dropdown in sync so +Add/Set apply to same zone
             const sel = document.getElementById('eyedropperZoneSelect');
             if (sel) { sel.value = String(selectedZoneIndex); }
-            showToast(`🎯 Region applied to ${zone.name}: ${pixelCount.toLocaleString()} pixels (${pct}%) - set base/finish in the zone panel and Render.`);
+            showToast(`Region applied to ${zone.name}: ${pixelCount.toLocaleString()} pixels (${pct}%). Set a base or finish in the zone panel, then Render.`);
         }
 
         var _selectionMoveDrag = null;
@@ -9697,7 +10198,7 @@ function closeLasso(e) {
             const zone = zones[selectedZoneIndex];
             if (zone && zone.regionMask && _maskAny(zone.regionMask)) {
                 const pixelCount = _maskCount(zone.regionMask);
-                statusEl.textContent = `Region: ${pixelCount.toLocaleString()}px ✓`;
+                statusEl.textContent = `Region: ${pixelCount.toLocaleString()}px`;
                 statusEl.style.color = '#cc88ff';
             } else {
                 statusEl.textContent = '';
@@ -9719,6 +10220,20 @@ function closeLasso(e) {
         const PREVIEW_REQUEST_TIMEOUT_MS = 18000;
         const PREVIEW_RETRY_DELAY_MS = 900;
         const PREVIEW_MAX_AUTO_RETRIES = 2;
+        // [S18 2026-10-12 owner: base/spec did nothing on a NUMBERS colour zone]
+        // A first-time Shokk Works base (slt_/lsk_ ...) can take 25-30 s to construct on a busy
+        // server (owner's live log: Corn Snake Blotch preview = 31.7 s). The client timed out at
+        // 18 s, the owner pressed Refresh, and every re-request got 429 "previous render still
+        // finishing" - each 429 was counted as a FAILURE, so after 3 of them the auto-retry gave
+        // up for good and the late result was thrown away: preview stuck on the old paint
+        // ("did NOTHING ... even after LIVE PREVIEW refresh"). "Server busy" is not a failure: the
+        // server is alive and about to free up, so busy retries get their own, much longer budget
+        // (they stop counting toward PREVIEW_MAX_AUTO_RETRIES) and keep going until it answers.
+        let previewBusySince = 0;
+        let previewBusyCount = 0;
+        const PREVIEW_BUSY_GIVEUP_MS = 120000;
+        const PREVIEW_BUSY_RETRY_BASE_MS = 1500;
+        const PREVIEW_BUSY_RETRY_MAX_MS = 5000;
         // Native 2048 token transport keeps settled requests below the 10/sec
         // server guard.  140ms removes 160ms of deliberate post-click latency
         // while still coalescing continuous slider/input bursts into one render.
@@ -9812,7 +10327,7 @@ function closeLasso(e) {
 
             if (previewPane) previewPane.style.display = splitViewActive ? 'flex' : 'none';
             if (sourceLabel) sourceLabel.style.display = nextMode === 'source' ? 'none' : '';
-            if (sourceTitle) sourceTitle.textContent = nextMode === 'rendered' ? 'CAR VIEW' : 'SOURCE';
+            if (sourceTitle) sourceTitle.textContent = nextMode === 'rendered' ? 'Car view' : 'SOURCE';
             if (sourcePreviewControls) sourcePreviewControls.style.display = nextMode === 'rendered' ? '' : 'none';
 
             _updateCanvasDisplayModeButtons();
@@ -9920,6 +10435,7 @@ function closeLasso(e) {
                 // from "hover-driven height churn" and refuse to re-center on the latter.
                 const _prevFitW = _sizePreviewSquares._lastFitW;
                 const _widthChanged = (typeof _prevFitW !== 'number') || Math.abs(_prevFitW - cvW) >= 2;
+                const _prevKeyTfx1 = _sizePreviewSquares._lastS;  // [SPB-TFX1 2026-10-09 TA-021] (read BEFORE it is overwritten below)
                 _sizePreviewSquares._lastFitW = cvW;
                 _sizePreviewSquares._lastS = _key;
                 [src, pv].forEach(el => { el.style.flex = '0 0 auto'; el.style.width = s + 'px'; el.style.height = s + 'px'; el.style.maxWidth = 'none'; el.style.maxHeight = 'none'; });
@@ -9957,6 +10473,15 @@ function closeLasso(e) {
                     var _hoverPickActive = _NON_FIT_HOVER_MODES.indexOf(canvasMode) !== -1;
                     if (_ftActive || _brushActive) return;            // mid-edit: keep manual zoom
                     if (_hoverPickActive && !_widthChanged) return;   // hover/pick + height-only churn: do NOT re-center
+                    // [SPB-TFX1 2026-10-09 TA-021] Applying / cancelling / Enter-committing a piece transform closes the transform quickbar, the pane gets
+                    // its height back, and this re-fit reset a 300% view to Fit (0.358) while the scroll offset stayed -> the canvas was off-screen
+                    // and the workspace looked EMPTY. Photoshop never touches the view when a transform ends. Now a height-only change (same width,
+                    // same Focus mode) leaves a manually zoomed view alone; a view that is still AT fit re-fits as before, and real width changes
+                    // (window resize, panel open/close) and Focus toggles re-fit as before. before: 3.0 -> 0.358 + empty frame, after: unchanged.
+                    if (!window.SPB_TFX1_OFF && !_widthChanged && typeof window.__spbFitZoom === 'number') {
+                        var _focusToggledTfx1 = (typeof _prevKeyTfx1 === 'string') && _prevKeyTfx1.charAt(0) !== _key.charAt(0);
+                        if (!_focusToggledTfx1 && Math.abs(currentZoom - window.__spbFitZoom) > 0.004) return;
+                    }
                     canvasZoom('fit');
                 } catch (_) {} }, 0);
             } catch (_e) {}
@@ -11216,8 +11741,19 @@ function closeLasso(e) {
         function _schedulePreviewRecovery(zoneHash, reason) {
             if (previewRetryTimer) clearTimeout(previewRetryTimer);
             const sourceMissing = reason === 'source-missing';
-            if (!sourceMissing && previewConsecutiveFailures > PREVIEW_MAX_AUTO_RETRIES) return;
-            const delay = sourceMissing ? 0 : PREVIEW_RETRY_DELAY_MS + (previewConsecutiveFailures * 450);
+            // [S18 2026-10-12 owner: base/spec did nothing on a NUMBERS colour zone]
+            const serverBusy = reason === 'busy';
+            if (serverBusy) {
+                if (!previewBusySince) previewBusySince = Date.now();
+                previewBusyCount++;
+                if (Date.now() - previewBusySince > PREVIEW_BUSY_GIVEUP_MS) {
+                    updatePreviewStatus('error', 'Server busy - press Refresh');
+                    return;
+                }
+            } else if (!sourceMissing && previewConsecutiveFailures > PREVIEW_MAX_AUTO_RETRIES) return;
+            const delay = sourceMissing ? 0
+                : (serverBusy ? Math.min(PREVIEW_BUSY_RETRY_BASE_MS + (previewBusyCount * 500), PREVIEW_BUSY_RETRY_MAX_MS)
+                              : PREVIEW_RETRY_DELAY_MS + (previewConsecutiveFailures * 450));
             const retryText = sourceMissing
                 ? 'Refreshing preview source'
                 : (reason === 'timeout' ? 'Retrying preview' : 'Server busy - retrying');
@@ -11346,7 +11882,7 @@ function closeLasso(e) {
                 console.error('[preview] ' + serializerError);
                 _finishPreviewRequest('error', serializerError);
                 if (typeof showToast === 'function') {
-                    showToast('Live Preview cannot start because its render serializer did not load. Restart SPB.', true);
+                    showToast('Live Preview can\'t start. Restart Shokker Paint Booth.', true);
                 }
                 return;
             }
@@ -11802,8 +12338,12 @@ function closeLasso(e) {
             // asynchronously. PSD pixels retain precedence over legacy decals.
             const sourcePath = _psdPath || paintFile;
             if (_psdPath || !previewPaintCanvas) {
-                previewPaintCanvas = typeof buildLivePaintCompositeCanvas === 'function'
-                    ? buildLivePaintCompositeCanvas() : document.getElementById('paintCanvas');
+                // [SPB-POLISH-F 2026-10-10 P0 WYSIWYG] Live Preview = what RENDER writes: guide layers (Wire / Mask /
+                // Car Mandatory) are left out, exactly as NUQ-FIX does for the render. SOURCE pane untouched. Kill switch SPB_NUQ_OFF.
+                previewPaintCanvas = typeof window._nuqPreviewComposite === 'function'
+                    ? window._nuqPreviewComposite()
+                    : (typeof buildLivePaintCompositeCanvas === 'function'
+                        ? buildLivePaintCompositeCanvas() : document.getElementById('paintCanvas'));
             }
             if (previewPaintCanvas && previewPaintCanvas.width > 0 && previewPaintCanvas.height > 0) {
                 const paintRevision = window._spbLayerRev | 0;
@@ -11868,11 +12408,12 @@ function closeLasso(e) {
 
                 // 429 = server busy or superseded — silently ignore, don't show error
                 if (resp.status === 429) {
-                    previewConsecutiveFailures++;
+                    // [S18 2026-10-12 owner: base/spec did nothing on a NUMBERS colour zone]: busy != failure (own retry budget, see PREVIEW_BUSY_*)
                     _finishPreviewRequest('retrying', 'Server busy - retrying');
                     _schedulePreviewRecovery(zoneHash, 'busy');
                     return;
                 }
+                previewBusySince = 0; previewBusyCount = 0;
 
                 const data = await resp.json();
                 if (thisVersion !== previewVersion) return;
@@ -12075,7 +12616,7 @@ function closeLasso(e) {
                 if (!pane.style.position) pane.style.position = 'relative';
                 pane.appendChild(veil);
             }
-            veil.textContent = '⚠ Preview failed — showing the LAST GOOD render' +
+            veil.textContent = 'Preview failed — showing the last good render' +
                 (text ? ' (' + text + ')' : '') + '. Click here to retry.';
             veil.style.display = 'block';
             pane.style.outline = '2px solid #b91c1c';
@@ -12129,6 +12670,7 @@ function closeLasso(e) {
             previewIsRendering = false;
             previewTimedOutVersion = 0;
             previewConsecutiveFailures = 0;
+            previewBusySince = 0; previewBusyCount = 0;   // [S18 2026-10-12 owner: base/spec did nothing on a NUMBERS colour zone]
             // Clear hash so next render is NOT skipped as "unchanged"
             lastPreviewZoneHash = '';
             // Hide spinner/status
@@ -12173,6 +12715,8 @@ function closeLasso(e) {
         let currentZoom = 1;
         let viewRotation = 0; // View rotation in degrees (non-destructive, CSS only)
         const ZOOM_STEPS = [0.1, 0.15, 0.2, 0.25, 0.33, 0.5, 0.67, 0.75, 1, 1.25, 1.5, 2, 3, 4];
+        // [SPB-TFX1 2026-10-09 TA-036] the keyboard/button ladder stopped at 400 % (a 2048 sheet needs 800-3200 % for pixel work); the wheel is now continuous (see the wheel handler)
+        const ZOOM_STEPS_PRO = ZOOM_STEPS.concat([6, 8, 12, 16, 24, 32]);
 
         function rotateView(degrees) {
             viewRotation = ((viewRotation + degrees) % 360 + 360) % 360;
@@ -12229,18 +12773,20 @@ function closeLasso(e) {
         function toggleGrid() {
             _gridVisible = !_gridVisible;
             drawGridOverlay();
-            if (typeof showToast === 'function') showToast(_gridVisible ? `Grid ON (${_gridSize}px)` : 'Grid OFF');
+            if (typeof showToast === 'function') showToast(_gridVisible ? `Grid ON (${_gridSize}px)` : 'Grid off');
         }
         function setGridSize(size) {
             _gridSize = Math.max(8, Math.min(512, parseInt(size) || 64));
             if (_gridVisible) drawGridOverlay();
         }
-        function addGuideH(y) {
-            if (y == null) y = parseInt(prompt('Horizontal guide Y position (pixels):', '1024'));
+        // [SPB-PROMPT-FIX 2026-10-10] async: window.prompt() throws in Electron -> in-app box (SpbDialog.prompt); with a number given no await runs.
+        // Esc = no guide. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+        async function addGuideH(y) {
+            if (y == null) y = parseInt(await SpbDialog.prompt('Add Horizontal Guide', '1024', { message: 'Y position in pixels.', okLabel: 'Add', inputMode: 'numeric', validate: SpbDialog.rules.number({ int: true }), nativeText: 'Horizontal guide Y position (pixels):' }));
             if (y != null && !isNaN(y)) { _guidesH.push(y); drawGridOverlay(); }
         }
-        function addGuideV(x) {
-            if (x == null) x = parseInt(prompt('Vertical guide X position (pixels):', '1024'));
+        async function addGuideV(x) {
+            if (x == null) x = parseInt(await SpbDialog.prompt('Add Vertical Guide', '1024', { message: 'X position in pixels.', okLabel: 'Add', inputMode: 'numeric', validate: SpbDialog.rules.number({ int: true }), nativeText: 'Vertical guide X position (pixels):' }));
             if (x != null && !isNaN(x)) { _guidesV.push(x); drawGridOverlay(); }
         }
         function clearGuides() { _guidesH = []; _guidesV = []; drawGridOverlay(); }
@@ -12353,6 +12899,7 @@ function closeLasso(e) {
                 // to recover. Floor at 0.1 matching the pinch-zoom
                 // handler at line 4201.
                 currentZoom = Math.max(0.1, Math.min(fitZoom, 1));
+                window.__spbFitZoom = currentZoom; // [SPB-TFX1 2026-10-09 TA-021] remember the last FIT zoom so a height-only layout change can tell "still at fit" from "manually zoomed"
             } else if (action === '100') {
                 currentZoom = 1;
             } else if (action === '200') {
@@ -12363,6 +12910,13 @@ function closeLasso(e) {
                 currentZoom = 0.5;
             } else if (action === '25') {
                 currentZoom = 0.25;
+            } else if (action === 'in' && !window.SPB_TFX1_OFF) {   // [SPB-TFX1 2026-10-09 TA-036] next ladder step ABOVE the current (continuous) zoom, up to 3200 %
+                const nx = ZOOM_STEPS_PRO.find(s => s > currentZoom + 0.005);
+                currentZoom = nx || ZOOM_STEPS_PRO[ZOOM_STEPS_PRO.length - 1];
+            } else if (action === 'out' && !window.SPB_TFX1_OFF) {
+                let pv = ZOOM_STEPS_PRO[0];
+                for (let i = ZOOM_STEPS_PRO.length - 1; i >= 0; i--) { if (ZOOM_STEPS_PRO[i] < currentZoom - 0.005) { pv = ZOOM_STEPS_PRO[i]; break; } }
+                currentZoom = pv;
             } else if (action === 'in') {
                 const curIdx = ZOOM_STEPS.findIndex(s => s >= currentZoom - 0.01);
                 const nextIdx = Math.min(curIdx + 1, ZOOM_STEPS.length - 1);
@@ -12387,9 +12941,20 @@ function closeLasso(e) {
             const h = Math.round(canvas.height * currentZoom);
             canvas.style.width = w + 'px';
             canvas.style.height = h + 'px';
+            // SPB-93 / Source fidelity, owner 2026-10-14: zoom looks degraded.
+            // Zoom only the CSS view of the native backing store. Smooth reductions,
+            // but show crisp source pixels at/above 1:1 instead of interpolated blur.
+            canvas.style.imageRendering = currentZoom >= 1 ? 'pixelated' : 'auto';
             if (regionCanvas) {
                 regionCanvas.style.width = w + 'px';
                 regionCanvas.style.height = h + 'px';
+            }
+            // [SPB-TFX1 2026-10-09 TA-036] the Magnetic Lasso overlay (js/canvas/zone/pc-magnetic.js) took its CSS size ONCE, when it was first drawn (e.g. 4096 px at 200 %),
+            // and never followed zoom. After zooming out it stayed 4096 px: the scroller kept 4110 x 4111 px of scrollable area at FIT, so Fit left the canvas scrolled
+            // off-screen (canvas rect at -1146,-1330 with a 587 px canvas in a 607 px pane) and the scrollbars never went away. It now follows the canvas size like the region canvas.
+            if (!window.SPB_TFX1_OFF) {
+                const _tfxMo = document.getElementById('spbMagneticOverlay');
+                if (_tfxMo) { _tfxMo.style.width = w + 'px'; _tfxMo.style.height = h + 'px'; }
             }
             // rectSelectionBox is a CSS div - no resize needed, it positions itself via drawRectPreview()
             inner.style.width = w + 'px';
@@ -12475,6 +13040,18 @@ function closeLasso(e) {
         let panScrollStartX = 0, panScrollStartY = 0;
         let spaceHeld = false;
 
+        // [SPB-TFX1 2026-10-09 TA-004] A mouse click on a toolbar / options-band / zoom button left that button focused, and the Space-to-pan
+        // handler below deliberately ignores Space while a BUTTON/SUMMARY has focus (so keyboard users can still press a focused button).
+        // Result: click a tool, then Space+drag did nothing and Space re-triggered the tool button. Photoshop's tool buttons never keep keyboard
+        // focus after a click. Now a MOUSE click (detail>0) on such a button releases focus afterwards; Tab+Enter/Space (detail 0) is untouched.
+        document.addEventListener('click', (e) => {
+            if (window.SPB_TFX1_OFF || !(e.detail > 0)) return;
+            const b = e.target && e.target.closest ? e.target.closest('button, summary') : null;
+            if (!b || !b.closest('#spbTopToolbar, #spbToolRowTop, #zoomControls, .vtool-btn, #layerPanelContent')) return;
+            if (b.closest('dialog, [role="dialog"], .modal, .spb-modal')) return;
+            setTimeout(() => { try { if (document.activeElement === b) b.blur(); } catch (_e) { } }, 0);
+        }, true);
+
         function _nudgeActiveBrushSize(delta) {
             const spatialMode = ['spatial-include', 'spatial-exclude', 'spatial-erase'].includes(canvasMode);
             const brushSizeMode = ['brush','erase','clone','heal','colorbrush','recolor','smudge',
@@ -12486,6 +13063,19 @@ function closeLasso(e) {
             if (!el) return false;
             const min = Number(el.min) || 1;
             const max = Number(el.max) || 300;
+            // [SPB-TFX2 2026-10-09 TA-005] [ and ] used a FIXED +/-5 at every size (size 3 + [ -> 1 in one jump, size 200 + ] -> 205 barely moved).
+            // They now walk a Photoshop-style ladder: 1px steps up to 10, then ~10-20 % steps (12,14..20,25..50,60..100,120..200,250,300),
+            // so one key press changes the brush by a visible, proportional amount at every size. delta only supplies the direction.
+            if (!window.SPB_TFX2_OFF && delta) {
+                const cur = parseInt(el.value, 10) || min;
+                const ladder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 250, 300, 400, 500];
+                let nxt = cur + (delta > 0 ? 1 : -1);
+                if (delta > 0) { for (let i = 0; i < ladder.length; i++) { if (ladder[i] > cur) { nxt = ladder[i]; break; } } }
+                else { for (let i = ladder.length - 1; i >= 0; i--) { if (ladder[i] < cur) { nxt = ladder[i]; break; } } }
+                el.value = Math.max(min, Math.min(max, nxt));
+                if (typeof el.oninput === 'function') el.oninput();
+                return true;
+            }
             el.value = Math.max(min, Math.min(max, (parseInt(el.value, 10) || min) + delta));
             if (typeof el.oninput === 'function') el.oninput();
             return true;
@@ -12497,8 +13087,249 @@ function closeLasso(e) {
             return modes.includes(canvasMode) && !(canvasMode === 'erase' && _getEraserMode() !== 'brush');
         }
 
+        // ===== [SPB-TFX1 2026-10-09 TA-033] Photoshop key map + sticky Hand / Zoom tools =====
+        // Audit TA-033: M was the ELLIPSE marquee; G, T, I, D, H, Z, S, Ctrl+A (Layer mode), Ctrl+1 did nothing. Now (kill switch SPB_TFX1_OFF restores the old map):
+        //   M rect marquee (M again = ellipse)   W wand (Shift+W: Grab Object, Smart Region Fill)   L lasso   I (and P) eyedropper   J healing (Shift+J kept)
+        //   B brush (Shift+B: pencil, recolor)   S clone stamp   E eraser   G gradient (Shift+G: fill; K fill kept)   R blur (R again: sharpen, smudge; Q smudge kept)
+        //   O dodge (Shift+O: burn)   Y pick item (kept)   Shift+Y history brush   T text   D default colours   X swap (kept)   H hand   Z zoom   Ctrl+A / Ctrl+1
+        // Shift+M / Shift+R / Shift+E / Shift+D / Shift+H / Shift+T / Shift+V / Shift+N stay with the Zone shortcuts (mute, randomize, editor, duplicate, history, templates, split, new).
+        const _TFX_PS_GROUPS = {
+            m: { modes: ['rect', 'ellipse-marquee'], again: true, noShift: true },
+            w: { modes: ['wand', 'grab-object', 'edge'] },
+            b: { modes: ['brush', 'pencil', 'recolor'] },
+            g: { modes: ['gradient', 'fill'] },
+            r: { modes: ['blur-brush', 'sharpen-brush', 'smudge'], again: true, noShift: true },
+            o: { modes: ['dodge', 'burn'] },
+            j: { modes: ['heal'] },
+            l: { modes: ['lasso'] },
+            s: { modes: ['clone'] },
+            i: { modes: ['eyedropper'] },
+            e: { modes: ['erase'], noShift: true }
+        };
+        const _TFX_KEY_LABELS = {
+            'layer-move': 'V', 'pick-item': 'Y', eyedropper: 'I', wand: 'W', 'grab-object': 'Shift+W', edge: 'Shift+W \u00d72', lasso: 'L',
+            rect: 'M', 'ellipse-marquee': 'M \u00d72', selectall: 'A', brush: 'B', pencil: 'Shift+B', recolor: 'Shift+B \u00d72', colorbrush: 'C',
+            fill: 'K', gradient: 'G', erase: 'E', clone: 'S', heal: 'J', smudge: 'Q', 'blur-brush': 'R', 'sharpen-brush': 'R \u00d72',
+            dodge: 'O', burn: 'Shift+O', 'history-brush': 'Shift+Y', text: 'T'
+        };
+        var navTool = null;   // 'hand' | 'zoom' | null: sticky navigation tools (Esc, any tool key or any tool button exits); var = no TDZ if setCanvasMode runs during load
+        function _tfxHandOn() { return navTool === 'hand' && !window.SPB_TFX1_OFF; }
+        function _tfxNavSet(tool) {
+            if (typeof freeTransformState !== 'undefined' && freeTransformState) {
+                if (typeof showToast === 'function') showToast('Apply or cancel the transform first (Enter / Esc)', 'info');
+                return;
+            }
+            navTool = tool;
+            const vp = document.getElementById('canvasViewport');
+            if (vp) { vp.classList.toggle('spb-tfx1-nav-hand', tool === 'hand'); vp.classList.toggle('spb-tfx1-nav-zoom', tool === 'zoom'); vp.classList.remove('spb-tfx1-nav-out', 'spb-tfx1-nav-drag'); }
+            const lbl = document.getElementById('activeToolLabel');
+            if (lbl) lbl.textContent = tool === 'hand' ? 'Hand' : 'Zoom';
+            if (typeof showToast === 'function') showToast(tool === 'hand' ? 'Hand: drag to pan. Esc or any tool key to leave' : 'Zoom: click zooms in, Alt+click zooms out. Esc or any tool key to leave', 'info');
+        }
+        function _tfxNavExit(silent) {
+            if (!navTool) return;
+            navTool = null;
+            const vp = document.getElementById('canvasViewport');
+            if (vp) vp.classList.remove('spb-tfx1-nav-hand', 'spb-tfx1-nav-zoom', 'spb-tfx1-nav-out', 'spb-tfx1-nav-drag');
+            if (!silent && typeof refreshActiveToolLabel === 'function') refreshActiveToolLabel();
+        }
+        // one zoom step anchored on the point under the cursor (same rect-based anchoring as the wheel, TA-036)
+        function _tfxZoomAt(cx, cy, dir) {
+            const pc = document.getElementById('paintCanvas');
+            if (!pc || !pc.width) return;
+            const old = currentZoom;
+            const r0 = pc.getBoundingClientRect(), s0 = r0.width / pc.width;
+            const au = (cx - r0.left) / s0, av = (cy - r0.top) / s0;
+            canvasZoom(dir > 0 ? 'in' : 'out');
+            if (Math.abs(currentZoom - old) < 1e-6 || viewRotation || viewFlippedH || viewFlippedV) return;
+            const sc = getScrollContainer();
+            if (!sc) return;
+            const r1 = pc.getBoundingClientRect(), s1 = r1.width / pc.width;
+            const fitsX = pc.width * currentZoom <= sc.clientWidth, fitsY = pc.height * currentZoom <= sc.clientHeight;
+            sc.scrollLeft = fitsX ? 0 : Math.round(sc.scrollLeft + (r1.left + au * s1 - cx));
+            sc.scrollTop = fitsY ? 0 : Math.round(sc.scrollTop + (r1.top + av * s1 - cy));
+            const r2 = pc.getBoundingClientRect();
+            if (!fitsX && Math.abs(r2.left + au * s1 - cx) > 0.6) sc.scrollLeft += (r2.left + au * s1 - cx);
+            if (!fitsY && Math.abs(r2.top + av * s1 - cy) > 0.6) sc.scrollTop += (r2.top + av * s1 - cy);
+        }
+        // returns true when the key was consumed
+        function _tfxPsKeys(e, key) {
+            if (e.ctrlKey || e.metaKey || e.altKey) return false;
+            if (key === 'h' || key === 'z' || key === 'd' || key === 't') {
+                if (e.shiftKey) return false;   // Shift+H history gallery, Shift+T templates, Shift+D duplicate zone belong to the Zone shortcuts
+                e.preventDefault();
+                if (e.repeat) return true;
+                if (key === 'd') {
+                    if (typeof resetDefaultColors === 'function') resetDefaultColors();
+                    if (typeof showToast === 'function') showToast('Default colours: black / white', 'info');
+                } else if (key === 't') {
+                    setCanvasMode('text');
+                } else {
+                    _tfxNavSet(key === 'h' ? 'hand' : 'zoom');
+                }
+                return true;
+            }
+            if (key === 'y' && e.shiftKey) { e.preventDefault(); if (!e.repeat) setCanvasMode('history-brush'); return true; }
+            const g = _TFX_PS_GROUPS[key];
+            if (!g || (g.noShift && e.shiftKey)) return false;
+            e.preventDefault();
+            if (e.repeat) return true;
+            const i = navTool ? -1 : g.modes.indexOf(canvasMode);
+            const target = (e.shiftKey || (g.again && i >= 0)) ? g.modes[(i + 1) % g.modes.length] : g.modes[0];
+            setCanvasMode(target);
+            return true;
+        }
+        // show the REAL key in every tool tooltip / tool guide (runtime, so the kill switch leaves the old text alone)
+        function _tfxApplyKeyHints() {
+            if (window.SPB_TFX1_OFF) return;
+            try {
+                document.querySelectorAll('button[onclick*="setCanvasMode("]').forEach((b) => {
+                    const m = /setCanvasMode\('([a-z-]+)'\)/.exec(b.getAttribute('onclick') || '');
+                    const k = m && _TFX_KEY_LABELS[m[1]];
+                    const t = b.getAttribute('title');
+                    if (!k || !t) return;
+                    const p = /^([^\u2014(]*?)\s*(\([^)]*\))?\s*(\u2014.*)?$/.exec(t);
+                    if (!p || !p[1]) return;
+                    b.setAttribute('title', p[1] + ' (' + k + ')' + (p[3] ? ' ' + p[3] : ''));
+                });
+                // the keyboard-shortcut overlay (#shortcutOverlay, opened with ?) listed only 14 tools and none of S/I/G/T/H/Z/D: rewrite its two lists with the real map
+                const _kbd = (k) => '<kbd style="background:#1a1a3a;padding:2px 6px;border-radius:3px;border:1px solid #444;color:#00e5ff;font-family:monospace;">' + k + '</kbd>';
+                const _h3 = (txt) => Array.from(document.querySelectorAll('#shortcutOverlay h3')).find((h) => (h.textContent || '').trim().toUpperCase().indexOf(txt) === 0);
+                const _hTools = _h3('Canvas tools'), _hView = _h3('VIEW');
+                if (_hTools && _hTools.nextElementSibling && !_hTools.nextElementSibling.dataset.tfx1) {
+                    const rows = [['B', 'Brush'], ['Shift+B', 'Pencil / Recolor (cycle)'], ['E', 'Eraser'], ['M', 'Rectangle Select (M again: Ellipse)'], ['W', 'Magic Wand'],
+                        ['Shift+W', 'Grab Object / Smart Region (cycle)'], ['L', 'Lasso'], ['I', 'Eyedropper (P also)'], ['G', 'Gradient'], ['Shift+G', 'Gradient / Fill (cycle)'],
+                        ['K', 'Fill Bucket'], ['V', 'Move'], ['Y', 'Pick Item'], ['Shift+Y', 'History Brush'], ['C', 'Color Brush'], ['S', 'Clone Stamp'], ['J', 'Healing Brush'],
+                        ['R', 'Blur (R again: Sharpen, Smudge)'], ['Q', 'Smudge'], ['O', 'Dodge'], ['Shift+O', 'Burn (cycle)'], ['A', 'Select All Color'], ['T', 'Text']];
+                    _hTools.nextElementSibling.innerHTML = rows.map((r) => '<div>' + _kbd(r[0]) + ' ' + r[1] + '</div>').join('');
+                    _hTools.nextElementSibling.dataset.tfx1 = '1';
+                }
+                if (_hView && _hView.nextElementSibling && !_hView.nextElementSibling.dataset.tfx1) {
+                    const extra = [['H', 'Hand tool (Esc leaves)'], ['Z', 'Zoom tool (Alt+click: out)'], ['Ctrl+1', '100% zoom'], ['D', 'Default FG/BG (black / white)'], ['Alt+right-drag', 'Brush size (left/right) and hardness (up/down)']];
+                    _hView.nextElementSibling.insertAdjacentHTML('beforeend', extra.map((r) => '<div>' + _kbd(r[0]) + ' ' + r[1] + '</div>').join(''));
+                    _hView.nextElementSibling.dataset.tfx1 = '1';
+                }
+                const one = document.querySelector('[data-testid="btn-zoom-100"]');
+                if (one && !/Ctrl\+1/.test(one.title || '')) one.title = 'Actual Size (Ctrl+1) \u2014 100% zoom (1:1 pixels)';
+                if (window.TOOL_GUIDE) {
+                    Object.keys(_TFX_KEY_LABELS).forEach((mode) => {
+                        const g = window.TOOL_GUIDE[mode];
+                        if (!g || typeof g[1] !== 'string') return;
+                        const re = /\[ [A-Z][^\]]{0,16} \]/;
+                        g[1] = re.test(g[1]) ? g[1].replace(re, '[ ' + _TFX_KEY_LABELS[mode] + ' ]') : g[1] + '   [ ' + _TFX_KEY_LABELS[mode] + ' ]';
+                    });
+                }
+            } catch (_e) { }
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _tfxApplyKeyHints);
+        else _tfxApplyKeyHints();
+        window.addEventListener('load', () => { setTimeout(_tfxApplyKeyHints, 50); setTimeout(_tfxApplyKeyHints, 2500); });
+        // a click on any tool button leaves Hand / Zoom (setCanvasMode(sameMode) would not otherwise know)
+        document.addEventListener('click', (e) => {
+            if (!navTool || window.SPB_TFX1_OFF) return;
+            const b = e.target && e.target.closest ? e.target.closest('.vtool-btn, .vtool-btn *') : null;
+            if (b && /setCanvasMode\(/.test((b.closest('button') || b).getAttribute('onclick') || '')) _tfxNavExit(true);
+        }, true);
+        document.addEventListener('mousedown', (e) => {
+            if (navTool !== 'hand' || window.SPB_TFX1_OFF || e.button !== 0) return;
+            const vp = document.getElementById('canvasViewport');
+            if (vp && vp.contains(e.target)) vp.classList.add('spb-tfx1-nav-drag');
+        }, true);
+        document.addEventListener('mouseup', () => {
+            const vp = document.getElementById('canvasViewport');
+            if (vp) vp.classList.remove('spb-tfx1-nav-drag');
+        }, true);
+        document.addEventListener('keyup', (e) => {
+            if (navTool === 'zoom' && e.key === 'Alt') { const vp = document.getElementById('canvasViewport'); if (vp) vp.classList.remove('spb-tfx1-nav-out'); }
+        });
+        // any tool key leaves Hand / Zoom even when it re-selects the tool that was already active (setCanvasMode(sameMode) alone would not notice)
+        document.addEventListener('keydown', (e) => {
+            if (!navTool || window.SPB_TFX1_OFF || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+            const t = (e.target && e.target.tagName || '').toLowerCase();
+            if (t === 'input' || t === 'textarea' || t === 'select' || (e.target && e.target.isContentEditable)) return;
+            if (/^[abcegijklmopqrstvwy]$/i.test(e.key) && !(e.shiftKey && /^[mredtvhn]$/i.test(e.key))) _tfxNavExit(false);
+        }, true);
+
+        // [SPB-TFX1 2026-10-09 TA-005] Alt + right-drag on the canvas scrubs the brush ON the canvas (Photoshop): left / right = size, up / down = hardness,
+        // the ring stays where you started and a small readout follows it. Esc cancels (numbers restored), release keeps them. Applies to every
+        // brush-family tool (the same set the [ ] keys use); the right-drag pan and the context menu are untouched without Alt.
+        // before: no on-canvas size / hardness control (only the sliders and [ ] ) -> after: drag 120 px right = ring +120 px.
+        let _tfxScrub = null;
+        function _tfxScrubEligible() {
+            const fam = ['brush', 'erase', 'clone', 'heal', 'colorbrush', 'recolor', 'smudge', 'history-brush', 'dodge', 'burn', 'blur-brush', 'sharpen-brush', 'pencil'];
+            if (fam.indexOf(canvasMode) < 0) return false;
+            if (canvasMode === 'erase' && typeof _getEraserMode === 'function' && _getEraserMode() === 'all') return false;
+            return !!document.getElementById('brushSize');
+        }
+        function _tfxScrubSet(id, v) {
+            const el = document.getElementById(id); if (!el) return;
+            v = Math.max(Number(el.min) || 0, Math.min(Number(el.max) || 100, Math.round(v)));
+            if (String(el.value) === String(v)) return;
+            el.value = v;
+            el.dispatchEvent(new Event('input', { bubbles: true }));   // the inline oninput updates label / title, the tool memory listens too
+        }
+        function _tfxScrubHud() {
+            const sc = _tfxScrub; if (!sc) return;
+            let h = document.getElementById('spbTfx1Scrub');
+            if (!h) { h = document.createElement('div'); h.id = 'spbTfx1Scrub'; document.body.appendChild(h); }
+            const sz = Number(document.getElementById('brushSize').value) || 0, hd = document.getElementById('brushHardness');
+            h.textContent = 'Size ' + (window.SPB_TFX2_OFF ? sz : sz * 2) + ' px  \u00b7  Hardness ' + (hd ? Math.round(Number(hd.value)) : 100) + '%';
+            const ringR = Math.max(7, sz * sc.s);
+            h.style.left = Math.round(sc.x0 + ringR + 10) + 'px';
+            h.style.top = Math.round(sc.y0 - 10) + 'px';
+        }
+        function _tfxScrubMove(e) {
+            const sc = _tfxScrub; if (!sc) return;
+            e.preventDefault(); e.stopImmediatePropagation();
+            const dx = e.clientX - sc.x0, dy = e.clientY - sc.y0;
+            _tfxScrubSet('brushSize', sc.size0 + dx / sc.s);
+            _tfxScrubSet('brushHardness', sc.hard0 - dy * 0.5);
+            try { if (typeof window.spbRefreshBrushCursor === 'function') window.spbRefreshBrushCursor(); } catch (_e) { }
+            _tfxScrubHud();
+        }
+        function _tfxScrubEnd(cancel) {
+            const sc = _tfxScrub; if (!sc) return;
+            _tfxScrub = null;
+            document.removeEventListener('mousemove', _tfxScrubMove, true);
+            document.removeEventListener('mouseup', _tfxScrubUp, true);
+            document.removeEventListener('keydown', _tfxScrubKey, true);
+            if (cancel) { _tfxScrubSet('brushSize', sc.size0); _tfxScrubSet('brushHardness', sc.hard0); try { window.spbRefreshBrushCursor && window.spbRefreshBrushCursor(); } catch (_e) { } }
+            const h = document.getElementById('spbTfx1Scrub'); if (h) h.remove();
+            // the contextmenu that follows the right button release must not open the canvas menu
+            const eat = (ev) => { ev.preventDefault(); ev.stopImmediatePropagation(); };
+            document.addEventListener('contextmenu', eat, true);
+            setTimeout(() => document.removeEventListener('contextmenu', eat, true), 500);
+        }
+        function _tfxScrubUp(e) { if (_tfxScrub) { e.preventDefault(); e.stopImmediatePropagation(); _tfxScrubEnd(false); } }
+        function _tfxScrubKey(e) { if (_tfxScrub && e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); _tfxScrubEnd(true); } }
+        document.addEventListener('mousedown', (e) => {
+            if (window.SPB_TFX1_OFF || e.button !== 2 || !e.altKey || _tfxScrub) return;
+            const vp = document.getElementById('canvasViewport');
+            if (!vp || !vp.contains(e.target)) return;
+            const tid = e.target && e.target.id;
+            if (tid !== 'paintCanvas' && tid !== 'transformCanvas' && e.target !== vp) return;
+            if (!_tfxScrubEligible()) return;
+            const pc = document.getElementById('paintCanvas'), r = pc && pc.getBoundingClientRect();
+            if (!r || !r.width) return;
+            const hd = document.getElementById('brushHardness');
+            _tfxScrub = { x0: e.clientX, y0: e.clientY, size0: Number(document.getElementById('brushSize').value) || 20, hard0: hd ? Number(hd.value) : 100, s: r.width / pc.width };
+            e.preventDefault(); e.stopImmediatePropagation();
+            document.addEventListener('mousemove', _tfxScrubMove, true);
+            document.addEventListener('mouseup', _tfxScrubUp, true);
+            document.addEventListener('keydown', _tfxScrubKey, true);
+            _tfxScrubHud();
+        }, true);
+
         document.addEventListener('keydown', (e) => {
             if (e.defaultPrevented) return;
+            // [SPB-TFX1 2026-10-09 TA-033] Esc leaves the sticky Hand / Zoom tool; Alt shows the zoom-out cursor
+            if (navTool && !window.SPB_TFX1_OFF) {
+                const _ntag = (e.target && e.target.tagName || '').toLowerCase();
+                if (e.key === 'Escape' && !(_ntag === 'input' || _ntag === 'textarea' || _ntag === 'select' || (e.target && e.target.isContentEditable))) {
+                    _tfxNavExit(false); e.preventDefault(); return;
+                }
+                if (navTool === 'zoom') { const _nvp = document.getElementById('canvasViewport'); if (_nvp) _nvp.classList.toggle('spb-tfx1-nav-out', !!e.altKey); }
+            }
             // SPB-93 2026-09-07: Space on a focused command activates that button;
             // native Reset Pivot was swallowed by pan. Canvas Space-drag stays intact.
             if (e.code === 'Space' && !e.repeat &&
@@ -12540,7 +13371,11 @@ function closeLasso(e) {
                 typeof _ellipseStart !== 'undefined' && !!_ellipseStart;
             const _rectGestureOwnsEscape = typeof canvasMode !== 'undefined' && canvasMode === 'rect' &&
                 typeof rectStart !== 'undefined' && !!rectStart;
-            if (e.key === 'Escape' && _selectedLayerId && !_escIsInput && !freeTransformState && !_penPathOwnsEscape && !_ellipseGestureOwnsEscape && !_rectGestureOwnsEscape) {
+            // [SPB-TFX1 2026-10-09 TA-023] Esc used to DESELECT the active layer (and swallow the key, so every later Esc handler was skipped);
+            // afterwards Move/brush/fill/Undo did nothing useful. Photoshop never deselects a layer on Esc. Now this block only runs for the
+            // mid-stroke cancel; a plain Esc falls through to the other Esc handlers (transform cancel, selection cancel, menus...).
+            if (e.key === 'Escape' && _selectedLayerId && !_escIsInput && !freeTransformState && !_penPathOwnsEscape && !_ellipseGestureOwnsEscape && !_rectGestureOwnsEscape
+                && (window.SPB_TFX1_OFF || (isDrawing && _activeLayerCanvas))) {
                 // 2026-04-18 marathon audit — refuse mid-stroke deselect.
                 // Pre-fix, pressing Esc during an in-progress layer paint
                 // stroke deselected _selectedLayerId but left _activeLayerCanvas
@@ -12577,6 +13412,8 @@ function closeLasso(e) {
             if ((e.ctrlKey || e.metaKey) && (e.key === '=' || e.key === '+')) { e.preventDefault(); canvasZoom('in'); return; }
             if ((e.ctrlKey || e.metaKey) && e.key === '-') { e.preventDefault(); canvasZoom('out'); return; }
             if ((e.ctrlKey || e.metaKey) && e.key === '0') { e.preventDefault(); canvasZoom('fit'); return; }
+            // [SPB-TFX1 2026-10-09 TA-033] Ctrl+1 = 100 % (was: nothing; zoom unchanged)
+            if (!window.SPB_TFX1_OFF && (e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key === '1') { e.preventDefault(); canvasZoom('100'); return; }
             // Photoshop Layer ordering: Ctrl+[ / Ctrl+] moves one step;
             // Shift sends the Layer to the bottom/top in one history action.
             if ((e.ctrlKey || e.metaKey) && !e.altKey &&
@@ -12606,12 +13443,19 @@ function closeLasso(e) {
                 return;
             }
             if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'a') {
+                // [SPB-TICKETS-2 2026-10-10 T-11] Ctrl+A turned the whole canvas into the zone's red draft region from anywhere (dialog, menu or
+                // panel open, focus off the workspace). Now only when the workspace owns the keyboard (native select-all still works in dialogs);
+                // the toast says what happened and offers Undo. Kill: SPB_TICKETS2_OFF / SPB_T2_T11_OFF.
+                if (window.SPBStrayKeyGate && window.SPBStrayKeyGate.swallow(e, 'T11')) return;
+                const _t2zi = selectedZoneIndex;
                 e.preventDefault();
                 if (typeof isLayerToolbarMode === 'function' && isLayerToolbarMode()) {
+                    // [SPB-TFX1 2026-10-09 TA-033] Ctrl+A in Layer mode only toasted "switch to Zone mode" (selection stayed 0 px); the Layer-mode selection IS the zone region mask (like Ctrl+Shift+I, TA-016), so select the whole canvas
+                    if (!window.SPB_TFX1_OFF && typeof _ctxSelectAll === 'function') { _t2SelAllDone(_ctxSelectAll(), _t2zi); return; }
                     if (typeof requireZoneToolbarMode === 'function') requireZoneToolbarMode('Select All');
                     return;
                 }
-                if (typeof _ctxSelectAll === 'function') _ctxSelectAll();
+                if (typeof _ctxSelectAll === 'function') _t2SelAllDone(_ctxSelectAll(), _t2zi);
                 return;
             }
             if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'd') {
@@ -12621,7 +13465,9 @@ function closeLasso(e) {
             }
             if ((e.ctrlKey || e.metaKey) && e.shiftKey && !e.altKey && e.key.toLowerCase() === 'i') {
                 e.preventDefault();
-                if (typeof isLayerToolbarMode === 'function' && isLayerToolbarMode()) {
+                // [SPB-TFX1 2026-10-09 TA-016] Layer mode selections ARE the zone region mask, so Ctrl+Shift+I inverts them there too (was: forced a Zone-mode switch).
+                const _tfxLayerSel = !window.SPB_TFX1_OFF && typeof hasActivePixelSelection === 'function' && hasActivePixelSelection();
+                if (typeof isLayerToolbarMode === 'function' && isLayerToolbarMode() && !_tfxLayerSel) {
                     if (typeof requireZoneToolbarMode === 'function') requireZoneToolbarMode('Invert Selection');
                     return;
                 }
@@ -12714,6 +13560,7 @@ function closeLasso(e) {
             }
             if (e.ctrlKey || e.metaKey || e.altKey) return; // Don't intercept other Ctrl combos
             const key = e.key.toLowerCase();
+            if (!window.SPB_TFX1_OFF && _tfxPsKeys(e, key)) return;   // [SPB-TFX1 2026-10-09 TA-033] Photoshop key map (see the block above the handler)
             if (key === 'b') { setCanvasMode('brush'); e.preventDefault(); }
             else if (key === 'x') { swapForegroundBackground(); e.preventDefault(); }
             else if (key === 'w') { setCanvasMode('wand'); e.preventDefault(); }
@@ -12909,6 +13756,40 @@ function closeLasso(e) {
                 const _innerEl = document.getElementById('canvasInner');
                 const _oldMarginX = _innerEl ? (parseFloat(_innerEl.style.marginLeft) || 0) : 0;
                 const _oldMarginY = _innerEl ? (parseFloat(_innerEl.style.marginTop) || 0) : 0;
+                // [SPB-TFX1 2026-10-09 TA-036] continuous wheel zoom anchored on the point under the cursor, measured from the canvas's own rect before/after
+                // (the old margin/scroll formula assumed the canvas starts at the scroller's origin: first step from Fit landed 16 canvas px off, and the
+                // error grew to 10,19 canvas px = 40-76 screen px by 400 %; the ladder also stopped at 400 %). Trackpads (tiny deltas) now zoom smoothly.
+                const _tfxPc = document.getElementById('paintCanvas');
+                if (!window.SPB_TFX1_OFF && _tfxPc && !viewRotation && !viewFlippedH && !viewFlippedV) {
+                    let _dy = e.deltaY;
+                    if (e.deltaMode === 1) _dy *= 33; else if (e.deltaMode === 2) _dy *= 400;
+                    _dy = Math.max(-300, Math.min(300, _dy));
+                    let nz = oldZoom * Math.exp(-_dy * (e.ctrlKey ? 0.012 : 0.0022));
+                    if ((oldZoom < 0.999 && nz > 1.001) || (oldZoom > 1.001 && nz < 0.999)) nz = 1;   // a notch always stops on 100 %
+                    nz = Math.min(32, Math.max(0.1, nz));
+                    if (Math.abs(nz - oldZoom) < 1e-4) return;
+                    const r0 = _tfxPc.getBoundingClientRect(), s0 = r0.width / _tfxPc.width;
+                    let au = (e.clientX - r0.left) / s0, av = (e.clientY - r0.top) / s0;   // canvas px under the cursor
+                    // consecutive notches with the cursor held still keep ONE anchor point (the scroller snaps to whole pixels, so re-reading the point each notch let
+                    // the sub-pixel error pile up: 4 canvas px = 29 screen px off after 14 notches)
+                    const _wa = window.__spbTfxWA, _tn = performance.now();
+                    if (_wa && _tn - _wa.t < 700 && _wa.cx === e.clientX && _wa.cy === e.clientY && Math.abs(_wa.z - oldZoom) < 1e-6) { au = _wa.u; av = _wa.v; }
+                    window.__spbTfxWA = { u: au, v: av, cx: e.clientX, cy: e.clientY, t: _tn, z: nz };
+                    currentZoom = nz;
+                    applyZoom();
+                    const sc2 = getScrollContainer();
+                    if (sc2) {
+                        const r1 = _tfxPc.getBoundingClientRect(), s1 = r1.width / _tfxPc.width;
+                        const fitsX = _tfxPc.width * nz <= sc2.clientWidth, fitsY = _tfxPc.height * nz <= sc2.clientHeight;
+                        sc2.scrollLeft = fitsX ? 0 : Math.round(sc2.scrollLeft + (r1.left + au * s1 - e.clientX));
+                        sc2.scrollTop = fitsY ? 0 : Math.round(sc2.scrollTop + (r1.top + av * s1 - e.clientY));
+                        // the scroller can clamp (canvas edge): one more pass with the real rect keeps the residual under a pixel
+                        const r2 = _tfxPc.getBoundingClientRect();
+                        if (!fitsX && Math.abs(r2.left + au * s1 - e.clientX) > 0.6) sc2.scrollLeft += (r2.left + au * s1 - e.clientX);
+                        if (!fitsY && Math.abs(r2.top + av * s1 - e.clientY) > 0.6) sc2.scrollTop += (r2.top + av * s1 - e.clientY);
+                    }
+                    return;
+                }
                 if (e.deltaY < 0) canvasZoom('in');
                 else canvasZoom('out');
                 const newZoom = currentZoom;
@@ -12991,6 +13872,16 @@ function closeLasso(e) {
             // 3) Run canvas.onmousedown(e) for Wand/Spatial/Brush/etc. 4) Stop propagation so no double-run.
             viewport.addEventListener('mousedown', (e) => {
                 if (e.target.id !== 'paintCanvas' || e.button !== 0) return;
+                // [SPB-TFX1 2026-10-09 TA-003] Space+left-drag over the canvas never panned: this capture handler ran the tool
+                // (canvas.onmousedown bails on spaceHeld) and stopPropagation()'d, so the bubble handler below (`spaceHeld && button 0
+                // -> startPan`) never ran. Now Space hands the gesture to the pan handler. before: scroll delta 0,0 -> after: follows the drag.
+                // [SPB-TFX1 2026-10-09 TA-033] sticky Zoom tool: a click zooms in on the point (Alt+click out); Hand = Space-pan
+                if (!window.SPB_TFX1_OFF && navTool === 'zoom') {
+                    e.preventDefault(); e.stopPropagation();
+                    _tfxZoomAt(e.clientX, e.clientY, e.altKey ? -1 : 1);
+                    return;
+                }
+                if ((spaceHeld || _tfxHandOn()) && !window.SPB_TFX1_OFF) return;
                 const canvas = document.getElementById('paintCanvas');
                 if (!canvas || !canvas.width || typeof paintImageData === 'undefined' || !paintImageData) return;
                 if (typeof canvasMode === 'undefined') return;
@@ -13080,7 +13971,7 @@ function closeLasso(e) {
                     return;
                 }
                 // Space + left-click pans immediately — unless Layer subRect active
-                if (spaceHeld && e.button === 0) {
+                if ((spaceHeld || _tfxHandOn()) && e.button === 0) {
                     if (layerSubRectTransformActive) {
                         return;
                     }
@@ -13239,7 +14130,7 @@ function closeLasso(e) {
                     const vp = document.getElementById('canvasViewport');
                     const cvs = document.getElementById('paintCanvas');
                     if (vp) {
-                        if (spaceHeld) {
+                        if (spaceHeld || _tfxHandOn()) {
                             vp.style.cursor = 'grab';
                             if (cvs) cvs.style.cursor = 'grab';
                         } else {
@@ -14269,14 +15160,14 @@ function _showLayerTransformQuickbar(label) {
         document.body.appendChild(globalPill);
         globalPill.onclick = () => {
             window._spbSmartTextPick = !window._spbSmartTextPick;
-            globalPill.textContent = window._spbSmartTextPick ? 'Smart Text: ON' : 'Smart Text: OFF';
+            globalPill.textContent = window._spbSmartTextPick ? 'Smart Text: ON' : 'Smart Text: off';
             globalPill.style.background = window._spbSmartTextPick ? '#166534' : '#334155';
             globalPill.style.color = '#e0f2fe';
             if (typeof _refreshLayerTransformQuickbarNumerics === 'function') _refreshLayerTransformQuickbarNumerics();
         };
     }
     const isOn = !!window._spbSmartTextPick;
-    globalPill.textContent = isOn ? 'Smart Text: ON' : 'Smart Text: OFF';
+    globalPill.textContent = isOn ? 'Smart Text: ON' : 'Smart Text: off';
     globalPill.style.background = isOn ? '#166534' : '#334155';
     globalPill.style.color = '#e0f2fe';
     globalPill.style.display = 'block';
@@ -14290,7 +15181,7 @@ function _showLayerTransformQuickbar(label) {
             stpPill.style.cssText = 'margin-left:8px;padding:1px 6px;border-radius:3px;font-size:9px;cursor:pointer;';
             if (labelEl && labelEl.parentNode) labelEl.parentNode.appendChild(stpPill);
         }
-        stpPill.textContent = isOn ? 'Text ON' : 'Text OFF';
+        stpPill.textContent = isOn ? 'Text ON' : 'Text off';
         stpPill.style.background = isOn ? '#166534' : '#334155';
         stpPill.style.color = '#e0f2fe';
         stpPill.title = 'Toggle Smart Text Pick (global)';
@@ -14298,7 +15189,7 @@ function _showLayerTransformQuickbar(label) {
             e.stopImmediatePropagation();
             window._spbSmartTextPick = !window._spbSmartTextPick;
             _refreshLayerTransformQuickbarNumerics();
-            if (typeof showToast === 'function') showToast(window._spbSmartTextPick ? 'Smart Text Pick: ON' : 'Smart Text Pick: OFF', 'info');
+            if (typeof showToast === 'function') showToast(window._spbSmartTextPick ? 'Smart Text Pick: ON' : 'Smart Text Pick: off', 'info');
         };
     } else {
         const oldPill = document.getElementById('layerSmartTextPill');
@@ -14393,7 +15284,7 @@ function _refreshLayerTransformQuickbarNumerics() {
                 <span style="color:#94a3b8;">Smart Text Pick</span>
                 <button style="background:${isOn ? '#166534' : '#334155'};color:#e0f2fe;border:none;border-radius:3px;padding:1px 6px;font-size:9px;cursor:pointer;" 
                         title="Toggle global Smart Text Pick mode (finer flood-fill for numbers/letters on all picks)">
-                    ${isOn ? 'ON' : 'OFF'}
+                    ${isOn ? 'On' : 'Off'}
                 </button>
             `;
             const btn = toggleRow.querySelector('button');
@@ -14403,7 +15294,7 @@ function _refreshLayerTransformQuickbarNumerics() {
                     window._spbSmartTextPick = !window._spbSmartTextPick;
                     _refreshLayerTransformQuickbarNumerics();
                     if (typeof showToast === 'function') {
-                        showToast(window._spbSmartTextPick ? 'Smart Text Pick: ON (global)' : 'Smart Text Pick: OFF', 'info');
+                        showToast(window._spbSmartTextPick ? 'Smart Text Pick: ON (global)' : 'Smart Text Pick: off', 'info');
                     }
                 };
             }
@@ -15037,6 +15928,33 @@ function setLayerTransformPositionAxis(axis, value, previewOnly) {
 }
 window.setLayerTransformPositionAxis = setLayerTransformPositionAxis;
 
+// PORT-W3 2026-10-09: numeric W / H (pixels of the transformed box) for precise picture sizing.
+// Honors Lock Aspect; flips (negative scale) are preserved. Same preview/commit contract as X/Y.
+function setLayerTransformSizeAxis(axis, value, previewOnly) {
+    const s = freeTransformState;
+    if (!s || s.target !== 'layer') return false;
+    const v = parseFloat(value);
+    if (!Number.isFinite(v) || v < 1) {
+        if (!previewOnly && typeof showToast === 'function') showToast(String(axis).toUpperCase() === 'H' ? 'Height must be at least 1 px' : 'Width must be at least 1 px', 'warn');
+        if (!previewOnly && typeof renderContextActionBar === 'function') renderContextActionBar();
+        return false;
+    }
+    const w0 = Math.max(1, Math.abs(s.boxW)), h0 = Math.max(1, Math.abs(s.boxH));
+    let w = w0, h = h0;
+    if (String(axis).toLowerCase() === 'h') { h = v; if (s.aspectLocked) w = w0 * v / h0; }
+    else { w = v; if (s.aspectLocked) h = h0 * v / w0; }
+    s.boxW = Math.max(1, w); s.boxH = Math.max(1, h);
+    s.scaleX = (s.scaleX < 0 ? -1 : 1) * s.boxW / (s.origBoxW || w0);
+    s.scaleY = (s.scaleY < 0 ? -1 : 1) * s.boxH / (s.origBoxH || h0);
+    if (s.subRect) s.subRect = { x1: s.centerX - s.boxW / 2, y1: s.centerY - s.boxH / 2, x2: s.centerX + s.boxW / 2, y2: s.centerY + s.boxH / 2 };
+    window.SPBElementTransformState?.syncFrame(s);
+    drawTransformHandles();
+    if (!previewOnly && typeof renderContextActionBar === 'function') renderContextActionBar();
+    if (!previewOnly && typeof showToast === 'function') showToast('Size set to ' + Math.round(s.boxW * 10) / 10 + ' x ' + Math.round(s.boxH * 10) / 10 + ' px');
+    return true;
+}
+window.setLayerTransformSizeAxis = setLayerTransformSizeAxis;
+
 /**
  * SPB-93 v18: Numeric editing helpers for active Zone free transforms (parity with Layer).
  */
@@ -15586,6 +16504,8 @@ function drawTransformHandles() {
         ctx.drawImage(fullLayerPreview,0,0);
         window.SPBLayerTransformPreview.show(pc);
     } else window.SPBLayerTransformPreview?.restore(pc);
+    // PORT-W3 2026-10-09: skew/distort/perspective quad draws its own outline + handles (js/canvas/layer/pc-quad.js).
+    if (s.quad && window.SPBPcQuad && window.SPBPcQuad.drawHandles(ctx, s)) { ctx.restore(); return; }
     window.SPBZoneMaterialInstanceTransform?.draw(ctx, s, zones[s.zoneIndex], pc.width, pc.height,
         document.getElementById('livePreviewSpecImg'));
 
@@ -15838,9 +16758,14 @@ function drawTransformHandles() {
             handleStyle = '#00ffcc';
         }
 
+        // [SPB-TFX1 2026-10-09 TA-025] this badge sat at y1 - 8, exactly where the dims line ("100% x 100%  Element 300x300 px  0 deg") is drawn, so the two printed on top of each
+        // other. The info now goes on the "Layer Element Active" line of the HUD stack below (window.__spbTfxBadge); SPB_TFX1_OFF keeps the old draw.
+        window.__spbTfxBadge = badgeText;
+        if (window.SPB_TFX1_OFF) {
         ctx.fillStyle = badgeColor;
         ctx.font = 'bold 11px sans-serif';
         ctx.fillText(badgeText, effectiveRect ? effectiveRect.x1 : s.subRect.x1, (effectiveRect ? effectiveRect.y1 : s.subRect.y1) - 8);
+        }
 
         // v116: Visual distinction – dashed cyan rect + distinct handles for instances (professional livery "linked" affordance)
         if (isInstance) {
@@ -16075,7 +17000,7 @@ function drawTransformHandles() {
         // Prominent label
         ctx.fillStyle = s.target === 'layer' ? '#67e8f9' : '#ff00aa';
         ctx.font = 'bold 11px sans-serif';
-        ctx.fillText(s.target === 'layer' ? 'LAYER ELEMENT' : 'SUB-PIECE', subCx + subW/2 + 6, subCy - subH/2 + 14);
+        ctx.fillText(s.target === 'layer' ? 'Layer element' : 'SUB-PIECE', subCx + subW/2 + 6, subCy - subH/2 + 14);
         // v144 small per-element seed: extra trust affordance on Layer — makes isolated glyph manipulation feel deliberately professional (Photoshop-style clarity)
         if (s.target === 'layer') {
             ctx.fillStyle = 'rgba(103, 232, 249, 0.65)';
@@ -16246,8 +17171,50 @@ function drawTransformHandles() {
         ctx.restore();
     }
 
+    // [SPB-TFX1 2026-10-09 TA-025] the HUD text was printed at a fixed canvas-pixel size/offset: "Layer Element Active", "Editing Element" (+11) and the dims line (-8) landed on
+    // the same 10 px, the two hint lines sat on the pivot label (-32 vs -34), and at Fit zoom everything was ~4 px tall. Now: one uniform scale about the
+    // box corner (1/zoom, 1..3.2x) so the text is legible at any zoom, 14 px leading, "Editing Element" on the label's own line, the two hints
+    // merged into one line, the pivot label stacked above them, and the in-box Rot/Scale/Pos line dropped while the quickbar shows the same numbers.
+    const _tfxHud = !window.SPB_TFX1_OFF;
+    const _hs = _tfxHud ? Math.max(1, Math.min(3.2, 1 / Math.max(0.2, zoom))) : 1;
+    // [SPB-TFX1 2026-10-09 TA-025] the text stack stands clear of the corner handle (its half-size is hs canvas px, text starts one handle + 3 px above the corner) and, when it
+    // would run over the rotate knob/stem (stem is 32 canvas px above the top edge at the centre), moves to the right of the knob (or left when the right side
+    // would leave the sheet) instead of printing on top of it.
+    const _tfxBase = _tfxHud ? Math.max(8, hs / _hs + 3) : 8;
+    let _tfxDx = 0;
+    if (_tfxHud) {
+        ctx.save();
+        ctx.font = '10px sans-serif'; const _w1 = s.dragging ? 0 : ctx.measureText(window.SPB_TFX3_OFF ? 'Double-click to apply · R/S/X/Y = numeric edit' : 'Enter or double-click = done · Esc = cancel').width;   // [SPB-TFX3 AUDIT2-F5]
+        ctx.font = '11px sans-serif'; const _w2 = ctx.measureText('100% × 100%  Element 0000×0000 px  -000° (snapped)').width;
+        ctx.restore();
+        const _sw = Math.max(_w1, _w2, s.dragging ? 268 : 0) * _hs;
+        const _stTop = tl.y - (_tfxBase + 14 * 4 + 4) * _hs, _stBot = tl.y;
+        const _kx0 = Math.min(tm.x, rotPtPos.x) - 11, _kx1 = Math.max(tm.x, rotPtPos.x) + 11;
+        const _ky0 = Math.min(tm.y, rotPtPos.y) - 11, _ky1 = Math.max(tm.y, rotPtPos.y);
+        if (tl.x < _kx1 && tl.x + _sw > _kx0 && _stTop < _ky1 && _stBot > _ky0) {
+            const _cw = (ctx.canvas && ctx.canvas.width) || 2048;
+            const _right = _kx1 + 4 - tl.x, _left = _kx0 - 4 - _sw - tl.x;
+            _tfxDx = ((tl.x + _right + _sw <= _cw - 6) || (tl.x + _left < 4) ? _right : _left) / _hs;
+        }
+    }
+    const _hudStack = [];
+    // each line of the stack gets a dark translucent plate so cyan/white text reads on the yellow/black car art (was ~1.2:1 contrast on the yellow sheet)
+    const _hudPlate = function (t, x, y, mw) {
+        const m = ctx.measureText(t), fm = /(\d+(?:\.\d+)?)px/.exec(ctx.font), fp = fm ? parseFloat(fm[1]) : 11, f = ctx.fillStyle;
+        ctx.fillStyle = 'rgba(8,12,20,0.6)'; ctx.fillRect(x - 3, y - fp - 1, m.width + 6, fp + 5); ctx.fillStyle = f;
+        return CanvasRenderingContext2D.prototype.fillText.call(ctx, t, x, y, mw);
+    };
+    const _hudOpen = (shift) => {
+        const _dx = shift ? _tfxDx : 0, _on = _hs !== 1 || _dx !== 0, _pl = shift === true && _tfxHud;
+        _hudStack.push({ on: _on, pl: _pl });
+        if (_on) { ctx.save(); ctx.translate(tl.x, tl.y); ctx.scale(_hs, _hs); ctx.translate(-tl.x + _dx, -tl.y); }
+        if (_pl) ctx.fillText = s.dragging ? function () { } : _hudPlate;   // while dragging the floating pill below already shows the same numbers
+    };
+    const _hudClose = () => { const _e = _hudStack.pop(); if (!_e) return; if (_e.pl) delete ctx.fillText; if (_e.on) ctx.restore(); };
+    let _tfxTopY = null;
     // SPB-93 v20: Smart label stacking above the main info text (avoids overlap)
-    let labelY = tl.y - 20;
+    _hudOpen(true);
+    let labelY = tl.y - (_tfxHud ? _tfxBase + 14 : 20);
     if (s.target === 'layer' && s.aspectLocked) {
         ctx.fillStyle = '#fde047';
         ctx.font = 'bold 11px sans-serif';
@@ -16268,7 +17235,9 @@ function drawTransformHandles() {
     } else if (s.subRect && ((typeof s.target === 'string' && _isZoneFreeTransformTarget(s.target)) || s.target === 'layer')) {
         ctx.fillStyle = (s.target === 'layer') ? '#67e8f9' : '#ff00aa';
         ctx.font = 'bold 11px sans-serif';
-        ctx.fillText(s.target === 'layer' ? 'Layer Element Active' : 'Sub-Piece Active', tl.x, labelY);
+        const _tfxLab = s.target === 'layer' ? (window.SPB_TFX3_OFF ? 'Layer Element Active' : 'Just this piece') : 'Sub-Piece Active';   // [SPB-TFX3 AUDIT2-F5]
+        ctx.fillText(_tfxLab, tl.x, labelY);
+        const _tfxLabW = ctx.measureText(_tfxLab).width;
         // v110: Element Link Groups prototype – show group membership
         if (s.subRect && s.target === 'layer') {
             const layer = getSelectedLayer();
@@ -16287,7 +17256,8 @@ function drawTransformHandles() {
             }
             ctx.font = '9px sans-serif';
             ctx.fillStyle = 'rgba(0, 255, 204, 0.85)';
-            ctx.fillText(groupSize > 1 ? `Editing Element (Group of ${groupSize})` : 'Editing Element', tl.x, labelY + 11);
+            if (_tfxHud) { const _b = window.__spbTfxBadge; if (_b && _b !== 'Editing Element') ctx.fillText('· ' + _b, tl.x + _tfxLabW + 6, labelY); }   // [SPB-TFX1 2026-10-09 TA-025] same line, no overlap
+            else ctx.fillText(groupSize > 1 ? `Editing Element (Group of ${groupSize})` : 'Editing Element', tl.x, labelY + 11);
         }
         // v117: Full visual parity for Zone Pattern Instances (mirrors Layer Smart Element Instances)
         if (s.subRect && s.target && _isZoneFreeTransformTarget && _isZoneFreeTransformTarget(s.target)) {
@@ -16332,13 +17302,20 @@ function drawTransformHandles() {
     if (!s.dragging) {
         ctx.fillStyle = 'rgba(255,255,255,0.55)';
         ctx.font = '10px sans-serif';
+        const isZone = typeof s.target === 'string' && _isZoneFreeTransformTarget(s.target);
+        if (_tfxHud) {   // [SPB-TFX1 2026-10-09 TA-025] one hint line
+            ctx.fillText(window.SPB_TFX3_OFF ? ((s.target === 'layer' || isZone) ? 'Double-click to apply · R/S/X/Y = numeric edit' : 'Double-click to apply') : 'Enter or double-click = done · Esc = cancel', tl.x, labelY);   // [SPB-TFX3 2026-10-09 AUDIT2-F5] NEWUSER-QA #5: jargon -> plain words (R/S/X/Y numeric editing stays, documented in the Encyclopedia)
+            labelY -= 14;
+        } else {
         ctx.fillText('Double-click to apply', tl.x, labelY);
         labelY -= 12;
-        const isZone = typeof s.target === 'string' && _isZoneFreeTransformTarget(s.target);
         if (s.target === 'layer' || isZone) {
             ctx.fillText('R/S/X/Y = numeric edit', tl.x, labelY);
         }
+        }
     }
+    _tfxTopY = labelY;
+    _hudClose();
     // Rotation snapping feedback (SPB-93 bigger swing)
     const rotationColor = s.rotationSnapped ? '#f472b6' : (s.constrained ? '#67e8f9' : 'rgba(0,229,255,0.9)');
     ctx.fillStyle = rotationColor;
@@ -16363,7 +17340,7 @@ function drawTransformHandles() {
         let snapText = 'Snapped';
         if (s.centerSnapped) snapText = 'Center Snapped';
         if (s.edgeSnapped) snapText = 'Edge Snapped';
-        ctx.fillText(snapText, tl.x, tl.y - 20);
+        if (!_tfxHud) ctx.fillText(snapText, tl.x, tl.y - 20);   // [SPB-TFX1 2026-10-09 TA-025] the pill shows the snap state (it printed on top of it)
 
         const pc = document.getElementById('paintCanvas');
         const canvasW = pc ? pc.width : 2048;
@@ -16414,7 +17391,9 @@ function drawTransformHandles() {
     } else if (s.target === 'layer' && s.boxW && s.boxH) {
         dimText = `  ${Math.round(s.boxW)}×${Math.round(s.boxH)} px`;
     }
-    ctx.fillText(`${Math.round(displayScaleX * 100)}% × ${Math.round(displayScaleY * 100)}%${dimText}  ${rotText}`, tl.x, tl.y - 8);
+    _hudOpen(true);
+    ctx.fillText(`${Math.round(displayScaleX * 100)}% × ${Math.round(displayScaleY * 100)}%${dimText}  ${rotText}`, tl.x, tl.y - (_tfxHud ? _tfxBase : 8));
+    _hudClose();
 
     // SPB-93 v46 (Hall + Nash): Live numeric readout (Rot / Scale / Pos / LocalPivot) now for both Layer and Zone transforms.
     // This is the classic "feels professional" feedback — you see exact numbers updating live while dragging handles or the box.
@@ -16422,7 +17401,10 @@ function drawTransformHandles() {
     const showNumericReadout = (s.target === 'layer') ||
         (typeof s.target === 'string' && _isZoneFreeTransformTarget(s.target));
 
-    if (showNumericReadout) {
+    const _tfxQb = document.getElementById('layerTransformQuickbar');
+    const _tfxSkipNum = _tfxHud && s.target === 'layer' && !!_tfxQb && _tfxQb.style.display !== 'none';   // [SPB-TFX1 2026-10-09 TA-025]
+    if (showNumericReadout && !_tfxSkipNum) {
+        _hudOpen();
         const rotVal = Math.round(s.rotation || 0);
         const scaleVal = Math.round(((s.scaleX || 1) + (s.scaleY || 1)) / 2 * 100);
         const posX = Math.round(s.centerX);
@@ -16460,6 +17442,7 @@ function drawTransformHandles() {
         ctx.fillStyle = 'rgba(255,255,255,0.7)';
         ctx.font = '10px sans-serif';
         ctx.fillText(`${prefix}Rot ${rotVal}°  Scale ${scaleVal}%  Pos ${posX},${posY}${extra}`, tl.x, tl.y + 4);
+        _hudClose();
     }
 
     // Show pivot offset if custom (SPB-93 v10 - now for both Layer and Zone transforms)
@@ -16475,7 +17458,9 @@ function drawTransformHandles() {
             const label = (isLayerLocalPivot || isZoneLocalPivot)
                 ? `local pivot ${px},${py}`
                 : `pivot ${px},${py}`;
-            ctx.fillText(label, tl.x, tl.y - 32);
+            _hudOpen(true);
+            ctx.fillText(label, tl.x, _tfxHud && _tfxTopY !== null ? _tfxTopY : tl.y - 32);   // [SPB-TFX1 2026-10-09 TA-025] stacked above the hints, not on top of them
+            _hudClose();
         }
     }
 
@@ -16484,10 +17469,11 @@ function drawTransformHandles() {
     // This is the "feels finished and trustworthy" feedback layer (Photoshop Free Transform / GIMP level).
     // Only rendered during drag to avoid clutter when idle. Reuses the current ctx — zero extra draw calls.
     if (s.dragging) {
-        const hudX = tl.x;
-        const hudY = Math.max(18, tl.y - 48); // above the existing scale/rot line, safe from edges
         const hudW = 268;
         const hudH = 42;
+        _hudOpen(2);   // [SPB-TFX1 2026-10-09 TA-025] scaled with the zoom, stands clear of the rotate knob, sits above the corner handle; was fixed 42 canvas px tall (= 10 screen px at Fit) on top of the text lines
+        const hudX = tl.x;
+        const hudY = _tfxHud ? Math.max(tl.y - _tfxBase - hudH - 4, tl.y - (tl.y - 4) / _hs) : Math.max(18, tl.y - 48); // above the existing scale/rot line, safe from edges
 
         // Dark semi-transparent pill background (high contrast, low jank)
         ctx.save();
@@ -16552,6 +17538,7 @@ function drawTransformHandles() {
 
         ctx.fillText(badgeLine, hudX + 10, hudY + 32);
         ctx.restore();
+        _hudClose();
     }
 
     // Rotation guide + original angle indicator + arc (SPB-93 bigger swing package)
@@ -17009,6 +17996,12 @@ function onTransformMouseMove(e) {
             }
         }
 
+        // [SPB-TFX3 2026-10-09 PORT-1 Smart Guides, lane TOOLS-FIX-3] snap the moving piece's edges/centres to the canvas edges + centre lines,
+        // the selection box and the other layers' edges/centres (PhotoCraft snap.rs port, js/canvas/tfx3-smartguides.js); magenta guides drawn.
+        // BEFORE: only centre->canvas-edge / start-centre rules, no guides. AFTER: see fix3/sg_after.json. Ctrl = free, Shift = straight line. Kill switch SPB_TFX3_OFF.
+        if (!window.SPB_TFX3_OFF && window.SPBTfx3Guides && typeof window.SPBTfx3Guides.snapElementMove === 'function') {
+            try { const _sg = window.SPBTfx3Guides.snapElementMove(s, moveX, moveY, e); if (_sg) { moveX = _sg.x; moveY = _sg.y; } } catch (_sge) { /* guides are a nicety: never break a move */ }
+        }
         s.centerX = moveX;
         s.centerY = moveY;
         s.moveSnapped = !!e.shiftKey;
@@ -17225,9 +18218,12 @@ document.addEventListener('keydown', function(e) {
             const tgt = s.target;
             const isSupportedTarget = (tgt === 'layer') || (typeof _isZoneFreeTransformTarget === 'function' && _isZoneFreeTransformTarget(tgt));
             if (!isSupportedTarget) return;
+            // [SPB-TFX1 2026-10-09 TA-024] arrows inside a numeric field (X / Y / W / H / R / S%) move the text cursor / step the number - they must not ALSO nudge the artwork
+            if (!window.SPB_TFX1_OFF && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement && document.activeElement.tagName)) return;
 
             // SPB-93 v8: Professional arrow-key nudging for both Layer and Zone transforms (parity)
-            const step = e.shiftKey ? 8 : 1;
+            // [SPB-TFX1 2026-10-09 TA-024] Shift+Arrow = 10 px like Photoshop and like Move Border in this app (was 8; piece moved 650 -> 658)
+            const step = e.shiftKey ? (window.SPB_TFX1_OFF ? 8 : 10) : 1;
             const rotStep = e.shiftKey ? 5 : 1;
 
             if (e.altKey) {
@@ -17403,7 +18399,7 @@ function loadColorPalette(name) {
 
 function showPaletteMenu() {
     let html = '<div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10000;background:#111;border:2px solid var(--accent-gold);border-radius:10px;padding:16px 20px;min-width:280px;">';
-    html += '<div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="font-weight:bold;color:var(--accent-gold);">COLOR PALETTES</span><button onclick="this.parentElement.parentElement.parentElement.remove()" style="background:none;border:none;color:#888;font-size:16px;cursor:pointer;">✕</button></div>';
+    html += '<div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="font-weight:bold;color:var(--accent-gold);">Color palettes</span><button onclick="this.parentElement.parentElement.parentElement.remove()" style="background:none;border:none;color:#888;font-size:16px;cursor:pointer;">✕</button></div>';
     for (const [name, colors] of Object.entries(_colorPalettes)) {
         html += `<div onclick="loadColorPalette('${name}');this.parentElement.parentElement.remove();" style="cursor:pointer;padding:6px 8px;border-radius:4px;margin-bottom:4px;display:flex;align-items:center;gap:8px;transition:background 0.1s;" onmouseenter="this.style.background='rgba(255,255,255,0.08)'" onmouseleave="this.style.background=''">`;
         html += `<div style="display:flex;gap:2px;">`;
@@ -17428,21 +18424,41 @@ document.addEventListener('DOMContentLoaded', renderSwatchBar);
 function showShortcutLegend() {
     const shortcuts = [
         ['---TOOLS---', '--- Canvas Tools ---'],
+        // [SPB-TFX1 2026-10-09 TA-033] the legend lists the keys that really exist (it still listed the retired S/I/D/F/H and Shift+J, M = ellipse, O = rect)
+        ...(window.SPB_TFX1_OFF ? [
         ['B', 'Brush (Zone mask or selected Layer)'], ['C', 'Color Brush'], ['I', 'Pencil (hard-edged, size-controlled)'],
         ['S', 'Clone Stamp (Alt+Click = set source)'], ['Shift+J', 'Healing Brush (Alt+Click = clean source)'], ['R', 'Recolor (first click samples source)'],
         ['Q', 'Smudge (finger paint)'], ['D', 'Dodge (lighten)'], ['J', 'Burn (darken)'],
         ['F', 'Blur Brush'], ['H', 'Sharpen Brush'],
+        ] : [
+        ['B', 'Brush (Zone mask or selected Layer)'], ['Shift+B', 'Cycle Brush / Pencil / Recolor'], ['C', 'Color Brush'],
+        ['S', 'Clone Stamp (Alt+Click = set source)'], ['J', 'Healing Brush (Alt+Click = clean source)'],
+        ['R', 'Blur Brush (press R again: Sharpen, then Smudge)'], ['Q', 'Smudge (finger paint)'],
+        ['O', 'Dodge (lighten)'], ['Shift+O', 'Burn (darken) / cycle'],
+        ['Y', 'Pick Item'], ['Shift+Y', 'History Brush'],
+        ['G', 'Gradient'], ['Shift+G', 'Cycle Gradient / Fill Bucket'], ['K', 'Fill Bucket'],
+        ]),
         ['---', '---'],
         ['---SELECTION---', '--- Selection Tools ---'],
+        ...(window.SPB_TFX1_OFF ? [
         ['W', 'Magic Wand'], ['A', 'Select All Color'], ['E', 'Eraser'],
         ['O', 'Rectangle Select'], ['L', 'Lasso'], ['M', 'Ellipse Marquee'], ['Button', 'Edge Detect'],
         ['G', 'Gradient'], ['K', 'Fill Bucket'], ['N', 'Pen / Bezier'],
+        ] : [
+        ['W', 'Magic Wand'], ['Shift+W', 'Cycle Wand / Grab Object / Smart Region Fill'], ['A', 'Select All Color'], ['E', 'Eraser'],
+        ['M', 'Rectangle Select (press M again: Ellipse)'], ['L', 'Lasso'],
+        ]),
         ['---', '---'],
         ['---CREATE---', '--- Create Tools ---'],
+        ...(window.SPB_TFX1_OFF ? [
         ['T', 'Text Tool'], ['U', 'Shape Tool'], ['P', 'Eyedropper'],
+        ] : [
+        ['T', 'Text Tool'], ['I', 'Eyedropper (P also works)'],
+        ]),
         ['---', '---'],
         ['---COLORS---', '--- Colors & Canvas ---'],
         ['X', 'Swap FG/BG Colors'], ['Alt+Click', 'Sample color (temporary eyedropper)'],
+        ...(window.SPB_TFX1_OFF ? [] : [['D', 'Default colors (black / white)'], ['H', 'Hand tool (Esc leaves)'], ['Z', 'Zoom tool (click in, Alt+click out)'], ['Ctrl+1 / Ctrl+0', '100% / Fit']]),
         ['[ ]', 'Brush Size -/+'], ['{ }', 'Brush Hardness -/+'],
         ['Space+Drag', 'Pan Canvas'], ['Scroll', 'Zoom In/Out'],
         ['0–9', 'Paint: tool opacity/strength · Move: Layer opacity'],
@@ -17485,7 +18501,7 @@ function showShortcutLegend() {
         ['?', 'This Legend'],
     ];
     let html = '<div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10000;background:#111;border:2px solid var(--accent-cyan);border-radius:12px;padding:20px 28px;max-height:80vh;overflow-y:auto;min-width:320px;">';
-    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span style="font-size:14px;font-weight:bold;color:var(--accent-cyan);">KEYBOARD SHORTCUTS</span><button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:#888;font-size:18px;cursor:pointer;">✕</button></div>';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span style="font-size:14px;font-weight:bold;color:var(--accent-cyan);">Keyboard shortcuts</span><button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:#888;font-size:18px;cursor:pointer;">✕</button></div>';
     html += '<table style="width:100%;border-collapse:collapse;">';
     for (const [key, desc] of shortcuts) {
         if (key === '---') { html += '<tr><td colspan="2" style="border-bottom:1px solid #333;padding:4px 0;"></td></tr>'; continue; }
@@ -17628,6 +18644,9 @@ function _strokeTextWithSpacing(ctx, text, x, y, spacing) {
 }
 
 function onTextToolClick(x, y) {
+    // [SPB-TFX2 2026-10-09 TA-034] live, re-editable text (js/canvas/pc-text-edit.js): a click on a text layer
+    // re-opens it (before: dbl-click opened a NEW empty box and the text was pixels forever). Kill: SPB_TFX2_OFF.
+    if (!window.SPB_TFX2_OFF && window.SPBTextEdit && window.SPBTextEdit.handleClick(x, y)) return true;
     if (_textInputActive) return false;
     const pc = document.getElementById('paintCanvas');
     if (!pc) return false;
@@ -18164,6 +19183,8 @@ function drawShapePreview(startPt, endPt) {
             ctx.lineTo(rx + rw * 0.85, ry + rh); ctx.lineTo(cx, cy + rh * 0.15);
             ctx.lineTo(rx + rw * 0.15, ry + rh); ctx.lineTo(rx, ry + rh * 0.85);
             ctx.lineTo(cx - rw * 0.15, cy); ctx.lineTo(rx, ry + rh * 0.15); ctx.closePath();
+        } else if (shapeType === 'gear' && !window.SPB_TFX2_OFF) {
+            window._tfx2GearPath(ctx, cx, cy, Math.min(rw, rh) / 2); // [SPB-TFX2 2026-10-09 TA-035] even trapezoid teeth around a centred root circle
         } else if (shapeType === 'gear') {
             const radius2 = Math.min(rw, rh) / 2;
             const teeth = 8, toothH = radius2 * 0.25;
@@ -18371,6 +19392,8 @@ function commitShape(startPt, endPt) {
             ctx.lineTo(ox + w6 * 3, oy + h4 * 2.5); ctx.lineTo(ox + w6 * 4.5, oy + sh);
             ctx.lineTo(ox + w6, oy + h4 * 2); ctx.lineTo(ox + w6 * 2.5, oy + h4 * 2);
             ctx.lineTo(ox + w6, oy + h4); ctx.lineTo(ox + w6 * 2.5, oy + h4); ctx.closePath();
+        } else if (shapeType === 'gear' && !window.SPB_TFX2_OFF) {
+            window._tfx2GearPath(ctx, ccx, ccy, Math.min(sw, sh) / 2); // [SPB-TFX2 2026-10-09 TA-035]
         } else if (shapeType === 'gear') {
             const gr = Math.min(sw, sh) / 2, teeth = 8, th = gr * 0.25;
             for (let i = 0; i < teeth; i++) {
@@ -18511,6 +19534,22 @@ function paintCloneStroke(x, y) {
     const selection = _activeSelectionMask(w, h);
     const sourceOverPixel = window.SPBRgbaBlend?.sourceOverPixel;
     if (typeof sourceOverPixel !== 'function') return;
+
+    // PORT-W2 (2026-10-09, owner "tools basically SUCK"): PhotoCraft coverage-buffer clone. Clone opacity is a hard
+    // cap for the whole stroke (before: every overlapping dab re-stamped at `opacity`, so 50% built up to ~100%);
+    // flow builds up toward it, sub-pixel dab centre, composite onto the pre-stroke pixels.
+    if (_cloneStrokeSource && window.SPBPcStroke && !window.SPB_PC_W2_OFF) {
+        const sub = window._spbDabSub;
+        window.SPBPcStroke.paintDabData(data, w, h, _cloneStrokeSource, {
+            x: sub ? sub.x : x, y: sub ? sub.y : y, radius, hardness, footprint,
+            cap: cloneOpacity, flow: _resolveBrushDynamics(radiusBase, 1, flow).opacity,
+            sel: selection, selW: w, pre: _cloneStrokeSource, src: _cloneStrokeSource,
+            sdx: srcX - dstX, sdy: srcY - dstY
+        });
+        _markActivePaintDirtyCircle(dstX, dstY, radius, 2);
+        _flushPaintImageDataToCurrentSurface();
+        return;
+    }
 
     // Read source pixels, write to destination
     for (let dy = -radius; dy <= radius; dy++) {
@@ -19068,8 +20107,18 @@ function getLayerPaintSpecialId() {
 window.getLayerPaintSpecialId = getLayerPaintSpecialId;
 
 function _getLayerPaintSpecialMeta(id) {
-    if (!id || typeof MONOLITHICS === 'undefined' || !Array.isArray(MONOLITHICS)) return null;
-    return MONOLITHICS.find(function (m) { return m && m.id === id; }) || null;
+    if (!id) return null;
+    const mono = (typeof MONOLITHICS !== 'undefined' && Array.isArray(MONOLITHICS))
+        ? (MONOLITHICS.find(function (m) { return m && m.id === id; }) || null) : null;
+    if (mono) return mono;
+    // [SPECIAL-ALL 2026-10-12] owner: "Choose Special ... should show ALL bases/spec options" - the picker now offers BASES too, so the chip / toasts / Special-zone names must resolve them
+    return (typeof BASES !== 'undefined' && Array.isArray(BASES)) ? (BASES.find(function (b) { return b && b.id === id; }) || null) : null;
+}
+// [SPECIAL-ALL 2026-10-12] finish id form the Brush Studio / Special-spec path wants: a pure base id stays raw, a Special keeps 'mono:'
+function _layerPaintSpecialFinishId(id) {
+    const isBase = typeof BASES !== 'undefined' && Array.isArray(BASES) && BASES.some(function (b) { return b && b.id === id; });
+    const isMono = typeof MONOLITHICS !== 'undefined' && Array.isArray(MONOLITHICS) && MONOLITHICS.some(function (m) { return m && m.id === id; });
+    return (isBase && !isMono) ? id : ('mono:' + id);
 }
 
 function _getLayerPaintSpecialUrl(id, size) {
@@ -19080,7 +20129,7 @@ function _getLayerPaintSpecialUrl(id, size) {
     }
     const base = (typeof ShokkerAPI !== 'undefined' && ShokkerAPI.baseUrl)
         ? ShokkerAPI.baseUrl
-        : `http://localhost:${window._SHOKKER_PORT || 59876}`;
+        : `http://localhost:${(window.spbServerPort ? window.spbServerPort() : window._SHOKKER_PORT)}`;
     return `${base}/api/swatch/monolithic/${id}?color=${tintHex.replace('#', '')}&size=${size || 256}&prefer=live&v=${Date.now()}`;
 }
 
@@ -19178,6 +20227,12 @@ function syncLayerPaintSourceUI() {
     if (pickerBtn) pickerBtn.style.display = active ? 'inline-flex' : 'none';
     if (chip) chip.style.display = active ? 'inline-flex' : 'none';
     if (hint) hint.style.display = active ? '' : 'none';
+    { // [SPECIAL-SPEC 2026-10-11] "Paint its spec too" checkbox: shown with the Special picker, remembered per browser
+        const sw = document.getElementById('layerSpecialSpecWrap'), sc = document.getElementById('layerSpecialSpecToggle');
+        if (sw) sw.style.display = (active && !window.SPB_SPECIAL_SPEC_OFF) ? 'inline-flex' : 'none';
+        if (sc) sc.checked = isSpecialSpecOn();
+        try { if (window.SPBSpecialZone) window.SPBSpecialZone.refreshUi(); } catch (_) {}   // [SPECIAL-ZONE 2026-10-11]
+    }
     if (nameEl) nameEl.textContent = meta ? meta.name : 'Choose Special...';
     if (swatchEl) {
         swatchEl.style.background = swatchColor;
@@ -19252,6 +20307,17 @@ function _paintColorBrushAt(data, w, h, x, y, cr, cg, cb, radius, opacity, hardn
     const sourceOverPixel = window.SPBRgbaBlend?.sourceOverPixel;
     if (typeof sourceOverPixel !== 'function') return;
 
+    // PORT-W5: Colour Brush on the stroke coverage buffer (opacity = stroke cap, flow builds up, sub-pixel centre)
+    if (!window.SPB_PC_W5_OFF && window.SPBPcStroke && window._spbW5CB && window._spbW5Key) {
+        const _c5 = _pcSubCentre(x, y), _cb5 = window._spbW5CB;
+        window.SPBPcStroke.paintDabData(data, w, h, window._spbW5Key, {
+            x: _c5.x, y: _c5.y, radius, hardness, footprint, cap: _cb5.cap, flow: _cb5.flow,
+            sel: _rmask, selW: w, color: [cr * 255, cg * 255, cb * 255]
+        });
+        if (typeof _logPaintPerf === 'function') _logPaintPerf('colorbrush', _t0, radius);
+        return;
+    }
+
     for (let dy = -radius; dy <= radius; dy++) {
         for (let dx = -radius; dx <= radius; dx++) {
             const dist2 = dx * dx + dy * dy;
@@ -19315,6 +20381,8 @@ function paintColorBrush(x, y) {
         paintKernel(d, w, h, px, py);
     };
 
+    // PORT-W5: cap/flow split for the coverage-buffer Colour Brush (pattern brush unaffected)
+    window._spbW5CB = { cap: opacity, flow: _resolveBrushDynamics(radiusBase, 1, flow).opacity };
     // Primary stroke
     paintFn(data, w, h, x, y);
 
@@ -19347,6 +20415,7 @@ function paintColorBrush(x, y) {
         }
     }
 
+    window._spbW5CB = null; // PORT-W5
     _flushPaintImageDataToCurrentSurface();
 }
 
@@ -19371,6 +20440,7 @@ window.resetDefaultColors = resetDefaultColors;
 // RECOLOR TOOL — Replace one color with another using tolerance
 // ══════════════════════════════════════════════════════════════════════════════
 
+var _pcRecolorBuf = null; // PORT-W2: per-stroke replacement colours (+match in alpha) for the coverage-buffer Recolor
 function paintRecolor(x, y) {
     var _t0 = (typeof window !== 'undefined' && window._SPB_DEBUG_PAINT_PERF === true) ? performance.now() : 0;
     const pc = document.getElementById('paintCanvas');
@@ -19414,6 +20484,39 @@ function paintRecolor(x, y) {
     // Match against immutable stroke-start pixels. Otherwise a low-Flow first
     // dab can move outside tolerance and later dabs cannot build naturally.
     const source = recolorMath?.getStrokeSource ? recolorMath.getStrokeSource(d) : d;
+
+    // PORT-W2 (2026-10-09): stroke coverage buffer for Recolor. Opacity is a cap for the whole stroke (before: each
+    // overlapping dab re-blended against the CURRENT pixel, so 50% built toward 100%); flow builds up toward it. Colour
+    // math (lightness-preserving Color mode, tolerance match) is unchanged; the per-pixel match rides in the src alpha.
+    if (source !== d && window.SPBPcStroke && !window.SPB_PC_W2_OFF) {
+        const c = _pcSubCentre(x, y);
+        if (!_pcRecolorBuf || _pcRecolorBuf.length !== d.length) _pcRecolorBuf = new Uint8ClampedArray(d.length);
+        const bx0 = Math.max(0, Math.floor(c.x - radius - 2)), by0 = Math.max(0, Math.floor(c.y - radius - 2));
+        const bx1 = Math.min(w, Math.ceil(c.x + radius + 3)), by1 = Math.min(h, Math.ceil(c.y + radius + 3));
+        for (let py = by0; py < by1; py++) {
+            for (let px = bx0; px < bx1; px++) {
+                const idx = (py * w + px) * 4;
+                _pcRecolorBuf[idx + 3] = 0;
+                if (source[idx + 3] === 0) continue;
+                const dr = source[idx] - tr, dg = source[idx + 1] - tg, db = source[idx + 2] - tb;
+                const dist2 = dr * dr + dg * dg + db * db;
+                if (dist2 > tol2) continue;
+                const rep = recolorMath?.colorizePreservingLightness
+                    ? recolorMath.colorizePreservingLightness(source[idx], source[idx + 1], source[idx + 2], rr, rg, rb)
+                    : [rr, rg, rb];
+                _pcRecolorBuf[idx] = rep[0]; _pcRecolorBuf[idx + 1] = rep[1]; _pcRecolorBuf[idx + 2] = rep[2];
+                _pcRecolorBuf[idx + 3] = Math.round((tol2 > 0 ? 1 - Math.sqrt(dist2) * invToleranceDistance : 1) * 255);
+            }
+        }
+        window.SPBPcStroke.paintDabData(d, w, h, source, {
+            x: c.x, y: c.y, radius, hardness, footprint, cap: opacity,
+            flow: _resolveBrushDynamics(radiusBase, 1, flow).opacity,
+            sel: _rmask, selW: w, pre: source, src: _pcRecolorBuf, sdx: 0, sdy: 0, keepAlpha: true
+        });
+        _flushPaintImageDataToCurrentSurface();
+        if (typeof _logPaintPerf === 'function') _logPaintPerf('recolor', _t0, radius);
+        return;
+    }
 
     for (let dy = -radius; dy <= radius; dy++) {
         for (let dx = -radius; dx <= radius; dx++) {
@@ -19503,6 +20606,21 @@ function paintSmudge(x, y) {
     // how aggressively each dab mixes into the running buffer).
     const hardness = parseInt(document.getElementById('brushHardness')?.value || 50) / 100;
 
+    // PORT-W5 (2026-10-09, owner "tools basically SUCK"): PhotoCraft retouch.rs Smudge - premultiplied carry laid down at
+    // strength*tip, then re-picked from the pixels under the dab (carry*strength + px*(1-strength)); sub-pixel dab centre.
+    if (!window.SPB_PC_W5_OFF && window.SPBPcStroke && window.SPBPcStroke.smudgeDab) {
+        const _c5 = _pcSubCentre(x, y);
+        if (!_pcSmudge) _pcSmudge = window.SPBPcStroke.smudgeState(Math.max(1, radiusBase));
+        _markActivePaintDirtyCircle(x, y, radius, 1);
+        window.SPBPcStroke.smudgeDab(d, w, h, _pcSmudge, {
+            x: _c5.x, y: _c5.y, radius: Math.min(radius, Math.max(1, radiusBase)), hardness, strength, footprint,
+            sel: _activeSelectionMask(w, h), selW: w
+        });
+        _flushPaintImageDataToCurrentSurface();
+        _logPaintPerf('smudge', _t0, radius);
+        return;
+    }
+
     // First call: pick up color under brush
     if (!_smudgeBuffer) {
         const seedRadius = bufferRadius;
@@ -19579,7 +20697,8 @@ function _logPaintPerf(toolName, t0, radius) {
 }
 window._logPaintPerf = _logPaintPerf;
 
-function resetSmudge() { _smudgeBuffer = null; _smudgeBufferRadius = 0; _smudgeBufferShape = null; }
+var _pcSmudge = null; // PORT-W5: carried-colour state of the PhotoCraft smudge
+function resetSmudge() { _smudgeBuffer = null; _smudgeBufferRadius = 0; _smudgeBufferShape = null; _pcSmudge = null; }
 window.paintSmudge = paintSmudge;
 window.resetSmudge = resetSmudge;
 
@@ -19618,6 +20737,17 @@ function paintPencil(x, y, useBG, skipFlush) {
     const sourceOverPixel = window.SPBRgbaBlend?.sourceOverPixel;
     if (typeof sourceOverPixel !== 'function') return;
     const _rmask = _activeSelectionMask(w, h); // clip pencil to the active pixel selection
+    // PORT-W5: aliased Pencil on the stroke coverage buffer - a pixel is in or out by its centre (exact 1px at size 1,
+    // no AA ring), Opacity is the stroke cap (overlapping stamps never darken), selection clips.
+    if (!window.SPB_PC_W5_OFF && window.SPBPcStroke && window._spbW5Key) {
+        window.SPBPcStroke.paintDabData(d, w, h, window._spbW5Key, {
+            x: x, y: y, radius: radius || 0.5, hardness: 1, footprint: radius === 0 ? null : footprint, aliased: true,
+            cap: opacityBase, flow: _resolveBrushDynamics(requestedSize, 1, flow).opacity,
+            sel: _rmask, selW: w, color: [cr, cg, cb]
+        });
+        if (!skipFlush) _flushPaintImageDataToCurrentSurface();
+        return;
+    }
     for (let dy = -radius; dy <= radius; dy++) {
         for (let dx = -radius; dx <= radius; dx++) {
             // Binary edge, selected footprint (pencil remains non-antialiased).
@@ -19695,6 +20825,19 @@ function _paintDodgeBurn(x, y, direction) {
     const footprint = _createBrushFootprint(radius);
     const _rmask = _activeSelectionMask(w, h);
 
+    // PORT-W2 (2026-10-09): PhotoCraft retouch.rs tone curves (range-weighted gamma bend, Protect Tones on luma with
+    // gamut compression), anti-aliased sub-pixel footprint. Per-dab budget unchanged (exposure*flow*0.15).
+    if (window.SPBPcStroke && !window.SPB_PC_W2_OFF) {
+        const c = _pcSubCentre(x, y);
+        window.SPBPcStroke.retouchDab(d, w, h, {
+            mode: direction > 0 ? 'dodge' : 'burn', x: c.x, y: c.y, radius, hardness, footprint,
+            amount: strength * 0.15, range: range === 'shadows' ? 0 : (range === 'highlights' ? 2 : 1),
+            protect: document.getElementById('dodgeBurnProtect')?.checked !== false, sel: _rmask, selW: w
+        });
+        _flushPaintImageDataToCurrentSurface();
+        return;
+    }
+
     for (let dy = -radius; dy <= radius; dy++) {
         for (let dx = -radius; dx <= radius; dx++) {
             const dist2 = dx * dx + dy * dy;
@@ -19728,7 +20871,17 @@ window.paintDodge = paintDodge;
 // so its pixels and the marching-ants mask share one coordinate space. The old
 // Layer-mode early return made every retouch brush silently ignore selections.
 // Callers only read this mask, preserving the Zone -> Layer ownership boundary.
-function _activeSelectionMask(w, h) {
+// PORT-W5B ZONECLIP (2026-10-09, owner: "red colours over ANYTHING including the numbers, it should ONLY colour red on that
+// ZONE"): while a layer-paint stroke is open (or when fill/gradient pass zoneClip=true) the selected zone's visible coverage
+// (Restrict-to-layers art / picked colours, see js/canvas/pc-zoneclip.js) is multiplied into this mask. zoneClip===false asks
+// for the plain selection. SPB_ZONECLIP_OFF restores the old behaviour.
+function _activeSelectionMask(w, h, zoneClip) {
+    const base = _activeSelectionMaskRaw(w, h);
+    if (window.SPB_ZONECLIP_OFF || zoneClip === false || !window.SPBZoneClip) return base;
+    if (zoneClip !== true && !_activeLayerCanvas) return base;
+    try { return window.SPBZoneClip.apply(w, h, base); } catch (_e) { return base; }
+}
+function _activeSelectionMaskRaw(w, h) {
     const expectedLength = w * h;
     let regionMask = null;
     let useRegion = false;
@@ -19737,6 +20890,7 @@ function _activeSelectionMask(w, h) {
             const z = zones[selectedZoneIndex];
             regionMask = z?.regionMask || null;
             useRegion = z?.useRegion === true;
+            if (window.SPBSpecialZone && window.SPBSpecialZone.ignoreRegion(z)) { regionMask = null; useRegion = false; }   // [SPECIAL-ZONE 2026-10-11] the zone's own Special footprint is what the brush edits, not a clip
         }
     } catch (_e) { /* A missing Zone is the same as no active selection. */ }
     const layerMode = typeof isLayerToolbarMode === 'function' && isLayerToolbarMode();
@@ -19819,6 +20973,19 @@ function paintBlurBrush(x, y) {
     // jinky/off." Served before -> after: generic 100% Opacity + full 2048²
     // copy/recursive dab + transparent-RGB fringe -> dedicated 50% Strength +
     // local immutable dab snapshot + alpha-weighted neighbors.
+    // PORT-W2 (2026-10-09): true Gaussian local blur (PhotoCraft local_blur, alpha-premultiplied, edge-clamped) over the
+    // dab window; sigma = clamp(radius/15, 1, 3) replaces the 1-2 px box. Mix = strength * falloff * selection.
+    if (window.SPBPcStroke && !window.SPB_PC_W2_OFF) {
+        const c = _pcSubCentre(x, y);
+        window.SPBPcStroke.retouchDab(d, w, h, {
+            mode: 'blur', x: c.x, y: c.y, radius, hardness, footprint, amount: strength,
+            // [SPB-TFX2 2026-10-09 TA-010] sigma now scales with brush size (was clamp(r/15,1,3): size 45 and size 100 blurred identically).
+            // Measured peak edge slope on 24px stripes, size 20/45/100 @100%: 5767/4746/2644 (old: sigma 1.3/3/3)
+            sigma: window.SPB_TFX2_OFF ? Math.max(1, Math.min(3, radius / 15)) : Math.max(1, Math.min(10, radius / 8)), sel: _activeSelectionMask(w, h), selW: w
+        });
+        _flushPaintImageDataToCurrentSurface();
+        return;
+    }
     const patch = _snapshotBrushPatch(d, w, h, x, y, radius, blurR);
     const src = patch.data;
     const _rmask = _activeSelectionMask(w, h); // clip blur to the active pixel selection
@@ -19887,6 +21054,21 @@ function paintSharpenBrush(x, y) {
     // 128/128/255/255/255 blurred 6x to 128/159/200/235/255 then sharpened 3x snaps back to
     // 128/255/255/255/255 -- per-pixel movement 0 -> +96/+55/+20.
     const sharpR = Math.max(1, Math.min(2, Math.round(radius / 80)));
+    // PORT-W2 (2026-10-09): PhotoCraft local_sharpen (unsharp mask, sigma 1, protect-detail 3x3 clamp).
+    if (window.SPBPcStroke && !window.SPB_PC_W2_OFF) {
+        const c = _pcSubCentre(x, y);
+        window.SPBPcStroke.retouchDab(d, w, h, {
+            mode: 'sharpen', x: c.x, y: c.y, radius, hardness, footprint, amount: strength,
+            // [SPB-TFX2 2026-10-09 TA-010] unsharp radius scales with brush size, 2x amount, detail-protect window follows the radius
+            // (was fixed sigma 1 + 3x3 clamp: +1.7 % edge slope at 100 % strength, 266 px changed at 50 %)
+            sigma: window.SPB_TFX2_OFF ? undefined : Math.max(1, Math.min(4, radius / 10)),
+            gain: window.SPB_TFX2_OFF ? undefined : 2,
+            protectR: window.SPB_TFX2_OFF ? undefined : Math.max(1, Math.min(6, Math.round(Math.max(1, Math.min(4, radius / 10)) * 1.5))),
+            sel: _activeSelectionMask(w, h), selW: w
+        });
+        _flushPaintImageDataToCurrentSurface();
+        return;
+    }
     const patch = _snapshotBrushPatch(d, w, h, x, y, radius, sharpR);
     const src = patch.data;
     const _rmask = _activeSelectionMask(w, h); // clip sharpen to the active pixel selection
@@ -19960,10 +21142,40 @@ function _installPatternBrushTexture(token, patternName, canvas, suffix) {
     return true;
 }
 
+// PORT-W5B (2026-10-09, SPB_W5B_OFF): the Pattern Brush list offers Carbon / Metal Flake / Crosshatch / Brushed Metal / Canvas Weave / Noise,
+// but /api/render-pattern-tile has no server route, so every pick falls back to _buildProceduralPatternBrush - and Brushed Metal and
+// Canvas Weave had NO procedural tile (they painted the same random grey noise as "Random Noise"); Carbon was a #333/#1a1a1a checker
+// (std 12.5 of 255 = barely visible). Seamless 64x64 tiles with a clearly readable structure (deterministic LCG, tiles at any offset).
+function _w5bTile(ctx, name) {
+    let s = 0x9e3779b1; const rnd = () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+    const id = ctx.createImageData(64, 64), d = id.data, put = (x, y, v, r, g, b) => { const i = ((y & 63) * 64 + (x & 63)) * 4; d[i] = Math.max(0, Math.min(255, v * r)); d[i + 1] = Math.max(0, Math.min(255, v * g)); d[i + 2] = Math.max(0, Math.min(255, v * b)); d[i + 3] = 255; };
+    if (name === 'carbon') { // 2/2 twill: 4px tow cells, alternating direction, each tow has a sheen ramp across its width
+        for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
+            const horiz = (((x >> 2) + (y >> 2)) & 1) === 0, t = (horiz ? (y & 3) : (x & 3)) / 3, sheen = Math.sin(t * Math.PI);
+            put(x, y, 30 + 78 * sheen + 10 * (horiz ? 1 : 0), 1, 1, 1.04);
+        }
+    } else if (name === 'brushed_metal') { // horizontal streaks: runs of 6-28px at slightly different tones, per-row base tone
+        for (let y = 0; y < 64; y++) {
+            const base = 118 + rnd() * 52; let x = 0;
+            while (x < 64) { const run = 6 + Math.floor(rnd() * 22), tone = base + (rnd() - 0.5) * 34; for (let k = 0; k < run && x + k < 128; k++) put(x + k, y, tone + (rnd() - 0.5) * 10, 1, 1, 1.02); x += run; }
+        }
+    } else { // canvas_weave: over/under plain weave, 4px threads, light ridge in the thread centre
+        for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
+            const horiz = (((x >> 2) + (y >> 2)) & 1) === 0, t = (horiz ? (y & 3) : (x & 3)) / 3, ridge = Math.sin(t * Math.PI);
+            put(x, y, 108 + 70 * ridge + (rnd() - 0.5) * 8, 1, 0.94, 0.8);
+        }
+    }
+    ctx.putImageData(id, 0, 0);
+}
+
 function _buildProceduralPatternBrush(patternName) {
     const c = document.createElement('canvas');
     c.width = 64; c.height = 64;
     const ctx = c.getContext('2d');
+    if (!window.SPB_W5B_OFF && (patternName === 'carbon' || patternName === 'brushed_metal' || patternName === 'canvas_weave')) {
+        _w5bTile(ctx, patternName);
+        return c;
+    }
     if (patternName === 'carbon') {
         for (let y = 0; y < 64; y += 4) for (let x = 0; x < 64; x += 4) {
             ctx.fillStyle = ((x + y) % 8 < 4) ? '#333' : '#1a1a1a';
@@ -20011,6 +21223,12 @@ function loadPatternBrush(patternName) {
         if (typeof showToast === 'function') showToast('Pattern brush: solid color mode');
         return Promise.resolve(false);
     }
+    // [TICKETS-4 2026-10-10 item 7] the six built-in brush names have their own tuned client tiles (PORT-W5B); they never had a server tile, so asking the server
+    // only produced a 404 on every pick. They now load straight from the client; any other name (an engine pattern id) is rendered by the new
+    // POST /api/render-pattern-tile (server_routes/pattern_tile_routes.py). Kill switch: window.SPB_T4_OFF / SPB_T4_7_OFF = the old always-ask-the-server path.
+    if (!window.SPB_T4_OFF && !window.SPB_T4_7_OFF && /^(carbon|metal_flake|crosshatch|brushed_metal|canvas_weave|noise)$/.test(patternName)) {
+        return Promise.resolve(_installPatternBrushTexture(token, patternName, _buildProceduralPatternBrush(patternName), ''));
+    }
     _patternBrushLoadingName = patternName;
     if (typeof showToast === 'function') showToast(`Loading pattern brush: ${patternName}`, 'info');
     // Render a 256x256 pattern tile via the server
@@ -20049,6 +21267,7 @@ function loadPatternBrush(patternName) {
 var _patternBrushTextureData = null;
 var _patternBrushTextureKey = null;
 
+var _pcPatFull = null; // PORT-W5: canvas-sized tiling of the pattern brush texture
 function paintPatternBrushAt(data, w, h, x, y, radius, opacity, hardness, _rmask) {
     if (!_patternBrushTexture) return;
     const footprint = _createBrushFootprint(radius);
@@ -20067,6 +21286,28 @@ function paintPatternBrushAt(data, w, h, x, y, radius, opacity, hardness, _rmask
         tData = _patternBrushTexture.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, tw, th).data;
         _patternBrushTextureData = tData;
         _patternBrushTextureKey = _cacheKey;
+    }
+
+    // PORT-W5: Pattern brush on the stroke coverage buffer (opacity = stroke cap, flow builds up, sub-pixel centre); the tile is
+    // expanded once to a canvas-sized source so it stays world-anchored exactly like the old per-pixel modulo sampling.
+    if (!window.SPB_PC_W5_OFF && window.SPBPcStroke && window._spbW5CB && window._spbW5Key) {
+        if (!_pcPatFull || _pcPatFull.key !== _cacheKey || _pcPatFull.w !== w || _pcPatFull.h !== h) {
+            const full = new Uint8ClampedArray(w * h * 4);
+            for (let yy = 0; yy < h; yy++) {
+                const ty = yy % th;
+                for (let xx = 0; xx < w; xx += tw) {
+                    const n = Math.min(tw, w - xx);
+                    full.set(tData.subarray(ty * tw * 4, (ty * tw + n) * 4), (yy * w + xx) * 4);
+                }
+            }
+            _pcPatFull = { key: _cacheKey, w, h, full };
+        }
+        const _c5 = _pcSubCentre(x, y), _cb5 = window._spbW5CB;
+        window.SPBPcStroke.paintDabData(data, w, h, window._spbW5Key, {
+            x: _c5.x, y: _c5.y, radius, hardness, footprint, cap: _cb5.cap, flow: _cb5.flow,
+            sel: _rmask, selW: w, src: _pcPatFull.full, sdx: 0, sdy: 0
+        });
+        return;
     }
 
     for (let dy = -radius; dy <= radius; dy++) {
@@ -20224,7 +21465,7 @@ function getColorHarmonies(hexColor) {
 function showColorHarmonies(hexColor) {
     const harmonies = getColorHarmonies(hexColor || _foregroundColor);
     let html = `<div style="padding:8px;background:#111;border:1px solid var(--accent-cyan);border-radius:6px;font-size:9px;">`;
-    html += `<div style="font-weight:bold;color:var(--accent-cyan);margin-bottom:4px;">COLOR HARMONIES</div>`;
+    html += `<div style="font-weight:bold;color:var(--accent-cyan);margin-bottom:4px;">Color harmonies</div>`;
 
     function swatch(color, label) {
         return `<div style="display:inline-flex;align-items:center;gap:3px;margin:2px 4px;cursor:pointer;" onclick="setForegroundColor('${color}');showToast('FG: ${color}')">
@@ -20295,6 +21536,8 @@ function _closeAdjustmentColorModal(options) {
         try { _activeAdjustmentColorPickCleanup(); } catch (_) { }
         _activeAdjustmentColorPickCleanup = null;
     }
+    // [DEADFEAT 2026-10-10] drop the Escape listener that _openAdjustmentColorDialog adds (see there).
+    if (window._spbAdjColorEsc) { document.removeEventListener('keydown', window._spbAdjColorEsc, true); window._spbAdjColorEsc = null; }
     const modal = document.getElementById('adjustmentColorModal');
     if (modal && modal.parentNode) modal.parentNode.removeChild(modal);
 }
@@ -20434,7 +21677,7 @@ function _openAdjustmentColorDialog(config) {
             </div>
             <div class="modal-body" style="display:flex;flex-direction:column;gap:10px;">
                 <div style="font-size:11px;color:var(--text-dim);line-height:1.4;">${config.description}</div>
-                ${typeof config.onPreview === 'function' ? `<div style="font-size:10px;color:#72e5ef;letter-spacing:.25px;">${config.previewNote || 'LIVE PREVIEW · Cancel restores the original'}</div>` : ''}
+                ${typeof config.onPreview === 'function' ? `<div style="font-size:10px;color:#72e5ef;letter-spacing:.25px;">${config.previewNote || 'Live preview · Cancel restores the original'}</div>` : ''}
                 ${config.fields.map((field) => `
                     <div style="display:flex;flex-direction:column;gap:6px;padding:9px;border:1px solid var(--border);border-radius:8px;background:var(--bg-main);">
                         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
@@ -20516,6 +21759,20 @@ function _openAdjustmentColorDialog(config) {
     overlay.querySelectorAll('[data-adjustment-close]').forEach((btn) => {
         btn.addEventListener('click', () => _closeAdjustmentColorModal());
     });
+    // [DEADFEAT 2026-10-10] Escape closes this dialog exactly like Cancel (undoes the live preview). Measured before: Esc left
+    // #adjustmentColorModal open (Replace Color and Gradient Map), so only Cancel / the backdrop worked and the open dialog covered the editor.
+    // While the canvas colour picker hides the dialog (visibility hidden) the picker owns Escape. Kill switch window.SPB_DEADFEAT_OFF = true.
+    if (window.SPB_DEADFEAT_OFF !== true) {
+        window._spbAdjColorEsc = (e) => {
+            if (e.key !== 'Escape' || e.defaultPrevented) return;
+            const m = document.getElementById('adjustmentColorModal');
+            if (!m || m.style.visibility === 'hidden') return;
+            e.preventDefault();
+            e.stopPropagation();
+            _closeAdjustmentColorModal();
+        };
+        document.addEventListener('keydown', window._spbAdjColorEsc, true);
+    }
     overlay.querySelector('[data-adjustment-apply]')?.addEventListener('click', () => {
         if (previewFrame) cancelAnimationFrame(previewFrame);
         previewFrame = 0;
@@ -20670,6 +21927,7 @@ function saveHistorySnapshot() {
     return true;
 }
 
+var _pcHistFull = null; // PORT-W5: full-canvas expansion of the history snapshot (cached per snapshot)
 function paintHistoryBrush(x, y) {
     if (!paintImageData) return;
     const pc = document.getElementById('paintCanvas');
@@ -20696,6 +21954,30 @@ function paintHistoryBrush(x, y) {
     const mixPixel = window.SPBRgbaBlend?.mixPixel;
     if (typeof mixPixel !== 'function') return;
     const selection = _activeSelectionMask(w, h);
+
+    // PORT-W5: History Brush on the coverage buffer: opacity = stroke cap, flow builds up, sub-pixel centre, restored
+    // pixel mixed in premultiplied space incl. alpha (retouch.rs mix_premultiplied).
+    if (!window.SPB_PC_W5_OFF && window.SPBPcStroke && window._spbW5Key) {
+        if (!_pcHistFull || _pcHistFull.srcData !== srcData || _pcHistFull.w !== w || _pcHistFull.h !== h) {
+            const full = new Uint8ClampedArray(w * h * 4);
+            for (let sy = 0; sy < srcHeight; sy++) {
+                const ty = sy + srcOriginY;
+                if (ty < 0 || ty >= h) continue;
+                const sx0 = Math.max(0, -srcOriginX), sx1 = Math.min(srcWidth, w - srcOriginX);
+                if (sx1 <= sx0) continue;
+                full.set(srcData.subarray((sy * srcWidth + sx0) * 4, (sy * srcWidth + sx1) * 4), (ty * w + sx0 + srcOriginX) * 4);
+            }
+            _pcHistFull = { srcData, w, h, full };
+        }
+        const _c5 = _pcSubCentre(x, y);
+        window.SPBPcStroke.paintDabData(dstData, w, h, window._spbW5Key, {
+            x: _c5.x, y: _c5.y, radius, hardness, footprint, cap: baseOpacity,
+            flow: _resolveBrushDynamics(radiusBase, 1, flow).opacity,
+            sel: selection, selW: w, src: _pcHistFull.full, sdx: 0, sdy: 0, mix: true
+        });
+        _flushPaintImageDataToCurrentSurface();
+        return;
+    }
 
     for (let dy = -radius; dy <= radius; dy++) {
         for (let dx = -radius; dx <= radius; dx++) {
@@ -20731,8 +22013,9 @@ window.paintHistoryBrush = paintHistoryBrush;
 // HOLY SHIT #6: AUTO COLOR REPLACE — Select by color, shift hue of selection
 // ══════════════════════════════════════════════════════════════════════════════
 
-function autoColorReplace(targetHex, replacementHex, tolerance) {
-    const target = _getAdjustmentTarget('color replace');
+window.SPB_AI_EXPLICIT_COLOR_REPLACE = true;
+function autoColorReplace(targetHex, replacementHex, tolerance, explicitTarget) {
+    const target = explicitTarget || _getAdjustmentTarget('color replace');
     if (!target) return;
     const imgData = target.ctx.getImageData(0, 0, target.canvas.width, target.canvas.height);
     const d = imgData.data;
@@ -20782,10 +22065,12 @@ function autoColorReplace(targetHex, replacementHex, tolerance) {
                 : `on the canvas`;
             showToast(`Color Replace: no pixels near ${normalizedTarget} found ${where}`, 'warn');
         }
-        return;
+        return { ok: true, unchanged: true, pixels: 0 };
     }
     target.ctx.putImageData(imgData, 0, 0);
-    if (_commitAdjustment(target) && typeof showToast === 'function') showToast(`Replaced ${count.toLocaleString()} pixels: ${normalizedTarget} -> ${normalizedReplacement}`);
+    const committed = _commitAdjustment(target);
+    if (committed && typeof showToast === 'function') showToast(`Replaced ${count.toLocaleString()} pixels: ${normalizedTarget} -> ${normalizedReplacement}`);
+    return { ok: true, unchanged: !committed, pixels: committed ? count : 0 };
 }
 
 // 2026-05-29 SPB tool-QA (owner mandate "create REAL features"): replace a color across
@@ -20870,7 +22155,7 @@ function openColorReplaceDialog() {
         showTolerance: true,
         tolerance: 40,
         allLayersToggle: true,
-        previewNote: 'LIVE PREVIEW · active Layer only · Apply can target all unlocked Layers · Cancel restores the original',
+        previewNote: 'Live preview · active Layer only · Apply can target all unlocked Layers · Cancel restores the original',
         fields: [
             { key: 'target', label: 'Target color', hint: 'Pixels near this color get replaced', value: _normalizeAdjustmentHex(_backgroundColor, '#000000') },
             { key: 'replacement', label: 'Replacement color', hint: 'Pixels blend toward this color', value: _normalizeAdjustmentHex(_foregroundColor, '#ffffff') }
@@ -20949,7 +22234,7 @@ function drawSymmetryAxis() {
         // Label
         ctx.fillStyle = 'rgba(255,215,0,0.6)';
         ctx.font = '10px monospace';
-        ctx.fillText('MIRROR H', w / 2 + 4, 14);
+        ctx.fillText('Mirror H', w / 2 + 4, 14);
     }
     if (sym === 'mirror-v' || sym === 'mirror-both') {
         ctx.strokeStyle = 'rgba(0,229,255,0.5)';
@@ -20959,7 +22244,7 @@ function drawSymmetryAxis() {
         ctx.stroke();
         ctx.fillStyle = 'rgba(0,229,255,0.6)';
         ctx.font = '10px monospace';
-        ctx.fillText('MIRROR V', 4, h / 2 - 4);
+        ctx.fillText('Mirror V', 4, h / 2 - 4);
     }
     if (sym.startsWith('radial')) {
         const cx = w / 2, cy = h / 2;
@@ -20974,7 +22259,7 @@ function drawSymmetryAxis() {
         }
         ctx.fillStyle = 'rgba(255,100,255,0.6)';
         ctx.font = '10px monospace';
-        ctx.fillText(`RADIAL ${segments}`, cx + 4, cy - 4);
+        ctx.fillText(`Radial ${segments}`, cx + 4, cy - 4);
     }
     ctx.setLineDash([]);
 }
@@ -21073,7 +22358,7 @@ function drawEllipsePreview(start, end, options) {
     return gesture;
 }
 
-function _beginEllipseGesture(pos) {
+function _beginEllipseGesture(pos, ev) {
     const targetZoneIndex = selectedZoneIndex;
     if (!zones[targetZoneIndex]) {
         if (typeof showToast === 'function') showToast('Select a Zone before drawing an ellipse', true);
@@ -21083,6 +22368,7 @@ function _beginEllipseGesture(pos) {
     _ellipseStart = { x: pos.x, y: pos.y };
     _ellipseGestureState = _captureEllipsePreview(targetZoneIndex);
     isDrawing = true;
+    _tfx3MqBegin('ellipse', ev);   // [SPB-TFX3 2026-10-09 TA-017]
     return true;
 }
 
@@ -21090,9 +22376,10 @@ function _updateEllipseGesture(e) {
     if (!_ellipseStart) return null;
     const pos = _ellipseCanvasPointFromEvent(e);
     if (!pos) return null;
+    const _m = _tfx3MqMods('ellipse', e);   // [SPB-TFX3 2026-10-09 TA-017]
     return drawEllipsePreview(_ellipseStart, pos, {
-        shiftKey: !!e.shiftKey,
-        altKey: !!e.altKey,
+        shiftKey: _m.shiftKey,
+        altKey: _m.altKey,
     });
 }
 
@@ -21124,7 +22411,7 @@ function commitEllipseSelection(start, end, options) {
         return false;
     }
 
-    const selMode = document.getElementById('selectionMode')?.value || 'add';
+    const selMode = _tfx3MqMode('ellipse', document.getElementById('selectionMode')?.value || 'add');   // [SPB-TFX3 2026-10-09 TA-017]
     const currentMask = zone.regionMask instanceof Uint8Array && zone.regionMask.length === w * h
         ? zone.regionMask
         : new Uint8Array(w * h);
@@ -21181,9 +22468,10 @@ function _completeEllipseGesture(e) {
         if (typeof showToast === 'function') showToast('Ellipse cancelled: the starting Zone is no longer active', 'warn');
         return false;
     }
+    const _m = _tfx3MqMods('ellipse', e);   // [SPB-TFX3 2026-10-09 TA-017]
     const gesture = pos ? _resolveEllipseGesture(start, pos, {
-        shiftKey: !!e.shiftKey,
-        altKey: !!e.altKey,
+        shiftKey: _m.shiftKey,
+        altKey: _m.altKey,
     }) : null;
     _ellipseStart = null;
     _ellipseGestureState = null;
@@ -21193,6 +22481,7 @@ function _completeEllipseGesture(e) {
         gesture,
     });
     if (typeof _doRenderRegionOverlay === 'function') _doRenderRegionOverlay();
+    _tfx3Mq = null;   // [SPB-TFX3 2026-10-09 TA-017]
     return changed;
 }
 
@@ -21242,7 +22531,7 @@ function _completeEllipseGesture(e) {
         }
 
         if (canvasMode === 'ellipse-marquee') {
-            _beginEllipseGesture(pos);
+            _beginEllipseGesture(pos, e);
             e.preventDefault();
             return;
         }
@@ -21309,6 +22598,10 @@ function _completeEllipseGesture(e) {
 document.addEventListener('keydown', function (e) {
     if (e.defaultPrevented) return;
     if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
+    if (e.key === 'Enter' && canvasMode === 'lasso' && window.SPBPcMagnetic && window.SPBPcMagnetic.active()) {
+        // PORT-W4: Enter closes the Magnetic Lasso along the edges (Alt+Enter: straight line).
+        window.SPBPcMagnetic.close(!!e.altKey, e); e.preventDefault();
+    } else
     if (e.key === 'Enter' && canvasMode === 'lasso' && typeof window.closeLasso === 'function') {
         if (window.closeLasso(e)) e.preventDefault();
     }
@@ -21419,6 +22712,11 @@ function clearPSDDocumentState(reason, options) {
     } catch (_) {}
     try { if (typeof renderLayerPanel === 'function') renderLayerPanel(); } catch (_) {}
     try { if (typeof renderZones === 'function') renderZones(); } catch (_) {}
+    // [SPB-TFX4 2026-10-10 item 4 lane TOOLS-FIX-4] every flat (TGA/PNG/JPEG) load passes here: tell crash recovery a flat session starts (it offers the
+    // interrupted layers for THIS file once, and stops the previous PSD's identity staying armed). Kill switch SPB_TFX4_OFF = nothing happens.
+    try { if (!window.SPB_TFX4_OFF && !window.SPB_TFX3_OFF && window.SPBTfx3Recovery && typeof window.SPBTfx3Recovery.flatSourceLoaded === 'function') window.SPBTfx3Recovery.flatSourceLoaded(reason); } catch (_) {}
+    // [SPB-FLATWIPE 2026-10-10 lane FLAT-WIPE] a flat document starts: its paint becomes the locked Background when the first layer arrives (js/canvas/flatwipe-bg.js). Kill switch SPB_FLATWIPE_OFF.
+    try { if (window.SPBFlatBg) window.SPBFlatBg.docReset(); } catch (_) {}
     if (hadLayers) {
         try { console.log('[SPB][source] cleared PSD/layer state for flat paint source:', reason || 'source change'); } catch (_) {}
     }
@@ -21626,7 +22924,8 @@ async function importPSD() {
         });
         return;
     }
-    const psdPath = prompt('Enter the full path to the PSD or ORA file:', '');
+    // [SPB-PROMPT-FIX 2026-10-10] fallback only (openFilePicker exists in the app): window.prompt() throws in Electron -> in-app box. Kill switch SPB_PROMPT_FIX_OFF -> native prompt.
+    const psdPath = await SpbDialog.prompt('Open Layered File', '', { message: 'Enter the full path to the PSD or ORA file.', okLabel: 'Open', nativeText: 'Enter the full path to the PSD or ORA file:' });
     if (psdPath) _doPSDImport(psdPath);
 }
 
@@ -22252,6 +23551,17 @@ async function _doPSDImport(psdPath, importOptions) {
         // recovery transaction, not a seven-day automatic preference replay.
         // Clean closes never auto-apply. Interrupted sessions require source
         // identity parity plus an explicit painter choice before mutation.
+        // [SPB-TFX3 2026-10-09 P1 recovery] remember which layers the import created (everything else = added later) + hold the autosave
+        // writers while the recovery prompt is pending, so the fresh import cannot overwrite the crash checkpoint (see js/canvas/tfx3-layerrecovery.js)
+        let _t3 = null;
+        try {
+            if (!window.SPB_TFX3_OFF && window.SPBTfx3Recovery) {
+                _t3 = window.SPBTfx3Recovery;
+                _t3.reset();
+                _t3.markSource(_psdLayers, _spbLayerSourceFingerprint());
+                _t3.setPending(true);
+            }
+        } catch (_) { _t3 = null; }
         try {
             // SPB-93: explicit Projects restore owns saved Layer state.
             const _rawLA = importOptions && importOptions.restoreProject
@@ -22268,17 +23578,26 @@ async function _doPSDImport(psdPath, importOptions) {
                         && !!_la.sourceFingerprint
                         && _la.sourceFingerprint === _currentFingerprint;
                     if (_eligibleCrash) {
-                        const _restore = typeof window.confirm === 'function'
-                            ? window.confirm('SPB found layer settings from an interrupted session for this exact source. Restore them?\n\nLayer pixels are not part of crash autosave; use a saved SPB Project for exact pixel recovery.')
-                            : false;
+                        // [SPB-TFX3 2026-10-09 P1 recovery] schema-3 checkpoints come with pixels (IndexedDB): read + decode them BEFORE the prompt
+                        let _t3prep = null;
+                        if (_t3 && Number(_la.schemaVersion) >= 3) {
+                            try { _t3prep = await _t3.prepare(_la); } catch (_) { _t3prep = null; }
+                            if (!_spbIsCurrentSourceLoad(transaction)) return _spbSourceLoadResult(transaction, false, { error: 'superseded by a newer source request' });
+                        }
+                        // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF); the loader is async and re-checks that this source load is still current after the box closes
+                        const _restoreNative = _t3prep ? _t3prep.message : 'SPB found layer settings from an interrupted session for this exact source. Restore them?\n\nLayer pixels are not part of crash autosave; use a saved SPB Project for exact pixel recovery.';
+                        const _restore = await SpbDialog.ask('Restore Your Interrupted Session?', { message: String(_restoreNative).replace(/\s*Restore them\?\s*/, '\n\n').trim(), okLabel: 'Restore Session', cancelLabel: 'Start Fresh', nativeText: _restoreNative });
+                        if (!_spbIsCurrentSourceLoad(transaction)) return _spbSourceLoadResult(transaction, false, { error: 'superseded by a newer source request' });
                         if (_restore) {
                             if (typeof _pushLayerStackUndo === 'function') _pushLayerStackUndo('restore interrupted layer session');
-                            const _nRestored = _spbApplyLayerStateLite(_la.layers);
+                            const _t3res = _t3prep ? _t3prep.apply() : null;
+                            const _nRestored = _t3res ? _t3res.n : _spbApplyLayerStateLite(_la.layers);
                             if (_nRestored) {
                                 recompositeFromLayers();
                                 renderLayerPanel();
                                 localStorage.removeItem(SPB_LAYER_AUTOSAVE_KEY);
-                                if (typeof showToast === 'function') showToast('Restored interrupted layer settings (' + _nRestored + ' layer' + (_nRestored > 1 ? 's' : '') + '). Ctrl+Z undoes this. Layer pixels require a saved Project.');
+                                if (_t3res && typeof showToast === 'function') showToast('Restored your interrupted session: ' + _nRestored + ' layers' + (_t3res.added ? ', ' + _t3res.added + ' added' : '') + (_t3res.painted ? ', ' + _t3res.painted + ' painted' : '') + (_t3res.text ? ', ' + _t3res.text + ' live text' : '') + (_t3res.dropped ? ', ' + _t3res.dropped + ' deleted layer(s) stay deleted' : '') + '. Ctrl+Z undoes this.');
+                                else if (typeof showToast === 'function') showToast('Restored interrupted layer settings (' + _nRestored + ' layer' + (_nRestored > 1 ? 's' : '') + '). Ctrl+Z undoes this. Layer pixels require a saved Project.');
                             }
                         } else {
                             _la.cleanClose = true;
@@ -22286,11 +23605,11 @@ async function _doPSDImport(psdPath, importOptions) {
                             localStorage.setItem(SPB_LAYER_AUTOSAVE_KEY, JSON.stringify(_la));
                         }
                     } else if (_la.cleanClose === false && typeof showToast === 'function') {
-                        showToast('Interrupted layer settings were not applied because the source fingerprint did not match. The current document was left unchanged.', true);
+                        showToast('Interrupted layer settings weren\'t restored because the source file has changed since they were saved. The current document was left unchanged.', true);
                     }
                 }
             }
-        } catch (_) {}
+        } catch (_) {} finally { if (_t3) { try { _t3.setPending(false); } catch (_) { } } }   // [SPB-TFX3 2026-10-09 P1 recovery] release the autosave hold
 
         // [SPB-HEADER-SLIM 2026-08-29] blend audit: unsupported PSD blend modes silently became
         // Normal — the painter saw a different-looking car with no explanation. One summary toast.
@@ -22378,12 +23697,13 @@ let _layerCompositeRevision = Math.floor(Date.now() / 1000);
 function invalidateLayerVisibleContributionCache() {
     _layerVisibleContributionCache.clear();
     _layerCompositeRevision++;
+    if (window.SPBTfx1Pick) window.SPBTfx1Pick.bump(); // [SPB-TFX1 2026-10-09 TA-027] layer pixels changed -> drop the hover pick cache
 }
 
 // [SPB-MULTILAYER 2026-08-21] Union of the visible-contribution masks of ALL
 // of a zone's restricted layers. Same payload contract as a single layer -
 // the engine never changes.
-function getZoneSourceLayersUnionMask(zone, w, h) {
+function getZoneSourceLayersUnionMask(zone, w, h, excludeLayerId) { // PORT-W5B: optional 4th arg = a layer whose art is NOT counted as "art above" (the layer being painted)
     const ids = (typeof window !== 'undefined' && typeof window.zoneSourceLayerIds === 'function')
         ? window.zoneSourceLayerIds(zone)
         : (zone && zone.sourceLayer ? [zone.sourceLayer] : []);
@@ -22395,7 +23715,7 @@ function getZoneSourceLayersUnionMask(zone, w, h) {
         // getLayerVisibleContributionMask never checked visibility, so a zone
         // restricted to a hidden layer silently kept painting its footprint.
         if (l.visible === false) { hiddenCount++; continue; }
-        const m = getLayerVisibleContributionMask(l, w, h);
+        const m = getLayerVisibleContributionMask(l, w, h, excludeLayerId);
         if (!m) continue;
         found++;
         if (!union) union = new Uint8Array(m);
@@ -22438,9 +23758,9 @@ window._spbWarnPickOutsideRestriction = function (zoneIndex, x, y) {
             if (m && m[idx] > 0) { owner = l; break; }
         }
         if (typeof showToast === 'function') {
-            showToast('Color added — but that spot\'s art is on '
+            showToast('Color added, but that spot\'s art is on '
                 + (owner ? '"' + (owner.name || 'another layer') + '"' : 'a layer')
-                + ', which is NOT in this zone\'s RESTRICT TO LAYERS set, so the zone won\'t select it there. Check that layer in the restrict box (or Clear the restriction) to include it.', true);
+                + ', which is not in this zone\'s layer restriction, so the zone won\'t select it there. Add that layer to the restriction, or clear the restriction.', true);
         }
     } catch (_) {}
 };
@@ -22459,9 +23779,11 @@ function _spbHiddenSourceToast(z, u) {
 }
 if (typeof window !== 'undefined') { window._spbHiddenSourceToast = _spbHiddenSourceToast; }
 
-function getLayerVisibleContributionMask(srcLayer, w, h) {
+function getLayerVisibleContributionMask(srcLayer, w, h, excludeLayerId, opaqueDiagnostic) {
     if (!srcLayer || !srcLayer.img || srcLayer.visible === false || !_psdLayersLoaded) return null;
-    const cacheKey = `${_layerCompositeRevision}:${srcLayer.id}:${w}x${h}`;
+    // PORT-W5B ZONECLIP: excludeLayerId (optional) = the layer being PAINTED. Its own art must not count as "art above" the zone's
+    // source layer, otherwise repainting what that layer already holds would be locked out. Absent => identical to before.
+    const cacheKey = `${_layerCompositeRevision}:${srcLayer.id}:${w}x${h}` + (excludeLayerId ? `:x${excludeLayerId}` : '') + (opaqueDiagnostic ? ':opaque-diagnostic' : '');
     const cached = _layerVisibleContributionCache.get(cacheKey);
     if (cached) return cached;
 
@@ -22506,13 +23828,14 @@ function getLayerVisibleContributionMask(srcLayer, w, h) {
     const aboveC = document.createElement('canvas');
     aboveC.width = w; aboveC.height = h;
     const aboveCtx = aboveC.getContext('2d', { willReadFrequently: true });
-    const _isHelperLayer = function (l) {
-        return /^\s*(mask|wire)\b/i.test(String(l.name || ''));
-    };
+    // SPB-93 private59910: red-only AI recolour painted157486 opaque Mask pixels.
+    // Visible guides own their displayed pixels too; hiding them invalidates the
+    // normal visibility cache and exposes the source underneath. Preserve the
+    // explicit brush excludeLayerId exception; never infer exclusion from a name.
     const aboveResult = _spbCompositeLayerStack(aboveCtx, ownershipLayers, {
         includeLayer: function(layer, layerIndex) {
             return layerIndex > srcIdx && layer && layer.visible !== false &&
-                !!layer.img && !_isHelperLayer(layer);
+                !!layer.img && !(excludeLayerId && layer.id === excludeLayerId);
         },
         identityBlend: true,
         drawLayer: drawOwnershipFootprint
@@ -22529,8 +23852,8 @@ function getLayerVisibleContributionMask(srcLayer, w, h) {
     // threshold, so no fractional owner can reach paint/spec/remainder math.
     const visibleMask = new Uint8Array(w * h);
     for (let pi = 0; pi < w * h; pi++) {
-        if (srcData[pi * 4 + 3] < 128) continue;   // own art <50% → not ours (kills recolor halos past edges)
-        if (aboveData[pi * 4 + 3] >= 128) continue; // art above >=50% → theirs (kills repaint-over-art + fuzz)
+        if (srcData[pi * 4 + 3] < (opaqueDiagnostic ? 255 : 128)) continue;   // own art <50% → not ours (kills recolor halos past edges)
+        if (aboveData[pi * 4 + 3] >= (opaqueDiagnostic ? 1 : 128)) continue; // art above >=50% → theirs (kills repaint-over-art + fuzz)
         visibleMask[pi] = 255;
     }
 
@@ -22543,6 +23866,12 @@ function getLayerVisibleContributionMask(srcLayer, w, h) {
     return visibleMask;
 }
 if (typeof window !== 'undefined') window.getLayerVisibleContributionMask = getLayerVisibleContributionMask;
+// Private SPB AI acceptance Oct10: reuse exact compositor alpha for diagnostics.
+// Painting ownership keeps its existing >=50% rule and original cache keys.
+// No mask writes, history, renderer or Zone/Layer dispatch changes.
+if (typeof window !== 'undefined') window.getLayerOpaqueContributionMask = function(layer, w, h) {
+    return getLayerVisibleContributionMask(layer, w, h, null, true);
+};
 
 // ===== LAYER EFFECTS RENDERER =====
 // Renders Photoshop-style layer effects for a single layer onto the given context.
@@ -22761,7 +24090,7 @@ function _spbReportGroupFidelityFailure(inspection) {
     if (_spbGroupFidelityToastKey === key) return;
     _spbGroupFidelityToastKey = key;
     if (typeof showToast === 'function') {
-        showToast('Layer composite blocked: ' + reason + path + '. The prior SOURCE pixels were kept unchanged.', 'warn');
+        showToast('Layer composite blocked: ' + reason + path + '. The prior Source pixels were kept unchanged.', 'warn');
     }
 }
 
@@ -22853,8 +24182,10 @@ function exportLayerAsPng(layerId) {
         const ctx = out.getContext('2d');
         const f = (window.SPBLayerClippingMask && typeof window.SPBLayerClippingMask.adjustFilterFor === 'function')
             ? window.SPBLayerClippingMask.adjustFilterFor(l) : null;
-        if (f) ctx.filter = f;
-        ctx.drawImage(l.img, 0, 0);
+        // [SPB-TLAY2 2026-10-10 L2-3] Hue/Sat now use the PhotoCraft Hue/Saturation math (js/canvas/tlay2-hsb.js); draw that baked copy so the PNG matches the canvas. SPB_TLAY2_OFF -> old CSS filter.
+        const _t2h = (window.SPBTlay2Hsb && typeof window.SPBTlay2Hsb.baked === 'function') ? window.SPBTlay2Hsb.baked(l) : null;
+        if (f && !_t2h) ctx.filter = f;
+        ctx.drawImage(_t2h || l.img, 0, 0);
         const a = document.createElement('a');
         a.href = out.toDataURL('image/png');
         a.download = (l.name || 'layer').replace(/[^A-Za-z0-9 _-]+/g, '_').slice(0, 60) + '.png';
@@ -22950,6 +24281,10 @@ var _spbLayerAutosaveSessionId = (function () {
 })();
 
 function _spbLayerSourceFingerprint() {
+    // [SPB-TFX3 2026-10-09 P1 recovery] the checkpoint fingerprint was taken over the WHOLE live stack, so a single added layer made it
+    // differ from the freshly imported PSD and the whole recovery was refused (owner PSD + 2 added layers: 15 layers -> 13, no prompt).
+    // With TFX3 active it is the fingerprint of the imported set, captured once at import. SPB_TFX3_OFF restores the live-stack hash.
+    try { const _t3 = window.SPBTfx3Recovery; if (_t3 && !window.SPB_TFX3_OFF && _t3.active() && _t3.fingerprint()) return _t3.fingerprint(); } catch (_) { }
     if (typeof _psdLayers === 'undefined' || !Array.isArray(_psdLayers)) return '';
     // Deliberately excludes mutable order/visibility/opacity/bbox. This identity
     // describes the imported source layer set, not the session state being saved.
@@ -22976,8 +24311,9 @@ function _spbLayerAutosaveResult(ok, reason, extra) {
 }
 function _spbSerializeLayerStateLite() {
     if (typeof _psdLayers === 'undefined' || !_psdLayersLoaded || !_psdLayers.length) return null;
+    const _t3 = (!window.SPB_TFX3_OFF && window.SPBTfx3Recovery && window.SPBTfx3Recovery.active()) ? window.SPBTfx3Recovery : null;
     return _psdLayers.map(function (l, idx) {
-        return {
+        const _rec = {
             idx: idx, path: l.path || null, name: l.name || ('Layer ' + idx),
             groupName: l.groupName || '',
             imgW: (l.img && l.img.width) || 0, imgH: (l.img && l.img.height) || 0,
@@ -22989,6 +24325,8 @@ function _spbSerializeLayerStateLite() {
             adjHue: Number(l.adjHue) || 0, adjSat: Number(l.adjSat) || 0, adjBri: Number(l.adjBri) || 0,
             bbox: Array.isArray(l.bbox) ? l.bbox.slice(0, 4) : null,
         };
+        // [SPB-TFX3 2026-10-09 P1 recovery] id + added/painted flags (+ group info of added layers) so added layers can be re-created
+        return _t3 ? _t3.decorate(l, _rec) : _rec;
     });
 }
 function _spbApplyLayerStateLite(records) {
@@ -23035,26 +24373,32 @@ function _spbApplyLayerStateLite(records) {
 }
 function _spbWriteLayerAutosave(options) {
     try {
+        // [SPB-TFX3 2026-10-09 P1 recovery] while a recovery prompt is pending the old crash checkpoint must not be overwritten by the fresh import's state
+        const _t3 = (!window.SPB_TFX3_OFF && window.SPBTfx3Recovery && window.SPBTfx3Recovery.active()) ? window.SPBTfx3Recovery : null;
+        if (_t3 && _t3.pending()) return _spbLayerAutosaveResult(true, 'recovery-pending', { skipped: true });
         const recs = _spbSerializeLayerStateLite();
         if (!recs) return _spbLayerAutosaveResult(true, 'no-layer-document', { skipped: true });
-        const src = (typeof window.getCurrentSourcePaintFile === 'function') ? (window.getCurrentSourcePaintFile() || '') : '';
+        // [SPB-TFX4 2026-10-10 item 4] flat session: the flat file's own identity (a picked file has no path; getCurrentSourcePaintFile() can be a stale PSD path)
+        const src = (_t3 && typeof _t3.flatSourceFile === 'function' && _t3.flatSourceFile())
+            || ((typeof window.getCurrentSourcePaintFile === 'function') ? (window.getCurrentSourcePaintFile() || '') : '');
         if (!src) return _spbLayerAutosaveResult(false, 'missing-source-identity');
         const savedAt = Date.now();
         const cleanClose = !!((options && options.cleanClose) || _spbLayerAutosaveCleanClose);
         const payload = JSON.stringify({
-            schemaVersion: SPB_LAYER_AUTOSAVE_SCHEMA,
+            schemaVersion: _t3 ? 3 : SPB_LAYER_AUTOSAVE_SCHEMA,   // 3 = every layer listed + added/painted pixels in IndexedDB (>= 2 is still accepted by older readers)
             sourcePaintFile: src,
             sourceFingerprint: _spbLayerSourceFingerprint(),
             savedAt: savedAt,
             sessionId: _spbLayerAutosaveSessionId,
             cleanClose: cleanClose,
-            pixelDataSaved: false,
+            pixelDataSaved: !!(_t3 && recs.some(function (r) { return r.px; })),
             layers: recs,
         });
         if (payload.length > 1024 * 1024) {
             return _spbLayerAutosaveResult(false, 'payload-too-large', { bytes: payload.length });
         }
         localStorage.setItem(SPB_LAYER_AUTOSAVE_KEY, payload);
+        if (_t3 && !cleanClose) _t3.schedule('layer-autosave');
         return _spbLayerAutosaveResult(true, cleanClose ? 'clean-close-saved' : 'crash-checkpoint-saved', {
             bytes: payload.length,
             savedAt: savedAt,
@@ -23125,7 +24469,11 @@ function _spbBuildGestureCache(gid, w, h) {
 }
 
 function recompositeFromLayers(options) {
+    if (window.SPBTfx1Pick) window.SPBTfx1Pick.bump(); // [SPB-TFX1 2026-10-09 TA-027] layer pixels changed -> drop the hover pick cache
     if (!_psdLayersLoaded) return false;
+    // [SPB-FLATWIPE 2026-10-10 lane FLAT-WIPE] flat source + first added layer: put the flat paint under the stack as the locked Background
+    // BEFORE the canvas is cleared. Before: px(100,100) 35,63,118,255 -> 0,0,0,0 on the first full recomposite (and after Undo). Kill switch SPB_FLATWIPE_OFF.
+    if (window.SPBFlatBg) { try { window.SPBFlatBg.beforeComposite(); } catch (_) {} }
     const shouldReadback = !options || options.readback !== false;
     const pc = document.getElementById('paintCanvas');
     if (!pc) return false;
@@ -23348,7 +24696,7 @@ function renderLayerPanel() {
         container.innerHTML = _emptyLayerDocument
             ? '<div style="color:var(--text-dim);font-size:10px;padding:12px 10px;text-align:center;line-height:1.55;"><strong style="color:var(--accent-cyan);font-size:11px;letter-spacing:0.5px;">EMPTY LAYER DOCUMENT</strong><br><span style="font-size:9px;">The last Layer was removed. Add a blank Layer or import artwork to continue editing.</span><br><button type="button" onclick="addBlankLayer()" style="margin-top:9px;padding:6px 10px;border:1px solid var(--accent-cyan);border-radius:5px;background:rgba(40,190,210,.12);color:var(--accent-cyan);font-size:9px;font-weight:800;cursor:pointer;">+ ADD BLANK LAYER</button></div>'
             : _tgaLoaded
-            ? '<div style="color:var(--text-dim);font-size:10px;padding:12px 10px;text-align:center;line-height:1.55;"><strong style="color:var(--accent-gold);font-size:11px;letter-spacing:0.5px;">NO LAYERS — TGA LOADED</strong><br><span style="font-size:9px;">This car is a flat TGA with no layer tree.<br>Click <strong style="color:var(--accent-cyan);">Import PSD</strong> above for editable layers.</span></div>'
+            ? '<div style="color:var(--text-dim);font-size:10px;padding:12px 10px;text-align:center;line-height:1.55;"><strong style="color:var(--accent-gold);font-size:11px;letter-spacing:0.5px;">No layers — TGA loaded</strong><br><span style="font-size:9px;">This car is a flat TGA with no layer tree.<br>Click <strong style="color:var(--accent-cyan);">Open Layered</strong> above for editable layers.</span></div>'
             : '<div style="color:var(--text-dim);font-size:10px;padding:8px;text-align:center;">No PSD loaded.</div>';
         return;
     }
@@ -23389,7 +24737,7 @@ function renderLayerPanel() {
                 + '<b>' + _msel.size + ' selected</b>'
                 + '<span style="color:var(--text-dim);">Ctrl-click adds \u00b7 Shift-click ranges</span>'
                 + '<span style="margin-left:auto;"></span>'
-                + '<button class="layer-act-btn" onclick="mergeSelectedLayers()" title="Merge the selected layers into one">MERGE ' + _msel.size + '</button>'
+                + '<button class="layer-act-btn" onclick="mergeSelectedLayers()" title="Merge the selected layers into one">Merge ' + _msel.size + '</button>'
                 + '<button class="layer-act-btn layer-act-red" onclick="deleteSelectedLayers()" title="Delete every selected layer (one undo)">DELETE ' + _msel.size + '</button>'
                 + '<button class="layer-act-btn" onclick="clearLayerSelection()" title="Back to single selection">\u2715</button>'
                 + '</div>';
@@ -23417,7 +24765,7 @@ function renderLayerPanel() {
                 const _gSafe = escapeHtml(_gRun);
                 const _gActionIndex = _layerPanelGroupNames.push(_gRun) - 1;
                 html += `<div class="layer-group-header" data-layer-group-action="collapse" data-layer-group-index="${_gActionIndex}" style="display:flex;align-items:center;gap:5px;padding:3px 4px;margin-top:3px;background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.14);border-radius:4px;font-size:9px;font-weight:800;letter-spacing:0.05em;color:var(--accent-cyan);cursor:pointer;user-select:none;"
-                    title="Click to ${_gCollapsed ? 'expand' : 'collapse'} this group">
+                    title="${_gSafe}: click to ${_gCollapsed ? 'expand' : 'collapse'} this group">
                     <span style="width:10px;">${_gCollapsed ? '\u25b8' : '\u25be'}</span>
                     <span data-layer-group-action="visibility" data-layer-group-index="${_gActionIndex}" title="Show/hide the whole group" style="opacity:${_gShown ? 1 : 0.35};">\u{1F441}</span>
                     <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${_gSafe}</span>
@@ -23676,38 +25024,40 @@ function renderLayerPanel() {
             // Every remaining button is unique to the card: DUPE / MIRROR / STROKE FX / MERGE / RENAME / DELETE.
             // Action buttons — row 1: create-from-this-layer
             html += `<div style="display:flex;gap:2px;margin-bottom:3px;flex-wrap:wrap;">`;
-            html += `<button onclick="event.shiftKey ? duplicateLayerWithOffset('${l.id}', 50, 50) : duplicateLayer('${l.id}')" class="layer-act-btn" title="Duplicate this Layer in place; Shift-click makes a +50 px offset copy for repeated sponsors/numbers">DUPE</button>`;
-            html += `<button onclick="mirrorCloneLayer('${l.id}')" class="layer-act-btn" style="border-color:#ffd700;color:#ffd700;" title="Mirror Clone — duplicate + flip to opposite side of car (iRacing essential)">MIRROR</button>`;
-            html += `<button onclick="openLayerEffects('${l.id}', 'stroke')" class="layer-act-btn"${lockedControlAttr} style="border-color:#ff66aa;color:#ff66aa;" title="${lockedControlTitle || 'Open non-destructive Stroke in Layer Effects — live preview with Apply / Cancel'}">STROKE FX</button>`;
+            html += `<button onclick="event.shiftKey ? duplicateLayerWithOffset('${l.id}', 50, 50) : duplicateLayer('${l.id}')" class="layer-act-btn" title="Duplicate this Layer in place; Shift-click makes a +50 px offset copy for repeated sponsors/numbers">Duplicate</button>`;
+            html += `<button onclick="mirrorCloneLayer('${l.id}')" class="layer-act-btn" style="border-color:#ffd700;color:#ffd700;" title="Mirror Clone — duplicate + flip to opposite side of car (iRacing essential)">Mirror</button>`;
+            html += `<button onclick="openLayerEffects('${l.id}', 'stroke')" class="layer-act-btn"${lockedControlAttr} style="border-color:#ff66aa;color:#ff66aa;" title="${lockedControlTitle || 'Open non-destructive Stroke in Layer Effects — live preview with Apply / Cancel'}">Stroke FX</button>`;
             html += `</div>`;
 
             // Action buttons — row 2: manage-this-layer
             html += `<div style="display:flex;gap:2px;flex-wrap:wrap;">`;
             // 2026-05-29 owner curation (Layers panel trim): UP/DOWN reorder buttons removed — drag-to-reorder in the layer rail replaces them. CENTER/FIT/KNOCKOUT removed — niche on a full-car UV. All kept in source for re-add.
-            html += `<button onclick="mergeLayerDown('${l.id}')" class="layer-act-btn"${lockedControlAttr} title="${lockedControlTitle || 'Merge into layer below'}">MERGE ↓</button>`;
-            html += `<button onclick="renameLayer('${l.id}')" class="layer-act-btn" title="Rename this layer">RENAME</button>`;
-            html += `<button onclick="exportLayerAsPng('${l.id}')" class="layer-act-btn" style="border-color:#7dd87d;color:#7dd87d;" title="Save just this layer as a transparent PNG (Hue/Sat/Bright adjustments baked in)">EXPORT</button>`;
-            html += `<button onclick="makeZoneFromLayer('${l.id}')" class="layer-act-btn" style="border-color:#ffd166;color:#ffd166;" title="Create a zone restricted to this layer's footprint \u2014 then give it a base material">MAKE ZONE</button>`;
+            html += `<button onclick="mergeLayerDown('${l.id}')" class="layer-act-btn"${lockedControlAttr} title="${lockedControlTitle || 'Merge into layer below'}">Merge ↓</button>`;
+            html += `<button onclick="renameLayer('${l.id}')" class="layer-act-btn" title="Rename this layer">Rename</button>`;
+            // [SPB-TFX2 2026-10-09 TA-034] a live text layer shows an explicit RASTERIZE (Photoshop "Rasterize Type"); other layers unchanged
+            if (!window.SPB_TFX2_OFF && window.SPBTextEdit && window.SPBTextEdit.isTextLayer(l)) html += `<button onclick="window.SPBTextEdit.rasterize(_psdLayers.find(function(x){return x.id==='${l.id}'}))" class="layer-act-btn" style="border-color:#00e5ff;color:#00e5ff;" title="This is live text (double-click it with the Text tool to edit). Rasterize turns it into plain pixels - Ctrl+Z undoes">Rasterize</button>`;
+            html += `<button onclick="exportLayerAsPng('${l.id}')" class="layer-act-btn" style="border-color:#7dd87d;color:#7dd87d;" title="Save just this layer as a transparent PNG (Hue/Sat/Bright adjustments baked in)">Export</button>`;
+            html += `<button onclick="makeZoneFromLayer('${l.id}')" class="layer-act-btn" style="border-color:#ffd166;color:#ffd166;" title="Create a zone restricted to this layer's footprint \u2014 then give it a base material">Make zone</button>`;
             html += `<button onclick="deleteLayer('${_selectedLayerId}')" class="layer-act-btn layer-act-red"${lockedControlAttr} title="${lockedControlTitle || 'Delete layer'}">DELETE</button>`;
             html += `</div>`;
             // [SPB-HEADER-SLIM 2026-08-29] owner: "add 3-5 more useful layer controls" — four verified-
             // working ops that had no UI (solo only via undiscoverable Alt+click; flips/rotate zero callers).
             html += `<div style="display:flex;gap:2px;margin-top:3px;flex-wrap:wrap;">`;
-            html += `<button onclick="toggleLayerSolo('${_selectedLayerId}')" class="layer-act-btn" title="Isolate this layer — click again to restore (same as Alt+click the eye)">SOLO</button>`;
-            html += `<button onclick="flipLayerH()" class="layer-act-btn"${lockedControlAttr} title="${lockedControlTitle || 'Flip this layer horizontally'}">FLIP H</button>`;
-            html += `<button onclick="flipLayerV()" class="layer-act-btn"${lockedControlAttr} title="${lockedControlTitle || 'Flip this layer vertically'}">FLIP V</button>`;
-            html += `<button onclick="rotateLayer90('${_selectedLayerId}')" class="layer-act-btn"${lockedControlAttr} title="${lockedControlTitle || 'Rotate this layer 90° clockwise'}">ROT 90</button>`;
+            html += `<button onclick="toggleLayerSolo('${_selectedLayerId}')" class="layer-act-btn" title="Isolate this layer — click again to restore (same as Alt+click the eye)">Solo</button>`;
+            html += `<button onclick="flipLayerH()" class="layer-act-btn"${lockedControlAttr} title="${lockedControlTitle || 'Flip this layer horizontally'}">Flip H</button>`;
+            html += `<button onclick="flipLayerV()" class="layer-act-btn"${lockedControlAttr} title="${lockedControlTitle || 'Flip this layer vertically'}">Flip V</button>`;
+            html += `<button onclick="rotateLayer90('${_selectedLayerId}')" class="layer-act-btn"${lockedControlAttr} title="${lockedControlTitle || 'Rotate this layer 90° clockwise'}">Rotate 90</button>`;
             html += `</div>`;
             // [SPB-DECLUTTER3 2026-08-29] owner: "I want ALL layer controls to stay in the layers thing on
             // the right side" - the middle #layerActiveDock is hidden; its controls live HERE now.
             html += `<div style="display:flex;gap:2px;margin-top:3px;flex-wrap:wrap;">`;
-            html += `<button onclick="setCanvasMode('layer-move')" class="layer-act-btn"${lockedControlAttr} title="${lockedControlTitle || 'Move this layer on the canvas (drag)'}">MOVE</button>`;
-            html += `<button onclick="activateContextTransform()" class="layer-act-btn"${lockedControlAttr} title="${lockedControlTitle || 'Transform the selection or the whole layer (Ctrl+T)'}">XFORM</button>`;
-            html += `<button onclick="window.spbLayerFlow&&window.spbLayerFlow.panToLayer('${_selectedLayerId}', false)" class="layer-act-btn" title="Pan the view to this layer">PAN</button>`;
-            html += `<button onclick="window.spbLayerFlow&&window.spbLayerFlow.panToLayer('${_selectedLayerId}', true)" class="layer-act-btn" title="Fit this layer in the view">FIT</button>`;
-            html += `<button onclick="window.spbLayerFlow&&window.spbLayerFlow.lockActiveZoneToSelectedLayer()" class="layer-act-btn" title="Lock the active zone to THIS layer's pixels (Ctrl+L)">LOCK ZONE</button>`;
+            html += `<button onclick="setCanvasMode('layer-move')" class="layer-act-btn"${lockedControlAttr} title="${lockedControlTitle || 'Move this layer on the canvas (drag)'}">Move</button>`;
+            html += `<button onclick="activateContextTransform()" class="layer-act-btn"${lockedControlAttr} title="${lockedControlTitle || 'Transform the selection or the whole layer (Ctrl+T)'}">Transform</button>`;
+            html += `<button onclick="window.spbLayerFlow&&window.spbLayerFlow.panToLayer('${_selectedLayerId}', false)" class="layer-act-btn" title="Pan the view to this layer">Pan</button>`;
+            html += `<button onclick="window.spbLayerFlow&&window.spbLayerFlow.panToLayer('${_selectedLayerId}', true)" class="layer-act-btn" title="Fit this layer in the view">Fit</button>`;
+            html += `<button onclick="window.spbLayerFlow&&window.spbLayerFlow.lockActiveZoneToSelectedLayer()" class="layer-act-btn" title="Lock the active zone to this layer's pixels (Ctrl+L)">Lock zone</button>`;
             html += `<button onclick="var F=window.spbLayerFlow;if(!F)return;if(event.shiftKey){F.setEffectIntensity(1.0);}else{var c=F.getEffectIntensity();F.setEffectIntensity(c>=1.5?0.25:(c+0.25));}if(typeof recompositeFromLayers==='function')recompositeFromLayers();if(typeof triggerPreviewRender==='function')triggerPreviewRender();" class="layer-act-btn" title="Cycle the global FX intensity (Shift-click = reset to 1.0)">FX &times;</button>`;
-            html += `<button onclick="window.spbLayerFlow&&window.spbLayerFlow.deselectLayer()" class="layer-act-btn" title="Done - deselect this layer (Esc)">DONE</button>`;
+            html += `<button onclick="window.spbLayerFlow&&window.spbLayerFlow.deselectLayer()" class="layer-act-btn" title="Done - deselect this layer${window.SPB_TFX1_OFF ? ' (Esc)' : ''}">Done</button>`; // [SPB-TFX1 2026-10-09 TA-023] Esc no longer deselects
             html += `</div>`;
 
             // Hint
@@ -23816,7 +25166,7 @@ function _commitLayerReorderDrop(sourceLayerId, targetLayerId, insertAbove) {
     const targetLayer = _psdLayers[targetIdx];
     if (_spbLayerGroupBoundaryKey(sourceLayer) !== _spbLayerGroupBoundaryKey(targetLayer)) {
         if (typeof showToast === 'function') {
-            showToast('Move stopped: PSD group boundaries cannot be crossed by a leaf Layer. Flatten the group first.', 'warn');
+            showToast('Move stopped: a layer can\'t move across a PSD group boundary. Flatten the group first.', 'warn');
         }
         return false;
     }
@@ -24841,8 +26191,10 @@ function mergeLayerDown(layerId) {
     {
         const _mAdj = (window.SPBLayerClippingMask && typeof window.SPBLayerClippingMask.adjustFilterFor === 'function')
             ? window.SPBLayerClippingMask.adjustFilterFor(lower) : null;
-        if (_mAdj) mctx.filter = _mAdj;
-        mctx.drawImage(lower.img, lower.bbox[0], lower.bbox[1]);
+        // [SPB-TLAY2 2026-10-10 L2-3] same baked Hue/Sat copy as the canvas draws (js/canvas/tlay2-hsb.js); SPB_TLAY2_OFF -> old CSS filter.
+        const _t2m = (window.SPBTlay2Hsb && typeof window.SPBTlay2Hsb.baked === 'function') ? window.SPBTlay2Hsb.baked(lower) : null;
+        if (_mAdj && !_t2m) mctx.filter = _mAdj;
+        mctx.drawImage(_t2m || lower.img, lower.bbox[0], lower.bbox[1]);
         if (_mAdj) mctx.filter = 'none';
     }
     if (lower.effects && typeof renderLayerEffects === 'function') {
@@ -25011,7 +26363,7 @@ function mergeVisibleLayers() {
     }
     if (window.SPBLayerClippingMask?.hasGroupSemantics?.(_psdLayers)) {
         if (typeof showToast === 'function') {
-            showToast('Merge Visible stopped: grouped PSD Layers cannot be collapsed while hidden group structure is retained. Use Flatten Image for an explicit full-document bake.', 'warn');
+            showToast('Merge Visible stopped: merging grouped PSD layers would lose their group structure. To flatten the whole image, use Flatten Image.', 'warn');
         }
         return false;
     }
@@ -25078,7 +26430,7 @@ function selectLayerPixels(layerId) {
     if (!pc) return false;
     const zone = (typeof zones !== 'undefined' && typeof selectedZoneIndex !== 'undefined') ? zones[selectedZoneIndex] : null;
     if (!zone) {
-        if (typeof showToast === 'function') showToast('Select a zone first, then use SELECT to create a mask from layer pixels', 'info');
+        if (typeof showToast === 'function') showToast('Select a zone first, then use select to create a mask from layer pixels', 'info');
         return false;
     }
     // SPB-93 Pass 152 (2026-07-17; owner: tools must do exactly what users
@@ -25134,13 +26486,14 @@ function _getAdjustmentTarget() {
     // hue-sat/levels/curves/etc.) reads the target via getImageData and writes
     // back via putImageData. Without the flag this round-trips the GPU per slider tick.
     const adjustmentLabel = arguments[0] || 'adjust image';
+    const adjustmentLayerId = arguments.length > 1 ? arguments[1] : _selectedLayerId;
     if (typeof _settleActiveLayerStrokeBeforeTargetChange === 'function') {
         _settleActiveLayerStrokeBeforeTargetChange();
     }
     const pc = document.getElementById('paintCanvas');
     if (!pc) return null;
-    if (_selectedLayerId && _psdLayersLoaded) {
-        const layer = _psdLayers.find(l => l.id === _selectedLayerId);
+    if (adjustmentLayerId && _psdLayersLoaded) {
+        const layer = _psdLayers.find(l => l.id === adjustmentLayerId);
         if (layer && layer.img) {
             if (layer.locked) {
                 if (typeof showToast === 'function') showToast(`"${layer.name}" is locked — unlock to apply ${adjustmentLabel}`, 'warn');
@@ -25202,7 +26555,7 @@ function _commitAdjustment(target) {
     if (target.selectionMask) {
         const applyMask = window.SPBSelectionClip?.applyMask;
         if (typeof applyMask !== 'function') {
-            if (typeof showToast === 'function') showToast('Adjustment selection clip is not ready', 'warn');
+            if (typeof showToast === 'function') showToast('The adjustment isn\'t ready for the selection yet.', 'warn');
             return false;
         }
         applyMask(
@@ -25274,7 +26627,7 @@ function _clipAdjustmentPreviewCandidate(target, frame) {
     if (!target.selectionMask) return true;
     const applyMask = window.SPBSelectionClip?.applyMask;
     if (typeof applyMask !== 'function') {
-        if (typeof showToast === 'function') showToast('Adjustment selection clip is not ready', 'warn');
+        if (typeof showToast === 'function') showToast('The adjustment isn\'t ready for the selection yet.', 'warn');
         return false;
     }
     applyMask(
@@ -25769,7 +27122,7 @@ function _showAdjustmentDialog(spec) {
 
         if (typeof spec.onPreview === 'function') {
             var previewNote = document.createElement('div');
-            previewNote.textContent = 'LIVE PREVIEW · Cancel restores the original';
+            previewNote.textContent = 'Live preview · Cancel restores the original';
             previewNote.style.cssText = 'font-size:10px;color:#72e5ef;letter-spacing:.25px;margin:-1px 0 9px;';
             panel.appendChild(previewNote);
         }
@@ -26059,6 +27412,8 @@ if (typeof window !== 'undefined') {
  *                                             (activateZoneTransform)
  */
 function spbSmartTransform() {
+    // PORT-W3: drop cached source pixels so every transform session reads the layer fresh.
+    try { if (window.SPBPcWarp) window.SPBPcWarp.invalidate(); } catch (_pcw) {}
     // Keep the picked element's existing handles and scope. Re-entering must
     // not silently replace an object transform with the entire Numbers layer.
     if (typeof freeTransformState !== 'undefined' && freeTransformState) return true;
@@ -26134,12 +27489,14 @@ function _spbSelectedLayers() {
     const set = _spbSelectedLayerSet();
     return _psdLayers.filter(l => l && set.has(l.id));
 }
-function deleteSelectedLayers() {
+async function deleteSelectedLayers() {
     const sel = _spbSelectedLayers();
     if (sel.length <= 1) { if (sel.length === 1 && typeof deleteLayer === 'function') deleteLayer(sel[0].id); return; }
     const lockedOnes = sel.filter(l => l.locked);
     if (lockedOnes.length) { if (typeof showToast === 'function') showToast(lockedOnes.length + ' of the selected layers are locked \u2014 unlock them first', true); return; }
-    if (!window.confirm('Delete ' + sel.length + ' selected layers? This cannot be undone by the confirm \u2014 but Ctrl+Z can.')) return;
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+    if (!(await SpbDialog.ask('Delete ' + sel.length + ' Layers?', { message: 'The selected layers are removed. Ctrl+Z brings them back.', okLabel: 'Delete ' + sel.length + ' Layers', danger: true, nativeText: 'Delete ' + sel.length + ' selected layers? This cannot be undone by the confirm \u2014 but Ctrl+Z can.' }))) return;
+    if (sel.some(function (l) { return _psdLayers.indexOf(l) < 0; })) return;   // the layer stack changed while the box was open
     _pushLayerStackUndo('delete ' + sel.length + ' layers');
     const ids = new Set(sel.map(l => l.id));
     // zone restriction cleanup, same contract as single deleteLayer
@@ -26539,6 +27896,17 @@ function _railHasVisibleToolOptions() {
     return false;
 }
 function renderContextActionBar() {
+    // [SPB-TFX1 2026-10-09 TA-022] remember the bar's height from BEFORE the transform controls render, so the canvas pane keeps its size (see css/spb-tool-workflow.css)
+    if (!window.SPB_TFX1_OFF) {
+        try {
+            const _xfOn = typeof freeTransformState !== 'undefined' && !!freeTransformState, _cl = document.body.classList;
+            if (_xfOn && !_cl.contains('spb-tfx1-xf')) {
+                const _bar = document.querySelector('#centerPanel > .workbench-command-bar.spb-cmdbar-bottom');
+                document.documentElement.style.setProperty('--spb-tfx1-barh', (_bar ? Math.round(_bar.getBoundingClientRect().height) : 0) + 'px');
+                _cl.add('spb-tfx1-xf');
+            } else if (!_xfOn && _cl.contains('spb-tfx1-xf')) _cl.remove('spb-tfx1-xf');
+        } catch (_e) {}
+    } else if (document.body.classList.contains('spb-tfx1-xf')) document.body.classList.remove('spb-tfx1-xf');
     const scopeEl = document.getElementById('contextScopeChip');
     const actionsEl = document.getElementById('contextActionsBar');
     const hintEl = document.getElementById('contextActionHint');
@@ -26619,6 +27987,12 @@ function renderContextActionBar() {
             actions += _contextActionNumberInput('Y', 'position-y', numericY,
                 "setLayerTransformPositionAxis('y',this.value,true)", "setLayerTransformPositionAxis('y',this.value,false)",
                 'Transform center Y in pixels', { step: 0.1, width: 58 });
+            actions += _contextActionNumberInput('W', 'size-w', Math.round(Math.abs(Number(freeTransformState.boxW) || 0) * 10) / 10,
+                "setLayerTransformSizeAxis('w',this.value,true)", "setLayerTransformSizeAxis('w',this.value,false)",
+                'Transform width in pixels (Lock Aspect links W and H)', { min: 1, step: 0.1, width: 58 });
+            actions += _contextActionNumberInput('H', 'size-h', Math.round(Math.abs(Number(freeTransformState.boxH) || 0) * 10) / 10,
+                "setLayerTransformSizeAxis('h',this.value,true)", "setLayerTransformSizeAxis('h',this.value,false)",
+                'Transform height in pixels (Lock Aspect links W and H)', { min: 1, step: 0.1, width: 58 });
             actions += _contextActionButton('Flip H', 'flipActiveLayerTransformH()', 'Flip the layer horizontally (non-destructive)', 'neutral');
             actions += _contextActionButton('Flip V', 'flipActiveLayerTransformV()', 'Flip the layer vertically (non-destructive)', 'neutral');
         }
@@ -26759,7 +28133,7 @@ function refreshActiveToolLabel() {
 }
 window.refreshActiveToolLabel = refreshActiveToolLabel;
 
-function deleteLayer(layerId) {
+async function deleteLayer(layerId) {
     const idx = _psdLayers.findIndex(l => l.id === layerId);
     if (idx < 0) return;
     const targetLayer = _psdLayers[idx];
@@ -26807,7 +28181,9 @@ function deleteLayer(layerId) {
                 + ' restricted to this layer. Deleting will clear the restriction so '
                 + (_danglingZones.length === 1 ? 'it paints' : 'they paint')
                 + ' across the whole car. Continue?';
-            if (!confirm(_msg)) return;
+            // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+            if (!(await SpbDialog.ask('Delete Layer?', { message: _msg.replace(/\s*Continue\?\s*$/, ''), okLabel: 'Delete Layer', danger: true, nativeText: _msg }))) return;
+            if (_psdLayers[idx] !== targetLayer) return;   // the layer stack changed while the box was open
         }
     }
     // Snapshot after all refusal/confirmation paths, before either half of the
@@ -26823,7 +28199,7 @@ function deleteLayer(layerId) {
         }
     });
     if (_danglingZones.length > 0 && typeof showToast === 'function') {
-        showToast('Cleared sourceLayer restriction on ' + _danglingZones.length
+        showToast('Cleared the layer restriction on ' + _danglingZones.length
             + ' zone' + (_danglingZones.length === 1 ? '' : 's'), true);
     }
     _psdLayers.splice(idx, 1);
@@ -27172,6 +28548,7 @@ var _activePaintCompositeBaseline = null;
 var _activePaintCompositeRegion = window.SPBPaintPreviewRegion.createQueue();
 
 function _initLayerPaintCanvas() {
+    _spbSpFpDrop(); // [SPECIAL-SPEC 2026-10-11]
     _activePaintCompositeBaseline = null;
     _activePaintCompositeRegion.clear();
     _activeLayerAlphaLockMask = null;
@@ -27246,7 +28623,7 @@ function _beginLayerPixelStroke(toolName, undoLabel) {
     const layer = (typeof getSelectedEditableLayer === 'function') ? getSelectedEditableLayer() : null;
     if (layer && layer.alphaLock && typeof canvasMode !== 'undefined' && canvasMode === 'erase') {
         _pendingLayerPaintUndo = null;
-        if (typeof showToast === 'function') showToast('Alpha Lock protects this Layer — turn α off before erasing', 'info');
+        if (typeof showToast === 'function') showToast('Alpha Lock (α) protects this Layer. Turn it off before erasing.', 'info');
         return null;
     }
     if (!layer || !_initLayerPaintCanvas()) {
@@ -27256,6 +28633,7 @@ function _beginLayerPixelStroke(toolName, undoLabel) {
         return null;
     }
     _pendingLayerPaintUndo = undoLabel ? { layerId: layer.id, label: undoLabel } : null;
+    try { if (!window.SPB_ZONECLIP_OFF && window.SPBZoneClip) window.SPBZoneClip.onStrokeStart(layer); } catch (_e) {} // PORT-W5B: one-time "not exported" toast for the Turn Off Before Exporting TGA group
     return layer;
 }
 window._beginLayerPixelStroke = _beginLayerPixelStroke;
@@ -27497,6 +28875,8 @@ function _snapshotLayerStack() {
         });
         if (_spbUndoFingerprints.length > 400) _spbUndoFingerprints.splice(0, _spbUndoFingerprints.length - 400);
     }
+    // [SPB-FLATWIPE 2026-10-10 lane FLAT-WIPE] an empty snapshot of a FLAT document keeps a copy of the flat pixels (exact Undo to before the first layer).
+    if (_psdLayers.length === 0 && window.SPBFlatBg) { try { return window.SPBFlatBg.tagSnapshot([]); } catch (_) { return []; } }
     return _psdLayers.map(function(l) {
         return {
             id: l.id,
@@ -27562,6 +28942,8 @@ function _restoreLayerStack(snapshot, selectedId) {
         _selectedLayerId = selectedId;
         if (typeof window !== 'undefined') window._selectedLayerId = _selectedLayerId;
     }
+    // [SPB-FLATWIPE 2026-10-10 lane FLAT-WIPE] Undo back to a flat document puts its exact flat pixels back (before: an empty canvas). Kill switch SPB_FLATWIPE_OFF.
+    if (window.SPBFlatBg) { try { window.SPBFlatBg.afterRestore(snapshot); } catch (_) {} }
     if (typeof recompositeFromLayers === 'function') recompositeFromLayers();
     if (typeof renderLayerPanel === 'function') renderLayerPanel();
     if (typeof drawLayerBounds === 'function') { try { drawLayerBounds(); } catch (_) {} }
@@ -27585,6 +28967,9 @@ function _pushLayerStackUndo(label) {
     if (typeof window._clearAllRedos === 'function') window._clearAllRedos(); else _layerRedoStack.length = 0;
     _trimLayerUndoHistory();
     if (typeof window._recordUndoAction === 'function') window._recordUndoAction('layer');
+    // [SPB-FLATWIPE 2026-10-10 lane FLAT-WIPE] flat document + first layer (+ Layer, paste, kits, PhotoCraft...): AFTER the snapshot, the flat
+    // paint becomes the locked Background at index 0, so the new layer lands on top of it. Kill switch SPB_FLATWIPE_OFF.
+    if (window.SPBFlatBg) { try { window.SPBFlatBg.afterStackUndo(entry.label); } catch (_) {} }
 }
 window._pushLayerStackUndo = _pushLayerStackUndo;
 
@@ -27669,6 +29054,10 @@ function _snapshotZoneSourceLayers() {
             zoneId: zone && zone.id != null ? zone.id : null,
             index: index,
             sourceLayer: zone && zone.sourceLayer != null ? zone.sourceLayer : null,
+            // [SPB-TICKETS-2 2026-10-10 item 3] the PLURAL list was never saved: delete layer -> undo left sourceLayers short
+            // (2 source layers -> 1) while sourceLayer came back. Save a copy of it too; undo AND redo restore it exactly.
+            hasSL: !!(zone && Object.prototype.hasOwnProperty.call(zone, 'sourceLayers')),
+            sourceLayers: zone && Array.isArray(zone.sourceLayers) ? zone.sourceLayers.slice() : (zone ? zone.sourceLayers : undefined),
         };
     });
 }
@@ -27682,7 +29071,14 @@ function _restoreZoneSourceLayers(snapshot) {
             zone = zones.find(function(candidate) { return candidate && candidate.id === saved.zoneId; }) || null;
         }
         if (!zone && saved.index >= 0 && saved.index < zones.length) zone = zones[saved.index];
-        if (zone) zone.sourceLayer = saved.sourceLayer;
+        if (zone) {
+            zone.sourceLayer = saved.sourceLayer;
+            // kill switches: window.SPB_TICKETS2_OFF / window.SPB_T2_SRCLAYERS_OFF (old behaviour = singular only)
+            if (!window.SPB_TICKETS2_OFF && !window.SPB_T2_SRCLAYERS_OFF && saved.hasSL !== undefined) {
+                if (saved.hasSL) zone.sourceLayers = Array.isArray(saved.sourceLayers) ? saved.sourceLayers.slice() : saved.sourceLayers;
+                else delete zone.sourceLayers;
+            }
+        }
     });
     if (typeof refreshZoneDetailIfOpen === 'function') refreshZoneDetailIfOpen();
 }
@@ -27953,6 +29349,7 @@ function _refreshPaintedLayerThumbnail(layer) {
 }
 
 function _commitLayerPaint() {
+    const _spFpTaken = _spbSpFpTake(); // [SPECIAL-SPEC 2026-10-11]
     const paintPatch={baseline:_activePaintCompositeBaseline,region:_activePaintCompositeRegion.consume()};
     _activePaintCompositeBaseline=null;
     _cancelPendingActiveLayerCompositePreview();
@@ -28046,7 +29443,11 @@ function _commitLayerPaint() {
     const { pixelsChanged, minX, minY, maxX, maxY } = window.SPBPaintCommitBounds.analyze(
         imgData, originalPixels, strokeSource ? 0 : originalX, strokeSource ? 0 : originalY, alphaLockOriginal);
     auditCommitStage?.('analyze');
-    if (!pixelsChanged) {
+    // [SPECIAL-ZONE 2026-10-11] Special-as-zone-Base: the stroke's weights become the zone's coverage; the layer stays untouched (no bake)
+    let _szHandled = false;
+    try { if (_spFpTaken && window.SPBSpecialZone && window.SPBSpecialZone.commitStroke) _szHandled = !!window.SPBSpecialZone.commitStroke(_spFpTaken); } catch (e) { console.warn('[SPECIAL-ZONE]', e); }
+    if (!pixelsChanged || _szHandled) {
+        try { if (window.SPBZoneClip && window.SPBZoneClip.flushWarn) window.SPBZoneClip.flushWarn(_szHandled); } catch (_) {} // [SPECIAL-ZONE 2026-10-11] deferred "outside" message only for a stroke that painted nothing
         _activeLayerCanvas = null;
         _activeLayerCtx = null;
         _activeLayerPaintLayerId = null;
@@ -28056,6 +29457,7 @@ function _commitLayerPaint() {
         if (typeof recompositeFromLayers === 'function') recompositeFromLayers();
         return false;
     }
+    try { if (window.SPBZoneClip && window.SPBZoneClip.flushWarn) window.SPBZoneClip.flushWarn(true); } catch (_) {}
     if (alphaLockOriginal) _activeLayerCtx.putImageData(imgData, 0, 0);
     if (_pendingLayerPaintUndo && _pendingLayerPaintUndo.layerId === layer.id) {
         const beforeHistory=window._spbLayerRev || 0;
@@ -28066,6 +29468,12 @@ function _commitLayerPaint() {
             paintPatch.baseline,_psdLayers,w,h,beforeHistory,window._spbLayerRev || 0);
     }
     _pendingLayerPaintUndo = null;
+    if (_spFpTaken && !_spFpTaken.erase && _spFpTaken.x1 > _spFpTaken.x0 && _spFpTaken.y1 > _spFpTaken.y0) { // [SPECIAL-SPEC 2026-10-11] spec for exactly the painted pixels
+        const _bw = _spFpTaken.x1 - _spFpTaken.x0, _bh = _spFpTaken.y1 - _spFpTaken.y0, _wt = new Float32Array(_bw * _bh);
+        let _any = false;
+        for (let yy = 0; yy < _bh; yy++) { const so = (_spFpTaken.y0 + yy) * _spFpTaken.W + _spFpTaken.x0, d0 = yy * _bw; for (let xx = 0; xx < _bw; xx++) { const v = _spFpTaken.buf[so + xx]; if (v > 0) { _wt[d0 + xx] = v > 1 ? 1 : v; _any = true; } } }
+        if (_any) _spbSpecialSpecApply({ id: _spFpTaken.id, x: _spFpTaken.x0, y: _spFpTaken.y0, w: _bw, h: _bh, wt: _wt });
+    }
     // A completely erased layer is a real edit, not a discarded stroke.
     // Keep a minimal transparent backing canvas so the layer remains a valid,
     // selectable Photoshop-style empty layer and Ctrl+Z restores its pixels.
@@ -28315,7 +29723,7 @@ function _imageDataHasVisibleAlpha(imageData) {
 function _clearLayerWithEraser(layer) {
     if (!layer || !layer.img) return false;
     if (layer.alphaLock) {
-        if (typeof showToast === 'function') showToast('Alpha Lock protects this Layer — turn α off before clearing', 'info');
+        if (typeof showToast === 'function') showToast('Alpha Lock (α) protects this Layer. Turn it off before clearing.', 'info');
         return false;
     }
     // SPB-93 Pass 77: candidate-before-history for the destructive Eraser
@@ -28372,7 +29780,7 @@ function _beginLayerDabSelectionPatch(x, y, radius) {
     if (typeof applyMask !== 'function') {
         if (!window._spbSelectionClipUnavailableToasted && typeof showToast === 'function') {
             window._spbSelectionClipUnavailableToasted = true;
-            showToast('Brush selection clip is not ready — reload before painting', 'warn');
+            showToast('Brush selection isn\'t ready. Reload before painting.', 'warn');
         }
         return false;
     }
@@ -28410,12 +29818,117 @@ function _finishLayerDabSelectionPatch(patch) {
     return true;
 }
 
-function _paintOnLayerAt(x, y, radius, color, opacity, hardness, eraseMode) {
+// PORT-W2 (2026-10-09, owner "tools basically SUCK"): brush/eraser dabs go through the PhotoCraft-style stroke
+// coverage buffer (js/canvas/pc-stroke.js): opacity is a hard cap, flow builds up, no dab-overlap darkening,
+// sub-pixel centres. Special/pattern sources and the Block eraser keep the previous engine.
+// Before -> after (T2.1, opacity 50 / spacing 12.5%): core alpha ~248 -> 128.
+// sub-pixel dab centre if the integer dab (x,y) is the rounded form of the current resampled dab (not a symmetry mirror)
+// [SPB-TFX2 2026-10-09 TA-035] Gear outline: N identical trapezoid teeth, evenly pitched, joined by arcs of one centred root circle.
+// The old builder joined each tooth to the next with a diagonal (no root arc), 8 teeth, and read as lumpy (audit shape_types_sheet2.png).
+window._tfx2GearPath = function (ctx, cx, cy, R) {
+    const N = 10, p = Math.PI * 2 / N, rRoot = R * 0.78, wRoot = 0.30 * p, wTip = 0.17 * p;
+    let startA = 0, prevEnd = 0;
+    for (let i = 0; i < N; i++) {
+        const c = -Math.PI / 2 + i * p;
+        if (i === 0) { startA = c - wRoot; ctx.moveTo(cx + rRoot * Math.cos(startA), cy + rRoot * Math.sin(startA)); }
+        else ctx.arc(cx, cy, rRoot, prevEnd, c - wRoot);
+        ctx.lineTo(cx + R * Math.cos(c - wTip), cy + R * Math.sin(c - wTip));
+        ctx.lineTo(cx + R * Math.cos(c + wTip), cy + R * Math.sin(c + wTip));
+        ctx.lineTo(cx + rRoot * Math.cos(c + wRoot), cy + rRoot * Math.sin(c + wRoot));
+        prevEnd = c + wRoot;
+    }
+    ctx.arc(cx, cy, rRoot, prevEnd, startA + Math.PI * 2);
+    ctx.closePath();
+};
+function _pcSubCentre(x, y) {
+    const s = window._spbDabSub;
+    return (s && Math.round(s.x) === x && Math.round(s.y) === y) ? s : { x, y };
+}
+
+var _pcSpecialTileCache = null;
+function _pcSpecialTile() { // PORT-W5: RGBA readback of the cached Special swatch, once per swatch canvas
+    const id = getLayerPaintSpecialId() || _getDefaultLayerPaintSpecialId();
+    const cv = id ? _getCachedLayerPaintSpecialCanvas(id) : null;
+    if (!cv) { if (id && typeof warmLayerPaintSpecialCache === 'function') warmLayerPaintSpecialCache(true); return null; }
+    if (!_pcSpecialTileCache || _pcSpecialTileCache.cv !== cv) {
+        _pcSpecialTileCache = { cv, w: cv.width, h: cv.height, data: cv.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, cv.width, cv.height).data };
+    }
+    return _pcSpecialTileCache;
+}
+
+// [SPECIAL-SPEC 2026-10-11] (OWNER BUG) a Special brush / Special Fill painted only the PAINT; the spec under it came from whatever zone covered
+// those pixels (Zone 1 had no base -> only the number outline changed on the Spec map). "Paint its spec too" (checkbox in the layer brush bar,
+// ON by default, remembered) now lays the Special's own spec (a Spec-only Brush Studio coat of mono:<special>) over EXACTLY the pixels that
+// were painted: pc-stroke records the paint's own per-pixel weight (coverage x opacity x selection/zone clip x swatch alpha), and the stroke
+// commit / fill hands that to SPBRevMaterial.paintFootprint. Two adjacent undo steps (spec, then paint). Kill switch: window.SPB_SPECIAL_SPEC_OFF.
+function isSpecialSpecOn() {
+    if (window.SPB_SPECIAL_SPEC_OFF) return false;
+    if (window.SPBSpecialZone && window.SPBSpecialZone.effective()) return false;   // [SPECIAL-ZONE 2026-10-11] the zone's Base already carries the Special's spec
+    try { return window.localStorage.getItem('spb_special_spec') !== '0'; } catch (_) { return true; }
+}
+window.isSpecialSpecOn = isSpecialSpecOn;
+function setSpecialSpecOn(on) {
+    try { window.localStorage.setItem('spb_special_spec', on ? '1' : '0'); } catch (_) {}
+    const cb = document.getElementById('layerSpecialSpecToggle');
+    if (cb) cb.checked = !!on;
+    return !!on;
+}
+window.setSpecialSpecOn = setSpecialSpecOn;
+var _spbSpFp = null;
+function _spbSpFpDrop() { _spbSpFp = null; }
+function _spbSpFpTake() { const f = _spbSpFp; _spbSpFp = null; return f; }
+function _spbSpecialSpecApply(fp) {
+    // fp = { id, x, y, w, h, wt: Float32Array(w*h) }
+    try {
+        if (!fp || !fp.id || !window.SPBRevMaterial || !window.SPBRevMaterial.paintFootprint) return false;
+        const ok = window.SPBRevMaterial.paintFootprint({ finishId: _layerPaintSpecialFinishId(fp.id), params: null, x: fp.x, y: fp.y, w: fp.w, h: fp.h, wt: fp.wt });   // [SPECIAL-ALL 2026-10-12] base ids resolve as bases
+        if (ok && typeof window._spbSpecialSpecDone === 'function') window._spbSpecialSpecDone(fp);
+        return !!ok;
+    } catch (e) { console.warn('[SPECIAL-SPEC]', e); return false; }
+}
+function _pcPaintLayerDab(x, y, radius, color, hardness, eraseMode, pc, tile) {
+    const w = _activeLayerCanvas.width, h = _activeLayerCanvas.height;
+    // PORT-W5: Block eraser = hard aliased square tip, 100% (Photoshop ignores Opacity/Flow in Block mode)
+    const _block = !!eraseMode && !window.SPB_PC_W5_OFF && _getEraserMode() === 'block';
+    const footprint = _createBrushFootprint(radius, _block ? 'square' : null);
+    const hex = String(color || '#000000');
+    const sel = (typeof _activeSelectionMask === 'function') ? _activeSelectionMask(w, h) : null;
+    const fx = _block ? x : (Number.isFinite(pc.fx) ? pc.fx : x), fy = _block ? y : (Number.isFinite(pc.fy) ? pc.fy : y);
+    let _spFp = null;
+    const _szOn = !eraseMode ? (tile && window.SPBSpecialZone && window.SPBSpecialZone.effective()) : (window.SPBSpecialZone && window.SPBSpecialZone.eraseOn()); // [SPECIAL-ZONE 2026-10-11]
+    if ((tile && !eraseMode && isSpecialSpecOn()) || _szOn) {   // [SPECIAL-SPEC 2026-10-11]
+        if (!_spbSpFp || _spbSpFp.W !== w || _spbSpFp.H !== h) _spbSpFp = { W: w, H: h, id: getLayerPaintSpecialId() || _getDefaultLayerPaintSpecialId(), buf: new Float32Array(w * h), x0: w, y0: h, x1: 0, y1: 0, erase: !!eraseMode };
+        _spFp = _spbSpFp;
+    }
+    // [STROKE-HL 2026-10-12] owner: "coloring it a highlighted color ... at the exact same time so you can see where you are drawing" - display-only footprint plane
+    const _hlBuf = (!eraseMode && window.SPBStrokeHL) ? window.SPBStrokeHL.bufferFor(_activeLayerPaintLayerId, w, h) : null;
+    const rect = window.SPBPcStroke.paintDab(_activeLayerCtx, _activeLayerCanvas, w, h, {
+        fpOut: _spFp ? _spFp.buf : null, hlOut: _hlBuf,
+        x: fx, y: fy, radius, hardness, erase: !!eraseMode, footprint,
+        color: [parseInt(hex.slice(1, 3), 16) || 0, parseInt(hex.slice(3, 5), 16) || 0, parseInt(hex.slice(5, 7), 16) || 0],
+        cap: _block ? 1 : pc.cap, flow: _block ? 1 : pc.flow, ceil: pc.ceil, sel, selW: w, selH: h, aliased: _block, tile: tile || null
+    });
+    if (rect && _spFp) { _spFp.x0 = Math.min(_spFp.x0, rect.x); _spFp.y0 = Math.min(_spFp.y0, rect.y); _spFp.x1 = Math.max(_spFp.x1, rect.x + rect.width); _spFp.y1 = Math.max(_spFp.y1, rect.y + rect.height); }
+    if (rect && _hlBuf) window.SPBStrokeHL.flush(rect);   // [STROKE-HL 2026-10-12] dirty-rect only, never a full-canvas pass
+    if (rect) _scheduleActiveLayerCompositePreview(rect);
+    return true;
+}
+
+function _paintOnLayerAt(x, y, radius, color, opacity, hardness, eraseMode, pcOpts) {
     // Paint a single dab on the active layer canvas
     if (!_activeLayerCtx) return false;
+    // PORT-W5: Special brush -> world-anchored tiled swatch on the same coverage buffer (was: the whole swatch re-fitted into
+    // every dab's box and stacked at `opacity` per dab); falls back to the old stamp until the swatch is cached / for Noise tips.
+    const _w5Tile = (!eraseMode && !window.SPB_PC_W5_OFF && isLayerPaintSourceSpecial()) ? _pcSpecialTile() : null;
+    if (pcOpts && window.SPBPcStroke && !window.SPB_PC_W2_OFF && !(eraseMode && _getEraserMode() === 'block' && window.SPB_PC_W5_OFF) &&
+        (!(!eraseMode && isLayerPaintSourceSpecial()) || (_w5Tile && _createBrushFootprint(radius, null).shape !== 'noise'))) {
+        return _pcPaintLayerDab(x, y, radius, color, hardness, eraseMode, pcOpts, _w5Tile);
+    }
     const ctx = _activeLayerCtx;
     const selectionPatch = _beginLayerDabSelectionPatch(x, y, radius);
     if (selectionPatch === false) return false;
+    // [STROKE-HL 2026-10-12] legacy (non coverage-buffer) dab: show its footprint too (a soft disc; selection not applied on this fallback path)
+    if (!eraseMode && window.SPBStrokeHL) window.SPBStrokeHL.circleDab(_activeLayerPaintLayerId, _activeLayerCanvas.width, _activeLayerCanvas.height, x, y, radius);
 
     const eraserModeId = eraseMode ? _getEraserMode() : 'brush';
     const footprint = _createBrushFootprint(radius, eraseMode && eraserModeId === 'block' ? 'square' : null);
@@ -28594,6 +30107,7 @@ function refreshToolbarModeSensitiveUi() {
     if (layerPaintSourceOpts) {
         layerPaintSourceOpts.style.display = (layerToolbarActive && (mode === 'fill' || mode === 'brush')) ? 'inline-flex' : 'none';
     }
+    try { if (window.SPBStrokeHL) window.SPBStrokeHL.syncUi(); } catch (_) {}   // [STROKE-HL 2026-10-12] Highlight toggle/colour/clear follow the brush options
     const showSelMode = (mode === 'wand' || mode === 'selectall' || mode === 'edge' || mode === 'rect' || mode === 'lasso' || mode === 'pen' || mode === 'ellipse-marquee' || ((mode === 'fill' || mode === 'gradient') && !layerToolbarActive));
     const selModeEl = document.getElementById('selectionMode');
     if (selModeEl) selModeEl.style.display = showSelMode ? '' : 'none';
@@ -28607,7 +30121,7 @@ function refreshToolbarModeSensitiveUi() {
                 ? 'Shift: add · Alt: subtract · Sample + Tolerance match the full source'
                 : 'Shift: add · Alt: subtract · Sample + Tolerance control the match')
             : mode === 'ellipse-marquee' || mode === 'rect'
-            ? (mode === 'rect' ? 'Shift: square · Alt: from center · Esc: cancel' : 'Shift: circle · Alt: from center · Esc: cancel')
+            ? (window.SPB_TFX3_OFF ? (mode === 'rect' ? 'Shift: square · Alt: from center · Esc: cancel' : 'Shift: circle · Alt: from center · Esc: cancel') : (mode === 'rect' ? 'Shift: add · Alt: subtract · mid-drag: Shift square, Alt from center · Esc: cancel' : 'Shift: add · Alt: subtract · mid-drag: Shift circle, Alt from center · Esc: cancel'))   // [SPB-TFX3 2026-10-09 TA-017]
             : 'Shift+click add, Alt+click subtract';
     }
     const patBrushEl = document.getElementById('patternBrushSelect');
@@ -28706,12 +30220,12 @@ function _maybeWarnToolbarModeMismatch(toolName, wantedMode) {
     if (typeof showToast !== 'function') return;
     if (desired === 'layer') {
         if (toolName === 'Text' || toolName === 'Shape') {
-            showToast(`${toolName} creates a new layer and only works in Layer Mode — switch the toolbar to LAYER`, 'warn');
+            showToast(`${toolName} creates a new layer and only works in Layer Mode — switch the toolbar to Layer`, 'warn');
         } else {
-            showToast(`${toolName} only edits layers in Layer Mode — switch the toolbar to LAYER`, 'warn');
+            showToast(`${toolName} only edits layers in Layer Mode — switch the toolbar to Layer`, 'warn');
         }
     } else {
-        showToast(`${toolName} is a zone/mask tool — switch the toolbar to ZONE`, 'warn');
+        showToast(`${toolName} is a zone/mask tool — switch the toolbar to Zone`, 'warn');
     }
 }
 
@@ -28730,7 +30244,7 @@ function requireLayerToolbarTarget(toolName) {
     if (!layer) {
         const reason = (typeof _diagnoseLayerPaintFail === 'function') ? _diagnoseLayerPaintFail() : null;
         if (typeof showToast === 'function') {
-            showToast(reason || `${toolName} needs an editable selected layer in LAYER mode`, 'warn');
+            showToast(reason || `${toolName} needs an editable selected layer in Layer mode`, 'warn');
         }
         return false;
     }
@@ -28788,8 +30302,13 @@ function shouldBrushStrokeProceed() {
         const p = window._spbLastPointerPixel;
         const pc = document.getElementById('paintCanvas');
         if (p && pc && typeof _activeSelectionMask === 'function') {
-            const mask = _activeSelectionMask(pc.width, pc.height);
-            if (mask && !mask[p.y * pc.width + p.x]) {
+            const mask = _activeSelectionMask(pc.width, pc.height, false);
+            if (window.SPBZoneClip && window.SPBZoneClip.setPending && !window.SPB_CLIPTOAST_OFF) window.SPBZoneClip.setPending(null); // [SPECIAL-ZONE 2026-10-11] a new stroke clears the previous stroke's deferred message
+            if (window.SPBZoneClip && !window.SPB_ZONECLIP_OFF) window.SPBZoneClip.warnIfOutside(p, pc); // PORT-W5B: stroke starts outside the zone's coverage -> say why
+            if (mask && !mask[p.y * pc.width + p.x] && window.SPBZoneClip && window.SPBZoneClip.setPending && !window.SPB_CLIPTOAST_OFF) {
+                // [SPECIAL-ZONE 2026-10-11 owner] defer: say it only if the whole stroke paints nothing (it may drag into the selection)
+                window.SPBZoneClip.setPending('Nothing painted: that spot is outside your selection (Ctrl+D clears it, or Mask > Invert). Start inside it.');
+            } else if (mask && !mask[p.y * pc.width + p.x]) {
                 const now = Date.now();
                 if (!window._spbOutsideSelWarnAt || now - window._spbOutsideSelWarnAt > 4000) {
                     window._spbOutsideSelWarnAt = now;
@@ -28922,7 +30441,7 @@ function _diagnoseLayerPaintFail() {
         return `"${layer.name || 'Layer'}" image not loaded yet`;
     }
     if (layer.locked) {
-        return `"${layer.name || 'Layer'}" is locked — click the 🔒 icon to unlock`;
+        return `"${layer.name || 'Layer'}" is locked — click the lock icon to unlock`;
     }
     return null; // Layer paint will proceed fine
 }
@@ -29031,8 +30550,13 @@ function _getLayerAlphaImageData(layer) {
     return tctx.getImageData(0, 0, w, h);
 }
 
-function isPointOnLayerOpaque(layer, px, py, alphaThreshold) {
+function isPointOnLayerOpaque(layer, px, py, alphaThreshold, hover) {
     if (!layer || !layer.img || !isPointInLayerBbox(layer, px, py)) return false;
+    // [SPB-TFX1 2026-10-09 TA-027] hover callers read the cached alpha plane instead of a full-layer getImageData per layer per move
+    if (hover && !window.SPB_TFX1_OFF && window.SPBTfx1Pick) {
+        const _hit = window.SPBTfx1Pick.opaqueAt(layer, px, py, alphaThreshold);
+        if (_hit !== null) return _hit;
+    }
     const origin = getLayerCanvasOrigin(layer);
     const imgData = _getLayerAlphaImageData(layer);
     if (!imgData) return false;
@@ -29106,7 +30630,7 @@ function getTopmostVisibleLayerAtCanvasPoint(px, py, options) {
         if (!layer.img) {
             const [x1, y1, x2, y2] = layer.bbox;
             if (px < x1 || px >= x2 || py < y1 || py >= y2) continue;
-        } else if (!isPointOnLayerOpaque(layer, px, py, 6)) { // SPB TOOLS /loop 2026-06-05 (owner: transform like Photoshop): alpha 10->6 so a click on the thin anti-aliased HALO of a small number/letter still FINDS the layer (was a "dead click near a number" source); the ring-snap in selectConnectedLayerPixelsAtPoint then snaps to the solid glyph.
+        } else if (!isPointOnLayerOpaque(layer, px, py, 6, opts.hover)) { // SPB TOOLS /loop 2026-06-05 (owner: transform like Photoshop): alpha 10->6 so a click on the thin anti-aliased HALO of a small number/letter still FINDS the layer (was a "dead click near a number" source); the ring-snap in selectConnectedLayerPixelsAtPoint then snaps to the solid glyph.
             continue;
         }
 
@@ -29191,6 +30715,28 @@ function selectConnectedLayerPixelsAtPoint(layerId, canvasX, canvasY, options) {
     const transientRegionMask = opts.autoTransform
         ? (zone.regionMask ? new Uint8Array(zone.regionMask) : null)
         : null;
+    // [SPB-TFX1 2026-10-09 TA-027] hover preview (previewOnly) answered from a per-layer alpha plane + connected-component label map instead of a
+    // full-layer getImageData and a JS flood fill over up to 4M pixels on EVERY hover tick (real owner car: pick-item 583 ms p50 / 737 ms p95 per
+    // hover -> see tfx1-pickcache.js for the after number). Same result as the flood fill (threshold, 8-connectivity, in-canvas bbox, +-40 px
+    // auto-grow). Not used for real clicks, for Color Limit pick, or when SPB_TFX1_OFF is set.
+    if (opts.previewOnly && !window.SPB_TFX1_OFF && window.SPBTfx1Pick && !((opts.colorLimit !== undefined) ? !!opts.colorLimit : !!window._spbColorLimitPick)) {
+        const _fp = window.SPBTfx1Pick.preview(layer, canvasX, canvasY, {
+            textMode: !!(opts.textMode || opts.fineText), allowSnap: !!opts.allowSnap, pcW: pc.width, pcH: pc.height,
+            dispScale: () => { const _r = pc.getBoundingClientRect(); return (_r && _r.width && pc.width) ? (_r.width / pc.width) : 0.23; }
+        });
+        if (_fp) {
+            if (_fp.oob) return false;
+            if (_fp.miss) {
+                // a hover PREVIEW over transparent pixels must stay silent (the original toasted on every ~11 fps hover tick and the toast anchor read
+                // layout = ~10 ms forced reflow per tick); real picks (previewOnly false) never reach this block.
+                return false;
+            }
+            window._spbLastPickedElementBbox = _fp.count > 0 ? { x1: _fp.x1, y1: _fp.y1, x2: _fp.x2, y2: _fp.y2, layerId: layer.id, pixelCount: _fp.count } : null;
+            if (typeof renderRegionOverlay === 'function') renderRegionOverlay();
+            if (typeof renderContextActionBar === 'function') renderContextActionBar();
+            return _fp.count > 0;
+        }
+    }
     const imgData = _getLayerAlphaImageData(layer);
     if (!imgData) return false;
     const origin = getLayerCanvasOrigin(layer);
@@ -29238,7 +30784,7 @@ function selectConnectedLayerPixelsAtPoint(layerId, canvasX, canvasY, options) {
             }
         }
         if (!_snapped) {
-            if (typeof showToast === 'function') showToast(`No opaque ${layer.name || 'layer'} pixels near that spot`, 'info');
+            if (!opts.quietMiss && typeof showToast === 'function') showToast(`No opaque ${layer.name || 'layer'} pixels near that spot`, 'info');
             return false;
         }
     }
@@ -29413,6 +30959,79 @@ window.selectConnectedLayerPixelsAtPoint = selectConnectedLayerPixelsAtPoint;
     }
     if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();
+// [SPB-TFX1 2026-10-09 TA-025] the fixed bottom corners (AI button, Smart Text / Color Limit pills, X/Y readout) sat ON the bottom options bar at narrow widths: at 1100x800 the Smart Text pill
+// and the AI button covered Flip V / Apply / Cancel and the readout covered the first bar control. Whatever of them overlaps the bar is lifted (CSS `translate`, so the dockers'
+// own bottom/right stay untouched) to just above the bar; re-checked when the bar resizes / empties, the window resizes or one of them changes. Kill switch: SPB_TFX1_OFF.
+(function () {
+    const IDS = ['spbProAIFab', 'spb-global-text-pick-pill', 'spb-global-color-limit-pill'];
+    let raf = 0, mo = null, ro = null, watched = null;
+    function barBox() {
+        const bar = document.querySelector('.workbench-command-bar.spb-cmdbar-bottom');
+        if (!bar || bar.classList.contains('spb-ctx-empty')) return null;
+        const r = bar.getBoundingClientRect();
+        if (!(r.height > 4) || r.bottom < window.innerHeight * 0.6) return null;   // only a bar docked at the bottom of the window
+        let top = r.top;   // the extra row of the transform bar can grow upward out of the bar box: take the highest visible control
+        const cs = bar.querySelectorAll('button,input,select');
+        for (let i = 0; i < cs.length; i++) { const c = cs[i].getBoundingClientRect(); if (c.width > 6 && c.height > 6 && c.bottom > window.innerHeight * 0.6 && c.top < top) top = c.top - 4; }
+        return { top: top, bottom: r.bottom, left: r.left, right: r.right };
+    }
+    function run() {
+        raf = 0;
+        try {
+            const els = IDS.map(function (id) { return document.getElementById(id); });
+            const rd = document.getElementById('platinumCoordReadout');
+            els.concat([rd]).forEach(function (el) { if (el && el.style.translate) el.style.translate = ''; });   // natural position first
+            const b = window.SPB_TFX1_OFF ? null : barBox();
+            if (b) {
+                // [S10 2026-10-12 owner: "lose this vibecoded look"] lifted elements stack instead of sharing one spot: with the right panel collapsed the bar runs under both
+                // pills, Smart Text was lifted onto the Color Limit pill (it hid completely). Each element is also pushed above anything already placed that it would now cover.
+                const placed = [];
+                els.forEach(function (el) {
+                    if (!el) return;
+                    const r = el.getBoundingClientRect();
+                    if (!(r.width && r.height)) return;
+                    let dy = (r.bottom > b.top && r.top < b.bottom && r.right > b.left && r.left < b.right) ? -Math.round(r.bottom - b.top + 6) : 0;
+                    for (let pass = 0; pass < 3; pass++) {
+                        let moved = false;
+                        for (let k = 0; k < placed.length; k++) {
+                            const q = placed[k];
+                            if (r.right > q.left && r.left < q.right && r.bottom + dy > q.top && r.top + dy < q.bottom) { dy -= Math.round(r.bottom + dy - q.top + 6); moved = true; }
+                        }
+                        if (!moved) break;
+                    }
+                    placed.push({ left: r.left, right: r.right, top: r.top + dy, bottom: r.bottom + dy });
+                    if (dy) el.style.translate = '0 ' + dy + 'px';
+                });
+                if (rd) {   // hidden until the mouse is over the sheet, so use its CSS geometry (left 14 / bottom 14)
+                    const w = rd.offsetWidth || 150, h = rd.offsetHeight || 24, bot = window.innerHeight - 14, top = bot - h;
+                    if (bot > b.top && top < b.bottom && 14 + w > b.left && 14 < b.right) rd.style.translate = '0 ' + (-Math.round(bot - b.top + 6)) + 'px';
+                }
+            }
+            watch();
+            if (mo) mo.takeRecords();
+        } catch (e) { }
+    }
+    function sched() { if (!raf) raf = requestAnimationFrame(run); }
+    function watch() {
+        const bar = document.querySelector('.workbench-command-bar.spb-cmdbar-bottom'), cab = document.getElementById('contextActionsBar');
+        if (bar && bar !== watched) {
+            watched = bar;
+            try { if (window.ResizeObserver) { if (ro) ro.disconnect(); ro = new ResizeObserver(sched); ro.observe(bar); if (cab) ro.observe(cab); } } catch (e) { }
+            try { if (mo) { mo.observe(bar, { attributes: true, attributeFilter: ['class'] }); if (cab) mo.observe(cab, { childList: true, subtree: true }); } } catch (e) { }
+        }
+        if (mo) IDS.concat(['platinumCoordReadout']).forEach(function (id) { const el = document.getElementById(id); if (el) { try { mo.observe(el, { attributes: true, attributeFilter: ['style', 'hidden', 'class'] }); } catch (e) { } } });
+    }
+    function start() {
+        try {
+            mo = new MutationObserver(sched);
+            new MutationObserver(function (muts) { for (let a = 0; a < muts.length; a++) { const ad = muts[a].addedNodes; for (let b = 0; b < ad.length; b++) { const id = ad[b] && ad[b].id; if (id && (IDS.indexOf(id) !== -1 || id === 'platinumCoordReadout')) { sched(); return; } } } }).observe(document.body, { childList: true });
+        } catch (e) { }
+        window.addEventListener('resize', sched);
+        window._spbTfx1AvoidBar = sched;
+        sched(); setTimeout(sched, 1500); setTimeout(sched, 5000);
+    }
+    if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+})();
 function activateLayerElementPickMode() {
     if (typeof setCanvasMode === 'function') setCanvasMode('layer-pick');
 
@@ -29426,14 +31045,14 @@ function activateLayerElementPickMode() {
         document.body.appendChild(globalPill);
         globalPill.onclick = () => {
             window._spbSmartTextPick = !window._spbSmartTextPick;
-            globalPill.textContent = window._spbSmartTextPick ? 'Smart Text: ON' : 'Smart Text: OFF';
+            globalPill.textContent = window._spbSmartTextPick ? 'Smart Text: ON' : 'Smart Text: off';
             globalPill.style.background = window._spbSmartTextPick ? '#166534' : '#334155';
             globalPill.style.color = '#e0f2fe';
             if (typeof _refreshLayerTransformQuickbarNumerics === 'function') _refreshLayerTransformQuickbarNumerics();
         };
     }
     const isOn = !!window._spbSmartTextPick;
-    globalPill.textContent = isOn ? 'Smart Text: ON' : 'Smart Text: OFF';
+    globalPill.textContent = isOn ? 'Smart Text: ON' : 'Smart Text: off';
     globalPill.style.background = isOn ? '#166534' : '#334155';
     globalPill.style.color = '#e0f2fe';
     globalPill.style.display = 'block';
@@ -29450,15 +31069,15 @@ function activateLayerElementPickMode() {
         clPill.onclick = () => {
             window._spbColorLimitPick = !window._spbColorLimitPick;
             const on = !!window._spbColorLimitPick;
-            clPill.textContent = on ? 'Color Limit: ON' : 'Color Limit: OFF';
+            clPill.textContent = on ? 'Color Limit: ON' : 'Color Limit: off';
             clPill.style.background = on ? '#7c2d12' : '#334155';
             clPill.style.color = '#fff7ed';
-            if (typeof showToast === 'function') showToast(on ? 'Color Limit: ON — pick grabs only the clicked colour, using the zone TOL slider for how close counts' : 'Color Limit: OFF — pick grabs the whole element', 'info');
+            if (typeof showToast === 'function') showToast(on ? 'Color Limit: ON — pick grabs only the clicked colour, using the zone TOL slider for how close counts' : 'Color Limit: off — pick grabs the whole element', 'info');
         };
     }
     {
         const on = !!window._spbColorLimitPick;
-        clPill.textContent = on ? 'Color Limit: ON' : 'Color Limit: OFF';
+        clPill.textContent = on ? 'Color Limit: ON' : 'Color Limit: off';
         clPill.style.background = on ? '#7c2d12' : '#334155';
         clPill.style.color = '#fff7ed';
         clPill.style.display = 'block';
@@ -29630,7 +31249,12 @@ function updateLayerDrag(currentX, currentY) {
         _layerDragState.didMove = true;
     }
     const ob = _layerDragState.origBbox;
-    layer.bbox = [ob[0] + dx, ob[1] + dy, ob[2] + dx, ob[3] + dy];
+    // [SPB-TFX3 2026-10-09 PORT-1 Smart Guides] whole-layer drag snaps the layer's CONTENT box (not its transparent bbox) to the same targets.
+    let _sgDx = dx, _sgDy = dy;
+    if (!window.SPB_TFX3_OFF && window.SPBTfx3Guides && typeof window.SPBTfx3Guides.snapLayerDrag === 'function') {
+        try { const _r = window.SPBTfx3Guides.snapLayerDrag(layer, _layerDragState, dx, dy); if (_r) { _sgDx = _r.dx; _sgDy = _r.dy; } } catch (_sge) { /* never break a move */ }
+    }
+    layer.bbox = [ob[0] + _sgDx, ob[1] + _sgDy, ob[2] + _sgDx, ob[3] + _sgDy];
     // SPB-93 2026-08-08, owner verdict: SOURCE-panel edits must update in
     // real time and feel snappy like Photoshop/GIMP. Before: every raw mouse
     // event recomposited the full Layer stack and read 16.8 MB back from a
@@ -29658,6 +31282,33 @@ function endLayerDrag() {
 }
 
 // Free Transform for a PSD layer (Ctrl+T)
+// [SPB-TFX1 2026-10-09 TA-028] tight box of the layer's non-transparent pixels in canvas coordinates (null when the layer fills most of its bbox)
+function _tfx1LayerContentBox(layer) {
+    try {
+        const img = layer && layer.img, bb = layer && layer.bbox;
+        if (!img || !bb) return null;
+        const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+        const bw = bb[2] - bb[0], bh = bb[3] - bb[1];
+        if (!(iw > 0 && ih > 0 && bw > 0 && bh > 0)) return null;
+        const c = document.createElement('canvas'); c.width = iw; c.height = ih;
+        const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0);
+        const px = new Uint32Array(g.getImageData(0, 0, iw, ih).data.buffer);
+        let minX = iw, minY = ih, maxX = -1, maxY = -1, n = 0;
+        for (let y = 0; y < ih; y++) {
+            const row = y * iw;
+            for (let x = 0; x < iw; x++) {
+                if ((px[row + x] >>> 24) !== 0) { n++; if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y; }
+            }
+        }
+        if (maxX < 0) return null;
+        const sx = bw / iw, sy = bh / ih;
+        const x1 = Math.floor(bb[0] + minX * sx), y1 = Math.floor(bb[1] + minY * sy);
+        const x2 = Math.ceil(bb[0] + (maxX + 1) * sx), y2 = Math.ceil(bb[1] + (maxY + 1) * sy);
+        if ((x2 - x1) * (y2 - y1) > bw * bh * 0.9) return null;
+        return { x1, y1, x2, y2, count: n };
+    } catch (_) { return null; }
+}
+
 function activateLayerTransform() {
     const layer = getSelectedLayer();
     // Relaxed for text/number layers that may not have a traditional .img but still have a bbox
@@ -29718,6 +31369,16 @@ function activateLayerTransform() {
         // work immediately for isolated glyphs inside a single PSD layer — without forcing a zone.regionMask bake.
         // Future: can evolve into a full layerSubSelection with lasso support.
     };
+    // [SPB-TFX1 2026-10-09 TA-028] Ctrl+T / Transform Layer with no piece isolated boxed the whole 2048 canvas (handles on the canvas corners, pivot =
+    // canvas centre; content 800x300 -> box 2048x2048). Photoshop boxes the layer's pixels, so use their tight box through the same
+    // piece pipeline an isolated piece takes. Lifted selections ('captured-stack') keep their own box. SPB_TFX1_OFF restores the old box.
+    let _tfxAutoBox = false;
+    if (!window.SPB_TFX1_OFF && meta.sessionUndoMode !== 'captured-stack' && !String(layer.id).startsWith('selxform_') && !layer.isText &&
+        !(window.SPBTextEdit && window.SPBTextEdit.isTextLayer(layer)) &&   // [SPB-TFX1 2026-10-09 TA-034b] live text transforms as a whole (re-rendered, stays live)
+        !(window._spbLastPickedElementBbox && window._spbLastPickedElementBbox.layerId === layer.id)) {
+        const _tb = _tfx1LayerContentBox(layer);
+        if (_tb) { window._spbLastPickedElementBbox = { x1: _tb.x1, y1: _tb.y1, x2: _tb.x2, y2: _tb.y2, layerId: layer.id, pixelCount: _tb.count }; _tfxAutoBox = true; }
+    }
     // Attach subRect from the v40 tight isolation result (only for the matching layer, only on fresh activate)
     if (typeof window !== 'undefined' && window._spbLastPickedElementBbox &&
         window._spbLastPickedElementBbox.layerId === layer.id) {
@@ -29734,6 +31395,7 @@ function activateLayerTransform() {
         freeTransformState.sessionScopeLabel = instCount > 0
             ? `Layer Element: ${layer.name || 'Picked'} (Instance – ${instCount + 1} total)${hasBeenSynced ? ' • Synced' : ''}${extraStatus}`
             : `Layer Element: ${layer.name || 'Picked'}`;
+        if (_tfxAutoBox) freeTransformState.sessionScopeLabel = meta.sessionScopeLabel || `Layer: ${layer.name || 'Layer'}`;   // [SPB-TFX1 2026-10-09 TA-028]
         layerSubRectDragActive = true;
 
         // v110: Track previous picked element so "Link with Previous" works for the first Element Link Groups prototype
@@ -29790,7 +31452,7 @@ function activateLayerTransform() {
         pendingPanButton = null;
     }
     if (typeof showToast === 'function') {
-        showToast('Layer Transform: drag/Arrow keys to move, handles to resize/rotate, R/S/X/Y=numeric, double-click to apply. Per-element isolation supported. Enter=apply, Esc/Ctrl+Z=cancel', 'info');
+        showToast('Layer Transform: drag or use the arrow keys to move, and use the handles to resize or rotate. Press R, S, X or Y to type exact values. Enter or double-click applies. Esc or Ctrl+Z cancels.', 'info');
     }
     if (typeof renderContextActionBar === 'function') renderContextActionBar();
     return true;
@@ -29800,6 +31462,47 @@ function activateLayerTransform() {
 // Photoshop-correct: push undo BEFORE mutating, and use the synchronous canvas
 // (not an async toDataURL→Image→onload round-trip) so Ctrl+Z immediately after
 // commit always targets the committed state.
+// [SPB-TFX1 2026-10-09 TA-034b] Ctrl+T on a LIVE text layer (img.__spbText) used to rasterize it (the text could not be edited
+// afterwards). Uniform scale / rotation / move now re-render the text from its stored payload at the new size / angle
+// (real vector text, not a resampled bitmap) and the layer stays live. Stretch / flip / skew cannot be expressed by the
+// payload: those still become pixels, with a toast (Ctrl+Z brings the live text back). SPB_TFX1_OFF = old behaviour.
+function _tfxLiveTextApply(s, layer, newW, newH) {
+    if (window.SPB_TFX1_OFF) return false;
+    const TE = window.SPBTextEdit;
+    const td0 = (TE && typeof TE.payload === 'function') ? TE.payload({ img: s.origImg }) : null;
+    if (!td0 || s.quad || s.subRect) return false;
+    if ((s.scaleX || 1) < 0 || (s.scaleY || 1) < 0) return false;
+    const ow = s.origImg.naturalWidth || s.origImg.width, oh = s.origImg.naturalHeight || s.origImg.height;
+    if (!(ow > 0 && oh > 0 && newW > 0 && newH > 0)) return false;
+    const kx = newW / ow, ky = newH / oh;
+    if (Math.abs(kx / ky - 1) > 0.015) return false;               // non-uniform stretch: cannot stay live
+    const k = Math.sqrt(kx * ky);
+    let a = (((Number(td0.angle) || 0) + (Number(s.rotation) || 0)) % 360);
+    if (a > 180) a -= 360; else if (a <= -180) a += 360;
+    a = Math.round(a * 100) / 100;
+    const same = Math.abs(k - 1) < 0.0005 && a === (Number(td0.angle) || 0);
+    let outImg;
+    if (same) {                                                      // pure move: same pixels in a fresh canvas
+        outImg = document.createElement('canvas'); outImg.width = ow; outImg.height = oh;
+        outImg.getContext('2d').drawImage(s.origImg, 0, 0);
+        outImg.__spbText = td0;
+    } else {
+        const td = JSON.parse(JSON.stringify(td0));
+        td.size = Math.max(2, Math.round(td0.size * k));
+        td.strokeWidth = Math.max(0, Math.round((td0.strokeWidth || 0) * k));
+        td.spacing = Math.round((td0.spacing || 0) * k);
+        if (a) td.angle = a; else delete td.angle;
+        const r = TE.render(td);
+        if (!r || !r.canvas) return false;
+        r.canvas.__spbText = Object.freeze(td);
+        outImg = r.canvas;
+    }
+    const bx1 = Math.round(s.centerX - outImg.width / 2), by1 = Math.round(s.centerY - outImg.height / 2);
+    layer.img = outImg;
+    layer.bbox = [bx1, by1, bx1 + outImg.width, by1 + outImg.height];
+    return true;
+}
+
 function commitLayerTransform() {
     if (!freeTransformState || freeTransformState.target !== 'layer') return;
     const s = freeTransformState;
@@ -29833,6 +31536,7 @@ function commitLayerTransform() {
     const newY1 = Math.round(s.centerY - newH / 2);
     const isLayerSubRect = (s.target === 'layer' && !!s.subRect);
     const transformRaster = (typeof window !== 'undefined') ? window.SPBLayerTransformRaster : null;
+    const _tfxTxt0 = !window.SPB_TFX1_OFF && window.SPBTextEdit && typeof window.SPBTextEdit.payload === 'function' && window.SPBTextEdit.payload({ img: s.origImg });   // // [SPB-TFX1 2026-10-09 TA-034b]
     if (isLayerSubRect && (!s.subRect || s.subRect.x1 >= s.subRect.x2 || s.subRect.y1 >= s.subRect.y2)) {
         if (typeof showToast === 'function') showToast('Invalid element selection — transform cancelled to protect layer data', 'warn');
         cancelLayerTransform();
@@ -29840,7 +31544,7 @@ function commitLayerTransform() {
     }
     // SPB-93 tools 2026-09-07: picking then Apply is a no-op, not a raster
     // conversion or move to the whole-layer center (live143,184px before).
-    if (window.SPBElementTransformState?.unchanged(s)) {
+    if (!s.quad && window.SPBElementTransformState?.unchanged(s)) {
         const links = window.SPBElementTransformState.captureLinks(layer);
         if (s.origElementLinks && JSON.stringify(links) !== JSON.stringify(s.origElementLinks)) {
             _pushLayerUndo(layer, 'link elements', s.origElementLinks);
@@ -29892,7 +31596,21 @@ function commitLayerTransform() {
         // We crop the original sub-rect from the layer's pixel buffer, apply the full free-transform (custom pivot, rotation, scale, flip), then composite the result back into a full-size copy of the original layer — leaving sibling content untouched.
         // Heenan review: This is pure Layer-owned pixel mutation (approved path). Reuses the exact same flip/rotate matrix the live preview uses. Safe, synchronous, undo-correct.
 
-        if (isLayerSubRect && transformRaster?.composeElementTransforms) {
+        if (s.quad && isLayerSubRect && !window.SPB_TFX1_OFF && window.SPBPcQuad && window.SPBPcQuad.composePiece) {
+            // [SPB-TFX1 2026-10-09 TA-031] distort / skew / perspective of an isolated piece: the piece is warped through the quad and put
+            // back into the layer (old footprint cleared); ONE undo step is recorded before the layer pixels are replaced.
+            const _qc = window.SPBPcQuad.composePiece(s, function(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; });
+            if (!_qc) {
+                if (typeof showToast === 'function') showToast('Distort could not be rasterized - layer unchanged', 'warn');
+                cancelLayerTransform();
+                return false;
+            }
+            pushTransformUndoOnce();
+            layer.img = _qc.canvas;
+            layer.bbox = _qc.bbox;
+        } else if (s.quad && window.SPBPcQuad && window.SPBPcQuad.bake(s, layer)) {
+            // PORT-W3: quad (skew/distort/perspective) baked through SPBPcWarp; undo already pushed above (!isLayerSubRect).
+        } else if (isLayerSubRect && transformRaster?.composeElementTransforms) {
             const currentSr = s.origSubRect || s.subRect;
             const items = [];
             const itemsByRect = new Map();
@@ -29955,7 +31673,7 @@ function commitLayerTransform() {
                     };
                 });
             });
-            if (typeof showToast === 'function') showToast('Layer element baked — siblings untouched', 'success');
+            if (typeof showToast === 'function') showToast('Element applied to the layer. Other elements are unchanged.', 'success');
 
         } else if (isLayerSubRect) {
             pushTransformUndoOnce();
@@ -30171,9 +31889,11 @@ function commitLayerTransform() {
 
             // v145: Clear success feedback for per-element commit (reinforces "independent glyph" trust + sibling preservation)
             if (typeof showToast === 'function') {
-                showToast('Layer element baked — siblings untouched', 'success');
+                showToast('Element applied to the layer. Other elements are unchanged.', 'success');
             }
 
+        } else if (_tfxTxt0 && _tfxLiveTextApply(s, layer, newW, newH)) {
+            // [SPB-TFX1 2026-10-09 TA-034b] live text layer: re-rendered from its payload (size / angle), stays editable
         } else {
             // === Whole-layer commit path ===
             // FIX 2026-06-05 (owner /loop: "transform doesn't half work" -- per-element rotate+Apply
@@ -30187,9 +31907,11 @@ function commitLayerTransform() {
             const rot = (s.rotation || 0) * Math.PI / 180;
             const _cos = Math.abs(Math.cos(rot));
             const _sin = Math.abs(Math.sin(rot));
-            const aabbW = Math.max(1, Math.ceil(newW * _cos + newH * _sin));
-            const aabbH = Math.max(1, Math.ceil(newW * _sin + newH * _cos));
-            const PAD = (s.rotation && s.rotation % 180 !== 0) ? 2 : 0; // AA guard, rotation only
+            // PORT-W3 2026-10-09: quarter turns must stay pixel-exact (cos(90deg)=6e-17 made ceil() add a row/col and PAD blurred a pure 90deg turn).
+            const _pcOff = (typeof window !== 'undefined' && window.SPB_PC_W3_OFF), _pcEps = _pcOff ? 0 : 1e-9, _pcQuarter = _pcOff ? 180 : 90;
+            const aabbW = Math.max(1, Math.ceil(newW * _cos + newH * _sin - _pcEps));
+            const aabbH = Math.max(1, Math.ceil(newW * _sin + newH * _cos - _pcEps));
+            const PAD = (s.rotation && s.rotation % _pcQuarter !== 0) ? 2 : 0; // AA guard, non-quarter-turn rotation only
 
             const tmpCanvas = document.createElement('canvas');
             tmpCanvas.width = aabbW + PAD * 2;
@@ -30205,7 +31927,8 @@ function commitLayerTransform() {
             if (flipH || flipV) tmpCtx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
             if (s.rotation && s.rotation !== 0) tmpCtx.rotate(rot);
 
-            tmpCtx.drawImage(s.origImg, -newW / 2, -newH / 2, newW, newH);
+            // PORT-W3 2026-10-09: PhotoCraft bicubic/premultiplied warp (SPB_PC_W3_OFF restores drawImage).
+            if (!(transformRaster && transformRaster.pcDraw && transformRaster.pcDraw(tmpCtx, s.origImg, 0, 0, s.origImg.naturalWidth || s.origImg.width, s.origImg.naturalHeight || s.origImg.height, -newW / 2, -newH / 2, newW, newH, true))) tmpCtx.drawImage(s.origImg, -newW / 2, -newH / 2, newW, newH);
 
             // SYNCHRONOUS assignment -- bbox = AABB centered on the unchanged transform center
             const finalW = tmpCanvas.width, finalH = tmpCanvas.height;
@@ -30213,6 +31936,10 @@ function commitLayerTransform() {
             const by1 = Math.round(s.centerY - finalH / 2);
             layer.img = tmpCanvas;
             layer.bbox = [bx1, by1, bx1 + finalW, by1 + finalH];
+        }
+        if (_tfxTxt0 && layer.img && !layer.img.__spbText && typeof showToast === 'function') {   // [SPB-TFX1 2026-10-09 TA-034b] be honest about it
+            window.__tfx3RastAt = Date.now();   // [SPB-TFX3 AUDIT2-F8] tells the live-text watcher this toast is already shown
+            showToast('Text turned into pixels (stretch / flip / skew cannot stay live) - Ctrl+Z brings the live text back', 'info');
         }
 
         // T16/T42 (owner /goal 2026-08-08): PICK ITEM lifts the picked glyph to a temp
@@ -30261,7 +31988,7 @@ function commitLayerTransform() {
 
         // v145: Clear success feedback for per-element commit (reinforces "independent glyph" trust)
         if (isLayerSubRect && typeof showToast === 'function') {
-            showToast('Layer element baked — siblings untouched', 'success');
+            showToast('Element applied to the layer. Other elements are unchanged.', 'success');
         }
     }
 
@@ -30523,7 +32250,7 @@ function showCanvasContextMenu(e) {
                 window._spbSmartTextPick = !window._spbSmartTextPick;
                 if (typeof _refreshLayerTransformQuickbarNumerics === 'function') _refreshLayerTransformQuickbarNumerics();
                 if (typeof showToast === 'function') {
-                    showToast(window._spbSmartTextPick ? 'Smart Text Pick: ON (global)' : 'Smart Text Pick: OFF', 'info');
+                    showToast(window._spbSmartTextPick ? 'Smart Text Pick: ON (global)' : 'Smart Text Pick: off', 'info');
                 }
             };
         }
@@ -30628,6 +32355,11 @@ function _ctxSelectAll() {
     if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
     if (typeof showToast === 'function') showToast('Selected all pixels in Zone ' + (selectedZoneIndex + 1));
     return true;
+}
+// [SPB-TICKETS-2 2026-10-10 T-11] Ctrl+A result toast with Undo (Ctrl+Z does the same)
+function _t2SelAllDone(ok, zi) {
+    var g = window.SPBStrayKeyGate;
+    if (ok === true && g && !g.off('T11')) g.toastWithUndo('Whole canvas selected for Zone ' + (zi + 1) + '. Ctrl+D clears it.');
 }
 function _ctxTransform() { if (typeof activateContextTransform === 'function') activateContextTransform(); }
 function _ctxZoomFit() { if (typeof canvasZoom === 'function') canvasZoom('fit'); }
@@ -30744,7 +32476,7 @@ function _ctxSelectGroup() {
 
     // For the prototype, just toast which members are linked. Real multi-selection would highlight all.
     if (typeof showToast === 'function') {
-        showToast(`Group contains ${foundGroup.length} linked elements. Future: multi-select all members.`, 'info');
+        showToast(`This group has ${foundGroup.length} linked elements.`, 'info');
     }
 }
 
@@ -30979,7 +32711,7 @@ window._ctxSyncZonePatternInstance = function _ctxSyncZonePatternInstance() {
 
     freeTransformState.sessionScopeLabel = `Sub-Piece: Pattern (Synced Instance – ${insts.length + 1} total)`;
     if (typeof showToast === 'function') {
-        showToast(`Synced ${insts.length} pattern instance(s) from master – Zone pattern link updated`, 'success');
+        showToast(`Updated ${insts.length} linked pattern copies to match the master.`, 'success');
     }
 
     drawTransformHandles();
@@ -31025,7 +32757,7 @@ window._ctxBreakZonePatternInstanceLink = function _ctxBreakZonePatternInstanceL
         z.patternInstances = remaining;
         freeTransformState.sessionScopeLabel = `Sub-Piece: Pattern (Link Broken)`;
         if (typeof showToast === 'function') {
-            showToast(`Pattern instance link broken – ${removed} reference(s) removed.`, 'success');
+            showToast(`Pattern link broken: ${removed} copies are no longer linked.`, 'success');
         }
         drawTransformHandles();
         if (typeof renderContextActionBar === 'function') renderContextActionBar();
@@ -31074,7 +32806,7 @@ window._ctxReapplyZonePatternSource = function _ctxReapplyZonePatternSource() {
     }
 
     if (typeof showToast === 'function') {
-        showToast(`Re-applied master source to ${insts.length} Zone pattern instance(s) (snapshot propagated)`, 'success');
+        showToast(`Re-applied the master to ${insts.length} linked pattern copies.`, 'success');
     }
 
     freeTransformState.sessionScopeLabel = `Sub-Piece: Pattern (Master Source – ${insts.length + 1} total)`;
@@ -31144,7 +32876,7 @@ window._ctxPromoteZoneToMaster = function _ctxPromoteZoneToMaster() {
     drawTransformHandles();
 
     if (typeof showToast === 'function') {
-        showToast(`Promoted current pattern piece to Master Source for ${insts.length + 1} linked instances (snapshot propagated)`, 'success');
+        showToast(`This piece is now the master for ${insts.length + 1} linked pattern pieces.`, 'success');
     }
 };
 
@@ -31445,13 +33177,17 @@ function _captureSelectionClipboardData() {
     const clipped = new ImageData(selectionInfo.clipW, selectionInfo.clipH);
     for (let y = selectionInfo.minY; y <= selectionInfo.maxY; y++) {
         for (let x = selectionInfo.minX; x <= selectionInfo.maxX; x++) {
-            if (selectionInfo.zone.regionMask[y * selectionInfo.width + x] > 0) {
+            const _tfx3M = selectionInfo.zone.regionMask[y * selectionInfo.width + x];
+            if (_tfx3M > 0) {
                 const si = (y * selectionInfo.width + x) * 4;
                 const di = ((y - selectionInfo.minY) * selectionInfo.clipW + (x - selectionInfo.minX)) * 4;
                 clipped.data[di] = srcInfo.sourceData[si];
                 clipped.data[di + 1] = srcInfo.sourceData[si + 1];
                 clipped.data[di + 2] = srcInfo.sourceData[si + 2];
-                clipped.data[di + 3] = srcInfo.sourceData[si + 3];
+                // [SPB-TFX3 2026-10-10 AUDIT2-F9 lane TOOLS-FIX-3] a feathered / refined selection has soft edge values (1..254); copying treated every
+                // value > 0 as fully selected, so Ctrl+J of a 20 px feathered ellipse came out as a HARD cutout (77,926 soft mask px -> 0 semi-transparent
+                // px, 198,502 opaque px). Alpha now follows the mask; hard 0/255 selections copy exactly as before. SPB_TFX3_OFF restores the old copy.
+                clipped.data[di + 3] = (window.SPB_TFX3_OFF || _tfx3M >= 255) ? srcInfo.sourceData[si + 3] : Math.round(srcInfo.sourceData[si + 3] * _tfx3M / 255);
             }
         }
     }
@@ -31600,12 +33336,23 @@ function _clearSelectionFromLayer(layer, selectionInfo, options) {
     let cleared = 0;
     for (let y = selectionInfo.minY; y <= selectionInfo.maxY; y++) {
         for (let x = selectionInfo.minX; x <= selectionInfo.maxX; x++) {
-            if (selectionInfo.zone.regionMask[y * selectionInfo.width + x] <= 0) continue;
+            const _tfx3M = selectionInfo.zone.regionMask[y * selectionInfo.width + x];
+            if (_tfx3M <= 0) continue;
             const lx = x - origin.x;
             const ly = y - origin.y;
             if (lx < 0 || ly < 0 || lx >= tmpCanvas.width || ly >= tmpCanvas.height) continue;
             const idx = (ly * tmpCanvas.width + lx) * 4;
             if (d[idx] === 0 && d[idx + 1] === 0 && d[idx + 2] === 0 && d[idx + 3] === 0) continue;
+            // [SPB-TFX3 2026-10-10 AUDIT2-F9] Cut / Delete on a soft selection removes only the selected FRACTION (alpha x (1 - mask/255)), the same weight the copy took,
+            // so cut + paste-back recomposes the original. Hard selections clear fully as before.
+            if (!window.SPB_TFX3_OFF && _tfx3M < 255) {
+                const na = Math.round(d[idx + 3] * (255 - _tfx3M) / 255);
+                if (na === d[idx + 3]) continue;
+                d[idx + 3] = na;
+                if (na === 0) d[idx] = d[idx + 1] = d[idx + 2] = 0;
+                cleared++;
+                continue;
+            }
             d[idx] = d[idx + 1] = d[idx + 2] = d[idx + 3] = 0;
             cleared++;
         }
@@ -31811,10 +33558,47 @@ function _rectCanvasPointFromEvent(e) {
     };
 }
 
-function _rectGestureOptions(eventLike) {
+// [SPB-TFX3 2026-10-09 TA-017] Photoshop rule for the Rect / Ellipse marquees. Before: Shift/Alt only ever meant square / from-centre, so Shift-drag REPLACED a
+// selection with a square and Alt-drag grew a box from its centre instead of subtracting (audit: Rect Shift 300x300 square replacing; Alt +2,915 px instead of -).
+// Now a modifier that is DOWN WHEN THE DRAG STARTS picks the mode (Shift = add, Alt = subtract, same as Wand / Lasso); a modifier pressed AFTER the drag starts
+// (or released and pressed again) is the shape constraint (Shift = square / circle, Alt = from centre). Kill switch: SPB_TFX3_OFF.
+// [SPB-TFX3 2026-10-09 AUDIT2-F5 lane TOOLS-FIX-3 / coordinator P1 from NEWUSER-QA #5] a LIVE text layer (img.__spbText) is ONE object: Move (V) must
+// carry all of it. The Move tool's element isolation picks a connected blob, so dragging from the gap between 'TEST' and '99' tore 'TEST' away and left
+// '99' behind (and dragging from a letter moved nothing until applied). Before: 2 pieces/torn, after: whole layer moves, still live, 1 undo step.
+function _tfx3LiveText(layer) { try { return !window.SPB_TFX3_OFF && !!(layer && layer.img && layer.img.__spbText); } catch (_) { return false; } }
+var _tfx3Mq = null;
+function _tfx3MqBegin(kind, ev) {
+    _tfx3Mq = window.SPB_TFX3_OFF ? null : { kind: kind, shift: !!(ev && ev.shiftKey), alt: !!(ev && ev.altKey), shiftFree: false, altFree: false };
+    return _tfx3Mq;
+}
+function _tfx3MqMods(kind, ev) {
+    const st = _tfx3Mq;
+    if (!st || st.kind !== kind) return { shiftKey: !!(ev && ev.shiftKey), altKey: !!(ev && ev.altKey) };
+    if (st.shift && ev && !ev.shiftKey) st.shiftFree = true;
+    if (st.alt && ev && !ev.altKey) st.altFree = true;
     return {
-        shiftKey: !!eventLike?.shiftKey,
-        altKey: !!eventLike?.altKey,
+        shiftKey: !!(ev && ev.shiftKey) && (!st.shift || st.shiftFree),
+        altKey: !!(ev && ev.altKey) && (!st.alt || st.altFree),
+    };
+}
+function _tfx3MqMode(kind, uiMode) {
+    const st = _tfx3Mq;
+    if (!st || st.kind !== kind) return uiMode;
+    if (st.alt && !st.shift) return 'subtract';
+    if (st.shift && !st.alt) return 'add';
+    return uiMode;
+}
+document.addEventListener('keyup', function (ev) {
+    if (!_tfx3Mq) return;
+    if (ev.key === 'Shift' && _tfx3Mq.shift) _tfx3Mq.shiftFree = true;
+    if (ev.key === 'Alt' && _tfx3Mq.alt) _tfx3Mq.altFree = true;
+}, true);
+
+function _rectGestureOptions(eventLike) {
+    const _m = _tfx3MqMods('rect', eventLike);   // [SPB-TFX3 2026-10-09 TA-017]
+    return {
+        shiftKey: _m.shiftKey,
+        altKey: _m.altKey,
         fixedSize: window.marqueeFixedSize || null,
         fixedAspect: window.marqueeFixedAspect || null,
     };
@@ -31832,7 +33616,7 @@ function _resolveRectGesture(start, end, eventLike) {
     };
 }
 
-function _beginRectGesture(pos) {
+function _beginRectGesture(pos, ev) {
     const targetZoneIndex = selectedZoneIndex;
     if (!zones[targetZoneIndex]) {
         if (typeof showToast === 'function') showToast('Select a Zone before drawing a rectangle', true);
@@ -31842,6 +33626,7 @@ function _beginRectGesture(pos) {
     rectStart = { x: pos.x, y: pos.y };
     isDrawing = true;
     _rectGestureState = { targetZoneIndex };
+    _tfx3MqBegin('rect', ev);   // [SPB-TFX3 2026-10-09 TA-017] remember the modifiers held at mouse-down (they pick add / subtract)
     return true;
 }
 
@@ -31881,7 +33666,7 @@ function commitRectSelection(endPos, eventLike) {
         if (typeof showToast === 'function') showToast(validation.reason || 'Rectangle selection is too small');
         return false;
     }
-    const selMode = document.getElementById('selectionMode')?.value || 'add';
+    const selMode = _tfx3MqMode('rect', document.getElementById('selectionMode')?.value || 'add');   // [SPB-TFX3 2026-10-09 TA-017] Shift at mouse-down = add, Alt = subtract
     const currentMask = zone.regionMask instanceof Uint8Array && zone.regionMask.length === canvas.width * canvas.height
         ? zone.regionMask
         : new Uint8Array(canvas.width * canvas.height);
@@ -31896,9 +33681,15 @@ function commitRectSelection(endPos, eventLike) {
         return false;
     }
     const featherPx = parseInt(document.getElementById('selectionFeather')?.value || 0, 10) || 0;
-    const nextMask = featherPx > 0 && window.SPBPenPath?.featherMask
-        ? window.SPBPenPath.featherMask(composed.nextMask, canvas.width, canvas.height, featherPx)
-        : composed.nextMask;
+    // PORT-W5: feather only the NEW rectangle through the PhotoCraft core, then combine (old: re-feathered the whole mask)
+    const _w5Feathered = featherPx > 0 && !window.SPB_PC_W5_OFF && window.SPBRectMarquee?.composeFeathered
+        ? window.SPBRectMarquee.composeFeathered(currentMask, canvas.width, canvas.height, gesture, selMode, featherPx)
+        : null;
+    const nextMask = _w5Feathered
+        ? _w5Feathered
+        : (featherPx > 0 && window.SPBPenPath?.featherMask
+            ? window.SPBPenPath.featherMask(composed.nextMask, canvas.width, canvas.height, featherPx)
+            : composed.nextMask);
     // SPB-93 tools 2026-09-07, owner: remove laggy drags. composeMask already
     // counted exact changes; only feathering needs a second native-mask scan.
     const changedPixels = nextMask !== composed.nextMask && window.SPBRectMarquee?.countDifferences
@@ -31959,6 +33750,7 @@ function _completeRectGesture(e) {
     });
     if (rectStart) _cancelRectGesture({ silent: true });
     else isDrawing = false;
+    _tfx3Mq = null;
     return changed;
 }
 window.commitRectSelection = commitRectSelection;
@@ -32276,7 +34068,7 @@ function activateContextTransform() {
 window.activateContextTransform = activateContextTransform;
 window.liftSelectionToNewLayer = liftSelectionToNewLayer;
 // Crop canvas to current selection bounding box
-function cropToSelection() {
+async function cropToSelection() {
     const pc = document.getElementById('paintCanvas');
     if (!pc || !paintImageData) return;
     const w = pc.width, h = pc.height;
@@ -32296,7 +34088,9 @@ function cropToSelection() {
     if (maxX < minX) { showToast('Selection is empty', true); return; }
 
     const cw = maxX - minX + 1, ch = maxY - minY + 1;
-    if (!confirm(`Crop canvas from ${w}x${h} to ${cw}x${ch}? This cannot be undone.`)) return;
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+    if (!(await SpbDialog.ask('Crop Canvas?', { message: `Crop from ${w}\u00d7${h} to ${cw}\u00d7${ch}. This cannot be undone.`, okLabel: 'Crop Canvas', danger: true, nativeText: `Crop canvas from ${w}x${h} to ${cw}x${ch}? This cannot be undone.` }))) return;
+    if (pc.width !== w || pc.height !== h) return;   // the canvas changed while the box was open
 
     // Extract cropped area
     const ctx = pc.getContext('2d');
@@ -32358,6 +34152,24 @@ function fillSelectionWithColor(useBG) {
                 if (alphaMask && alphaMask[pixelIndex] <= 0) continue;
                 const idx = (y * w + x) * 4;
                 const nextAlpha = targetLayer && targetLayer.alphaLock ? d[idx + 3] : 255;
+                // TOOLS-FIX 2026-10-09 (QA defect 2): feathered / anti-aliased selections fill SOFT: coverage = mask/255,
+                // source-over blend (alpha-lock keeps dest alpha and mixes colour only). mask 255 = exact old hard fill.
+                const mv = zone.regionMask[y * w + x];
+                if (mv < 255 && !window.SPB_TOOLSFIX_HARDFILL) {
+                    const cv = mv / 255, dA = d[idx + 3] / 255;
+                    if (targetLayer && targetLayer.alphaLock) {
+                        const nr = Math.round(d[idx] + (r - d[idx]) * cv), ng = Math.round(d[idx + 1] + (g - d[idx + 1]) * cv), nb = Math.round(d[idx + 2] + (b - d[idx + 2]) * cv);
+                        if (nr === d[idx] && ng === d[idx + 1] && nb === d[idx + 2]) continue;
+                        d[idx] = nr; d[idx + 1] = ng; d[idx + 2] = nb;
+                    } else {
+                        const oA = cv + dA * (1 - cv);
+                        const nr = Math.round((r * cv + d[idx] * dA * (1 - cv)) / oA), ng = Math.round((g * cv + d[idx + 1] * dA * (1 - cv)) / oA), nb = Math.round((b * cv + d[idx + 2] * dA * (1 - cv)) / oA), na = Math.round(oA * 255);
+                        if (nr === d[idx] && ng === d[idx + 1] && nb === d[idx + 2] && na === d[idx + 3]) continue;
+                        d[idx] = nr; d[idx + 1] = ng; d[idx + 2] = nb; d[idx + 3] = na;
+                    }
+                    count++;
+                    continue;
+                }
                 if (d[idx] === r && d[idx + 1] === g && d[idx + 2] === b && d[idx + 3] === nextAlpha) continue;
                 d[idx] = r; d[idx+1] = g; d[idx+2] = b; d[idx+3] = nextAlpha;
                 count++;
@@ -32407,7 +34219,7 @@ function deleteSelection() {
     const targetLayer = (typeof isLayerEditTarget === 'function' && isLayerEditTarget())
         ? getSelectedEditableLayer() : null;
     if (targetLayer && targetLayer.alphaLock) {
-        if (typeof showToast === 'function') showToast('Alpha Lock protects this Layer — turn α off before deleting pixels', 'info');
+        if (typeof showToast === 'function') showToast('Alpha Lock (α) protects this Layer. Turn it off before deleting pixels.', 'info');
         return false;
     }
     if (targetLayer && !_beginLayerPixelStroke('Delete Selection', 'delete selection')) return false;
@@ -32418,6 +34230,16 @@ function deleteSelection() {
             if (zone.regionMask[y * w + x] > 0) {
                 const idx = (y * w + x) * 4;
                 if (d[idx] === 0 && d[idx + 1] === 0 && d[idx + 2] === 0 && d[idx + 3] === 0) continue;
+                // TOOLS-FIX 2026-10-09: delete is soft on feathered edges too (alpha *= 1 - mask/255); mask 255 = old hard delete.
+                const dmv = zone.regionMask[y * w + x];
+                if (dmv < 255 && !window.SPB_TOOLSFIX_HARDFILL) {
+                    const na = Math.round(d[idx + 3] * (1 - dmv / 255));
+                    if (na === d[idx + 3]) continue;
+                    d[idx + 3] = na;
+                    if (na === 0) d[idx] = d[idx + 1] = d[idx + 2] = 0;
+                    count++;
+                    continue;
+                }
                 d[idx] = d[idx+1] = d[idx+2] = d[idx+3] = 0;
                 count++;
             }
@@ -32867,10 +34689,15 @@ window.invertCanvasColors = invertCanvasColors;
 window.posterize = posterize;
 
 // Prompt user for new canvas size
-function promptResizeCanvas() {
+// [SPB-PROMPT-FIX 2026-10-10] async: window.prompt() throws in Electron -> in-app box (SpbDialog.prompt, WxH). Esc = no resize. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+async function promptResizeCanvas() {
     const pc = document.getElementById('paintCanvas');
     if (!pc) return;
-    const input = prompt(`Enter new size (WxH):\nCurrent: ${pc.width}x${pc.height}\niRacing standard: 2048x2048`, `${pc.width}x${pc.height}`);
+    const input = await SpbDialog.prompt('Resize Canvas', `${pc.width}x${pc.height}`, {
+        message: `New size as WxH.\nCurrent: ${pc.width}x${pc.height}. iRacing standard: 2048x2048.`, okLabel: 'Resize',
+        validate: (t) => /^\s*\d+\s*x\s*\d+\s*$/.test(String(t)) ? '' : 'Use the format 2048x2048 (a lowercase x).',
+        nativeText: `Enter new size (WxH):\nCurrent: ${pc.width}x${pc.height}\niRacing standard: 2048x2048`
+    });
     if (!input) return;
     const parts = input.split('x').map(s => parseInt(s.trim()));
     if (parts.length !== 2 || isNaN(parts[0]) || isNaN(parts[1]) || parts[0] < 1 || parts[1] < 1) {
@@ -33345,7 +35172,7 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
     window.brushSmoothing = Number.isFinite(Number(window.brushSmoothing))
         ? Math.max(0, Math.min(100, Number(window.brushSmoothing)))
         : parseInt(_brushSmoothingControl && _brushSmoothingControl.value || 10, 10);
-    window.smoothBrushPoint = function smoothBrushPoint(x, y) {
+    window.smoothBrushPoint = function smoothBrushPoint(x, y, keepSub) { // PORT-W5: keepSub = do not round (sub-pixel strokes)
         var s = Math.max(0, Math.min(100, parseInt(window.brushSmoothing || 0, 10))) / 100;
         if (s <= 0.01) return { x: x, y: y };
         _smoothSamples.push({ x: x, y: y });
@@ -33354,8 +35181,8 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
         for (var i = 0; i < n; i++) { sx += _smoothSamples[i].x; sy += _smoothSamples[i].y; }
         var avgX = sx / n, avgY = sy / n;
         return {
-            x: Math.round(x * (1 - s) + avgX * s),
-            y: Math.round(y * (1 - s) + avgY * s)
+            x: keepSub ? (x * (1 - s) + avgX * s) : Math.round(x * (1 - s) + avgX * s),
+            y: keepSub ? (y * (1 - s) + avgY * s) : Math.round(y * (1 - s) + avgY * s)
         };
     };
     window.resetBrushSmoothing = function resetBrushSmoothing() { _smoothSamples.length = 0; };
@@ -33381,7 +35208,7 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
         ? Math.max(0, Math.min(200, Number(window.brushStabilizer)))
         : parseInt(_brushStabilizerControl && _brushStabilizerControl.value || 0, 10); // 0..200 px lag
     var _stabAnchor = null;
-    window.stabilizeBrushPoint = function stabilizeBrushPoint(x, y) {
+    window.stabilizeBrushPoint = function stabilizeBrushPoint(x, y, keepSub) { // PORT-W5: keepSub = do not round
         var rope = Math.max(0, Math.min(200, parseInt(window.brushStabilizer || 0, 10)));
         if (rope <= 0) return { x: x, y: y };
         if (!_stabAnchor) { _stabAnchor = { x: x, y: y }; return { x: x, y: y }; }
@@ -33391,7 +35218,7 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
         var ratio = (d - rope) / d;
         _stabAnchor.x += dx * ratio;
         _stabAnchor.y += dy * ratio;
-        return { x: Math.round(_stabAnchor.x), y: Math.round(_stabAnchor.y) };
+        return keepSub ? { x: _stabAnchor.x, y: _stabAnchor.y } : { x: Math.round(_stabAnchor.x), y: Math.round(_stabAnchor.y) };
     };
     window.resetBrushStabilizer = function resetBrushStabilizer() { _stabAnchor = null; };
     window.setBrushStabilizer = function setBrushStabilizer(v, silent) {
@@ -33437,18 +35264,18 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
     // is a mystery ("click brush, then what?"). Only REAL keyboard shortcuts are shown
     // (verified against the keydown handler — several button tooltips list dead shortcuts).
     window.TOOL_GUIDE = {
-        eyedropper:   ['Pick Color', 'Click any color on the SOURCE (left image) to load it as your foreground color.   [ P ]'],
-        brush:        ['Brush', 'Drag on the SOURCE to paint. Zone mode fills this zone’s mask; Layer mode paints the selected layer. Size / Opacity / Hardness are in the bar above.   [ B ]  ·  [ and ] resize'],
-        erase:        ['Eraser', 'Drag on the SOURCE to erase — mask strokes in Zone mode, layer pixels in Layer mode.   [ E ]'],
-        wand:         ['Magic Wand', 'Click a color on the SOURCE to select the connected same-color patch. Raise Tolerance to grab more. Shift = add, Alt = subtract.   [ W ]'],
-        selectall:    ['Select All Color', 'Click a color on the SOURCE to select EVERY pixel of that color across the whole template — not just the touching blob. Tolerance widens the match.   [ A ]'],
+        eyedropper:   ['Pick Color', 'Click any color on the Source (left image) to load it as your foreground color.   [ P ]'],
+        brush:        ['Brush', 'Drag on the Source to paint. Zone mode fills this zone’s mask; Layer mode paints the selected layer. Size / Opacity / Hardness are in the bar above.   [ B ]  ·  [ and ] resize'],
+        erase:        ['Eraser', 'Drag on the Source to erase — mask strokes in Zone mode, layer pixels in Layer mode.   [ E ]'],
+        wand:         ['Magic Wand', 'Click a color on the Source to select the connected same-color patch. Raise Tolerance to grab more. Shift = add, Alt = subtract.   [ W ]'],
+        selectall:    ['Select All Color', 'Click a color on the Source to select every pixel of that color across the whole template — not just the touching blob. Tolerance widens the match.   [ A ]'],
         lasso:        ['Lasso', 'Drag freehand and release to close. Or click polygon points, then double-click / Enter. Shift adds; Alt subtracts.   [ L ]'],
-        rect:         ['Rectangle Select', 'Drag a box on the SOURCE, release to commit. Hold Shift for a square.   [ O ]'],
-        'ellipse-marquee': ['Elliptical Marquee', 'Drag an ellipse on the SOURCE. Hold Shift for a perfect circle.'],
-        edge:         ['Edge Detect', 'Click on the SOURCE to select along the boundary between two colors — handy for outlining panels.'],
+        rect:         ['Rectangle Select', window.SPB_TFX3_OFF ? 'Drag a box on the Source, release to commit. Hold Shift for a square.   [ O ]' : 'Drag a box on the Source, release to commit. Shift adds, Alt subtracts; press Shift mid-drag for a square.   [ O ]'],
+        'ellipse-marquee': ['Elliptical Marquee', window.SPB_TFX3_OFF ? 'Drag an ellipse on the Source. Hold Shift for a perfect circle.' : 'Drag an ellipse on the Source. Shift adds, Alt subtracts; press Shift mid-drag for a perfect circle.'],
+        edge:         ['Edge Detect', 'Click on the Source to select along the boundary between two colors — handy for outlining panels.'],
         fill:         ['Fill Bucket', 'Zone mode: click to flood-fill the zone mask. Layer mode: fills the selected layer with the foreground color.   [ K ]'],
-        gradient:     ['Gradient', 'Drag a line on the SOURCE to fill the mask / selection with a gradient. Pick the gradient shape in the bar above.   [ G ]'],
-        colorbrush:   ['Color Brush', 'Paints real RGB color onto the selected LAYER (not a mask). Set a foreground color first.'],
+        gradient:     ['Gradient', 'Drag a line on the Source to fill the mask / selection with a gradient. Pick the gradient shape in the bar above.   [ G ]'],
+        colorbrush:   ['Color Brush', 'Paints real RGB color onto the selected Layer (not a mask). Set a foreground color first.'],
         recolor:      ['Recolor', 'First click samples the source. Paint foreground hue/chroma while preserving its light and texture.   [ R ]'],
         smudge:       ['Smudge', 'Click-drag to smear pixels in the drag direction, like a wet finger.   [ Q ]'],
         clone:        ['Clone Stamp', 'Alt+click to set a source point, then paint elsewhere to copy from it.'],
@@ -33459,16 +35286,16 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
         'blur-brush': ['Blur Brush', 'Drag to soften pixels. Strength controls gradual buildup; number keys set it.   [ F ]'],
         'sharpen-brush':['Sharpen Brush', 'Drag to sharpen pixels. Strength controls gradual buildup; number keys set it.   [ H ]'],
         'history-brush':['History Brush', 'Save a snapshot, then paint the selected Layer back toward that exact state — a selective, opacity-controlled restore.'],
-        text:         ['Text', 'Click the SOURCE to drop a text layer, then type.'],
-        shape:        ['Shape', 'Drag on the SOURCE to draw a rectangle, ellipse, polygon, or line.'],
+        text:         ['Text', 'Click the Source to drop a text layer, then type.'],
+        shape:        ['Shape', 'Drag on the Source to draw a rectangle, ellipse, polygon, or line.'],
         pen:          ['Pen / Bezier', 'Click anchors and drag curve handles. Shift constrains to 45°; Alt breaks handle symmetry; Enter or Path→Selection closes and selects.'],
-        'spatial-include': ['Include Region', 'Paint GREEN on the SOURCE to KEEP areas in this zone’s color match. Pair with Exclude to hand-carve a zone.'],
-        'spatial-exclude': ['Exclude Region', 'Paint RED on the SOURCE to REMOVE areas from this zone’s color match.'],
+        'spatial-include': ['Include Region', 'Paint green on the Source to keep areas in this zone’s color match. Pair with Exclude to hand-carve a zone.'],
+        'spatial-exclude': ['Exclude Region', 'Paint red on the Source to remove areas from this zone’s color match.'],
         'spatial-erase':   ['Erase Spatial', 'Erase your include / exclude paint without touching the underlying art.'],
         'layer-move': ['Move', 'Drag to reposition the selected layer. In Layer mode, click an element first to isolate just that piece.'],
-        'pick-item':  ['Pick Item', 'Click ONE element (a number, sponsor, pattern piece) to isolate it for independent move / rotate / scale.'],
+        'pick-item':  ['Pick Item', 'Click one element (a number, sponsor, pattern piece) to isolate it for independent move / rotate / scale.'],
         'zone-pick':  ['Zone Pick', 'Click a spec-pattern or base sub-piece to free-transform just that piece — handles, rotate, snapping.'],
-        'selection-move': ['Move Selection Border', 'Drag to move the selection OUTLINE itself (the marching ants), not the pixels inside it.']
+        'selection-move': ['Move Selection Border', 'Drag to move the selection outline itself (the marching ants), not the pixels inside it.']
     };
     // flashToolHint(title) OR flashToolHint(title, body[, ms]) — backward compatible.
     window.flashToolHint = function flashToolHint(title, body, ms) {
@@ -33503,6 +35330,9 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
             var r = _origSetCanvasMode.apply(this, arguments);
             try {
                 if (prev !== mode) {
+                    // [SPB-TFX1 2026-10-09 TA-027] entering a hover-pick tool: pre-build the per-layer alpha planes + component maps in idle slices
+                    // so the first hover is already an O(1) lookup (worst first touch of a 2048x2048 layer = ~85 ms otherwise).
+                    if (!window.SPB_TFX1_OFF && window.SPBTfx1Pick && (mode === 'pick-item' || mode === 'layer-pick' || mode === 'layer-move')) { window.SPBTfx1Pick.bump(); window.SPBTfx1Pick.warm(); }
                     var g = window.TOOL_GUIDE && window.TOOL_GUIDE[mode];
                     if (g) { window.flashToolHint(g[0], g[1]); }
                     else {
@@ -33527,7 +35357,7 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
     window.pixelPerfectEnabled = false;
     window.togglePixelPerfect = function togglePixelPerfect() {
         window.pixelPerfectEnabled = !window.pixelPerfectEnabled;
-        if (typeof showToast === 'function') showToast('Pixel-perfect: ' + (window.pixelPerfectEnabled ? 'ON' : 'OFF'));
+        if (typeof showToast === 'function') showToast('Pixel-perfect: ' + (window.pixelPerfectEnabled ? 'on' : 'off'));
     };
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -33621,6 +35451,7 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
         window.eyedropperSampleSize = n;
         var select = document.getElementById('wandSampleSize');
         if (select) select.value = String(n);
+        var _tfxSel = document.getElementById('spbEyeSampleSize'); if (_tfxSel) _tfxSel.value = String(n);   // [SPB-TFX1 2026-10-09 TA-029]
         if (typeof showToast === 'function') showToast('Eyedropper sample: ' + n + 'x' + n);
     };
     window.sampleEyedropperPixel = function sampleEyedropperPixel(x, y) {
@@ -33636,6 +35467,7 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
         var n = [1, 3, 5, 11].indexOf(selectedSize) >= 0
             ? selectedSize
             : (window.eyedropperSampleSize || 1);
+        if (!window.SPB_TFX1_OFF) { var _tfxE = parseInt(document.getElementById('spbEyeSampleSize')?.value || '1', 10); n = [1, 3, 5, 11].indexOf(_tfxE) >= 0 ? _tfxE : 1; }   // [SPB-TFX1 2026-10-09 TA-029]
         if (n <= 1) {
             // Bounds-check: a cursor exactly on the right/bottom edge rounds to x===w / y===h, so
             // _pid.data[idx] would be undefined -> the caller's [r,g,b].map(c=>c.toString())
@@ -33683,7 +35515,7 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
     window.wandAntiAlias = window.wandAntiAlias === undefined ? true : window.wandAntiAlias;
     window.setWandAntiAlias = function setWandAntiAlias(on) {
         window.wandAntiAlias = !!on;
-        if (typeof showToast === 'function') showToast('Wand anti-alias: ' + (on ? 'ON' : 'OFF'));
+        if (typeof showToast === 'function') showToast('Wand anti-alias: ' + (on ? 'on' : 'off'));
     };
     window.suggestWandTolerance = function suggestWandTolerance(rgb) {
         // Rough heuristic: low-contrast grays need more tolerance.
@@ -33789,7 +35621,7 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
     window.cloneAligned = window.cloneAligned === undefined ? true : window.cloneAligned;
     window.toggleCloneAligned = function toggleCloneAligned() {
         window.cloneAligned = !window.cloneAligned;
-        if (typeof showToast === 'function') showToast('Clone aligned: ' + (window.cloneAligned ? 'ON' : 'OFF'));
+        if (typeof showToast === 'function') showToast('Clone aligned: ' + (window.cloneAligned ? 'on' : 'off'));
     };
     window.showCloneSourceMarker = function showCloneSourceMarker(x, y) {
         var rc = document.getElementById('regionCanvas');
@@ -33822,7 +35654,7 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
             el.style.cssText = 'position:fixed;right:14px;bottom:90px;background:rgba(45,30,80,0.92);color:#cc88ff;font:600 11px/1.4 system-ui,sans-serif;padding:6px 9px;border-radius:6px;z-index:99997;pointer-events:none;border:1px solid rgba(204,136,255,0.4);max-width:240px;';
             document.body.appendChild(el);
         }
-        el.textContent = '🕒 History snapshot: ' + (label || 'current');
+        el.textContent = 'History snapshot: ' + (label || 'current');
         clearTimeout(el._t);
         el._t = setTimeout(function () { el.remove(); }, 2200);
     };
@@ -33977,7 +35809,7 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
         // Asymmetric vs W12 (clipping) by design, not by accident.
         if (typeof _pushLayerStackUndo === 'function') _pushLayerStackUndo('Toggle alpha lock');
         L.alphaLock = !L.alphaLock;
-        if (typeof showToast === 'function') showToast('Alpha lock ' + (L.alphaLock ? 'ON' : 'OFF') + ' — ' + (L.name || 'layer'));
+        if (typeof showToast === 'function') showToast('Alpha lock ' + (L.alphaLock ? 'on' : 'off') + ' — ' + (L.name || 'layer'));
         if (typeof renderLayerPanel === 'function') renderLayerPanel();
         return true;
     };
@@ -34010,7 +35842,7 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
         // ring — Alt+click clip pair flickered with no way to revert.
         if (typeof _pushLayerStackUndo === 'function') _pushLayerStackUndo('Toggle clipping mask');
         L.clippingMask = !L.clippingMask;
-        if (typeof showToast === 'function') showToast('Clipping mask ' + (L.clippingMask ? 'ON' : 'OFF') + ' — ' + (L.name || 'layer'));
+        if (typeof showToast === 'function') showToast('Clipping mask ' + (L.clippingMask ? 'on' : 'off') + ' — ' + (L.name || 'layer'));
         if (typeof renderLayerPanel === 'function') renderLayerPanel();
         if (typeof recompositeFromLayers === 'function') recompositeFromLayers();
         if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
@@ -34140,7 +35972,7 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
     window._snapGridSize = 1;
     window.toggleSnapGrid = function toggleSnapGrid() {
         window.snapToGrid = !window.snapToGrid;
-        if (typeof showToast === 'function') showToast('Snap to grid: ' + (window.snapToGrid ? 'ON' : 'OFF'));
+        if (typeof showToast === 'function') showToast('Snap to grid: ' + (window.snapToGrid ? 'on' : 'off'));
     };
     window.snapPoint = function snapPoint(x, y) {
         if (!window.snapToGrid) return { x: x, y: y };
@@ -34206,7 +36038,7 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
             if (t) t.remove();
             if (l) l.remove();
         }
-        if (typeof showToast === 'function') showToast('Rulers ' + (window.rulersVisible ? 'ON' : 'OFF'));
+        if (typeof showToast === 'function') showToast('Rulers ' + (window.rulersVisible ? 'on' : 'off'));
     };
     window.drawRulers = function drawRulers() {
         if (!window.rulersVisible) return;
@@ -34237,7 +36069,7 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
             else if (window.canvasMode === 'eyedropper' || window.canvasMode === 'wand' || window.canvasMode === 'selectall' || window.canvasMode === 'edge' || window.canvasMode === 'grab-object') canvas.style.cursor = 'crosshair';
             else canvas.style.cursor = 'cell';
         }
-        if (typeof showToast === 'function') showToast('Precision cursor: ' + (window.precisionCursor ? 'ON' : 'OFF'));
+        if (typeof showToast === 'function') showToast('Precision cursor: ' + (window.precisionCursor ? 'on' : 'off'));
     };
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -34363,7 +36195,7 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
     };
     window.toggleBucketAntiAlias = function toggleBucketAntiAlias() {
         window.bucketAntiAlias = !window.bucketAntiAlias;
-        if (typeof showToast === 'function') showToast('Bucket anti-alias: ' + (window.bucketAntiAlias ? 'ON' : 'OFF'));
+        if (typeof showToast === 'function') showToast('Bucket anti-alias: ' + (window.bucketAntiAlias ? 'on' : 'off'));
     };
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -34585,6 +36417,9 @@ if (typeof window !== 'undefined' && !window._spbLayerEffectsEscapeBound) {
     document.addEventListener('keydown', function (e) {
         if (e.defaultPrevented) return; // SESSION ROUTER bail
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement && document.activeElement.tagName)) return;
+        if (e.key === 'Backspace' && window.canvasMode === 'lasso' && window.SPBPcMagnetic && window.SPBPcMagnetic.active()) {
+            window.SPBPcMagnetic.removeLast(); e.preventDefault(); // PORT-W4: back to the previous fastening point
+        } else
         if (e.key === 'Backspace' && window.canvasMode === 'lasso' && typeof undoLassoPoint === 'function') {
             if (undoLassoPoint()) e.preventDefault();
         }

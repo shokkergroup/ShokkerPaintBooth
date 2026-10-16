@@ -86,12 +86,12 @@
       const hasFinish = zoneHasAnyMaterial(zone);
       const hasColor = zone.color !== null || zone.colorMode === 'multi' || zone.colorMode === 'special';
       const hasRegion = zone.regionMask && maskAny(zone.regionMask);
-      if (!hasFinish && !hasColor && !hasRegion) return 'Empty zone — pick a base finish AND a color (or draw a region).';
-      if (!hasFinish) return 'No finish assigned. Pick a base material from the BASE row to make this zone visible.';
+      if (!hasFinish && !hasColor && !hasRegion) return 'Empty zone. Pick a base finish and a color, or draw a region.';
+      if (!hasFinish) return 'No finish assigned. Pick a base material from the base row to make this zone visible.';
       if (!hasColor && !hasRegion) return 'No color or region defined — this zone will not affect any pixels. Use Pick Color or Draw Region.';
       if (!zone.base && !zone.finish && zoneHasMaterialStack(zone)) {
         const mixNames = zoneMaterialMixDisplay(zone).map(function (entry) { return entry.name; });
-        return 'Material mix (' + mixNames.join(' + ') + ') — set in Easy Mode, renders as-is. Choose a Base Material here to replace the whole mix with one finish.';
+        return 'Material mix (' + mixNames.join(' + ') + ') renders as-is. Choose a Base Material here to replace the whole mix with one finish.';
       }
       return 'Zone is ready to render.';
     };
@@ -193,7 +193,7 @@
       const used = window.getLocalStorageUsage();
       const quotaWarn = 4 * 1024 * 1024;
       if (used > quotaWarn) {
-        showToast('Warning: localStorage at ' + (used / 1024 / 1024).toFixed(2) + ' MB. Consider exporting and clearing presets.', true);
+        showToast('Warning: browser storage is using ' + (used / 1024 / 1024).toFixed(2) + ' MB. Consider exporting and clearing presets.', true);
         return true;
       }
       return false;
@@ -381,6 +381,8 @@
         setTimeout(function () { card.style.animation = ''; }, 600);
       }
     };
+    // [SPB-PROMPT-FIX 2026-10-10] the "Load Preset" link below used window.prompt (throws in Electron) -> SpbDialog.choose pick list; Esc = nothing loaded.
+    // Kill switch window.SPB_PROMPT_FIX_OFF -> the old typed-name prompt.
     window.getEmptyStateGuide = function getEmptyStateGuide() {
       if (zones().length > 0) return '';
       return '<div class="empty-zones-guide" style="padding:18px 14px;text-align:center;color:#aaa;font-size:11px;border:1px dashed #333;border-radius:6px;margin:12px;">' +
@@ -388,7 +390,7 @@
         '<div style="font-weight:bold;color:#ddd;margin-bottom:6px;font-size:13px;">No zones yet</div>' +
         '<div style="margin-bottom:10px;line-height:1.5;">Zones tell SPB which pixels to paint with which finish.<br>Get started by adding your first zone.</div>' +
         '<button class="btn" onclick="addZone()" style="background:#E87A20;color:#fff;border:none;padding:7px 14px;border-radius:4px;cursor:pointer;font-weight:bold;">+ Add First Zone</button>' +
-        "<div style=\"margin-top:10px;font-size:9px;color:#666;\">Or load a preset: <a href=\"#\" onclick=\"event.preventDefault();const p=listZonePresets();if(p.length===0){alert('No saved presets');return;}const n=prompt('Load which preset?\\n\\n'+p.map(p=>p.name).join('\\n'));if(n)loadZonePreset(n);\" style=\"color:#0af;\">Load Preset</a></div>" +
+        "<div style=\"margin-top:10px;font-size:9px;color:#666;\">Or load a preset: <a href=\"#\" onclick=\"event.preventDefault();const p=listZonePresets();if(p.length===0){alert('No saved presets');return;}SpbDialog.choose('Load Preset',p.map(p=>({value:p.name,label:p.name,sub:p.zoneCount+' zones'})),{okLabel:'Load',message:'Pick a saved zone preset.',nativeText:'Load which preset?\\n\\n'+p.map(p=>p.name).join('\\n'),nativeResolve:t=>t}).then(n=>{if(n)loadZonePreset(n);});\" style=\"color:#0af;\">Load Preset</a></div>" +
         '</div>';
     };
 
@@ -433,10 +435,12 @@
       renderZones(); preview();
       showToast('All zones unmuted');
     };
-    window.resetZone = function resetZone(index) {
+    window.resetZone = async function resetZone(index) {
       index = selectedIndexOr(index);
       const z = zones()[index]; if (!z) return;
-      if (!confirm('Reset "' + z.name + '" to defaults? (Color, finish, all overlays will be cleared)')) return;
+      // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+      if (!(await SpbDialog.ask('Reset Zone?', { message: '"' + z.name + '" goes back to defaults: color, finish and all overlays are cleared. Ctrl+Z brings them back.', okLabel: 'Reset Zone', danger: true, nativeText: 'Reset "' + z.name + '" to defaults? (Color, finish, all overlays will be cleared)' }))) return;
+      if (zones()[index] !== z) return;   // the zone list changed while the box was open
       pushZoneUndo('Reset zone "' + z.name + '"');
       const preserveName = z.name;
       Object.keys(z).forEach(function (k) { delete z[k]; });
@@ -463,10 +467,12 @@
       renderZones(); preview();
       showToast('Reset zone: ' + preserveName);
     };
-    window.cloneZoneNTimes = function cloneZoneNTimes(index, n) {
+    // [SPB-PROMPT-FIX 2026-10-10] async: window.prompt() throws in Electron -> in-app box (SpbDialog.prompt, whole number 1-20). With a count given no
+    // await runs, so a programmatic call still finishes synchronously. Esc = nothing cloned. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+    window.cloneZoneNTimes = async function cloneZoneNTimes(index, n) {
       index = selectedIndexOr(index);
       if (!n) {
-        const v = prompt('Clone how many copies?', '3');
+        const v = await SpbDialog.prompt('Clone Zone', '3', { message: 'How many copies? (1 to 20)', okLabel: 'Clone', inputMode: 'numeric', validate: SpbDialog.rules.number({ min: 1, max: 20, int: true }), nativeText: 'Clone how many copies?' });
         n = parseInt(v, 10);
         if (!n) return;
       }
@@ -489,8 +495,9 @@
       renderZones(); preview();
       showToast('Cloned ' + n + ' copies of "' + src.name + '"');
     };
-    window.clearAllZones = function clearAllZones() {
-      if (!confirm('Delete ALL ' + zones().length + ' zones and start fresh?')) return;
+    window.clearAllZones = async function clearAllZones() {
+      // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+      if (!(await SpbDialog.ask('Delete All Zones?', { message: 'All ' + zones().length + ' zones are deleted and you start fresh with one empty zone. Ctrl+Z brings them back.', okLabel: 'Delete All Zones', danger: true, nativeText: 'Delete all ' + zones().length + ' zones and start fresh?' }))) return;
       pushZoneUndo('Clear all zones');
       zones().length = 0;
       if (typeof addZone === 'function') addZone(true);

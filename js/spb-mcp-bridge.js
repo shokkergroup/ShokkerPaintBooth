@@ -10,35 +10,114 @@
     // MCPSCEN 2026-10-05: ONE page owns the bridge (see mcp_bridge_routes.mcp_poll). This page claims it when it opens or when the buyer switches the bridge on;
     // a page superseded by a newer window stops polling and only takes over again once the owner has gone quiet.
     var PAGE = 'p' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36), claimNext = true;
+    // LIVE PLAYTEST 2026-10-09: tell the buyer (banner) and the AI (page_stale on results, mcp_bridge_routes._build_stamp) when this page runs old scripts.
+    var LOADED_BUILD = null, staleShown = false;
+    function staleBanner() {
+        try { var d = document.createElement('div'); d.id = 'spbStaleBanner'; d.setAttribute('role', 'status');
+            d.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:99999;background:#1d1f27;color:#fff;border:1px solid #e0a020;border-radius:8px;padding:10px 12px;font:13px/1.4 system-ui,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.45);max-width:340px';
+            d.innerHTML = 'Shokker Paint Booth was updated. Reload to use the new version. <button type="button" style="margin-left:6px;cursor:pointer">Reload now</button> <button type="button" aria-label="Dismiss" style="cursor:pointer">&times;</button>';
+            var b = d.querySelectorAll('button'); b[0].onclick = function () { location.reload(); }; b[1].onclick = function () { d.remove(); };
+            document.body.appendChild(d); } catch (e) {}
+    }
+    function checkBuild(b) { if (!b) return; if (LOADED_BUILD == null) { LOADED_BUILD = b; return; } if (b !== LOADED_BUILD && !staleShown) { staleShown = true; stats.stale = true; emit(); staleBanner(); } }
     function api(path, opt) { return fetch(BASE + path, opt).then(function (r) { return r.json(); }); }
     function emit() { listeners.forEach(function (f) { try { f(stats, enabled); } catch (e) {} }); }
     function post(id, res) {
         res = res || {};
         return fetch(BASE + '/api/mcp/result', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: id, ok: !!res.ok, result: res.ok ? Object.assign({}, res.result, res.images && res.images.length ? { images: res.images } : {}) : undefined, error: res.ok ? undefined : String(res.error || 'failed') }) }).catch(function () {});
     }
-    function handle(call) {
+    function documentScope() {
+        return window.SpbAiConnect && window.SpbAiConnect.documentScope ? window.SpbAiConnect.documentScope() : '';
+    }
+    function acknowledge(call) {
+        return new Promise(function(resolve, reject) {
+            var done = false, timer;
+            function finish(error, value) {
+                if (done) return; done = true; clearTimeout(timer);
+                if (error) reject(error); else resolve(value);
+            }
+            timer = setTimeout(function() { finish(new Error('Delivery receipt timed out; this page did not run the request.')); }, 15000);
+            api('/api/mcp/ack', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:call.id,page:PAGE,document_scope:documentScope()})}).then(function(r) { finish(null,r); }, function(e) { finish(e); });
+        });
+    }
+    function handle(call, epoch) {
+        if (!call.delivery_ack) return runCall(call);
+        if (epoch !== pollEpoch || !enabled || !running || (call.document_scope && call.document_scope !== documentScope())) return Promise.resolve();
+        return acknowledge(call).then(function(receipt) {
+            if (!receipt || !receipt.ok || receipt.execute !== true) return;
+            if (epoch !== pollEpoch || !enabled || !running || (call.document_scope && call.document_scope !== documentScope()))
+                return post(call.id, {ok:false,error:'The connection or open paint changed before this request started. No changes were applied.'});
+            return runCall(call);
+        });
+    }
+    function runCall(call) {
+        if (call.document_scope && call.document_scope !== documentScope())
+            return post(call.id, {ok:false,error:'The open paint changed before this call arrived. No action was run.'});
         stats.calls++; stats.lastTool = call.tool; stats.connected = true; emit();
         var P = window.spbProAI, run;
         try { run = (P && P.mcpCall) ? P.mcpCall(call.tool, call.args || {}) : Promise.resolve({ ok: false, error: 'the Shokker AI panel is not loaded (open Pro mode)' }); } catch (e) { run = Promise.resolve({ ok: false, error: String(e && e.message || e) }); }
         return Promise.resolve(run).then(function (res) { return post(call.id, res); }, function (e) { return post(call.id, { ok: false, error: String(e && e.message || e) }); });
     }
+    // SPB-93 private acceptance 2026-10-09: stalled poll prevented native
+    // read receipts; off/on could not restart it. Bound only transport polling.
+    // CX3 2026-10-09 (Codex 'Shared poll recovery delta', BRIDGE_RECOVERY_ACCEPTANCE.md): the page's /api/mcp/poll fetch had no timeout, and `running` stayed true while it
+    // hung, so neither off/on nor a refresh could start a replacement (health + status/chat kept answering while paint calls never arrived). The poll transport is now
+    // limited to 45 s (the server long-poll is 25 s), retried after 3 s, cancelled on an explicit toggle, and a late response from an older poll is ignored. A delivered
+    // paint call is NEVER timed out or replayed here: the next poll starts only after its handler has posted. Kill switch: window.SPB_CX3_OFF (plain untimed fetch).
+    var pollEpoch = 0, pollAbort = null, retryTimer = null, handling = false;
+    function stopPolling() {
+        pollEpoch++; running = false;
+        if (retryTimer != null) { clearTimeout(retryTimer); retryTimer = null; }
+        if (pollAbort) { pollAbort(); pollAbort = null; }
+    }
+    function pollFetch(url) {
+        if (window.SPB_CX3_OFF) return fetch(url).then(function (r) { return r.json(); });
+        return new Promise(function (resolve, reject) {
+            var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+            var done = false, timer;
+            function finish(error, value) {
+                if (done) return; done = true; clearTimeout(timer);
+                if (pollAbort === cancel) pollAbort = null;
+                if (error) reject(error); else resolve(value);
+            }
+            function cancel() { if (controller) controller.abort(); finish(new Error('Poll cancelled')); }
+            pollAbort = cancel;
+            timer = setTimeout(cancel, 45000);
+            fetch(url, controller ? {signal: controller.signal} : {}).then(function(r) {
+                return r.json();
+            }).then(function(j) { finish(null, j); }, function(e) { finish(e); });
+        });
+    }
     function loop() {
         if (!enabled || !running) { running = false; return; }
-        var q = '/api/mcp/poll?wait=25&page=' + PAGE + (claimNext ? '&claim=1' : ''); claimNext = false;
-        fetch(BASE + q).then(function (r) { return r.json(); }).then(function (j) {
+        var q = '/api/mcp/poll?wait=25&ack=1&page=' + PAGE + '&build=' + encodeURIComponent(LOADED_BUILD || '') + '&document_scope=' + encodeURIComponent(documentScope()) + (claimNext ? '&claim=1' : ''); claimNext = false;
+        var epoch = pollEpoch;
+        pollFetch(BASE + q).then(function (j) {
+            if (epoch !== pollEpoch || !enabled || !running) return;
+            checkBuild(j && j.build);
             if (j && j.superseded) { running = false; stats.connected = false; stats.superseded = true; emit(); return; }
             if (stats.superseded) { stats.superseded = false; emit(); }
-            if (j && j.call) return handle(j.call).then(loop);
+            if (j && j.call) {
+                handling = true;
+                return handle(j.call, epoch).then(function() {
+                    handling = false;
+                    if (epoch === pollEpoch) loop(); else start();
+                }, function() { handling = false; running = false; start(); });
+            }
             if (j && j.enabled === false) { enabled = false; running = false; stats.connected = false; emit(); return; }
             loop();
-        }).catch(function () { setTimeout(loop, 3000); });
+        }).catch(function () {
+            if (epoch !== pollEpoch || !enabled || !running) return;
+            stats.connected = false; emit();
+            retryTimer = setTimeout(function() { retryTimer = null; loop(); }, 3000);
+        });
     }
-    function start() { if (running || !enabled) return; running = true; loop(); }
+    function start() { if (running || !enabled || handling) return; running = true; loop(); }
     function refresh() {
-        return api('/api/mcp/status').then(function (s) { last = s; enabled = !!s.enabled; stats.connected = !!s.connected; stats.calls = s.calls || stats.calls; if (enabled) start(); emit(); return s; }, function () { return null; });
+        return api('/api/mcp/status').then(function (s) { last = s; checkBuild(s && s.build); enabled = !!s.enabled; stats.connected = !!s.connected; stats.calls = s.calls || stats.calls; if (enabled) start(); emit(); return s; }, function () { return null; });
     }
     function setEnabled(on) { if (!on && window.SpbAiLease) window.SpbAiLease.release(); if (on) claimNext = true;
-        return api('/api/mcp/enable', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ enabled: !!on }) }).then(function (s) { last = s; enabled = !!s.enabled; if (enabled) start(); emit(); return s; });
+        return api('/api/mcp/enable', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ enabled: !!on }) }).then(function (s) { last = s; enabled = !!s.enabled; stopPolling(); if (enabled) start(); emit(); return s; });
     }
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
     function copy(text, btn) { try { navigator.clipboard.writeText(text); if (btn) { var o = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = o; }, 1500); } } catch (e) {} }
@@ -48,7 +127,7 @@
         function draw() {
             var dir = (last && last.mcpDir) || '(the "mcp" folder of the app)', node = dir.replace(/\\/g, '/') + '/server/index.js';
             var cmd = 'claude mcp add shokker-paint-booth -- node "' + node + '"', cfg = JSON.stringify({ mcpServers: { 'shokker-paint-booth': { command: 'node', args: [node] } } }, null, 2);
-            box.innerHTML = '<div style="font-weight:700;margin-bottom:4px">\u2461 Chat from Claude or ChatGPT <span style="font-weight:400;opacity:.7">\u2014 they design in Shokker for you, using your own plan (no key)</span></div><div class="spb-pai-meta" style="margin:0 0 6px">You type in the <b>Claude</b> or <b>ChatGPT/Codex</b> app, not here. Switch this on, install Shokker in that app once, then tell it what to paint. Shokker\u2019s Copilot model setting does not apply to this way: the model is chosen inside Claude / ChatGPT.</div>' +
+            box.innerHTML = '<div style="font-weight:700;margin-bottom:4px">\u2461 Chat from Claude or ChatGPT <span style="font-weight:400;opacity:.7">\u2014 they design in Shokker for you, using your own plan (no key)</span></div><div class="spb-pai-meta" style="margin:0 0 6px">' + (window.SPB_CX2_OFF ? 'You type in the <b>Claude</b> or <b>ChatGPT/Codex</b> app, not here.' : /* CX2 2026-10-09 (lane CODEX-INTEGRATE, Codex finding: this contradicted the working in-app chat) */ 'You can type right here in Shokker\u2019s chat box or in the <b>Claude</b> / <b>ChatGPT/Codex</b> app: choose which one answers with the helper card at the top of the chat.') + ' Switch this on, install Shokker in that app once, then tell it what to paint. Shokker\u2019s Copilot model setting does not apply to this way: the model is chosen inside Claude / ChatGPT.</div>' +
                 '<label style="display:flex;gap:8px;align-items:center;cursor:pointer"><input type="checkbox" data-mcp="toggle"' + (enabled ? ' checked' : '') + '> Let an AI assistant (Claude or ChatGPT/Codex) control Shokker Paint Booth</label>' +
                 '<div class="spb-pai-meta" style="margin:6px 0">' + (enabled ? (stats.superseded ? '○ Another Shokker window has the AI connection (switch this off and on to move it here)' : stats.connected ? '● Connected' : '○ Waiting for your AI assistant…') + (stats.calls ? ' · ' + stats.calls + ' request' + (stats.calls > 1 ? 's' : '') + (stats.lastTool ? ' (last: ' + esc(stats.lastTool) + ')' : '') : '') : 'Off. Your AI assistant cannot touch your paint until you switch this on. Every AI change shows up in this panel with an Undo button.') + '</div>' +
                 '<div class="spb-pai-meta" style="margin:6px 0"><b>Claude model?</b> You pick it in Claude itself: the model menu in the Claude Desktop chat box (or <code>/model</code> in Claude Code). <b>Sonnet 5.5</b> is the economical everyday choice; <b>Opus 5.5</b> and <b>Fable 5.1</b> design a little better and use more of your plan. The built-in brain inside Shokker needs no model at all.</div>' +

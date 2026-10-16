@@ -15,7 +15,7 @@
     var getServerBase = deps.getServerBase || function() {
       return (typeof global.ShokkerAPI !== 'undefined' && global.ShokkerAPI.baseUrl)
         ? global.ShokkerAPI.baseUrl
-        : 'http://localhost:' + (global._SHOKKER_PORT || 59876);
+        : 'http://localhost:' + (global.spbServerPort ? global.spbServerPort() : global._SHOKKER_PORT);
     };
     var getSwatchVersion = deps.getSwatchVersion || function() {
       return global._SHOKKER_SWATCH_V || 'stable-v1';

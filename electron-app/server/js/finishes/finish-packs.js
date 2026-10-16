@@ -456,7 +456,7 @@
     banner.setAttribute('role', 'dialog');
     banner.setAttribute('aria-label', 'Download premium finish packs');
     banner.innerHTML = ''
-      + '<div class="fp-banner-ico" aria-hidden="true">📦</div>'
+      + '<div class="fp-banner-ico" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-2px"><path d="M2.5 5.2L8 2.4l5.5 2.8v5.6L8 13.6l-5.5-2.8z"/><path d="M2.5 5.2L8 8l5.5-2.8M8 8v5.6"/></svg></div>'
       + '<div class="fp-banner-body">'
       + '  <div class="fp-banner-title">Some premium finish packs aren’t downloaded yet</div>'
       + '  <div class="fp-banner-sub">' + esc(nameStr) + (names.length ? ' ' : '')

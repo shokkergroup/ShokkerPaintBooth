@@ -1,7 +1,7 @@
 'use strict';
 
 /*
- * SHOKKER-IZE (MEGA FEATURE 2) — "⚡ Shokker-ize this paint".
+ * SHOKKER-IZE (MEGA FEATURE 2) — "Shokker-ize this paint".
  *
  * One click sends the CURRENTLY LOADED paint to POST /api/shokkerize, which
  * auto-generates an angle-reactive color-shift spec map from the art's OWN
@@ -131,7 +131,7 @@
   var _PRESET_FALLBACK = [
     { id: 'subtle',   label: 'Subtle Sheen', blurb: 'Gentle satin flash — fine even pearl.' },
     { id: 'balanced', label: 'Balanced',     blurb: 'The crowd-pleaser — winner lanes + lively flake.' },
-    { id: 'inferno',  label: 'Inferno',      blurb: 'MAX color-shift — hottest, deepest flake.' },
+    { id: 'inferno',  label: 'Inferno',      blurb: 'Max color-shift — hottest, deepest flake.' },
     { id: 'chrome',   label: 'Chrome Flake', blurb: 'Liquid-chrome mirror — brushed sweeps.' },
     { id: 'ghost',    label: 'Ghost',        blurb: 'Dark phantom — sparse hard pins ignite on movement.' }
   ];
@@ -179,7 +179,7 @@
     var s = data.stats || {};
     wrap.innerHTML =
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
-        + '<b style="color:#7fe1a0;">&#9889; Shokker-ized spec</b>'
+        + '<b style="color:#7fe1a0;">Shokker-ized spec</b>'
         + '<span style="cursor:pointer;color:#8a93a0;" id="shokkerizeClose">&times;</span></div>'
       + '<img src="' + data.spec_png + '" alt="spec" style="width:100%;border-radius:6px;display:block;">'
       + '<div style="margin-top:6px;color:#9aa3b0;">M ' + (s.M_mean != null ? s.M_mean : '?')
@@ -216,8 +216,8 @@
           showResultPreview(data);
           var applied = applySpec(data);
           var look = (data.preset || _activePreset || 'balanced');
-          toast(applied ? ('⚡ Shokker-ized [' + look + '] — angle-reactive spec applied (Layer 0).')
-                        : ('⚡ Spec generated [' + look + '] (see preview, bottom-right).'));
+          toast(applied ? ('Shokker-ized [' + look + '] — angle-reactive spec applied (Layer 0).')
+                        : ('Spec generated [' + look + '] (see preview, bottom-right).'));
           return data;
         })
         .catch(function (err) { toast('Shokker-ize error: ' + err, true); });
@@ -240,7 +240,7 @@
       + 'font:13px/1.45 system-ui,sans-serif;color:#dfe3ea;';
     wrap.innerHTML =
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
-        + '<b style="color:#7fe1a0;font-size:14px;">&#9889; Shokker-ize</b>'
+        + '<b style="color:#7fe1a0;font-size:14px;">Shokker-ize</b>'
         + '<span style="cursor:pointer;color:#8a93a0;font-size:18px;line-height:1;" id="shokkerizePanelClose">&times;</span></div>'
       + '<div style="color:#9aa3b0;margin-bottom:10px;">Drop any paint &mdash; one click, it comes alive. Pick a look:</div>'
       + '<div id="shokkerizePresetBtns" style="display:flex;flex-direction:column;gap:7px;"></div>'

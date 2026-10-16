@@ -35,7 +35,7 @@
     var _status = null, _models = null, _listeners = [], REC_MODEL = 'deepseek/deepseek-v4.1-flash';
     function status(force) {
         if (_status && !force) return Promise.resolve(_status);
-        return api('GET', '/api/ai/status').then(function (s) { if (s && s.ok) { _status = s; notify(); } return s; });
+        return api('GET', '/api/ai/status').then(function (s) { if (s && s.ok) { if (window.SPB_NO_OPENROUTER !== false) s.configured = false; _status = s; notify(); } return s; });          // APPCHAT 2026-10-09: OpenRouter off (online = Claude / ChatGPT through MCP)
     }
     function notify() { _listeners.forEach(function (fn) { try { fn(_status); } catch (e) {} }); }
     function onStatus(fn) { if (_listeners.indexOf(fn) === -1) _listeners.push(fn); }
@@ -46,7 +46,7 @@
     }
     function credits() { return api('GET', '/api/ai/credits'); }
     function test() { return api('POST', '/api/ai/test', {}).then(function (r) { status(true); return r; }); }
-    function chat(body, signal) { return api('POST', '/api/ai/chat', body, signal); }
+    function chat(body, signal) { if (window.SPB_NO_OPENROUTER !== false) return Promise.resolve({ ok: false, error: 'disabled', message: 'The online AI is now Claude or ChatGPT: pick one in the AI panel (⚙).' }); return api('POST', '/api/ai/chat', body, signal); }          // APPCHAT
 
     // ------------------------------------------------------------------ the tool loop
     function run(o) {

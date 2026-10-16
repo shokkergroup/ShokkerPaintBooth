@@ -375,7 +375,7 @@ def _sx_load() -> None:
                'EXP_W': float(re.search(r'var EXP_W = ([0-9.]+);', src).group(1)), 'K1': float(re.search(r'var K1 = ([0-9.]+);', src).group(1)),
                'RE_WHAT': _js_re(src, 'RE_WHAT'), 'RE_HOW': _js_re(src, 'RE_HOW'), 'RE_WHERE': _js_re(src, 'RE_WHERE'), 'RE_PROB': _js_re(src, 'RE_PROB'),
                'RE_TOOLW': _js_re(src, 'RE_TOOLW'), 'RE_LOOKW': _js_re(src, 'RE_LOOKW'), 'RE_TOOLCTX': _js_re(src, 'RE_TOOLCTX'), 'RE_BAREV': _js_re(src, 'RE_BAREV'),
-               'RE_BAREF': _js_re(src, 'RE_BAREF'), 'RE_SIMCTX': _js_re(src, 'RE_SIMCTX'), 'RE_SIMSYM': _js_re(src, 'RE_SIMSYM'),
+               'RE_BAREF': _js_re(src, 'RE_BAREF'), 'RE_DEF': _js_re(src, 'RE_DEF'), 'RE_SIMCTX': _js_re(src, 'RE_SIMCTX'), 'RE_SIMSYM': _js_re(src, 'RE_SIMSYM'),
                'SIMSYM_ADD': re.search(r"var SIMSYM_ADD = '([^']*)';", src).group(1), 'REWRITE': _js_rewrite(src),
                'VERSION': re.search(r"var VERSION = '([^']+)'", src).group(1), 'loaded': True})
 
@@ -745,6 +745,8 @@ def sx_build(lst: list, prefix: bool = False) -> dict:
         aid = _s(a['id'])
         d = {'id': a['id'], 'i': len(docs), 'fl': fl, 'units': units, 'kind': _sx_kind(a), 'gen': bool(a.get('generated')) and not aid.startswith('help_'),
              'help': aid.startswith('help_'), 'dom': re.sub(r'_[0-9]+$', '', aid.split('.')[0]), 'ntitle': ' '.join(tt)}
+        dm = SX['RE_DEF'].search(_s(a.get('summary')))          # R5: the summary opens by defining its subject (mirror of d.def)
+        d['def'] = sx_toks(dm.group(1)) if dm else []
         # plain channel (mirror of the JS: the old helper's one-bag BM25 + title / alias bonuses, fused by rank in sx_search)
         lf = {'t': tt, 'a': sx_toks(' '.join(_s(x) for x in _l(a.get('aliases')))), 's': fl['s'],
               'q': sx_toks(' '.join((_s(x.get('q')) if isinstance(x, dict) and x.get('q') else '') for x in faq)),
@@ -1146,6 +1148,8 @@ def sx_search(ix: dict, text, limit: int = 6, prefix=None) -> list:
             m *= P['iwh']
         if it.get('look') and _sx_tool_doc(d):
             m *= P['il']
+        if P.get('idef', 1) != 1 and it['what'] and not it['prob'] and d['def'] and len(qs) <= len(d['def']) + 1 and all(t in qs for t in d['def']):
+            m *= P['idef']          # R5 (ENC_SEARCH_LAB ROUND 5): 'what is X' -> the article whose summary says 'X is ...'
         if d['ntitle'] and d['ntitle'] == qj:
             m = P['exact']
         cv = min(1, got[di] / mass) if mass else 0
@@ -1159,8 +1163,34 @@ def sx_search(ix: dict, text, limit: int = 6, prefix=None) -> list:
         lock = -1
     if P.get('qw', 0) > 0:          # ROUND 3: nearest question in the paraphrase bank
         out = _sx_qbblend(ix, out, raw, lock)
+    if P.get('rr', 0) and not ix.get('prefix'):          # R2 2026-10-07: learned re-rank (sibling articles); not for a prefix (reader) index
+        out = _sx_rrblend(ix, out)
     return out[:limit or 6]
 
+
+def _sx_rrblend(ix, out):
+    """R2 2026-10-07 (ARTICLE RANKER): mirror of rrBlend in js/spb-enc-search.js - picks the winner among the first rn entries
+    (key = ra/(rank+1) + rt (rank 0) + rs x score/top score + rc x cov + rg for a generated help / controls page); promote only, scores by position.
+    Trade-off and measurements: the comment above rrBlend and _easy_claude_work/eval/r2/PROGRESS.md."""
+    P = SX['P']
+    n = min(int(P.get('rn', 3)), len(out))
+    if n < 2:
+        return out
+    s0 = out[0]['score'] or 1
+    sc = [h['score'] for h in out[:n]]
+    bj, bk = 0, -1e9
+    for r in range(n):
+        h = out[r]
+        d = ix['docs'][h['i']]
+        k = P['ra'] / (r + 1) + (P['rt'] if r == 0 else 0) + P['rs'] * sc[r] / s0 + P['rc'] * (h.get('cov') or 0) + (P['rg'] if (d.get('help') or d.get('gen')) else 0)
+        if k > bk:
+            bk, bj = k, r
+    if not bj:
+        return out
+    out.insert(0, out.pop(bj))
+    for r in range(n):
+        out[r]['score'] = sc[r]
+    return out
 
 def search(text: str, limit: int = 6) -> list:
     """[{id, score, cov, doc}] best first; cov = share of the question's word weight the doc covers.

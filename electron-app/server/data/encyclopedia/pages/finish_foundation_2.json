@@ -1,0 +1,1948 @@
+{
+  "domain": "finish_foundation_2",
+  "version": 1,
+  "articles": [
+    {
+      "id": "finish_foundation_2.base.f_satin_chrome",
+      "title": "Satin Chrome",
+      "domain": "finish_foundation_2",
+      "summary": "Full-metal chrome body with a broad soft satin highlight instead of a mirror; brushed-metal luxury. Reads as your existing colours turned into soft, brushed-looking chrome; the highlights are broad and gentle instead of mirror sharp, so the car looks like satin stainless or pewter.",
+      "what": "Satin Chrome is a plain Foundation material starting at M/R/CC 250/45/40. Its own paint function adds no pattern, and its base spec is constant: it does not draw grain, flakes or brush marks. Choose BASE COLOR Use source paint (spec only) to preserve the source artwork rather than replace its colours with a solid colour. Metallic response, roughness, clearcoat, lighting and reflections still change the visible impression. Other layers, patterns, masks and zone adjustments can change the composed spec, so these starting values are not a promise for every exported pixel.",
+      "when": [
+        "Best on: body, trim, hero panel.",
+        "Mood: luxury, techy, industrial.",
+        "Era: modern, timeless.",
+        "Fits: gt / sports car, show car, open wheel."
+      ],
+      "how": [
+        "Click the zone you want to change.",
+        "Click the Base Material box under BASE (it shows the zone's current base, or \"Click to choose a base\" on an empty zone) and type \"Satin Chrome\" in the search box at the top of the picker.",
+        "Click it to open the big preview, then click Apply.",
+        "To keep existing artwork, choose BASE COLOR Use source paint (spec only). Choose Use solid color only when you intend to replace its colour.",
+        "Render and judge it on the car, not on the swatch."
+      ],
+      "controls": [],
+      "tips": [
+        "Whole body: a spec-only treatment suits any size panel",
+        "Hero panels like hood and roof show the soft highlight best",
+        "Numbers keep their colour and stay fully legible; just avoid very dark numbers on very dark paint since the metal can wash them.",
+        "Bold livery stripes and shapes: colours stay sharp over the soft metal",
+        "Pairs well with: black, satin, pearl, red."
+      ],
+      "pitfalls": [
+        "Not mirror chrome: roughness 45 spreads highlights, there are no sharp reflections",
+        "Not matte or flat paint: metal is 250, it glows and reflects broadly",
+        "Avoid: next to mirror chrome, big dark areas in the sim."
+      ],
+      "related": [
+        "finish_foundation_1.base.f_chrome",
+        "finish_foundation_1.base.f_metallic",
+        "finish_foundation_1.base.f_dark_chrome",
+        "finish_foundation_1.base.f_candy"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::f_satin_chrome"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "js/spb-ai-atlas-data.js:2",
+        "js/spb-ai-cards-data.js:2",
+        "SPB_WIKI.html#spec_guide",
+        "engine/paint_v2/surface_intent.py:98-160",
+        "engine/base_registry_data.py:1482",
+        "engine/base_registry_data.py:1550",
+        "engine/base_registry_data.py:1577"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::f_satin_chrome",
+      "type": "base",
+      "shelves": [
+        "Foundation"
+      ],
+      "metal": 250,
+      "rough": 45,
+      "coat": 40,
+      "palette": [
+        "#9e3333"
+      ],
+      "own_colours": false,
+      "quality": 87,
+      "loud": 3,
+      "busy": 1,
+      "ratings": {
+        "visible": 1,
+        "appeal": 4,
+        "body": 4,
+        "accent": 3,
+        "hero": 4,
+        "risk": 2
+      },
+      "mood": [
+        "luxury",
+        "techy",
+        "industrial"
+      ],
+      "era": [
+        "modern",
+        "timeless"
+      ],
+      "use": [
+        "body",
+        "trim",
+        "hero panel"
+      ],
+      "tags": [
+        "brushed",
+        "chrome",
+        "metallic",
+        "reflective",
+        "satin",
+        "matte"
+      ],
+      "level": "beginner",
+      "spec_character": "Average spec: metal 250 (chrome or mirror tier), roughness 45 (high gloss), clearcoat 39 (strong-to-medium clearcoat). The spec is almost perfectly flat, one smooth material.",
+      "intent": "spec_driven",
+      "intent_note": "Spec-driven shelf: the shine does all the visual work and your own paint colour stays as it is.",
+      "paint_advice": "Reflection inherits the paint colour: near-white paint gives silver, a coloured paint gives tinted chrome, and a dark paint stays dark. Avoid: next to mirror chrome, big dark areas in the sim.",
+      "combos": [
+        {
+          "with": "patterns.layers_and_stacking",
+          "why": "Patterns that suit it: bold livery stripes and shapes: colours stay sharp over the soft metal; fine linework and outlines: no texture to fight them"
+        },
+        {
+          "with": "patterns.choosing_at_car_scale",
+          "why": "Patterns to avoid: fine glitter or flake: pointless noise on a smooth satin base"
+        },
+        {
+          "with": "spec.overlays_stack",
+          "why": "Spec overlays that work: fine brushed streak spec: makes it a true brushed-metal look; light ripple or wave roughness: adds a soft liquid shimmer"
+        },
+        {
+          "with": "spec.paint_spec_marriage",
+          "why": "Judge the paint and the shine together: the same spec looks different under different colours."
+        }
+      ],
+      "examples": [
+        {
+          "title": "Preserve artwork while changing material",
+          "goal": "Try Satin Chrome without replacing the source paint.",
+          "settings": {
+            "Base Material": "Satin Chrome",
+            "BASE COLOR": "Use source paint (spec only)",
+            "Starting M/R/CC": "250/45/40"
+          },
+          "result": "Source paint is retained by this plain material; reflections and material response change its lit appearance. Check the composed spec and protect sponsor/number material separately."
+        }
+      ],
+      "screens": [],
+      "thumb": "thumbnails/base/f_satin_chrome.png",
+      "swatch": "/api/swatch/base/f_satin_chrome",
+      "faq": [
+        {
+          "q": "What are the starting spec values for Satin Chrome?",
+          "a": "The registered plain Foundation material starts at M/R/CC 250/45/40. The base spec is constant, not a grain or flake texture. Patterns, blends, masks and adjustments may change the composed result."
+        },
+        {
+          "q": "Can I keep my existing paint colours with Satin Chrome?",
+          "a": "Use BASE COLOR Use source paint (spec only) rather than Use solid color. This plain base preserves the source paint pixels, but metallic response, reflections and lighting still change their appearance. Source-colour preservation does not automatically protect sponsor and number material."
+        }
+      ]
+    },
+    {
+      "id": "finish_foundation_2.base.f_satin_pearl",
+      "title": "Satin Pearl",
+      "domain": "finish_foundation_2",
+      "summary": "Smooth satin pearl film with a soft, muted highlight and a faint pearly glow; no visible particles, colour comes from your paint. Your paint colour under a soft, even pearly satin glow; no sparkle or texture, just a smooth semi-metallic satin look.",
+      "what": "Satin Pearl is a plain Foundation material starting at M/R/CC 100/90/60. Its own paint function adds no pattern, and its base spec is constant: it does not draw grain, flakes or brush marks. Choose BASE COLOR Use source paint (spec only) to preserve the source artwork rather than replace its colours with a solid colour. Metallic response, roughness, clearcoat, lighting and reflections still change the visible impression. Other layers, patterns, masks and zone adjustments can change the composed spec, so these starting values are not a promise for every exported pixel.",
+      "when": [
+        "Best on: body, hood, roof.",
+        "Mood: luxury, elegant, dreamy.",
+        "Era: modern, timeless.",
+        "Fits: gt / sports car, show car, stock car."
+      ],
+      "how": [
+        "Click the zone you want to change.",
+        "Click the Base Material box under BASE (it shows the zone's current base, or \"Click to choose a base\" on an empty zone) and type \"Satin Pearl\" in the search box at the top of the picker.",
+        "Click it to open the big preview, then click Apply.",
+        "To keep existing artwork, choose BASE COLOR Use source paint (spec only). Choose Use solid color only when you intend to replace its colour.",
+        "Render and judge it on the car, not on the swatch."
+      ],
+      "controls": [],
+      "tips": [
+        "Whole body: uniform sheen looks best over all panels",
+        "Roof and hood for a soft glow in sunlight",
+        "Numbers read clean in any colour; the even soft sheen adds no texture or glare.",
+        "Any graphics, stripes or camo: a pure spec base never fights them",
+        "Pairs well with: chrome, white, dark blue, gold."
+      ],
+      "pitfalls": [
+        "Not glitter or flake pearl: no particles, just an even soft glow",
+        "Not high gloss pearl: highlight is softened to satin",
+        "Avoid: heavy flake textures, high-gloss clearcoats."
+      ],
+      "related": [
+        "finish_foundation_1.base.f_pearl",
+        "finish_foundation_1.base.f_frozen",
+        "finish_foundation_1.base.f_brushed",
+        "finish_foundation_1.base.chameleon"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::f_satin_pearl"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "js/spb-ai-atlas-data.js:2",
+        "js/spb-ai-cards-data.js:2",
+        "SPB_WIKI.html#spec_guide",
+        "engine/paint_v2/surface_intent.py:98-160",
+        "engine/base_registry_data.py:1482",
+        "engine/base_registry_data.py:1550",
+        "engine/base_registry_data.py:1577"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::f_satin_pearl",
+      "type": "base",
+      "shelves": [
+        "Foundation"
+      ],
+      "metal": 100,
+      "rough": 90,
+      "coat": 60,
+      "palette": [
+        "#9e3333"
+      ],
+      "own_colours": false,
+      "loud": 2,
+      "busy": 1,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 4,
+        "accent": 3,
+        "hero": 3,
+        "risk": 2
+      },
+      "mood": [
+        "luxury",
+        "elegant",
+        "dreamy"
+      ],
+      "era": [
+        "modern",
+        "timeless"
+      ],
+      "use": [
+        "body",
+        "hood",
+        "roof"
+      ],
+      "tags": [
+        "pearl",
+        "satin",
+        "shimmer",
+        "soft",
+        "matte"
+      ],
+      "level": "beginner",
+      "spec_character": "Average spec: metal 100 (pearl-level metal), roughness 90 (satin gloss), clearcoat 59 (strong-to-medium clearcoat). The spec is almost perfectly flat, one smooth material.",
+      "intent": "spec_driven",
+      "intent_note": "Spec-driven shelf: the shine does all the visual work and your own paint colour stays as it is.",
+      "paint_advice": "Pearl depth shows best on a clear mid-tone or deep saturated colour; a dull grey paint hides the shift. Avoid: heavy flake textures, high-gloss clearcoats.",
+      "combos": [
+        {
+          "with": "patterns.layers_and_stacking",
+          "why": "Patterns that suit it: any graphics, stripes or camo: a pure spec base never fights them; ghost or tone-on-tone patterns: a quiet pearl field makes them look rich"
+        },
+        {
+          "with": "patterns.choosing_at_car_scale",
+          "why": "Patterns to avoid: mirror or chrome patterns: base is too soft to support them"
+        },
+        {
+          "with": "spec.overlays_stack",
+          "why": "Spec overlays that work: fine pearl or micro flake: adds the sparkle this base does not have; gloss/matte stripe spec: sheen contrast without recolouring"
+        },
+        {
+          "with": "spec.paint_spec_marriage",
+          "why": "Judge the paint and the shine together: the same spec looks different under different colours."
+        }
+      ],
+      "examples": [
+        {
+          "title": "Preserve artwork while changing material",
+          "goal": "Try Satin Pearl without replacing the source paint.",
+          "settings": {
+            "Base Material": "Satin Pearl",
+            "BASE COLOR": "Use source paint (spec only)",
+            "Starting M/R/CC": "100/90/60"
+          },
+          "result": "Source paint is retained by this plain material; reflections and material response change its lit appearance. Check the composed spec and protect sponsor/number material separately."
+        }
+      ],
+      "screens": [],
+      "swatch": "/api/swatch/base/f_satin_pearl",
+      "faq": [
+        {
+          "q": "What are the starting spec values for Satin Pearl?",
+          "a": "The registered plain Foundation material starts at M/R/CC 100/90/60. The base spec is constant, not a grain or flake texture. Patterns, blends, masks and adjustments may change the composed result."
+        },
+        {
+          "q": "Can I keep my existing paint colours with Satin Pearl?",
+          "a": "Use BASE COLOR Use source paint (spec only) rather than Use solid color. This plain base preserves the source paint pixels, but metallic response, reflections and lighting still change their appearance. Source-colour preservation does not automatically protect sponsor and number material."
+        }
+      ]
+    },
+    {
+      "id": "finish_foundation_2.base.flat_black",
+      "title": "Flat Black",
+      "domain": "finish_foundation_2",
+      "summary": "Very dull, highly rough plain finish in the selected colour; choose black for a murdered-out look. Looks like your own paint with all shine killed: dead flat, chalky, with no reflections; with black it becomes the murdered-out flat black look, with any other colour a dull flat version.",
+      "what": "Flat Black is a plain Foundation material starting at M/R/CC 0/250/255. Its own paint function adds no pattern, and its base spec is constant: it does not draw grain, flakes or brush marks. Choose BASE COLOR Use source paint (spec only) to preserve the source artwork rather than replace its colours with a solid colour. Metallic response, roughness, clearcoat, lighting and reflections still change the visible impression. Other layers, patterns, masks and zone adjustments can change the composed spec, so these starting values are not a promise for every exported pixel.",
+      "when": [
+        "Best on: body, hood, roof.",
+        "Mood: stealth, rugged, industrial.",
+        "Era: modern, timeless.",
+        "Fits: stock car, gt / sports car, truck / off-road."
+      ],
+      "how": [
+        "Click the zone you want to change.",
+        "Click the Base Material box under BASE (it shows the zone's current base, or \"Click to choose a base\" on an empty zone) and type \"Flat Black\" in the search box at the top of the picker.",
+        "Click it to open the big preview, then click Apply.",
+        "To keep existing artwork, choose BASE COLOR Use source paint (spec only). Choose Use solid color only when you intend to replace its colour.",
+        "Render and judge it on the car, not on the swatch."
+      ],
+      "controls": [],
+      "tips": [
+        "Whole body: the flat look only works when it is even across panels",
+        "With gloss accents on spoiler or stripes for contrast",
+        "Numbers keep their colour; white, yellow and red numbers pop on flat black, dark numbers disappear.",
+        "Any livery graphics: spec-only base leaves paint and patterns untouched",
+        "Pairs well with: gloss, chrome, red, white."
+      ],
+      "pitfalls": [
+        "Not Ceramic Matte: that adds fine noise in the shine maps; this is perfectly uniform and rougher",
+        "Not Soft Matte or satin: it has the maximum roughness, no sheen at all",
+        "Avoid: low contrast with dark colours, overly bright colours may look washed out."
+      ],
+      "related": [
+        "finish_foundation_2.base.primer",
+        "finish_foundation_2.base.matte",
+        "finish_foundation_1.base.eggshell",
+        "finish_foundation_1.base.f_powder_coat"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::flat_black"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "js/spb-ai-atlas-data.js:2",
+        "js/spb-ai-cards-data.js:2",
+        "SPB_WIKI.html#spec_guide",
+        "engine/paint_v2/surface_intent.py:98-160",
+        "engine/base_registry_data.py:1482",
+        "engine/base_registry_data.py:1550",
+        "engine/base_registry_data.py:1577"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::flat_black",
+      "type": "base",
+      "shelves": [
+        "Foundation"
+      ],
+      "metal": 0,
+      "rough": 250,
+      "coat": 255,
+      "palette": [
+        "#9e3333"
+      ],
+      "own_colours": false,
+      "quality": 100,
+      "loud": 1,
+      "busy": 1,
+      "ratings": {
+        "visible": 1,
+        "appeal": 4,
+        "body": 5,
+        "accent": 4,
+        "hero": 4,
+        "risk": 1
+      },
+      "mood": [
+        "stealth",
+        "rugged",
+        "industrial"
+      ],
+      "era": [
+        "modern",
+        "timeless"
+      ],
+      "use": [
+        "body",
+        "hood",
+        "roof"
+      ],
+      "tags": [
+        "black",
+        "matte",
+        "military",
+        "tactical",
+        "dark"
+      ],
+      "level": "beginner",
+      "spec_character": "Average spec: metal 0 (non-metal paint), roughness 250 (dead flat or porous), clearcoat 255 (dull, no clearcoat shine).",
+      "intent": "spec_driven",
+      "intent_note": "Spec-driven shelf: the shine does all the visual work and your own paint colour stays as it is.",
+      "paint_advice": "Matte reads as flat colour, so a clean saturated colour looks richer than a muddy mid-grey; pair it with a gloss or metal neighbour for contrast. Avoid: low contrast with dark colours, overly bright colours may look washed out.",
+      "combos": [
+        {
+          "with": "patterns.layers_and_stacking",
+          "why": "Patterns that suit it: any livery graphics: spec-only base leaves paint and patterns untouched; gloss decals, numbers and stripes: strong contrast against dead flat"
+        },
+        {
+          "with": "patterns.choosing_at_car_scale",
+          "why": "Patterns to avoid: glitter or holo patterns: need shine to show; chrome-effect patterns: need gloss"
+        },
+        {
+          "with": "spec.overlays_stack",
+          "why": "Spec overlays that work: gloss clear stripe spec: glossy bands on dead flat, a ghost-stripe look; fine sparkle spec: tiny glints to break up the dullness"
+        },
+        {
+          "with": "spec.paint_spec_marriage",
+          "why": "Judge the paint and the shine together: the same spec looks different under different colours."
+        }
+      ],
+      "examples": [
+        {
+          "title": "Preserve artwork while changing material",
+          "goal": "Try Flat Black without replacing the source paint.",
+          "settings": {
+            "Base Material": "Flat Black",
+            "BASE COLOR": "Use source paint (spec only)",
+            "Starting M/R/CC": "0/250/255"
+          },
+          "result": "Source paint is retained by this plain material; reflections and material response change its lit appearance. Check the composed spec and protect sponsor/number material separately."
+        }
+      ],
+      "screens": [],
+      "thumb": "thumbnails/base/flat_black.png",
+      "swatch": "/api/swatch/base/flat_black",
+      "faq": [
+        {
+          "q": "What are the starting spec values for Flat Black?",
+          "a": "The registered plain Foundation material starts at M/R/CC 0/250/255. The base spec is constant, not a grain or flake texture. Patterns, blends, masks and adjustments may change the composed result."
+        },
+        {
+          "q": "Can I keep my existing paint colours with Flat Black?",
+          "a": "Use BASE COLOR Use source paint (spec only) rather than Use solid color. This plain base preserves the source paint pixels, but metallic response, reflections and lighting still change their appearance. Source-colour preservation does not automatically protect sponsor and number material."
+        }
+      ]
+    },
+    {
+      "id": "finish_foundation_2.base.gloss",
+      "title": "Gloss",
+      "domain": "finish_foundation_2",
+      "summary": "Standard glossy body in the selected colour; smooth, reflective, no grain. Reads as a clean, deep, wet-looking solid colour like a standard car paint job; nothing but colour and a bright even shine survives.",
+      "what": "Gloss is a plain Foundation material starting at M/R/CC 0/30/16. Its own paint function adds no pattern, and its base spec is constant: it does not draw grain, flakes or brush marks. Choose BASE COLOR Use source paint (spec only) to preserve the source artwork rather than replace its colours with a solid colour. Metallic response, roughness, clearcoat, lighting and reflections still change the visible impression. Other layers, patterns, masks and zone adjustments can change the composed spec, so these starting values are not a promise for every exported pixel.",
+      "when": [
+        "Best on: body, hood, roof.",
+        "Mood: clean, luxury, elegant.",
+        "Era: modern, timeless.",
+        "Fits: stock car, gt / sports car, open wheel."
+      ],
+      "how": [
+        "Click the zone you want to change.",
+        "Click the Base Material box under BASE (it shows the zone's current base, or \"Click to choose a base\" on an empty zone) and type \"Gloss\" in the search box at the top of the picker.",
+        "Click it to open the big preview, then click Apply.",
+        "To keep existing artwork, choose BASE COLOR Use source paint (spec only). Choose Use solid color only when you intend to replace its colour.",
+        "Render and judge it on the car, not on the swatch."
+      ],
+      "controls": [],
+      "tips": [
+        "Whole body: the default for any livery",
+        "Under numbers and sponsor areas: maximum legibility",
+        "Numbers read perfectly; nothing busy underneath, just a clean shine.",
+        "Any livery graphic, stripe or camo: the flat gloss never competes, so everything reads cleanly",
+        "Pairs well with: matte, chrome, black, white."
+      ],
+      "pitfalls": [
+        "Not metallic paint: metal is 0, so highlights are not tinted and there is no flake",
+        "Not chrome: roughness is 30 and metal 0, so no mirror",
+        "Avoid: dirt may show easily, scratches visible."
+      ],
+      "related": [
+        "finish_foundation_2.base.wet_look",
+        "finish_foundation_2.base.semi_gloss",
+        "finish_foundation_2.base.satin",
+        "finish_foundation_1.base.f_pearl"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::gloss"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "js/spb-ai-atlas-data.js:2",
+        "js/spb-ai-cards-data.js:2",
+        "SPB_WIKI.html#spec_guide",
+        "engine/paint_v2/surface_intent.py:98-160",
+        "engine/base_registry_data.py:1482",
+        "engine/base_registry_data.py:1550",
+        "engine/base_registry_data.py:1577"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::gloss",
+      "type": "base",
+      "shelves": [
+        "Foundation"
+      ],
+      "metal": 0,
+      "rough": 30,
+      "coat": 16,
+      "palette": [
+        "#9e3333"
+      ],
+      "own_colours": false,
+      "quality": 90,
+      "loud": 3,
+      "busy": 1,
+      "ratings": {
+        "visible": 1,
+        "appeal": 5,
+        "body": 5,
+        "accent": 5,
+        "hero": 5,
+        "risk": 1
+      },
+      "mood": [
+        "clean",
+        "luxury",
+        "elegant"
+      ],
+      "era": [
+        "modern",
+        "timeless"
+      ],
+      "use": [
+        "body",
+        "hood",
+        "roof"
+      ],
+      "tags": [
+        "cold",
+        "gloss",
+        "ice",
+        "metallic",
+        "smooth"
+      ],
+      "level": "beginner",
+      "spec_character": "Average spec: metal 0 (non-metal paint), roughness 30 (high gloss), clearcoat 16 (maximum clearcoat). The spec is almost perfectly flat, one smooth material.",
+      "intent": "spec_driven",
+      "intent_note": "Spec-driven shelf: the shine does all the visual work and your own paint colour stays as it is.",
+      "paint_advice": "Gloss shows the paint colour as it is, so any colour works; pick the colour for contrast with the neighbouring zones, not for the finish. Avoid: dirt may show easily, scratches visible.",
+      "combos": [
+        {
+          "with": "patterns.layers_and_stacking",
+          "why": "Patterns that suit it: any livery graphic, stripe or camo: the flat gloss never competes, so everything reads cleanly; sponsor decals and thick outlined numbers: the safe base for legibility"
+        },
+        {
+          "with": "patterns.choosing_at_car_scale",
+          "why": "Patterns to avoid: nothing in particular: it is the neutral base, but fine glitter on it looks like cheap flake"
+        },
+        {
+          "with": "spec.overlays_stack",
+          "why": "Spec overlays that work: metal flake spec: turns the plain gloss into a sparkle paint; brushed or ripple roughness: adds texture to an otherwise smooth surface"
+        },
+        {
+          "with": "spec.paint_spec_marriage",
+          "why": "Judge the paint and the shine together: the same spec looks different under different colours."
+        }
+      ],
+      "examples": [
+        {
+          "title": "Preserve artwork while changing material",
+          "goal": "Try Gloss without replacing the source paint.",
+          "settings": {
+            "Base Material": "Gloss",
+            "BASE COLOR": "Use source paint (spec only)",
+            "Starting M/R/CC": "0/30/16"
+          },
+          "result": "Source paint is retained by this plain material; reflections and material response change its lit appearance. Check the composed spec and protect sponsor/number material separately."
+        }
+      ],
+      "screens": [],
+      "thumb": "thumbnails/base/gloss.png",
+      "swatch": "/api/swatch/base/gloss",
+      "faq": [
+        {
+          "q": "What are the starting spec values for Gloss?",
+          "a": "The registered plain Foundation material starts at M/R/CC 0/30/16. The base spec is constant, not a grain or flake texture. Patterns, blends, masks and adjustments may change the composed result."
+        },
+        {
+          "q": "Can I keep my existing paint colours with Gloss?",
+          "a": "Use BASE COLOR Use source paint (spec only) rather than Use solid color. This plain base preserves the source paint pixels, but metallic response, reflections and lighting still change their appearance. Source-colour preservation does not automatically protect sponsor and number material."
+        }
+      ]
+    },
+    {
+      "id": "finish_foundation_2.base.hypershift_spectral",
+      "title": "Black Diamond Candy",
+      "domain": "finish_foundation_2",
+      "summary": "The paint construction uses a dark bed and coloured platelet flashes with halos. Its spec varies metal and roughness with the platelet fields; clearcoat starts at 16. Own palette runs in finish-colour mode; Use source paint skips primary paint generation.",
+      "what": "The paint construction uses a dark bed and coloured platelet flashes with halos. Its spec varies metal and roughness with the platelet fields; clearcoat starts at 16. This is one of the five colour-bearing Foundation exceptions, not a plain source-passing material. Registered M/R/CC seed values are not uniform output values or a tested recommendation for your car. Source inspection describes construction; final appearance and any angle-dependent claim require actual in-sim inspection. In the reviewed ordinary primary-base compositor, BASE COLOR Use source paint (spec only) skips the primary base paint function, including a colour-generating one. Use finish’s own color allows that palette to run. This preserves the source from the primary base paint pass, not from every other operation: patterns, additional bases, hue/saturation/brightness, explicit colour overrides and target/mask choices need separate checks. Spec still changes reflections and the visible impression.",
+      "when": [
+        "Best on: body, hero panel, roof.",
+        "Mood: wild, playful, luxury.",
+        "Era: modern, futuristic.",
+        "Fits: show car, gt / sports car, open wheel."
+      ],
+      "how": [
+        "Confirm the selected zone/layer and exact finish ID.",
+        "For primary-base material changes on an existing livery, choose BASE COLOR Use source paint (spec only).",
+        "Choose Use finish’s own color when the generated palette is part of the intended design.",
+        "Check patterns, additional bases and HSB adjustments separately before claiming the composed paint is unchanged."
+      ],
+      "controls": [],
+      "tips": [
+        "Source mode can use a colour-generating primary base for its spec without running its paint palette.",
+        "Colour-bearing finish mode is useful when its palette belongs in the intended design."
+      ],
+      "pitfalls": [
+        "Do not confuse the registered paint function with the BASE COLOR mode actually executing it.",
+        "Do not extend primary-base source-lock proof to the entire composed document.",
+        "A static interference palette is not proof of dynamic camera-angle colour flipping."
+      ],
+      "related": [
+        "finish_foundation_2.base.opal",
+        "finish_foundation_2.base.moonstone",
+        "finish_foundation_1.base.f_pearl",
+        "finish_foundation_2.base.f_satin_pearl"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::hypershift_spectral"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/candy_pearl_2026.py:592-785",
+        "engine/registry.py:1152",
+        "shokker_engine_v2.py:16269-16309",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:5320-5333",
+        "engine/compose.py:6240-6244",
+        "engine/compose.py:6302-6305",
+        "paint-booth-2-state-zones.js:1922-1923"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::hypershift_spectral",
+      "type": "base",
+      "shelves": [
+        "Foundation"
+      ],
+      "metal": 100,
+      "rough": 52,
+      "coat": 16,
+      "palette": [
+        "#1b1e23",
+        "#cdcd65",
+        "#b795d7"
+      ],
+      "own_colours": true,
+      "quality": 52,
+      "loud": 4,
+      "busy": 5,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 2,
+        "accent": 2,
+        "hero": 3,
+        "risk": 4
+      },
+      "mood": [
+        "wild",
+        "playful",
+        "luxury"
+      ],
+      "era": [
+        "modern",
+        "futuristic"
+      ],
+      "use": [
+        "body",
+        "hero panel",
+        "roof"
+      ],
+      "tags": [
+        "iridescent",
+        "multicolor",
+        "candy",
+        "metallic",
+        "glitter",
+        "geometric",
+        "luxury",
+        "dark"
+      ],
+      "level": "pro",
+      "spec_character": "Average spec: metal 100 (pearl-level metal), roughness 52 (high gloss), clearcoat 16 (maximum clearcoat). The spec is textured, not flat: metal varies by 20 or more across the surface.",
+      "intent": "spec_driven",
+      "intent_note": "Spec-driven shelf: the shine does all the visual work and your own paint colour stays as it is.",
+      "paint_advice": "Colour-generating construction is not the same as executing that paint pass: Use source paint bypasses the reviewed ordinary primary base paint function.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/hypershift_spectral.png",
+      "swatch": "/api/swatch/base/hypershift_spectral",
+      "deep": {
+        "title": "Construction, source mode and limits",
+        "body": "The paint construction uses a dark bed and coloured platelet flashes with halos. Its spec varies metal and roughness with the platelet fields; clearcoat starts at 16. This is one of the five colour-bearing Foundation exceptions, not a plain source-passing material. Registered M/R/CC seed values are not uniform output values or a tested recommendation for your car. Source inspection describes construction; final appearance and any angle-dependent claim require actual in-sim inspection. In the reviewed ordinary primary-base compositor, BASE COLOR Use source paint (spec only) skips the primary base paint function, including a colour-generating one. Use finish’s own color allows that palette to run. This preserves the source from the primary base paint pass, not from every other operation: patterns, additional bases, hue/saturation/brightness, explicit colour overrides and target/mask choices need separate checks. Spec still changes reflections and the visible impression."
+      },
+      "faq": [
+        {
+          "q": "Can I use hypershift spectral spec without adding its paint colours?",
+          "a": "Yes for the reviewed ordinary primary-base path: choose BASE COLOR Use source paint (spec only), which skips that base paint function while retaining its material contribution. This is not a whole-project colour guarantee; patterns, additional bases and HSB need separate checks."
+        },
+        {
+          "q": "Does Foundation hypershift spectral leave sponsor colours unchanged?",
+          "a": "It depends on BASE COLOR mode. Use source paint (spec only) skips the reviewed ordinary primary base paint function, so this primary base does not add its palette. Use finish’s own color runs its paint construction. Other operations can still change the livery; inspect patterns, additional bases, HSB and the target."
+        },
+        {
+          "q": "Are Black Diamond Candy material numbers constant everywhere?",
+          "a": "No. Its registered spec function varies metal and roughness spatially; clearcoat starts at 16. Catalog averages and registry seed values are not constant output values."
+        },
+        {
+          "q": "Does Black Diamond Candy automatically change colour with camera angle?",
+          "a": "The generated paint uses static spatial colour fields; the source functions accept no live camera angle. Actual lighting and reflection can affect appearance, but an angle-changing pigment effect must be checked in iRacing rather than promised from the name."
+        }
+      ],
+      "protips": [
+        "Source mode can use a colour-generating primary base for its spec without running its paint palette.",
+        "Colour-bearing finish mode is useful when its palette belongs in the intended design."
+      ],
+      "mistakes": [
+        "Do not confuse the registered paint function with the BASE COLOR mode actually executing it.",
+        "Do not extend primary-base source-lock proof to the entire composed document.",
+        "A static interference palette is not proof of dynamic camera-angle colour flipping."
+      ]
+    },
+    {
+      "id": "finish_foundation_2.base.matte",
+      "title": "Matte",
+      "domain": "finish_foundation_2",
+      "summary": "Matte body in the selected colour; light is absorbed, faint coat lobe keeps it from going dead. A plain flat paint in your colour with no shine; light is absorbed, so colours look a touch softer and darker than gloss.",
+      "what": "Matte is a plain Foundation material starting at M/R/CC 0/200/160. Its own paint function adds no pattern, and its base spec is constant: it does not draw grain, flakes or brush marks. Choose BASE COLOR Use source paint (spec only) to preserve the source artwork rather than replace its colours with a solid colour. Metallic response, roughness, clearcoat, lighting and reflections still change the visible impression. Other layers, patterns, masks and zone adjustments can change the composed spec, so these starting values are not a promise for every exported pixel.",
+      "when": [
+        "Best on: body, hood, roof.",
+        "Mood: stealth, rugged, industrial.",
+        "Era: modern, timeless.",
+        "Fits: stock car, gt / sports car, truck / off-road."
+      ],
+      "how": [
+        "Click the zone you want to change.",
+        "Click the Base Material box under BASE (it shows the zone's current base, or \"Click to choose a base\" on an empty zone) and type \"Matte\" in the search box at the top of the picker.",
+        "Click it to open the big preview, then click Apply.",
+        "To keep existing artwork, choose BASE COLOR Use source paint (spec only). Choose Use solid color only when you intend to replace its colour.",
+        "Render and judge it on the car, not on the swatch."
+      ],
+      "controls": [],
+      "tips": [
+        "Whole body: the standard way to flatten a car",
+        "Pair with gloss stripes or wheels for contrast",
+        "Numbers keep their colour; matte numbers on matte paint have no gloss contrast, so rely on colour contrast.",
+        "Any bold graphic, stripe or number: matte ground gives clean edges",
+        "Pairs well with: gloss, chrome, red, white."
+      ],
+      "pitfalls": [
+        "Not satin or eggshell: roughness is high, there is no sheen",
+        "Not a colour: it keeps whichever colour you gave it",
+        "Avoid: low contrast with dark colours, numbers need legible backing."
+      ],
+      "related": [
+        "finish_foundation_2.base.primer",
+        "finish_foundation_2.base.flat_black",
+        "finish_foundation_1.base.eggshell",
+        "finish_foundation_1.base.f_powder_coat"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::matte"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "js/spb-ai-atlas-data.js:2",
+        "js/spb-ai-cards-data.js:2",
+        "SPB_WIKI.html#spec_guide",
+        "engine/paint_v2/surface_intent.py:98-160",
+        "engine/base_registry_data.py:1482",
+        "engine/base_registry_data.py:1550",
+        "engine/base_registry_data.py:1577"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::matte",
+      "type": "base",
+      "shelves": [
+        "Foundation"
+      ],
+      "metal": 0,
+      "rough": 200,
+      "coat": 160,
+      "palette": [
+        "#9e3333"
+      ],
+      "own_colours": false,
+      "quality": 100,
+      "loud": 1,
+      "busy": 1,
+      "ratings": {
+        "visible": 1,
+        "appeal": 4,
+        "body": 5,
+        "accent": 4,
+        "hero": 4,
+        "risk": 1
+      },
+      "mood": [
+        "stealth",
+        "rugged",
+        "industrial"
+      ],
+      "era": [
+        "modern",
+        "timeless"
+      ],
+      "use": [
+        "body",
+        "hood",
+        "roof"
+      ],
+      "tags": [
+        "blue",
+        "carbon",
+        "green",
+        "matte",
+        "military",
+        "racing",
+        "stealth",
+        "tactical"
+      ],
+      "level": "beginner",
+      "spec_character": "Average spec: metal 0 (non-metal paint), roughness 200 (flat), clearcoat 158 (weak clearcoat).",
+      "intent": "spec_driven",
+      "intent_note": "Spec-driven shelf: the shine does all the visual work and your own paint colour stays as it is.",
+      "paint_advice": "Matte reads as flat colour, so a clean saturated colour looks richer than a muddy mid-grey; pair it with a gloss or metal neighbour for contrast. Avoid: low contrast with dark colours, numbers need legible backing.",
+      "combos": [
+        {
+          "with": "patterns.layers_and_stacking",
+          "why": "Patterns that suit it: any bold graphic, stripe or number: matte ground gives clean edges; gloss-contrast patterns (gloss stripes on matte): the classic matte and gloss pairing"
+        },
+        {
+          "with": "patterns.choosing_at_car_scale",
+          "why": "Patterns to avoid: flake or glitter patterns: lost on a matte surface; mirror-effect overlays: contradict the finish"
+        },
+        {
+          "with": "spec.overlays_stack",
+          "why": "Spec overlays that work: gloss stripe or clearcoat patches: shiny details over the flat body; subtle fine grain: adds tooth to the flatness"
+        },
+        {
+          "with": "spec.paint_spec_marriage",
+          "why": "Judge the paint and the shine together: the same spec looks different under different colours."
+        }
+      ],
+      "examples": [
+        {
+          "title": "Preserve artwork while changing material",
+          "goal": "Try Matte without replacing the source paint.",
+          "settings": {
+            "Base Material": "Matte",
+            "BASE COLOR": "Use source paint (spec only)",
+            "Starting M/R/CC": "0/200/160"
+          },
+          "result": "Source paint is retained by this plain material; reflections and material response change its lit appearance. Check the composed spec and protect sponsor/number material separately."
+        }
+      ],
+      "screens": [],
+      "thumb": "thumbnails/base/matte.png",
+      "swatch": "/api/swatch/base/matte",
+      "faq": [
+        {
+          "q": "What are the starting spec values for Matte?",
+          "a": "The registered plain Foundation material starts at M/R/CC 0/200/160. The base spec is constant, not a grain or flake texture. Patterns, blends, masks and adjustments may change the composed result."
+        },
+        {
+          "q": "Can I keep my existing paint colours with Matte?",
+          "a": "Use BASE COLOR Use source paint (spec only) rather than Use solid color. This plain base preserves the source paint pixels, but metallic response, reflections and lighting still change their appearance. Source-colour preservation does not automatically protect sponsor and number material."
+        }
+      ]
+    },
+    {
+      "id": "finish_foundation_2.base.moonstone",
+      "title": "Moonstone",
+      "domain": "finish_foundation_2",
+      "summary": "The paint construction combines a grey-blue body, fine lamellae and blurred blue-white sheets. Its spec uses the sheet and lamella fields for varying metal and roughness; clearcoat starts at 16. Own palette runs in finish-colour mode; Use source paint skips primary paint generation.",
+      "what": "The paint construction combines a grey-blue body, fine lamellae and blurred blue-white sheets. Its spec uses the sheet and lamella fields for varying metal and roughness; clearcoat starts at 16. This is one of the five colour-bearing Foundation exceptions, not a plain source-passing material. Registered M/R/CC seed values are not uniform output values or a tested recommendation for your car. Source inspection describes construction; final appearance and any angle-dependent claim require actual in-sim inspection. In the reviewed ordinary primary-base compositor, BASE COLOR Use source paint (spec only) skips the primary base paint function, including a colour-generating one. Use finish’s own color allows that palette to run. This preserves the source from the primary base paint pass, not from every other operation: patterns, additional bases, hue/saturation/brightness, explicit colour overrides and target/mask choices need separate checks. Spec still changes reflections and the visible impression.",
+      "when": [
+        "Best on: body, hero panel, roof.",
+        "Mood: dreamy, icy, elegant.",
+        "Era: timeless, futuristic.",
+        "Fits: gt / sports car, show car, open wheel."
+      ],
+      "how": [
+        "Confirm the selected zone/layer and exact finish ID.",
+        "For primary-base material changes on an existing livery, choose BASE COLOR Use source paint (spec only).",
+        "Choose Use finish’s own color when the generated palette is part of the intended design.",
+        "Check patterns, additional bases and HSB adjustments separately before claiming the composed paint is unchanged."
+      ],
+      "controls": [],
+      "tips": [
+        "Source mode can use a colour-generating primary base for its spec without running its paint palette.",
+        "Colour-bearing finish mode is useful when its palette belongs in the intended design."
+      ],
+      "pitfalls": [
+        "Do not confuse the registered paint function with the BASE COLOR mode actually executing it.",
+        "Do not extend primary-base source-lock proof to the entire composed document.",
+        "A static interference palette is not proof of dynamic camera-angle colour flipping."
+      ],
+      "related": [
+        "finish_foundation_2.base.opal",
+        "finish_foundation_2.base.hypershift_spectral",
+        "finish_foundation_1.base.f_pearl",
+        "finish_foundation_2.base.f_satin_pearl"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::moonstone"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/candy_pearl_2026.py:592-785",
+        "engine/registry.py:1152",
+        "shokker_engine_v2.py:16269-16309",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:5320-5333",
+        "engine/compose.py:6240-6244",
+        "engine/compose.py:6302-6305",
+        "paint-booth-2-state-zones.js:1922-1923"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::moonstone",
+      "type": "base",
+      "shelves": [
+        "Foundation"
+      ],
+      "metal": 65,
+      "rough": 68,
+      "coat": 15,
+      "palette": [
+        "#4c5f72",
+        "#5f84b2",
+        "#7dc5f7"
+      ],
+      "own_colours": true,
+      "quality": 47,
+      "loud": 2,
+      "busy": 2,
+      "ratings": {
+        "visible": 1,
+        "appeal": 4,
+        "body": 4,
+        "accent": 3,
+        "hero": 4,
+        "risk": 2
+      },
+      "mood": [
+        "dreamy",
+        "icy",
+        "elegant"
+      ],
+      "era": [
+        "timeless",
+        "futuristic"
+      ],
+      "use": [
+        "body",
+        "hero panel",
+        "roof"
+      ],
+      "tags": [
+        "shimmer",
+        "stone",
+        "neon",
+        "light"
+      ],
+      "level": "beginner",
+      "spec_character": "Average spec: metal 65 (pearl-level metal), roughness 68 (satin gloss), clearcoat 15 (no clearcoat). The spec is textured, not flat: metal varies by 20 or more across the surface.",
+      "intent": "spec_driven",
+      "intent_note": "Spec-driven shelf: the shine does all the visual work and your own paint colour stays as it is.",
+      "paint_advice": "Colour-generating construction is not the same as executing that paint pass: Use source paint bypasses the reviewed ordinary primary base paint function.",
+      "combos": [],
+      "examples": [],
+      "screens": [
+        "cat_foundation"
+      ],
+      "thumb": "thumbnails/base/moonstone.png",
+      "swatch": "/api/swatch/base/moonstone",
+      "deep": {
+        "title": "Construction, source mode and limits",
+        "body": "The paint construction combines a grey-blue body, fine lamellae and blurred blue-white sheets. Its spec uses the sheet and lamella fields for varying metal and roughness; clearcoat starts at 16. This is one of the five colour-bearing Foundation exceptions, not a plain source-passing material. Registered M/R/CC seed values are not uniform output values or a tested recommendation for your car. Source inspection describes construction; final appearance and any angle-dependent claim require actual in-sim inspection. In the reviewed ordinary primary-base compositor, BASE COLOR Use source paint (spec only) skips the primary base paint function, including a colour-generating one. Use finish’s own color allows that palette to run. This preserves the source from the primary base paint pass, not from every other operation: patterns, additional bases, hue/saturation/brightness, explicit colour overrides and target/mask choices need separate checks. Spec still changes reflections and the visible impression."
+      },
+      "faq": [
+        {
+          "q": "Can I use moonstone spec without adding its paint colours?",
+          "a": "Yes for the reviewed ordinary primary-base path: choose BASE COLOR Use source paint (spec only), which skips that base paint function while retaining its material contribution. This is not a whole-project colour guarantee; patterns, additional bases and HSB need separate checks."
+        },
+        {
+          "q": "Does Foundation moonstone leave sponsor colours unchanged?",
+          "a": "It depends on BASE COLOR mode. Use source paint (spec only) skips the reviewed ordinary primary base paint function, so this primary base does not add its palette. Use finish’s own color runs its paint construction. Other operations can still change the livery; inspect patterns, additional bases, HSB and the target."
+        },
+        {
+          "q": "Are Moonstone material numbers constant everywhere?",
+          "a": "No. Its registered spec function varies metal and roughness spatially; clearcoat starts at 16. Catalog averages and registry seed values are not constant output values."
+        },
+        {
+          "q": "Does Moonstone automatically change colour with camera angle?",
+          "a": "The generated paint uses static spatial colour fields; the source functions accept no live camera angle. Actual lighting and reflection can affect appearance, but an angle-changing pigment effect must be checked in iRacing rather than promised from the name."
+        }
+      ],
+      "protips": [
+        "Source mode can use a colour-generating primary base for its spec without running its paint palette.",
+        "Colour-bearing finish mode is useful when its palette belongs in the intended design."
+      ],
+      "mistakes": [
+        "Do not confuse the registered paint function with the BASE COLOR mode actually executing it.",
+        "Do not extend primary-base source-lock proof to the entire composed document.",
+        "A static interference palette is not proof of dynamic camera-angle colour flipping."
+      ]
+    },
+    {
+      "id": "finish_foundation_2.base.opal",
+      "title": "Dragon's Pearl Scale",
+      "domain": "finish_foundation_2",
+      "summary": "The paint construction combines coloured interference domains with a dark body and seams. Its spec recomputes the domain light field: metal and roughness vary across it; clearcoat starts at 16. Own palette runs in finish-colour mode; Use source paint skips primary paint generation.",
+      "what": "The paint construction combines coloured interference domains with a dark body and seams. Its spec recomputes the domain light field: metal and roughness vary across it; clearcoat starts at 16. This is one of the five colour-bearing Foundation exceptions, not a plain source-passing material. Registered M/R/CC seed values are not uniform output values or a tested recommendation for your car. Source inspection describes construction; final appearance and any angle-dependent claim require actual in-sim inspection. In the reviewed ordinary primary-base compositor, BASE COLOR Use source paint (spec only) skips the primary base paint function, including a colour-generating one. Use finish’s own color allows that palette to run. This preserves the source from the primary base paint pass, not from every other operation: patterns, additional bases, hue/saturation/brightness, explicit colour overrides and target/mask choices need separate checks. Spec still changes reflections and the visible impression.",
+      "when": [
+        "Best on: body, hero panel, hood.",
+        "Mood: wild, spooky, cosmic.",
+        "Era: futuristic, modern.",
+        "Fits: show car, truck / off-road, gt / sports car."
+      ],
+      "how": [
+        "Confirm the selected zone/layer and exact finish ID.",
+        "For primary-base material changes on an existing livery, choose BASE COLOR Use source paint (spec only).",
+        "Choose Use finish’s own color when the generated palette is part of the intended design.",
+        "Check patterns, additional bases and HSB adjustments separately before claiming the composed paint is unchanged."
+      ],
+      "controls": [],
+      "tips": [
+        "Source mode can use a colour-generating primary base for its spec without running its paint palette.",
+        "Colour-bearing finish mode is useful when its palette belongs in the intended design."
+      ],
+      "pitfalls": [
+        "Do not confuse the registered paint function with the BASE COLOR mode actually executing it.",
+        "Do not extend primary-base source-lock proof to the entire composed document.",
+        "A static interference palette is not proof of dynamic camera-angle colour flipping."
+      ],
+      "related": [
+        "finish_foundation_2.base.hypershift_spectral",
+        "finish_foundation_2.base.moonstone",
+        "finish_foundation_2.base.f_satin_pearl",
+        "finish_foundation_1.base.f_pearl"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::opal"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/candy_pearl_2026.py:592-785",
+        "engine/registry.py:1152",
+        "shokker_engine_v2.py:16269-16309",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:5320-5333",
+        "engine/compose.py:6240-6244",
+        "engine/compose.py:6302-6305",
+        "paint-booth-2-state-zones.js:1922-1923"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::opal",
+      "type": "base",
+      "shelves": [
+        "Foundation"
+      ],
+      "metal": 94,
+      "rough": 82,
+      "coat": 15,
+      "palette": [
+        "#09100e",
+        "#707047",
+        "#d4ce94"
+      ],
+      "own_colours": true,
+      "quality": 34,
+      "loud": 4,
+      "busy": 5,
+      "ratings": {
+        "visible": 1,
+        "appeal": 2,
+        "body": 2,
+        "accent": 2,
+        "hero": 3,
+        "risk": 5
+      },
+      "mood": [
+        "wild",
+        "spooky",
+        "cosmic"
+      ],
+      "era": [
+        "futuristic",
+        "modern"
+      ],
+      "use": [
+        "body",
+        "hero panel",
+        "hood"
+      ],
+      "tags": [
+        "military",
+        "organic",
+        "pearl",
+        "red",
+        "scales",
+        "tactical",
+        "white",
+        "rainbow"
+      ],
+      "level": "pro",
+      "spec_character": "Average spec: metal 94 (pearl-level metal), roughness 82 (satin gloss), clearcoat 15 (no clearcoat). The spec is textured, not flat: metal varies by 20 or more across the surface.",
+      "intent": "spec_driven",
+      "intent_note": "Spec-driven shelf: the shine does all the visual work and your own paint colour stays as it is.",
+      "paint_advice": "Colour-generating construction is not the same as executing that paint pass: Use source paint bypasses the reviewed ordinary primary base paint function.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/opal.png",
+      "swatch": "/api/swatch/base/opal",
+      "deep": {
+        "title": "Construction, source mode and limits",
+        "body": "The paint construction combines coloured interference domains with a dark body and seams. Its spec recomputes the domain light field: metal and roughness vary across it; clearcoat starts at 16. This is one of the five colour-bearing Foundation exceptions, not a plain source-passing material. Registered M/R/CC seed values are not uniform output values or a tested recommendation for your car. Source inspection describes construction; final appearance and any angle-dependent claim require actual in-sim inspection. In the reviewed ordinary primary-base compositor, BASE COLOR Use source paint (spec only) skips the primary base paint function, including a colour-generating one. Use finish’s own color allows that palette to run. This preserves the source from the primary base paint pass, not from every other operation: patterns, additional bases, hue/saturation/brightness, explicit colour overrides and target/mask choices need separate checks. Spec still changes reflections and the visible impression."
+      },
+      "faq": [
+        {
+          "q": "Can I use opal spec without adding its paint colours?",
+          "a": "Yes for the reviewed ordinary primary-base path: choose BASE COLOR Use source paint (spec only), which skips that base paint function while retaining its material contribution. This is not a whole-project colour guarantee; patterns, additional bases and HSB need separate checks."
+        },
+        {
+          "q": "Does Foundation opal leave sponsor colours unchanged?",
+          "a": "It depends on BASE COLOR mode. Use source paint (spec only) skips the reviewed ordinary primary base paint function, so this primary base does not add its palette. Use finish’s own color runs its paint construction. Other operations can still change the livery; inspect patterns, additional bases, HSB and the target."
+        },
+        {
+          "q": "Are Dragon's Pearl Scale material numbers constant everywhere?",
+          "a": "No. Its registered spec function varies metal and roughness spatially; clearcoat starts at 16. Catalog averages and registry seed values are not constant output values."
+        },
+        {
+          "q": "Does Dragon's Pearl Scale automatically change colour with camera angle?",
+          "a": "The generated paint uses static spatial colour fields; the source functions accept no live camera angle. Actual lighting and reflection can affect appearance, but an angle-changing pigment effect must be checked in iRacing rather than promised from the name."
+        }
+      ],
+      "protips": [
+        "Source mode can use a colour-generating primary base for its spec without running its paint palette.",
+        "Colour-bearing finish mode is useful when its palette belongs in the intended design."
+      ],
+      "mistakes": [
+        "Do not confuse the registered paint function with the BASE COLOR mode actually executing it.",
+        "Do not extend primary-base source-lock proof to the entire composed document.",
+        "A static interference palette is not proof of dynamic camera-angle colour flipping."
+      ]
+    },
+    {
+      "id": "finish_foundation_2.base.primer",
+      "title": "Primer",
+      "domain": "finish_foundation_2",
+      "summary": "Dull matte film with almost no sheen and a broad, flat surface; colour reads even and unpolished. Reads as a plain flat chalky colour, like raw primer on a project car; no highlights at all.",
+      "what": "Primer is a plain Foundation material starting at M/R/CC 0/215/200. Its own paint function adds no pattern, and its base spec is constant: it does not draw grain, flakes or brush marks. Choose BASE COLOR Use source paint (spec only) to preserve the source artwork rather than replace its colours with a solid colour. Metallic response, roughness, clearcoat, lighting and reflections still change the visible impression. Other layers, patterns, masks and zone adjustments can change the composed spec, so these starting values are not a promise for every exported pixel.",
+      "when": [
+        "Best on: body, hood, sides.",
+        "Mood: rugged, industrial, clean.",
+        "Era: timeless, modern.",
+        "Fits: dirt late model, truck / off-road, stock car."
+      ],
+      "how": [
+        "Click the zone you want to change.",
+        "Click the Base Material box under BASE (it shows the zone's current base, or \"Click to choose a base\" on an empty zone) and type \"Primer\" in the search box at the top of the picker.",
+        "Click it to open the big preview, then click Apply.",
+        "To keep existing artwork, choose BASE COLOR Use source paint (spec only). Choose Use solid color only when you intend to replace its colour.",
+        "Render and judge it on the car, not on the swatch."
+      ],
+      "controls": [],
+      "tips": [
+        "Whole body: a base coat",
+        "Bumpers, lower panels or doors alone for a patchwork project look",
+        "Any number colour reads well on a flat, even surface; white or black give strongest contrast.",
+        "Stencil or number graphics: classic work-in-progress look",
+        "Pairs well with: black, rust, white, grey."
+      ],
+      "pitfalls": [
+        "Not matte black or stealth paint: the primer look is chalky and slightly lighter, not a deep stealth",
+        "Not satin: roughness 215 is duller than satin",
+        "Avoid: glossy clearcoats, chrome highlights."
+      ],
+      "related": [
+        "finish_foundation_2.base.matte",
+        "finish_foundation_2.base.flat_black",
+        "finish_foundation_1.base.eggshell",
+        "finish_foundation_1.base.f_powder_coat"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::primer"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "js/spb-ai-atlas-data.js:2",
+        "js/spb-ai-cards-data.js:2",
+        "SPB_WIKI.html#spec_guide",
+        "engine/paint_v2/surface_intent.py:98-160",
+        "engine/base_registry_data.py:1482",
+        "engine/base_registry_data.py:1550",
+        "engine/base_registry_data.py:1577"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::primer",
+      "type": "base",
+      "shelves": [
+        "Foundation"
+      ],
+      "metal": 0,
+      "rough": 215,
+      "coat": 200,
+      "palette": [
+        "#9e3333"
+      ],
+      "own_colours": false,
+      "quality": 100,
+      "loud": 1,
+      "busy": 1,
+      "ratings": {
+        "visible": 1,
+        "appeal": 2,
+        "body": 3,
+        "accent": 2,
+        "hero": 2,
+        "risk": 1
+      },
+      "mood": [
+        "rugged",
+        "industrial",
+        "clean"
+      ],
+      "era": [
+        "timeless",
+        "modern"
+      ],
+      "use": [
+        "body",
+        "hood",
+        "sides"
+      ],
+      "tags": [
+        "grey",
+        "metallic",
+        "matte"
+      ],
+      "level": "beginner",
+      "spec_character": "Average spec: metal 0 (non-metal paint), roughness 215 (flat), clearcoat 198 (very weak clearcoat).",
+      "intent": "spec_driven",
+      "intent_note": "Spec-driven shelf: the shine does all the visual work and your own paint colour stays as it is.",
+      "paint_advice": "Matte reads as flat colour, so a clean saturated colour looks richer than a muddy mid-grey; pair it with a gloss or metal neighbour for contrast. Avoid: glossy clearcoats, chrome highlights.",
+      "combos": [
+        {
+          "with": "patterns.layers_and_stacking",
+          "why": "Patterns that suit it: stencil or number graphics: classic work-in-progress look; rust, weathering or scuff patterns: sells project-car honesty"
+        },
+        {
+          "with": "patterns.choosing_at_car_scale",
+          "why": "Patterns to avoid: fine grain or glitter patterns: ruin the unfinished look; glossy chrome patterns: contradict the matte"
+        },
+        {
+          "with": "spec.overlays_stack",
+          "why": "Spec overlays that work: gloss/matte split: a few shiny patches like repaired areas; fine grit or speckle in spec: sanded-primer feel"
+        },
+        {
+          "with": "spec.paint_spec_marriage",
+          "why": "Judge the paint and the shine together: the same spec looks different under different colours."
+        }
+      ],
+      "examples": [
+        {
+          "title": "Preserve artwork while changing material",
+          "goal": "Try Primer without replacing the source paint.",
+          "settings": {
+            "Base Material": "Primer",
+            "BASE COLOR": "Use source paint (spec only)",
+            "Starting M/R/CC": "0/215/200"
+          },
+          "result": "Source paint is retained by this plain material; reflections and material response change its lit appearance. Check the composed spec and protect sponsor/number material separately."
+        }
+      ],
+      "screens": [],
+      "thumb": "thumbnails/base/primer.png",
+      "swatch": "/api/swatch/base/primer",
+      "faq": [
+        {
+          "q": "What are the starting spec values for Primer?",
+          "a": "The registered plain Foundation material starts at M/R/CC 0/215/200. The base spec is constant, not a grain or flake texture. Patterns, blends, masks and adjustments may change the composed result."
+        },
+        {
+          "q": "Can I keep my existing paint colours with Primer?",
+          "a": "Use BASE COLOR Use source paint (spec only) rather than Use solid color. This plain base preserves the source paint pixels, but metallic response, reflections and lighting still change their appearance. Source-colour preservation does not automatically protect sponsor and number material."
+        }
+      ]
+    },
+    {
+      "id": "finish_foundation_2.base.satin",
+      "title": "Satin",
+      "domain": "finish_foundation_2",
+      "summary": "Soft satin film with a gentle diffuse reflection and no hard highlights; smooth, low-glare surface that keeps colour rich. Reads as a clean, soft-sheen single colour, like a satin vinyl wrap: no hard highlights, colours look rich and slightly muted.",
+      "what": "Satin is a plain Foundation material starting at M/R/CC 0/95/70. Its own paint function adds no pattern, and its base spec is constant: it does not draw grain, flakes or brush marks. Choose BASE COLOR Use source paint (spec only) to preserve the source artwork rather than replace its colours with a solid colour. Metallic response, roughness, clearcoat, lighting and reflections still change the visible impression. Other layers, patterns, masks and zone adjustments can change the composed spec, so these starting values are not a promise for every exported pixel.",
+      "when": [
+        "Best on: body, roof, sides.",
+        "Mood: luxury, elegant, clean.",
+        "Era: modern, timeless.",
+        "Fits: gt / sports car, show car, stock car."
+      ],
+      "how": [
+        "Click the zone you want to change.",
+        "Click the Base Material box under BASE (it shows the zone's current base, or \"Click to choose a base\" on an empty zone) and type \"Satin\" in the search box at the top of the picker.",
+        "Click it to open the big preview, then click Apply.",
+        "To keep existing artwork, choose BASE COLOR Use source paint (spec only). Choose Use solid color only when you intend to replace its colour.",
+        "Render and judge it on the car, not on the swatch."
+      ],
+      "controls": [],
+      "tips": [
+        "Whole body: even finish works anywhere",
+        "Roof and hood where glare would otherwise hurt visibility",
+        "Numbers read exactly as their own colour; add a gloss or matte number for a subtle sheen contrast.",
+        "Any graphic, stripe or camo pattern: a flat satin base lets the pattern be the star",
+        "Pairs well with: black, white, chrome, dark grey."
+      ],
+      "pitfalls": [
+        "Not matte: roughness is mid (95), so it has a soft sheen, flat matte is much duller",
+        "Not gloss: no sharp reflections or clear wet look",
+        "Avoid: high-gloss finishes, heavy flake."
+      ],
+      "related": [
+        "finish_foundation_2.base.semi_gloss",
+        "finish_foundation_1.base.f_powder_coat",
+        "finish_foundation_1.base.eggshell",
+        "finish_foundation_2.base.gloss"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::satin"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "js/spb-ai-atlas-data.js:2",
+        "js/spb-ai-cards-data.js:2",
+        "SPB_WIKI.html#spec_guide",
+        "engine/paint_v2/surface_intent.py:98-160",
+        "engine/base_registry_data.py:1482",
+        "engine/base_registry_data.py:1550",
+        "engine/base_registry_data.py:1577"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::satin",
+      "type": "base",
+      "shelves": [
+        "Foundation"
+      ],
+      "metal": 0,
+      "rough": 95,
+      "coat": 70,
+      "palette": [
+        "#9e3333"
+      ],
+      "own_colours": false,
+      "quality": 100,
+      "loud": 2,
+      "busy": 1,
+      "ratings": {
+        "visible": 1,
+        "appeal": 4,
+        "body": 4,
+        "accent": 4,
+        "hero": 4,
+        "risk": 1
+      },
+      "mood": [
+        "luxury",
+        "elegant",
+        "clean"
+      ],
+      "era": [
+        "modern",
+        "timeless"
+      ],
+      "use": [
+        "body",
+        "roof",
+        "sides"
+      ],
+      "tags": [
+        "gloss",
+        "matte",
+        "satin",
+        "luxury"
+      ],
+      "level": "beginner",
+      "spec_character": "Average spec: metal 0 (non-metal paint), roughness 95 (satin gloss), clearcoat 69 (moderate clearcoat, satin range). The spec is almost perfectly flat, one smooth material.",
+      "intent": "spec_driven",
+      "intent_note": "Spec-driven shelf: the shine does all the visual work and your own paint colour stays as it is.",
+      "paint_advice": "A satin or soft sheen shows the paint colour quietly, so most colours work; pick the colour for contrast with the neighbouring zones, not for the finish. Avoid: high-gloss finishes, heavy flake.",
+      "combos": [
+        {
+          "with": "patterns.layers_and_stacking",
+          "why": "Patterns that suit it: any graphic, stripe or camo pattern: a flat satin base lets the pattern be the star; gloss clear stripes or logos on satin: gloss-on-satin contrast looks premium"
+        },
+        {
+          "with": "patterns.choosing_at_car_scale",
+          "why": "Patterns to avoid: fine glitter or flake overlays: fights the quiet satin character"
+        },
+        {
+          "with": "spec.overlays_stack",
+          "why": "Spec overlays that work: gloss/matte stripe patterns: shiny stripes over the satin base; fine grain or brushed spec: adds texture while keeping the colour untouched"
+        },
+        {
+          "with": "spec.paint_spec_marriage",
+          "why": "Judge the paint and the shine together: the same spec looks different under different colours."
+        }
+      ],
+      "examples": [
+        {
+          "title": "Preserve artwork while changing material",
+          "goal": "Try Satin without replacing the source paint.",
+          "settings": {
+            "Base Material": "Satin",
+            "BASE COLOR": "Use source paint (spec only)",
+            "Starting M/R/CC": "0/95/70"
+          },
+          "result": "Source paint is retained by this plain material; reflections and material response change its lit appearance. Check the composed spec and protect sponsor/number material separately."
+        }
+      ],
+      "screens": [],
+      "thumb": "thumbnails/base/satin.png",
+      "swatch": "/api/swatch/base/satin",
+      "faq": [
+        {
+          "q": "What are the starting spec values for Satin?",
+          "a": "The registered plain Foundation material starts at M/R/CC 0/95/70. The base spec is constant, not a grain or flake texture. Patterns, blends, masks and adjustments may change the composed result."
+        },
+        {
+          "q": "Can I keep my existing paint colours with Satin?",
+          "a": "Use BASE COLOR Use source paint (spec only) rather than Use solid color. This plain base preserves the source paint pixels, but metallic response, reflections and lighting still change their appearance. Source-colour preservation does not automatically protect sponsor and number material."
+        }
+      ]
+    },
+    {
+      "id": "finish_foundation_2.base.semi_gloss",
+      "title": "Semi-Gloss",
+      "domain": "finish_foundation_2",
+      "summary": "Smooth semi-gloss film with a broader, calmer highlight than full gloss; even surface with no sparkle, colour reads flat. Your paint colour with a smooth, calm everyday-enamel sheen: shinier than satin but with a broad soft highlight, no sparkle.",
+      "what": "Semi-Gloss is a plain Foundation material starting at M/R/CC 0/55/40. Its own paint function adds no pattern, and its base spec is constant: it does not draw grain, flakes or brush marks. Choose BASE COLOR Use source paint (spec only) to preserve the source artwork rather than replace its colours with a solid colour. Metallic response, roughness, clearcoat, lighting and reflections still change the visible impression. Other layers, patterns, masks and zone adjustments can change the composed spec, so these starting values are not a promise for every exported pixel.",
+      "when": [
+        "Best on: body, hood, sides.",
+        "Mood: clean, industrial, retro.",
+        "Era: modern, timeless.",
+        "Fits: stock car, gt / sports car, truck / off-road."
+      ],
+      "how": [
+        "Click the zone you want to change.",
+        "Click the Base Material box under BASE (it shows the zone's current base, or \"Click to choose a base\" on an empty zone) and type \"Semi-Gloss\" in the search box at the top of the picker.",
+        "Click it to open the big preview, then click Apply.",
+        "To keep existing artwork, choose BASE COLOR Use source paint (spec only). Choose Use solid color only when you intend to replace its colour.",
+        "Render and judge it on the car, not on the swatch."
+      ],
+      "controls": [],
+      "tips": [
+        "Whole body: uniform sheen suits all panels",
+        "Hood and roof for a broad soft highlight",
+        "Numbers read cleanly in any colour; the even sheen adds no texture.",
+        "Any graphics, stripes or camo: a pure spec base is a clean canvas for them",
+        "Pairs well with: black, white, red, chrome."
+      ],
+      "pitfalls": [
+        "Not full gloss: highlight is wider and softer",
+        "Not satin or matte: reflections still read",
+        "Avoid: high-gloss finishes, heavy textures."
+      ],
+      "related": [
+        "finish_foundation_2.base.gloss",
+        "finish_foundation_2.base.satin",
+        "finish_foundation_2.base.wet_look",
+        "finish_foundation_1.base.f_powder_coat"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::semi_gloss"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "js/spb-ai-atlas-data.js:2",
+        "js/spb-ai-cards-data.js:2",
+        "SPB_WIKI.html#spec_guide",
+        "engine/paint_v2/surface_intent.py:98-160",
+        "engine/base_registry_data.py:1482",
+        "engine/base_registry_data.py:1550",
+        "engine/base_registry_data.py:1577"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::semi_gloss",
+      "type": "base",
+      "shelves": [
+        "Foundation"
+      ],
+      "metal": 0,
+      "rough": 55,
+      "coat": 40,
+      "palette": [
+        "#9e3333"
+      ],
+      "own_colours": false,
+      "quality": 90,
+      "loud": 2,
+      "busy": 1,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 4,
+        "accent": 3,
+        "hero": 3,
+        "risk": 1
+      },
+      "mood": [
+        "clean",
+        "industrial",
+        "retro"
+      ],
+      "era": [
+        "modern",
+        "timeless"
+      ],
+      "use": [
+        "body",
+        "hood",
+        "sides"
+      ],
+      "tags": [
+        "gloss",
+        "satin"
+      ],
+      "level": "beginner",
+      "spec_character": "Average spec: metal 0 (non-metal paint), roughness 55 (high gloss), clearcoat 40 (strong-to-medium clearcoat). The spec is almost perfectly flat, one smooth material.",
+      "intent": "spec_driven",
+      "intent_note": "Spec-driven shelf: the shine does all the visual work and your own paint colour stays as it is.",
+      "paint_advice": "Gloss shows the paint colour as it is, so any colour works; pick the colour for contrast with the neighbouring zones, not for the finish. Avoid: high-gloss finishes, heavy textures.",
+      "combos": [
+        {
+          "with": "patterns.layers_and_stacking",
+          "why": "Patterns that suit it: any graphics, stripes or camo: a pure spec base is a clean canvas for them; fades and gradients: even gloss shows colour changes cleanly"
+        },
+        {
+          "with": "patterns.choosing_at_car_scale",
+          "why": "Patterns to avoid: chrome or mirror patterns: base is not reflective enough"
+        },
+        {
+          "with": "spec.overlays_stack",
+          "why": "Spec overlays that work: fine micro-texture spec: breaks the flat gloss for a more real look; gloss/matte stripe spec: contrast bands without recolouring"
+        },
+        {
+          "with": "spec.paint_spec_marriage",
+          "why": "Judge the paint and the shine together: the same spec looks different under different colours."
+        }
+      ],
+      "examples": [
+        {
+          "title": "Preserve artwork while changing material",
+          "goal": "Try Semi-Gloss without replacing the source paint.",
+          "settings": {
+            "Base Material": "Semi-Gloss",
+            "BASE COLOR": "Use source paint (spec only)",
+            "Starting M/R/CC": "0/55/40"
+          },
+          "result": "Source paint is retained by this plain material; reflections and material response change its lit appearance. Check the composed spec and protect sponsor/number material separately."
+        }
+      ],
+      "screens": [],
+      "thumb": "thumbnails/base/semi_gloss.png",
+      "swatch": "/api/swatch/base/semi_gloss",
+      "faq": [
+        {
+          "q": "What are the starting spec values for Semi-Gloss?",
+          "a": "The registered plain Foundation material starts at M/R/CC 0/55/40. The base spec is constant, not a grain or flake texture. Patterns, blends, masks and adjustments may change the composed result."
+        },
+        {
+          "q": "Can I keep my existing paint colours with Semi-Gloss?",
+          "a": "Use BASE COLOR Use source paint (spec only) rather than Use solid color. This plain base preserves the source paint pixels, but metallic response, reflections and lighting still change their appearance. Source-colour preservation does not automatically protect sponsor and number material."
+        }
+      ]
+    },
+    {
+      "id": "finish_foundation_2.base.spectraflame",
+      "title": "Sentient Polycarbonate",
+      "domain": "finish_foundation_2",
+      "summary": "The paint construction uses a warm dye over a bright plating field, with pooling depth and flakes. Its spec varies metal with plating, polish and flakes, and roughness with plating topography; clearcoat starts at 16. Own palette runs in finish-colour mode; Use source paint skips primary paint generation.",
+      "what": "The paint construction uses a warm dye over a bright plating field, with pooling depth and flakes. Its spec varies metal with plating, polish and flakes, and roughness with plating topography; clearcoat starts at 16. This is one of the five colour-bearing Foundation exceptions, not a plain source-passing material. Registered M/R/CC seed values are not uniform output values or a tested recommendation for your car. Source inspection describes construction; final appearance and any angle-dependent claim require actual in-sim inspection. In the reviewed ordinary primary-base compositor, BASE COLOR Use source paint (spec only) skips the primary base paint function, including a colour-generating one. Use finish’s own color allows that palette to run. This preserves the source from the primary base paint pass, not from every other operation: patterns, additional bases, hue/saturation/brightness, explicit colour overrides and target/mask choices need separate checks. Spec still changes reflections and the visible impression.",
+      "when": [
+        "Best on: body, hood, hero panel.",
+        "Mood: fiery, luxury, wild.",
+        "Era: modern, timeless.",
+        "Fits: gt / sports car, show car, stock car."
+      ],
+      "how": [
+        "Confirm the selected zone/layer and exact finish ID.",
+        "For primary-base material changes on an existing livery, choose BASE COLOR Use source paint (spec only).",
+        "Choose Use finish’s own color when the generated palette is part of the intended design.",
+        "Check patterns, additional bases and HSB adjustments separately before claiming the composed paint is unchanged."
+      ],
+      "controls": [],
+      "tips": [
+        "Source mode can use a colour-generating primary base for its spec without running its paint palette.",
+        "Colour-bearing finish mode is useful when its palette belongs in the intended design."
+      ],
+      "pitfalls": [
+        "Do not confuse the registered paint function with the BASE COLOR mode actually executing it.",
+        "Do not extend primary-base source-lock proof to the entire composed document.",
+        "A static interference palette is not proof of dynamic camera-angle colour flipping."
+      ],
+      "related": [
+        "finish_foundation_1.base.chameleon",
+        "finish_foundation_1.base.f_metallic",
+        "finish_foundation_1.base.f_candy",
+        "finish_foundation_1.base.f_brushed"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::spectraflame"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/candy_pearl_2026.py:592-785",
+        "engine/registry.py:1152",
+        "shokker_engine_v2.py:16269-16309",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:5320-5333",
+        "engine/compose.py:6240-6244",
+        "engine/compose.py:6302-6305",
+        "paint-booth-2-state-zones.js:1922-1923"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::spectraflame",
+      "type": "base",
+      "shelves": [
+        "Foundation"
+      ],
+      "metal": 184,
+      "rough": 33,
+      "coat": 16,
+      "palette": [
+        "#780c01",
+        "#982c06",
+        "#bc5f29"
+      ],
+      "own_colours": true,
+      "quality": 53,
+      "loud": 4,
+      "busy": 3,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 2,
+        "accent": 2,
+        "hero": 4,
+        "risk": 4
+      },
+      "mood": [
+        "fiery",
+        "luxury",
+        "wild"
+      ],
+      "era": [
+        "modern",
+        "timeless"
+      ],
+      "use": [
+        "body",
+        "hood",
+        "hero panel"
+      ],
+      "tags": [
+        "carbon",
+        "holographic"
+      ],
+      "level": "pro",
+      "spec_character": "Average spec: metal 184 (true metallic), roughness 33 (high gloss), clearcoat 16 (maximum clearcoat).",
+      "intent": "spec_driven",
+      "intent_note": "Spec-driven shelf: the shine does all the visual work and your own paint colour stays as it is.",
+      "paint_advice": "Colour-generating construction is not the same as executing that paint pass: Use source paint bypasses the reviewed ordinary primary base paint function.",
+      "combos": [],
+      "examples": [],
+      "screens": [
+        "car_spectraflame"
+      ],
+      "thumb": "thumbnails/base/spectraflame.png",
+      "swatch": "/api/swatch/base/spectraflame",
+      "deep": {
+        "title": "Construction, source mode and limits",
+        "body": "The paint construction uses a warm dye over a bright plating field, with pooling depth and flakes. Its spec varies metal with plating, polish and flakes, and roughness with plating topography; clearcoat starts at 16. This is one of the five colour-bearing Foundation exceptions, not a plain source-passing material. Registered M/R/CC seed values are not uniform output values or a tested recommendation for your car. Source inspection describes construction; final appearance and any angle-dependent claim require actual in-sim inspection. In the reviewed ordinary primary-base compositor, BASE COLOR Use source paint (spec only) skips the primary base paint function, including a colour-generating one. Use finish’s own color allows that palette to run. This preserves the source from the primary base paint pass, not from every other operation: patterns, additional bases, hue/saturation/brightness, explicit colour overrides and target/mask choices need separate checks. Spec still changes reflections and the visible impression."
+      },
+      "faq": [
+        {
+          "q": "Can I use spectraflame spec without adding its paint colours?",
+          "a": "Yes for the reviewed ordinary primary-base path: choose BASE COLOR Use source paint (spec only), which skips that base paint function while retaining its material contribution. This is not a whole-project colour guarantee; patterns, additional bases and HSB need separate checks."
+        },
+        {
+          "q": "Does Foundation spectraflame leave sponsor colours unchanged?",
+          "a": "It depends on BASE COLOR mode. Use source paint (spec only) skips the reviewed ordinary primary base paint function, so this primary base does not add its palette. Use finish’s own color runs its paint construction. Other operations can still change the livery; inspect patterns, additional bases, HSB and the target."
+        },
+        {
+          "q": "Are Sentient Polycarbonate material numbers constant everywhere?",
+          "a": "No. Its registered spec function varies metal and roughness spatially; clearcoat starts at 16. Catalog averages and registry seed values are not constant output values."
+        },
+        {
+          "q": "Does Sentient Polycarbonate automatically change colour with camera angle?",
+          "a": "The generated paint uses static spatial colour fields; the source functions accept no live camera angle. Actual lighting and reflection can affect appearance, but an angle-changing pigment effect must be checked in iRacing rather than promised from the name."
+        }
+      ],
+      "protips": [
+        "Source mode can use a colour-generating primary base for its spec without running its paint palette.",
+        "Colour-bearing finish mode is useful when its palette belongs in the intended design."
+      ],
+      "mistakes": [
+        "Do not confuse the registered paint function with the BASE COLOR mode actually executing it.",
+        "Do not extend primary-base source-lock proof to the entire composed document.",
+        "A static interference palette is not proof of dynamic camera-angle colour flipping."
+      ]
+    },
+    {
+      "id": "finish_foundation_2.base.wet_look",
+      "title": "Wet Look",
+      "domain": "finish_foundation_2",
+      "summary": "Mirror-smooth high-gloss lacquer with a razor-tight highlight, no flake or texture. Reads as your own colour under a deep, razor-clear lacquer: crisp mirror-like highlights on curves, otherwise perfectly plain.",
+      "what": "Wet Look is a plain Foundation material starting at M/R/CC 0/15/16. Its own paint function adds no pattern, and its base spec is constant: it does not draw grain, flakes or brush marks. Choose BASE COLOR Use source paint (spec only) to preserve the source artwork rather than replace its colours with a solid colour. Metallic response, roughness, clearcoat, lighting and reflections still change the visible impression. Other layers, patterns, masks and zone adjustments can change the composed spec, so these starting values are not a promise for every exported pixel.",
+      "when": [
+        "Best on: body, hood, roof.",
+        "Mood: clean, elegant, luxury.",
+        "Era: timeless, modern.",
+        "Fits: show car, gt / sports car, stock car."
+      ],
+      "how": [
+        "Click the zone you want to change.",
+        "Click the Base Material box under BASE (it shows the zone's current base, or \"Click to choose a base\" on an empty zone) and type \"Wet Look\" in the search box at the top of the picker.",
+        "Click it to open the big preview, then click Apply.",
+        "To keep existing artwork, choose BASE COLOR Use source paint (spec only). Choose Use solid color only when you intend to replace its colour.",
+        "Render and judge it on the car, not on the swatch."
+      ],
+      "controls": [],
+      "tips": [
+        "Whole body: neutral and safe everywhere",
+        "Hood, roof and fenders: curves show the tight highlights best",
+        "Numbers keep their colour; strong reflections on curves can cut contrast on dark numbers in bright sun.",
+        "Any stripe, graphic or camo: the clear lacquer makes them look dipped and deep",
+        "Pairs well with: any colour, chrome, black, white."
+      ],
+      "pitfalls": [
+        "Not Soft Gloss: roughness 15 vs about 30, so the highlight is tighter and wetter",
+        "Not chrome: metal is zero, you still see your colour",
+        "Avoid: strong reflected highlights can reduce contrast on dark graphics, authored wear is optional, not part of the material."
+      ],
+      "related": [
+        "finish_foundation_2.base.gloss",
+        "finish_foundation_2.base.semi_gloss",
+        "finish_foundation_2.base.satin",
+        "finish_foundation_1.base.f_pearl"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::wet_look"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "js/spb-ai-atlas-data.js:2",
+        "js/spb-ai-cards-data.js:2",
+        "SPB_WIKI.html#spec_guide",
+        "engine/paint_v2/surface_intent.py:98-160",
+        "engine/base_registry_data.py:1482",
+        "engine/base_registry_data.py:1550",
+        "engine/base_registry_data.py:1577"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::wet_look",
+      "type": "base",
+      "shelves": [
+        "Foundation"
+      ],
+      "metal": 0,
+      "rough": 15,
+      "coat": 16,
+      "palette": [
+        "#9e3333"
+      ],
+      "own_colours": false,
+      "quality": 100,
+      "loud": 2,
+      "busy": 1,
+      "ratings": {
+        "visible": 1,
+        "appeal": 4,
+        "body": 5,
+        "accent": 4,
+        "hero": 4,
+        "risk": 1
+      },
+      "mood": [
+        "clean",
+        "elegant",
+        "luxury"
+      ],
+      "era": [
+        "timeless",
+        "modern"
+      ],
+      "use": [
+        "body",
+        "hood",
+        "roof"
+      ],
+      "tags": [
+        "gloss"
+      ],
+      "level": "beginner",
+      "spec_character": "Average spec: metal 0 (non-metal paint), roughness 15 (wet mirror gloss), clearcoat 16 (maximum clearcoat). The spec is almost perfectly flat, one smooth material.",
+      "intent": "spec_driven",
+      "intent_note": "Spec-driven shelf: the shine does all the visual work and your own paint colour stays as it is.",
+      "paint_advice": "Gloss shows the paint colour as it is, so any colour works; pick the colour for contrast with the neighbouring zones, not for the finish. Avoid: strong reflected highlights can reduce contrast on dark graphics, authored wear is optional, not part of the material.",
+      "combos": [
+        {
+          "with": "patterns.layers_and_stacking",
+          "why": "Patterns that suit it: any stripe, graphic or camo: the clear lacquer makes them look dipped and deep; fine metal flake or glitter overlay: wet depth over sparkle gives a show-car look"
+        },
+        {
+          "with": "patterns.choosing_at_car_scale",
+          "why": "Patterns to avoid: none; neutral base"
+        },
+        {
+          "with": "spec.overlays_stack",
+          "why": "Spec overlays that work: gloss/matte stripe bands: dull stripes against razor-wet paint; fine sparkle spec: adds shimmer without colour change"
+        },
+        {
+          "with": "spec.paint_spec_marriage",
+          "why": "Judge the paint and the shine together: the same spec looks different under different colours."
+        }
+      ],
+      "examples": [
+        {
+          "title": "Preserve artwork while changing material",
+          "goal": "Try Wet Look without replacing the source paint.",
+          "settings": {
+            "Base Material": "Wet Look",
+            "BASE COLOR": "Use source paint (spec only)",
+            "Starting M/R/CC": "0/15/16"
+          },
+          "result": "Source paint is retained by this plain material; reflections and material response change its lit appearance. Check the composed spec and protect sponsor/number material separately."
+        }
+      ],
+      "screens": [],
+      "thumb": "thumbnails/base/wet_look.png",
+      "swatch": "/api/swatch/base/wet_look",
+      "faq": [
+        {
+          "q": "What are the starting spec values for Wet Look?",
+          "a": "The registered plain Foundation material starts at M/R/CC 0/15/16. The base spec is constant, not a grain or flake texture. Patterns, blends, masks and adjustments may change the composed result."
+        },
+        {
+          "q": "Can I keep my existing paint colours with Wet Look?",
+          "a": "Use BASE COLOR Use source paint (spec only) rather than Use solid color. This plain base preserves the source paint pixels, but metallic response, reflections and lighting still change their appearance. Source-colour preservation does not automatically protect sponsor and number material."
+        }
+      ]
+    }
+  ]
+}

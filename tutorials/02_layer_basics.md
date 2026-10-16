@@ -96,7 +96,7 @@ Right-click any layer and pick **Lock layer** from the menu (or use the lock ico
 
 A locked layer can't be edited by the drawing tools. It's a guardrail — useful when you're doing detail work near a layer you don't want to bump.
 
-`Ctrl+L` while a layer is selected toggles its lock state.
+`Ctrl+L` is not a layer lock: it locks the active zone to the selected layer.
 
 ---
 

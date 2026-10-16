@@ -4093,6 +4093,13 @@
 
     async function loadMaps() {
       const id = (finishIdInput.value || finishSelect.value).trim();
+      // [LEFTOVERS-3 item 4, 2026-10-10] "Latest Render" puts the label "latest_render" in the finish-id box; it is the name of the latest SPB render maps, not a catalogue
+      // finish. Every re-load (Quality / Balanced / Speed preset, Texture Read) then asked /api/finish-viewer/render/monolithic/latest_render and got HTTP 500
+      // "Unknown monolithic finish" (measured: 4 of 4 re-loads). Re-load the latest render's own maps instead. Kill switch: window.SPB_LO3_OFF / SPB_LO3_4_OFF.
+      if (id === "latest_render" && !window.SPB_LO3_OFF && !window.SPB_LO3_4_OFF) {
+        await loadLatestRender();
+        return;
+      }
       if (isLiveSource()) {
         if (!state.selectedRow || state.selectedRow.id !== id) {
           state.selectedRow = state.catalogRows.find((row) => row.id === id)

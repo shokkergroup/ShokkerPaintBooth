@@ -312,7 +312,7 @@
                 if (!output) return null;
                 output.value = path;
                 if (typeof window.updateOutputPath === 'function') window.updateOutputPath();
-                if (typeof window.showToast === 'function') window.showToast('iRacing folder set!');
+                if (typeof window.showToast === 'function') window.showToast('iRacing folder set');
                 return path;
             }
         };

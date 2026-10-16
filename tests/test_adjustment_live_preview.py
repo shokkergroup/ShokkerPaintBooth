@@ -85,7 +85,7 @@ def test_primary_adjustment_dialogs_publish_live_preview_and_keep_keyboard_contr
     dialog = CANVAS[dialog_start:dialog_end]
     assert "schedulePreview();" in dialog
     assert "spec.onPreview(values.slice())" in dialog
-    assert "LIVE PREVIEW · Cancel restores the original" in dialog
+    assert "Live preview · Cancel restores the original" in dialog
     assert "cancelAnimationFrame(previewFrame)" in dialog
     assert "e.key === 'Enter'" in dialog
     assert "e.key === 'Escape'" in dialog
@@ -116,7 +116,7 @@ def test_color_dialog_adjustments_publish_live_preview_and_cancel_exactly():
     dialog = CANVAS[dialog_start:dialog_end]
     assert "config.onPreview(readPayload())" in dialog
     assert "requestAnimationFrame" in dialog
-    assert "LIVE PREVIEW · Cancel restores the original" in dialog
+    assert "Live preview · Cancel restores the original" in dialog
     assert "_activeAdjustmentColorDialogCancel" in dialog
     assert "overlay.style.justifyContent = 'flex-start'" in dialog
     assert "overlay.style.setProperty('backdrop-filter', 'none', 'important')" in dialog

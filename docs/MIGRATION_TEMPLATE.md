@@ -122,7 +122,7 @@ node --check paint-booth-0-finish-data.js
 node tests/_runtime_harness/registry_collisions.mjs   # collisions should reduce
 node tests/_runtime_harness/validate_finish_data.mjs  # 0 problems
 node tests/_runtime_harness/legacy_id_migration.mjs   # all migrations execute
-python audit_finish_quality.py                        # engine still 0/0/0/0
+python scripts/spb_golden_net.py --check             # golden net: 0 changed / 0 removed / 0 error
 python -m pytest tests/ -q                            # all green
 ```
 

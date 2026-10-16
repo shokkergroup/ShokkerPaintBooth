@@ -48,6 +48,12 @@
     // ------------------------------------------------------------------ layer roles
     function roleOf(l) {
         var n = norm(l.name), g = norm(l.groupName || '');
+        // CX3 2026-10-09 (Codex 'Shared layer intelligence', owner rule: change only the named part): the official ARCA template has FOUR layers called
+        // "Base Paint"; three live in the 'Custom Spec Map' groups (metallic / roughness / clearcoat). The old name test called all four 'body paint', so the
+        // paintable mask and every "body" edit also hit material maps. A named spec/alpha group now outranks the generic name. Baseline on the real 42-layer
+        // ARCA import: psd_0/37/38/40 all 'body paint'; after: psd_0 only. Kill switch: window.SPB_CX3_OFF = true.
+        var labelled = !window.SPB_CX3_OFF && window.SpbTemplateLayers && window.SpbTemplateLayers.classify(l);
+        if (labelled && (labelled.kind === 'spec' || labelled.kind === 'alpha')) return labelled.role;
         if (/turn off|export|template|guide/.test(g) || /(^| )(mask|wire|wireframe|mandatory|template|guide|outline|uv)( |$)/.test(n) || /mandatory/.test(n)) return 'template (switch off before exporting)';
         if (/number/.test(n)) return 'numbers';
         if (/sponsor/.test(n)) return 'sponsors';
@@ -58,7 +64,8 @@
     }
     var ROLES_SIG = null, ROLES_OUT = null;
     function roles() {
-        var sg = signature(); if (ROLES_SIG === sg && ROLES_OUT) return ROLES_OUT.map(function (r) { var o = {}; for (var k in r) o[k] = r[k]; o.visible = layerVisible(r.id); return o; });
+        var rs3 = sourceDescriptor();          // CX3: roles depend on the GROUP (not only geometry) and on which document is open
+        var sg = signature() + '|roles:' + JSON.stringify(layersArr().map(function (l3) { return l3 && [l3.id, l3.groupName || '']; })) + '|' + rs3.path + ':' + rs3.generation + '|' + (!window.SPB_CX3_OFF && !!window.SpbTemplateLayers); if (ROLES_SIG === sg && ROLES_OUT) return ROLES_OUT.map(function (r) { var o = {}; for (var k in r) o[k] = r[k]; o.visible = layerVisible(r.id); return o; });
         var out = layersArr().filter(function (l) { return l && l.img; }).map(function (l) { return { id: l.id, name: l.name, group: l.groupName || undefined, role: roleOf(l), visible: l.visible !== false, opacity: Math.round((l.opacity == null ? 255 : l.opacity) / 2.55), blend: (l.blendMode && l.blendMode !== 'source-over') ? l.blendMode : undefined }; });
         if (!out.some(function (r) { return r.role === 'body paint'; })) {      // nobody named the body layer ("Layer 16"): it is the BOTTOM-most art layer that covers a large part of the sheet
             for (var i = 0; i < out.length; i++) {
@@ -309,7 +316,8 @@
         'windshield': ['windshield', 'windscreen', 'front glass', 'a pillar'],
         'rear window': ['rear window', 'back glass', 'rear glass']
     };
-    function canonPart(ref) { var q = norm(ref), k; for (k in PART_ALIASES) { if (PART_ALIASES.hasOwnProperty(k) && PART_ALIASES[k].indexOf(q) !== -1) return k; } return q; }
+    function canonPart(ref) { if (typeof ref === 'string' && ref.indexOf('@') > 0) ref = ref.split('@')[0];          // D-DOOR: 'left side@door' is the left side
+        var q = norm(ref), k; for (k in PART_ALIASES) { if (PART_ALIASES.hasOwnProperty(k) && PART_ALIASES[k].indexOf(q) !== -1) return k; } return q; }
     // The flat sheet may still show the template's dead-space: the standard brownish tone, or transparency. Returns the same shape as binaryGrid's other sources.
     function deadSpaceGrid() {
         try {
@@ -587,8 +595,14 @@
         return best;
     }
     function findIsland(ref) {
+        if (typeof ref === 'string' && ref.indexOf('@') > 0) ref = ref.split('@')[0];          // D-DOOR
         if (!CACHE) return null; var q = norm(ref), cq = canonPart(ref), best = null;
         CACHE.islands.forEach(function (i) { if (!best && (i.id.toLowerCase() === q || (i.confirmed && i.name && (norm(i.name) === q || canonPart(i.name) === cq)))) best = i; });
+        // LIVE PLAYTEST 2026-10-09 (owner ARCA, "white ghost flames on the pink"): a labelled island named "left side" was only the rear PIECE of that side (one Mask component), so the flames
+        // and any "left side" paint landed in the rear 22 % of the panel. When the car map's box of the same name holds most of the island (>= 60 %) and is at least twice its size, the box is the part.
+        if (best && !best.box && best.bbox && q !== best.id.toLowerCase()) { var bxw = findBox(ref), ib0 = best.bbox, area = function (b) { return Math.max(0, b[2] - b[0]) * Math.max(0, b[3] - b[1]); };
+            var ov = bxw && bxw.bbox ? area([Math.max(bxw.bbox[0], ib0[0]), Math.max(bxw.bbox[1], ib0[1]), Math.min(bxw.bbox[2], ib0[2]), Math.min(bxw.bbox[3], ib0[3])]) : 0;          // overlap, not containment: the labelled piece may poke past the box
+            if (bxw && bxw.bbox && canonPart(bxw.name) === cq && area(bxw.bbox) >= 2 * area(ib0) && ov >= 0.6 * area(ib0)) best = bxw; }
         if (!best) best = findBox(ref);
         if (!best) CACHE.islands.forEach(function (i) { if (!best && i.confirmed && i.name && q.length > 3 && (norm(i.name).indexOf(q) !== -1 || q.indexOf(norm(i.name)) !== -1)) best = i; });
         return best || null;
@@ -641,22 +655,208 @@
         Object.keys(inn).forEach(function (k) { inBox += inn[k]; if (inn[k] / tot[k] >= 0.55) { ids[k] = 1; kept += inn[k]; } });
         return (inBox && kept / inBox >= 0.6) ? ids : null;
     }
-    function maskOne(ref, portion, band) {
+    // PART_MASKS 2026-10-06 (owner ARCA Chevy SS: "make the hood orange" left a ring whose OUTER edge was ragged): a part is a set of cells of the 256 grid (8 px), the labels were grown back only 3-4 cells
+    // after the Wire outlines were thickened, so its rim was an 8 px staircase and up to ~60 px of the panel just inside its outline was never labelled. The template's Mask layer is the real edge at full
+    // resolution and its Wire outlines cut the sheet into panels at full resolution: read both once per car. null = no usable Mask layer (flat sheets, server-read masks): maskOne() then behaves as before.
+    function fullPaintable() {
+        if (!CACHE || !MASKS || !PAINT) return null; var d = paintDims(), W = d[0], H = d[1], key = W + 'x' + H + ':' + layersArr().length;
+        if (CACHE._fp && CACHE._fp.key === key) return CACHE._fp.v;
+        var res = null;
+        try {
+            var ls = layersArr().filter(function (l) { return l && l.img; }), mk = null, wl = null, i, n, bb, L, T, cv, cx, px;
+            for (i = 0; i < ls.length; i++) { if (!mk && /(^| )mask( |$)/.test(norm(ls[i].name))) mk = ls[i]; if (!wl && /(^| )wire( |$)|wireframe|outline/.test(norm(ls[i].name))) wl = ls[i]; }
+            if (mk && !(SERVERMASK && maskLayerEmpty())) {
+                cv = document.createElement('canvas'); cv.width = W; cv.height = H; cx = cv.getContext('2d', { willReadFrequently: true });
+                bb = mk.bbox || [0, 0, mk.img.width, mk.img.height]; L = bb.x != null ? bb.x : bb[0]; T = bb.y != null ? bb.y : bb[1]; cx.drawImage(mk.img, L, T);
+                px = cx.getImageData(0, 0, W, H).data; var op = new Uint8Array(W * H); n = 0;
+                for (i = 0; i < W * H; i++) if (px[i * 4 + 3] > 40) { op[i] = 1; n++; }
+                var inv = n / (W * H) < 0.12, fp = new Uint8Array(W * H), pf = 0;
+                for (i = 0; i < W * H; i++) { fp[i] = (inv ? op[i] : (op[i] ? 0 : 1)); pf += fp[i]; }
+                if (pf / (W * H) > 0.08 && pf / (W * H) < 0.92) {
+                    // sanity: the full-resolution mask must agree with the grid the islands were labelled on (>= 90% of paintable grid cells have a paintable centre pixel)
+                    var sc = W / GRID, gp = 0, ok = 0, gx, gy; for (gy = 0; gy < GRID; gy++) for (gx = 0; gx < GRID; gx++) if (PAINT[gy * GRID + gx]) { gp++; if (fp[Math.min(H - 1, Math.floor((gy + 0.5) * sc)) * W + Math.min(W - 1, Math.floor((gx + 0.5) * sc))]) ok++; }
+                    if (gp && ok / gp >= 0.9) {
+                        // full-resolution panel outlines (the Wire layer's green lines, same colour test as wallGrid), thickened 1 px; panels = connected pieces of paintable pixels that no outline cuts
+                        var wall = new Uint8Array(W * H), x, y;
+                        if (wl) {
+                            cx.clearRect(0, 0, W, H); bb = wl.bbox || [0, 0, wl.img.width, wl.img.height]; L = bb.x != null ? bb.x : bb[0]; T = bb.y != null ? bb.y : bb[1]; cx.drawImage(wl.img, L, T); px = cx.getImageData(0, 0, W, H).data;
+                            for (i = 0; i < W * H; i++) { var o = i * 4; if (px[o + 3] > 120 && px[o + 1] > 140 && px[o] < 130 && px[o + 2] < 130 && px[o + 1] - px[o] > 60) wall[i] = 1; }
+                            var w2 = new Uint8Array(wall); for (y = 1; y < H - 1; y++) for (x = 1; x < W - 1; x++) { i = y * W + x; if (wall[i - 1] || wall[i + 1] || wall[i - W] || wall[i + W]) w2[i] = 1; } wall = w2;
+                        }
+                        var comp = new Int32Array(W * H), q = new Int32Array(W * H), nc = 0, sizes = [0], qi, qn, p, px0, cur;
+                        for (i = 0; i < W * H; i++) {
+                            if (!fp[i] || wall[i] || comp[i]) continue;
+                            cur = ++nc; qi = 0; qn = 0; q[qn++] = i; comp[i] = cur;
+                            while (qi < qn) { p = q[qi++]; px0 = p % W; if (px0 > 0 && fp[p - 1] && !wall[p - 1] && !comp[p - 1]) { comp[p - 1] = cur; q[qn++] = p - 1; } if (px0 < W - 1 && fp[p + 1] && !wall[p + 1] && !comp[p + 1]) { comp[p + 1] = cur; q[qn++] = p + 1; } if (p >= W && fp[p - W] && !wall[p - W] && !comp[p - W]) { comp[p - W] = cur; q[qn++] = p - W; } if (p < W * H - W && fp[p + W] && !wall[p + W] && !comp[p + W]) { comp[p + W] = cur; q[qn++] = p + W; } }
+                            sizes.push(qn);
+                        }
+                        var E = 1, c; for (c = 2; c <= nc; c++) if (sizes[c] > sizes[E]) E = c;          // the biggest piece is the bleed network that joins every panel's padding
+                        var wi = [], pass; for (i = 0; i < W * H; i++) if (fp[i] && !comp[i]) wi.push(i);
+                        for (pass = 0; pass < 3; pass++) {          // outline pixels join the panel they touch (an inner panel in preference to the bleed network)
+                            var nv = new Int32Array(wi.length), k, a, v; for (k = 0; k < wi.length; k++) { p = wi[k]; px0 = p % W; v = 0; a = px0 > 0 ? comp[p - 1] : 0; if (a && (a !== E || !v)) v = a; a = px0 < W - 1 ? comp[p + 1] : 0; if (a && (a !== E || !v)) v = a; a = p >= W ? comp[p - W] : 0; if (a && (a !== E || !v)) v = a; a = p < W * H - W ? comp[p + W] : 0; if (a && (a !== E || !v)) v = a; nv[k] = v; }
+                            for (k = 0; k < wi.length; k++) if (nv[k]) comp[wi[k]] = nv[k];
+                        }
+                        // OWNER MAP: which island (value of MASKS) owns every paintable pixel. A panel piece whose claimed cells all belong to ONE island is that island's, whole (this is what restores the
+                        // un-labelled strips just inside an outline) when the island's labelled cells cover >= 40% of the piece; a piece shared by several islands goes to the nearest claimed cell (<= 4 cells); unclaimed pieces (wipers, mirrors...) stay nobody's.
+                        // The bleed network is then grown out of the owned pixels by BLEED px (Mask-layer padding is ~12 px): the rim ends where the template's paintable area ends, not on a grid.
+                        var NI = 0; for (i = 0; i < GRID * GRID; i++) if (MASKS[i] > NI) NI = MASKS[i];
+                        if (NI > 0 && NI < 250 && nc < 60000) {
+                            var cnt = new Int32Array((nc + 1) * (NI + 1)), cs = W / GRID, cxp, cyp, mv, cc0;
+                            for (gy = 0; gy < GRID; gy++) for (gx = 0; gx < GRID; gx++) { mv = MASKS[gy * GRID + gx]; if (!mv) continue; cc0 = comp[Math.min(H - 1, Math.floor((gy + 0.5) * cs)) * W + Math.min(W - 1, Math.floor((gx + 0.5) * cs))]; if (cc0 && cc0 !== E) cnt[cc0 * (NI + 1) + mv]++; }
+                            var cown = new Int16Array(nc + 1), tot, top, topn, m2;          // 0 = unclaimed, -1 = shared, k = island k
+                            for (c = 1; c <= nc; c++) { if (c === E) continue; tot = 0; top = 0; topn = 0; for (m2 = 1; m2 <= NI; m2++) { v = cnt[c * (NI + 1) + m2]; tot += v; if (v > topn) { topn = v; top = m2; } } cown[c] = (!tot || tot * cs * cs < 0.4 * sizes[c]) ? 0 : (topn === tot ? top : -1); }          // a piece the labelled cells barely touch (a vent, a wiper...) is nobody's: the old grid answer stays there
+                            var own = new Uint8Array(W * H), bestd, bestv, wy, wx, ccx, ccy, dd, ccv;
+                            for (y = 0; y < H; y++) for (x = 0; x < W; x++) {
+                                i = y * W + x; if (!fp[i]) continue; c = comp[i]; if (!c || c === E) continue;
+                                if (cown[c] > 0) own[i] = cown[c];
+                                else if (cown[c] < 0) { cxp = Math.floor(x / cs); cyp = Math.floor(y / cs); bestd = 1e9; bestv = 0; for (wy = -4; wy <= 4; wy++) for (wx = -4; wx <= 4; wx++) { ccx = cxp + wx; ccy = cyp + wy; if (ccx < 0 || ccy < 0 || ccx >= GRID || ccy >= GRID) continue; ccv = MASKS[ccy * GRID + ccx]; if (!ccv) continue; dd = Math.pow((ccx + 0.5) * cs - x - 0.5, 2) + Math.pow((ccy + 0.5) * cs - y - 0.5, 2); if (dd < bestd) { bestd = dd; bestv = ccv; } } if (bestd <= 16 * cs * cs) own[i] = bestv; }
+                            }
+                            var BLEED = Math.ceil(1.5 * cs), qa = q, qh = 0, qt = 0, lvl, endl;          // grow the owned pixels through the bleed network (never through another panel piece), 4-connected, BLEED steps
+                            for (i = 0; i < W * H; i++) { if (!own[i]) continue; px0 = i % W; if ((px0 > 0 && !own[i - 1] && fp[i - 1] && comp[i - 1] === E) || (px0 < W - 1 && !own[i + 1] && fp[i + 1] && comp[i + 1] === E) || (i >= W && !own[i - W] && fp[i - W] && comp[i - W] === E) || (i < W * H - W && !own[i + W] && fp[i + W] && comp[i + W] === E)) qa[qt++] = i; }
+                            for (lvl = 0; lvl < BLEED && qh < qt; lvl++) {
+                                endl = qt; while (qh < endl) { p = qa[qh++]; px0 = p % W; v = own[p];
+                                    if (px0 > 0 && !own[p - 1] && fp[p - 1] && comp[p - 1] === E) { own[p - 1] = v; qa[qt++] = p - 1; }
+                                    if (px0 < W - 1 && !own[p + 1] && fp[p + 1] && comp[p + 1] === E) { own[p + 1] = v; qa[qt++] = p + 1; }
+                                    if (p >= W && !own[p - W] && fp[p - W] && comp[p - W] === E) { own[p - W] = v; qa[qt++] = p - W; }
+                                    if (p < W * H - W && !own[p + W] && fp[p + W] && comp[p + W] === E) { own[p + W] = v; qa[qt++] = p + W; } }
+                            }
+                            res = { own: own, fp: fp };
+                        }
+                    }
+                }
+            }
+        } catch (e) { res = null; }
+        CACHE._fp = { key: key, v: res }; return res;
+    }
+    // R10-MAP 2026-10-08 (owner Chevy SS: "left door red / doors black" recoloured the little '32' number plate under the front wheel arch and left a square blotch): the library box of a SIDE also
+    // swallows small separate pieces of the template's paintable area (the number plate in the arch, wheel-image tiles). A side = its main panel: any separate, compact (not a long strip) piece under
+    // 12% of the main panel's area is left out of the side's mask. Kill switch: window.SPB_CARMAP_KEEPPLATE = true.
+    function sidePlateKeep(isl, W, H) {
+        if (window.SPB_CARMAP_KEEPPLATE || !isl || !CACHE) return null;
+        var nm = canonPart(isl.name || ''); if (nm !== 'left side' && nm !== 'right side') return null;
+        CACHE._plk = CACHE._plk || {}; var key = isl.id + ':' + W + 'x' + H; if (CACHE._plk.hasOwnProperty(key)) return CACHE._plk[key];
+        var base = maskOne(isl.name, null, null, true), keep = null;
+        try {
+            var m = base && base.mask, N = W * H, lab = new Int32Array(N), q = new Int32Array(N), comps = [], i, c = 0, qh, qt, p, x, y, x0, y0, x1, y1, a;
+            for (i = 0; i < N; i++) {
+                if (!m[i] || lab[i]) continue; c++; qh = 0; qt = 0; q[qt++] = i; lab[i] = c; x0 = x1 = i % W; y0 = y1 = (i / W) | 0; a = 0;
+                while (qh < qt) { p = q[qh++]; a++; x = p % W; y = (p / W) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+                    if (x > 0 && m[p - 1] && !lab[p - 1]) { lab[p - 1] = c; q[qt++] = p - 1; } if (x < W - 1 && m[p + 1] && !lab[p + 1]) { lab[p + 1] = c; q[qt++] = p + 1; }
+                    if (y > 0 && m[p - W] && !lab[p - W]) { lab[p - W] = c; q[qt++] = p - W; } if (y < H - 1 && m[p + W] && !lab[p + W]) { lab[p + W] = c; q[qt++] = p + W; } }
+                comps.push({ id: c, area: a, w: x1 - x0 + 1, h: y1 - y0 + 1 });
+            }
+            var big = 0; comps.forEach(function (k) { if (k.area > big) big = k.area; });
+            var drop = {}, any = false; comps.forEach(function (k) { var asp = Math.max(k.w, k.h) / Math.max(1, Math.min(k.w, k.h)); if (k.area < 0.12 * big && asp < 2.5) { drop[k.id] = 1; any = true; } });
+            if (any) { keep = new Uint8Array(N); for (i = 0; i < N; i++) keep[i] = (m[i] && drop[lab[i]]) ? 0 : 1; }
+        } catch (e) { keep = null; }
+        CACHE._plk[key] = keep; return keep;
+    }
+    // ===== D-DOOR 2026-10-08 (owner: "paint the door red" / "flames from the front fender to the door" / "rear quarter panel black" painted the WHOLE side) =====
+    // Sub-part regions of a side panel, as fractions along its nose->tail axis: portion "door" | "front fender" | "rear quarter" | "rocker" | "A to B" (span) on left side / right side.
+    // Where the two WHEEL ARCHES can be measured in the panel's own mask, the door is the stretch between them (needs no nose end); otherwise the data defaults (spb-door-data.js) are used and
+    // need the nose end. Fender / quarter always need the nose end. The nose end is ONE data field per car (SPB_DOOR_DATA.cars[id].nose/status): a 'disputed' / unknown car is NOT guessed:
+    // subStatus() says ok:false + the question to ask, and maskOne() returns an EMPTY mask (never the whole side). Kill switch: window.SPB_DOOR_OFF = true.
+    function doorOff() { try { return !!window.SPB_DOOR_OFF; } catch (e) { return false; } }
+    function doorData() { try { return window.SPB_DOOR_DATA || null; } catch (e) { return null; } }
+    function subParse(portion) {
+        var p = String(portion || '').toLowerCase().replace(/\b(?:the|a|panel|panels)\b/g, ' ').replace(/\s+/g, ' ').trim(); if (!p) return null;
+        var SUBW = '(?:front fender|fender|door|rear quarter|rear fender|quarter|rocker|sill|skirt)', one = new RegExp('^' + SUBW + 's?$'), two = new RegExp('^(' + SUBW + ')s? (?:to|through|thru|until|till|into|and) (' + SUBW + ')s?$');
+        function norm1(w) { w = w.replace(/s$/, ''); return /fender/.test(w) && !/rear/.test(w) ? 'fender' : (/door/.test(w) ? 'door' : (/quarter|rear fender/.test(w) ? 'quarter' : 'rocker')); }
+        var m; if (one.test(p)) return { a: norm1(p), b: null };
+        m = two.exec(p); if (m) return { a: norm1(m[1]), b: norm1(m[2]) };
+        return null;
+    }
+    function sideGeom(ref) {
+        if (!CACHE) return null; var d = paintDims(), W = d[0], H = d[1], key = W + 'x' + H + ':' + canonPart(ref) + ':' + (CACHE.layoutSig || '') + ':' + layersArr().length;
+        CACHE._dg = CACHE._dg || {}; if (CACHE._dg[key] !== undefined) return CACHE._dg[key];
+        var res = null;
+        try {
+            var m = maskOne(ref, null, null, false); if (m && m.mask) {
+                var mk = m.mask, NC = 256, cnt = [], top = [], bot = [], c, x, y;
+                for (c = 0; c < NC; c++) { var x0 = Math.floor(c * W / NC), x1 = Math.floor((c + 1) * W / NC), mn = 1e9, mx = -1, n = 0; for (x = x0; x < x1; x += 2) for (y = 0; y < H; y += 2) if (mk[y * W + x]) { if (y < mn) mn = y; if (y > mx) mx = y; n++; } cnt.push(n); top.push(mn); bot.push(mx); }
+                var nz = cnt.filter(function (v) { return v > 0; }).sort(function (a, b) { return a - b; }); if (nz.length > 20) {
+                    var p75 = nz[Math.floor(nz.length * 0.75)], xs = -1, xe = -1; for (c = 0; c < NC; c++) if (cnt[c] >= 0.15 * p75) { if (xs < 0) xs = c; xe = c + 1; }
+                    var DD = doorData(), df = (DD && DD.defaults) || {}, AF = df.archFrac || 0.72, MINW = Math.max(3, Math.round((df.archMinW || 0.04) * (xe - xs))), runs = [], cur = null, gap = 0;
+                    for (c = xs; c < xe; c++) { var isA = cnt[c] < AF * p75; if (isA) { if (!cur) cur = { a: c, b: c + 1 }; else cur.b = c + 1; gap = 0; } else if (cur) { gap++; if (gap > 2) { runs.push(cur); cur = null; gap = 0; } } }
+                    if (cur) runs.push(cur);
+                    runs = runs.filter(function (r) { return (r.b - r.a) >= MINW && !(r.a <= xs + 1 && (r.b - r.a) < 0.08 * (xe - xs)); }).sort(function (a, b) { return (b.b - b.a) - (a.b - a.a); }).slice(0, 2).sort(function (a, b) { return a.a - b.a; });
+                    var arches = null; if (runs.length === 2 && runs[1].a - runs[0].b >= 0.15 * (xe - xs)) arches = [[runs[0].a / NC, runs[0].b / NC], [runs[1].a / NC, runs[1].b / NC]];
+                    var ymin = 1e9, ymax = -1; for (c = xs; c < xe; c++) if (cnt[c] >= 0.5 * p75) { if (top[c] < ymin) ymin = top[c]; if (bot[c] > ymax) ymax = bot[c]; }
+                    res = { x0: xs / NC, x1: xe / NC, y0: ymin / H, y1: (ymax + 1) / H, arches: arches };
+                }
+            }
+        } catch (e) { res = null; }
+        CACHE._dg[key] = res; return res;
+    }
+    // which end of the side panel is the NOSE, and may we rely on it? ONE data field per car (SPB_DOOR_DATA.cars[<atlas id>]).
+    function noseOf(isl, ref) {
+        var front = isl.front || null, bx = null; try { bx = CACHE && CACHE.boxes && (CACHE.boxes[isl.name] || CACHE.boxes[canonPart(ref)]); } catch (e) {}
+        if (!front && bx) front = bx.front || null;
+        var DD = doorData(), id = CACHE && CACHE.lib && CACHE.lib.id, ent = DD && DD.cars && id ? DD.cars[id] : null, ov = null;
+        if (!ent && DD && DD.cars && CACHE && CACHE.lib && CACHE.lib.name) { try { var nmA = String(CACHE.lib.name).toLowerCase(); ((window.SPB_CAR_ATLAS || {}).cars || []).some(function (c) { if (c && DD.cars[c.id] && String(c.name || '').toLowerCase() === nmA) { ent = DD.cars[c.id]; id = c.id; return true; } return false; }); } catch (eA) {} }          // LIVE PLAYTEST 2026-10-09: a learned car (learned-<folder>) shares the atlas car's name, not its id
+        try { var O = window.SPB_DOOR_NOSE; if (O) ov = (id && O[id]) || O['*'] || null; } catch (e2) {}
+        if (ov === 'left' || ov === 'right') return { end: ov, trusted: true, why: 'set by SPB_DOOR_NOSE' };
+        if (bx && bx.taught && (front === 'left' || front === 'right')) return { end: front, trusted: true, why: 'taught by the buyer' };
+        var end = (ent && (ent.nose === 'left' || ent.nose === 'right')) ? ent.nose : ((front === 'left' || front === 'right') ? front : null);
+        if (!end) return { end: null, trusted: false, why: 'this car map does not say which end of the side is the nose' };
+        var tr = ent ? (ent.status === 'atlas' || ent.status === 'owner') : false; try { if ((DD && DD.trustAtlas) || window.SPB_DOOR_TRUST_ATLAS) tr = true; } catch (e3) {}
+        return { end: end, trusted: tr, why: tr ? 'car library' : (ent && ent.status === 'disputed' ? 'the library says the nose is on the ' + end + ' but that is UNCONFIRMED for this sheet (owner question)' : 'unconfirmed') };
+    }
+    function subPieces(ref, isl, need) {          // -> { ok, why, ask, pieces:{fender,door,quarter,rocker:[x0,x1,(y0,y1)]}, mode }
+        var g = sideGeom(ref); if (!g) return { ok: false, why: 'the side panel could not be measured', ask: 'I cannot measure that panel on this car. Type the area or circle it on the paint and I will use that.' };
+        var nose = noseOf(isl, ref), df = (doorData() && doorData().defaults) || {}, P = {}, mode = 'measured', DEF = { fender: [0, 0.30], door: [0.30, 0.78], quarter: [0.78, 1.0] };
+        var needNose = need.fender || need.quarter || !g.arches;
+        if (needNose && !(nose.end && nose.trusted)) return { ok: false, why: nose.why, nose: nose, ask: 'I am not sure which end of this ' + canonPart(ref) + ' is the nose on this car, so I will not guess where the ' + (need.fender ? 'front fender' : (need.quarter ? 'rear quarter' : 'door')) + ' is. Tell me, or type or circle the area.' };
+        var x0 = g.x0, x1 = g.x1, ar = g.arches;
+        if (ar) { P.door = [ar[0][1], ar[1][0]]; var le = [x0, ar[0][1]], re = [ar[1][0], x1]; if (nose.end === 'right') { P.fender = re; P.quarter = le; } else { P.fender = le; P.quarter = re; } }
+        else { mode = 'default'; var F = function (r) { var a = r[0], b = r[1]; return nose.end === 'right' ? [x1 - b * (x1 - x0), x1 - a * (x1 - x0)] : [x0 + a * (x1 - x0), x0 + b * (x1 - x0)]; }; P.fender = F(df.fender || DEF.fender); P.door = F(df.door || DEF.door); P.quarter = F(df.quarter || DEF.quarter); }
+        if (need.rocker) {
+            var up = isl.up || (CACHE.boxes && CACHE.boxes[canonPart(ref)] && CACHE.boxes[canonPart(ref)].up) || null;
+            if (up !== 'top' && up !== 'bottom') return { ok: false, why: 'which edge of the side is the roof-line is not known', ask: 'I do not know which edge of this side is the roof-line on this car, so I will not guess where the rocker is. Type or circle the area.' };
+            var hh = (g.y1 - g.y0) * (df.rockerH || 0.22); P.rocker = [P.door[0], P.door[1], up === 'top' ? g.y1 - hh : g.y0, up === 'top' ? g.y1 : g.y0 + hh];
+        }
+        return { ok: true, pieces: P, mode: mode, nose: nose, geom: g };
+    }
+    function subStatus(ref, portion) {
+        if (doorOff()) return { ok: true, off: true };
+        var spec = subParse(portion); if (!spec) return { ok: true, sub: false };
+        var cp = canonPart(ref); if (cp !== 'left side' && cp !== 'right side') return { ok: true, sub: false };
+        var isl = findIsland(ref); if (!isl) return { ok: false, why: 'unknown part' };
+        var need = {}; need[spec.a] = 1; if (spec.b) need[spec.b] = 1;
+        var r = subPieces(ref, isl, need); if (!r.ok) return r;
+        var A = r.pieces[spec.a], B = spec.b ? r.pieces[spec.b] : null, x0 = Math.min(A[0], B ? B[0] : A[0]), x1 = Math.max(A[1], B ? B[1] : A[1]), y0 = isl.bbox[1], y1 = isl.bbox[3];
+        if (spec.a === 'rocker' && !spec.b) { y0 = A[2]; y1 = A[3]; }
+        return { ok: true, sub: true, box: [x0, y0, x1, y1], mode: r.mode, nose: r.nose && r.nose.end, trusted: r.nose && r.nose.trusted, spec: spec };
+    }
+    function subResolve(ref, portion) { var st = subStatus(ref, portion); if (st.sub === false || st.off) return null; if (!st.ok) return { empty: true, why: st.why }; return st.sub ? { box: st.box } : null; }          // not placeable = EMPTY, never the whole side
+    // ===== /D-DOOR =====
+    function maskOne(ref, portion, band, noKeep) {
+        if (typeof ref === 'string' && ref.indexOf('@') > 0) { var rp = ref.split('@'); ref = rp[0]; if (!portion && !band) portion = rp[1]; }          // D-DOOR: 'left side@door' = part@portion
         var isl = findIsland(ref); if (!isl) return null;
         if (!isl.box && !MASKS) return null;
-        var d = paintDims(), W = d[0], H = d[1], id = isl.box ? 0 : Number(isl.id.substr(1)), box = band ? bandBox(isl, band) : (portion ? portionBox(isl, portion) : isl.bbox);
+        var dsub = (portion && !band && !doorOff()) ? subResolve(ref, portion) : null;          // D-DOOR: door / front fender / rear quarter / rocker / span of a side panel
+        if (dsub && dsub.empty) { var d0 = paintDims(); return { mask: new Uint8Array(d0[0] * d0[1]), island: isl, box: isl.bbox, empty: true, why: dsub.why }; }          // unresolved = NOTHING, never the whole side
+        var d = paintDims(), W = d[0], H = d[1], id = isl.box ? 0 : Number(isl.id.substr(1)), box = band ? bandBox(isl, band) : (dsub ? dsub.box : (portion ? portionBox(isl, portion) : isl.bbox));
         var out = new Uint8Array(W * H), sc = GRID / W, y, x, x0 = Math.floor(box[0] * W), x1 = Math.ceil(box[2] * W), y0 = Math.floor(box[1] * H), y1 = Math.ceil(box[3] * H), only = isl.box ? boxIslandIds(isl, isl.bbox) : null;
+        var FPO = (MASKS && (isl.box ? !!only : true)) ? fullPaintable() : null, REACH = Math.ceil(1.6 * W / GRID), ib = isl.bbox || box;          // PART_MASKS 2026-10-06: full-res rim (see fullPaintable); sides of the portion that are the part's own outer edge may grow by REACH px
+        if (FPO) { if (box[0] <= ib[0] + 1e-6) x0 = Math.max(0, x0 - REACH); if (box[2] >= ib[2] - 1e-6) x1 = Math.min(W, x1 + REACH); if (box[1] <= ib[1] + 1e-6) y0 = Math.max(0, y0 - REACH); if (box[3] >= ib[3] - 1e-6) y1 = Math.min(H, y1 + REACH); }
         // MCPSCEN 2026-10-05 (DLM red->black gradient on "left side": the panel's diagonal edges were 8 px staircases, the 256 grid blown up cell by cell): the grid
         // membership is read bilinearly between cell centres and kept at >= 0.35, so diagonal edges are smooth lines and the part grows a hair (never shrinks) at its rim.
         var gin = new Uint8Array(GRID * GRID), gi; for (gi = 0; gi < GRID * GRID; gi++) gin[gi] = (isl.box ? (only ? only[MASKS ? MASKS[gi] : 0] : (!PAINT || PAINT[gi])) : (MASKS && MASKS[gi] === id)) ? 1 : 0;
+        var mine = null; if (FPO) { mine = new Uint8Array(256); if (isl.box) { for (gi in only) if (only.hasOwnProperty(gi) && Number(gi) < 256) mine[Number(gi)] = 1; } else if (id < 256) mine[id] = 1; }          // island ids this part is made of
         for (y = Math.max(0, y0); y < Math.min(H, y1); y++) {
             var fy = y * sc - 0.5 + sc / 2, gy0 = Math.floor(fy), ty = fy - gy0, ra = Math.max(0, Math.min(GRID - 1, gy0)) * GRID, rb = Math.max(0, Math.min(GRID - 1, gy0 + 1)) * GRID;
             for (x = Math.max(0, x0); x < Math.min(W, x1); x++) {
                 var fx = x * sc - 0.5 + sc / 2, gx0 = Math.floor(fx), tx = fx - gx0, ca = Math.max(0, Math.min(GRID - 1, gx0)), cb = Math.max(0, Math.min(GRID - 1, gx0 + 1));
+                if (mine) {          // PART_MASKS 2026-10-06: full-resolution owner map (fullPaintable): the rim follows the template's panel outline / paintable edge. Outside the paintable area: never. Where nobody
+                    // owns the pixel (enclosed windows / arches, panels the outlines do not close) the old grid answer stays: coverage never shrinks inside the paintable area.
+                    var pi = y * W + x, ow = FPO.own[pi]; if (!FPO.fp[pi]) continue; if (ow) { if (mine[ow]) out[pi] = 255; continue; }
+                }
                 var v00 = gin[ra + ca], v01 = gin[ra + cb], v10 = gin[rb + ca], v11 = gin[rb + cb];
                 if (v00 === v01 && v00 === v10 && v00 === v11 ? v00 : ((1 - tx) * (1 - ty) * v00 + tx * (1 - ty) * v01 + (1 - tx) * ty * v10 + tx * ty * v11) >= 0.35) out[y * W + x] = 255;
             }
         }
+        if (!noKeep) { var plk = sidePlateKeep(isl, W, H); if (plk) for (gi = 0; gi < out.length; gi++) if (out[gi] && !plk[gi]) out[gi] = 0; }          // R10-MAP: no number plate / tiles in a side
         return { mask: out, island: isl, box: box };
     }
     // island/part ∩ portion/band as a full-canvas mask; null if unknown.  ref may be a list (union): ["left side","right side"]
@@ -676,6 +876,24 @@
     // the UV edge is what the sim needs at seams anyway).
     function paintableMask(bleed) {
         if (!PAINT) return null; var d = paintDims(), W = d[0], H = d[1], out = new Uint8Array(W * H), sc = GRID / W, y, x, G = PAINT;
+        // M2 2026-10-07 (lane M2, M1 item B-0337: a scheme's whole-car base colour "limited to the paintable area" ended in 8 px stair-steps and left blocky leftovers of the old colour along
+        // every panel edge): when the template has a usable Mask layer, the paintable area IS that layer at full resolution (fullPaintable().fp, the same edge maskOne() uses for parts and bands);
+        // bleed = grow it 4 px (seams) instead of one 8 px grid cell. No Mask layer / no islands: the old grid answer below.
+        var FP = null; try { FP = MASKS ? fullPaintable() : null; } catch (eF) { FP = null; }
+        if (FP && FP.fp && FP.fp.length === W * H) {
+            var ck = bleed ? 'b' : 'p', PC = CACHE._pmc && CACHE._pmc.v === FP ? CACHE._pmc : (CACHE._pmc = { v: FP });
+            if (!PC[ck]) {
+                var fm = new Uint8Array(W * H), i2, R = bleed ? 4 : 0; for (i2 = 0; i2 < W * H; i2++) if (FP.fp[i2]) fm[i2] = 255;
+                if (R) {          // separable square dilation, radius R
+                    var hz = new Uint8Array(W * H), run, xx, yy, rw;
+                    for (yy = 0; yy < H; yy++) { rw = yy * W; run = -1e9; for (xx = 0; xx < W; xx++) { if (fm[rw + xx]) run = xx; if (xx - run <= R) hz[rw + xx] = 255; } run = 1e9; for (xx = W - 1; xx >= 0; xx--) { if (fm[rw + xx]) run = xx; if (run - xx <= R) hz[rw + xx] = 255; } }
+                    fm = new Uint8Array(W * H);
+                    for (xx = 0; xx < W; xx++) { run = -1e9; for (yy = 0; yy < H; yy++) { if (hz[yy * W + xx]) run = yy; if (yy - run <= R) fm[yy * W + xx] = 255; } run = 1e9; for (yy = H - 1; yy >= 0; yy--) { if (hz[yy * W + xx]) run = yy; if (run - yy <= R) fm[yy * W + xx] = 255; } }
+                }
+                PC[ck] = fm;
+            }
+            return new Uint8Array(PC[ck]);
+        }
         if (bleed) { G = new Uint8Array(GRID * GRID); var gy, gx, dy, dx; for (gy = 0; gy < GRID; gy++) for (gx = 0; gx < GRID; gx++) { if (!PAINT[gy * GRID + gx]) continue; for (dy = -1; dy <= 1; dy++) for (dx = -1; dx <= 1; dx++) { var ny = gy + dy, nx = gx + dx; if (ny >= 0 && nx >= 0 && ny < GRID && nx < GRID) G[ny * GRID + nx] = 1; } } }
         for (y = 0; y < H; y++) { var row = Math.min(GRID - 1, Math.floor(y * sc)) * GRID; for (x = 0; x < W; x++) if (G[row + Math.min(GRID - 1, Math.floor(x * sc))]) out[y * W + x] = 255; }
         return out;
@@ -691,6 +909,27 @@
         if (!CACHE || !obj || obj.format !== 'spb-car-map-v1' || !obj.parts) return 0; var n = 0;
         Object.keys(obj.parts).forEach(function (k) { var p = obj.parts[k]; if (p && p.box && p.box.length === 4) { if (setBox(k, p.box.map(function (v) { return Number(v) / 100; }), p.front || null, p.up || null)) n++; } });
         return n;
+    }
+    function readCurrentGeometry() {
+        var out = {status:'unavailable',parts:[],read_only:true,withheld_library_parts:0,geometry_authority:'buyer-confirmed current-source extents only'};
+        if (window.SPB_CX3_OFF) return out;
+        if (typeof _spbPsdImportInFlight !== 'undefined' && _spbPsdImportInFlight) { out.status = 'loading'; return out; }
+        if (!CACHE) return out;
+        if (!sameSource(CACHE_SOURCE, sourceDescriptor())) { out.status = 'stale'; return out; }
+        out.status = 'current';
+        function add(name, bbox, evidence) {
+            if (out.parts.length >= 80 || !name || !Array.isArray(bbox) || bbox.length !== 4 || !bbox.every(function(n){return Number.isFinite(n) && n >= 0 && n <= 1;}) || bbox[2] <= bbox[0] || bbox[3] <= bbox[1]) return;
+            out.parts.push({name:String(name).slice(0,80),bbox:bbox.slice(),evidence:evidence});
+        }
+        Object.keys(CACHE.boxes || {}).forEach(function(name) {
+            var b = CACHE.boxes[name];
+            if (b && b.taught) add(name,b.bbox,'buyer-taught box');
+            else if (b && b.lib) out.withheld_library_parts++;
+        });
+        (CACHE.islands || []).forEach(function(i) {
+            if (i && i.confirmed && i.name && !i.lib) add(i.name,i.bbox,'confirmed island label');
+        });
+        return out;
     }
     function describe() {
         if (!CACHE) return null;
@@ -772,5 +1011,5 @@
         } catch (e) { return null; }
     }
     function boxPickerImage(n, rect) { return pickerImage(n, null, rect); }
-    window.SpbProCar = { recognized: function () { return CACHE ? CACHE.rec || null : null; }, effFolder: effFolderKey, calibrationSheet: calibrationSheet, viewerFindings: viewerFindings, near: nearInfo, adoptNear: adoptNear, learnPost: learnPost, loadLearned: loadLearned, exportTaught: exportTaught, importTaught: importTaught, setBox: setBox, hasIslands: function () { return !!(CACHE && MASKS && CACHE.islands.length); }, hasParts: function () { return knownPartNames().length > 0; }, parts: knownPartNames, missing: missingParts, canon: canonPart, library: function () { return CACHE && CACHE.lib || null; }, layoutSig: function () { return CACHE && CACHE.layoutSig || null; }, folderKey: folderKey, atlasMatch: atlasMatch, sigSim: sigSim, setLabel: setLabel, forget: forget, islandAt: islandAt, pickerImage: pickerImage, _labelLocators: labelLocators, _labelWith: labelWith, ensure: ensure, map: function () { return CACHE; }, describe: describe, maskFor: maskFor, roles: roles, roleOf: roleOf, findIsland: findIsland, signature: signature, _paintable: function () { return PAINT; }, paintableMask: paintableMask, _reset: function () { CACHE = null; MASKS = null; PENDING = null; PAINT = null; } };
+    window.SpbProCar = { readCurrentGeometry:readCurrentGeometry, recognized: function () { return CACHE ? CACHE.rec || null : null; }, effFolder: effFolderKey, calibrationSheet: calibrationSheet, viewerFindings: viewerFindings, near: nearInfo, adoptNear: adoptNear, learnPost: learnPost, loadLearned: loadLearned, exportTaught: exportTaught, importTaught: importTaught, setBox: setBox, hasIslands: function () { return !!(CACHE && MASKS && CACHE.islands.length); }, hasParts: function () { return knownPartNames().length > 0; }, parts: knownPartNames, missing: missingParts, canon: canonPart, library: function () { return CACHE && CACHE.lib || null; }, layoutSig: function () { return CACHE && CACHE.layoutSig || null; }, folderKey: folderKey, atlasMatch: atlasMatch, sigSim: sigSim, setLabel: setLabel, forget: forget, islandAt: islandAt, pickerImage: pickerImage, _labelLocators: labelLocators, _labelWith: labelWith, ensure: ensure, map: function () { return CACHE; }, describe: describe, maskFor: maskFor, roles: roles, roleOf: roleOf, findIsland: findIsland, nose: function (ref) { try { var i = findIsland(ref); return i && i.bbox ? noseOf(i, ref) : null; } catch (e) { return null; } }, subStatus: subStatus, subParse: subParse, noseOf: function (ref) { var i = findIsland(ref); return i ? noseOf(i, ref) : null; }, sideGeom: sideGeom, signature: signature, _paintable: function () { return PAINT; }, paintableMask: paintableMask, _fullPaintable: function () { return fullPaintable(); }, _reset: function () { CACHE = null; MASKS = null; PENDING = null; PAINT = null; } };
 })();

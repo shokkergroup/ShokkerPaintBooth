@@ -1,0 +1,28 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const E=path.resolve(__dirname,'../../_codex_mcp_work/chatgpt-dev/59910'),read=n=>JSON.parse(fs.readFileSync(path.join(E,n),'utf8'));
+const names=['paint-notice-before-2026-10-10T07-27-25-574Z.json','paint-notice-applied-2026-10-10T07-28-08-738Z.json','paint-notice-recovered-2026-10-10T07-29-59-852Z.json','paint-notice-undo-2026-10-10T07-32-06-732Z.json'];
+const r=names.map(read),s=r.map(x=>JSON.parse(x.calls.find(c=>c.tool==='spb_get_state').text)),images=x=>x.images.map(i=>i.sha256);
+assert.equal(s[0].layers.length,42);
+assert.deepEqual(s[1].layers,s[2].layers);assert.deepEqual(s[1].zones,s[2].zones);assert.deepEqual(images(r[1]),images(r[2]));
+assert.deepEqual(s[0].layers,s[3].layers);assert.deepEqual(s[0].zones,s[3].zones);assert.deepEqual(images(r[0]),images(r[3]));
+assert.deepEqual(s[0].layers.filter(l=>l.id!=='psd_0'),s[1].layers.filter(l=>l.id!=='psd_0'));
+assert.equal(r[0].images[2].sha256,r[1].images[2].sha256);
+const ui=fs.readFileSync(path.join(E,'native-measurement-notice-pass.txt'),'utf8');assert.match(ui,/Preview check \(estimated\)/);assert.match(ui,/1664/);assert.match(ui,/does not verify every source pixel/);
+const probeName='context-session-probe-2026-10-10T07-28-53-389Z.json',probe=read(probeName);
+assert.equal(probe.authentication,'ChatGPT');assert.equal(probe.apiFallback,false);assert.equal(probe.exitCode,0);assert.deepEqual(probe.errors,[]);assert.equal(probe.delivery.pass,true);
+const allowed=['spb_assistant_context','spb_wait_for_message','spb_check','spb_preview','spb_get_state','spb_inspect_layer','spb_reply'];assert.ok(probe.calls.every(c=>allowed.includes(c.tool)));
+const reply=probe.calls.find(c=>c.tool==='spb_reply');assert.match(reply.arguments.text,/#101010/);assert.match(reply.arguments.text,/1,?664/);assert.match(reply.arguments.text,/Undo/);
+const checked=probe.calls.find(c=>c.tool==='spb_check');assert.equal(checked.arguments.fresh,true);
+const m=JSON.parse(checked.result.content.find(c=>c.type==='text').text).measured;
+assert.deepEqual(m.scope.layers,[]);assert.ok(m.findings.some(x=>/unasked-whole/.test(x))); // retained negative control
+const result={schema:'spb-result-recovery/1',native_warning_visible_without_model_reply:true,probe:probeName,receipts:names,delivered_recovery_answer:true,recovery_changed_no_metadata_zones_or_preview_bytes:true,undo_42_layers_zones_and_previews_exact:true,fresh_check_loses_scope_negative_control:true,fresh_scope_successor_component_only:true,full_pixel_preservation:false};
+const successorName='native-measurement-notice-2026-10-10T07-35-08-784Z.json',successor=read(successorName);
+assert.equal(successor.fresh_scope_preserved,true);
+const checks=successor.calls.filter(c=>c.tool==='spb_check').map(c=>JSON.parse(c.text));
+assert.equal(checks.length,2);assert.deepEqual(checks[0].measured.scope.layers,['psd_0']);assert.deepEqual(checks[1].measured.scope.layers,['psd_0']);
+assert.equal(checks[1].measured.decal_px,1664);assert.ok(!checks[1].measured.findings.some(f=>/unasked-whole/.test(f)));
+const restored=read('paint-fresh-scope-undo-2026-10-10T07-36-06-668Z.json'),restoredState=JSON.parse(restored.calls[0].text),beforeNative=JSON.parse(successor.calls[0].text);
+assert.deepEqual(restoredState.layers,beforeNative.layers);assert.deepEqual(restoredState.zones,beforeNative.zones);assert.deepEqual(images(restored),images(r[0]));
+result.fresh_scope_successor_component_only=false;result.fresh_scope_native_receipt=successorName;result.fresh_scope_undo_restored=true;
+fs.writeFileSync(path.join(E,'result-recovery-acceptance.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));

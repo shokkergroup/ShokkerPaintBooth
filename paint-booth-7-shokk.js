@@ -77,7 +77,7 @@ function browsePsExportFolder(inputId) {
             if (typeof localStorage !== 'undefined') localStorage.setItem(PS_EXPORT_FOLDER_KEY, dirPath);
             if (typeof showToast === 'function') showToast('PS Export folder set');
         } else {
-            if (typeof showToast === 'function') showToast('Browsers don\'t expose folder path — type or paste the full path in the box, or run in Electron for Browse.', true);
+            if (typeof showToast === 'function') showToast('Browsers can\'t show folder paths. Type or paste the full path in the box, or use the desktop app to browse.', true);
         }
         document.body.removeChild(el);
     });
@@ -102,7 +102,7 @@ function openShokkLibrary() {
     _loadShokkLibraryContents();
     } catch (e) {
         console.error('[SHOKK] openShokkLibrary error:', e);
-        if (typeof showToast === 'function') showToast('Could not open SHOKK Library: ' + e.message, true);
+        if (typeof showToast === 'function') showToast('Could not open Shokk Library: ' + e.message, true);
     }
 }
 
@@ -167,13 +167,13 @@ function _setShokkSpecUiState(state, label) {
             chip.style.color = '#ff6666';
             chip.style.borderColor = 'rgba(255,80,80,0.7)';
             chip.style.background = 'rgba(255,80,80,0.12)';
-            chip.title = label || 'This SHOKK has no spec map payload';
+            chip.title = label || 'This Shokk has no spec map payload';
         } else {
             chip.textContent = 'SPEC: none';
             chip.style.color = 'var(--text-dim)';
             chip.style.borderColor = 'var(--border)';
             chip.style.background = 'rgba(255,255,255,0.03)';
-            chip.title = 'Current SHOKK spec status';
+            chip.title = 'Current Shokk spec status';
         }
     }
     if (specBanner) {
@@ -186,7 +186,7 @@ function _setShokkSpecUiState(state, label) {
             specBanner.style.display = 'block';
             specBanner.style.borderColor = 'rgba(255,80,80,0.7)';
             specBanner.style.background = 'linear-gradient(135deg, rgba(255,60,60,0.12), rgba(120,20,20,0.10))';
-            if (specLabel) specLabel.textContent = label || 'No spec map found in this SHOKK file.';
+            if (specLabel) specLabel.textContent = label || 'No spec map found in this Shokk file.';
         } else {
             specBanner.style.display = 'none';
             specBanner.style.borderColor = 'rgba(0,200,80,0.5)';
@@ -204,7 +204,7 @@ async function _loadShokkLibraryContents() {
     const grid = document.getElementById('shokkLibraryGrid');
     const status = document.getElementById('shokkLibraryStatus');
     if (!grid) return;
-    grid.innerHTML = '<div style="color:var(--text-dim);font-size:12px;padding:20px;">Loading SHOKK Library…</div>';
+    grid.innerHTML = '<div style="color:var(--text-dim);font-size:12px;padding:20px;">Loading Shokk Library…</div>';
 
     const base = _shokkApiBase();
     try {
@@ -253,7 +253,7 @@ function _renderShokkGrid(entries, filter = '') {
 
     if (!filtered.length) {
         grid.innerHTML = `<div style="color:var(--text-dim);font-size:12px;padding:32px;text-align:center;">
-            ${lf ? `No SHOKK files match "${_shokkEscapeHtml(filter)}"` : 'No SHOKK files yet.<br><br>Render something, then click <strong>🔥 Save SHOKK</strong> to create your first one!'}
+            ${lf ? `No Shokk files match "${_shokkEscapeHtml(filter)}"` : 'No Shokk files yet.<br><br>Render something, then click <strong>Save Shokk</strong> to create your first one'}
         </div>`;
         return;
     }
@@ -265,11 +265,11 @@ function _renderShokkGrid(entries, filter = '') {
     let html = '';
 
     if (factory.length) {
-        html += `<div class="shokk-section-label">FACTORY</div>`;
+        html += `<div class="shokk-section-label">Factory</div>`;
         html += factory.map(e => _shokkCard(e)).join('');
     }
     if (user.length) {
-        html += `<div class="shokk-section-label">YOUR LIBRARY</div>`;
+        html += `<div class="shokk-section-label">Your library</div>`;
         html += user.map(e => _shokkCard(e)).join('');
     }
 
@@ -284,7 +284,7 @@ let _selectedShokkPath = '';
  * @returns {string} HTML fragment
  */
 function _shokkCard(e) {
-    const displayName = e.name || e.filename || 'Untitled SHOKK';
+    const displayName = e.name || e.filename || 'Untitled Shokk';
     const displayDesc = e.description || '';
     const tags = (e.tags || []).map(t => `<span class="shokk-tag">${_shokkEscapeHtml(t)}</span>`).join('');
     const meta = [
@@ -363,7 +363,7 @@ function filterShokkLibrary(val) {
 async function loadShokkFile(shokkPath, mode = 'full') {
     const base = _shokkApiBase();
     try {
-        showToast(mode === 'full' ? 'Opening SHOKK file…' : 'Importing spec from SHOKK…');
+        showToast(mode === 'full' ? 'Opening Shokk file…' : 'Importing spec from Shokk…');
         const res = await fetch(base + '/api/shokk/open', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -395,7 +395,8 @@ async function loadShokkFile(shokkPath, mode = 'full') {
             // Set BOTH global and window so doRender and any scope definitely sees it
             if (typeof importedSpecMapPath !== 'undefined') importedSpecMapPath = spec_path;
             try { window.importedSpecMapPath = spec_path; } catch (e) {}
-            await fetch(base + '/api/config', {
+            // [TICKETS-4 2026-10-10 item 7] the config route is '/config' (server_routes/config_routes.py); '/api/config' never existed, so the imported spec path was never saved (404 ignored). Kill switch: window.SPB_T4_OFF / SPB_T4_7_OFF restores the old URL.
+            await fetch(base + ((window.SPB_T4_OFF || window.SPB_T4_7_OFF) ? '/api/config' : '/config'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ imported_spec_path: spec_path })
@@ -421,13 +422,13 @@ async function loadShokkFile(shokkPath, mode = 'full') {
             try { window.importedSpecMapPath = null; } catch (e) {}
             const specStatus = document.getElementById('importSpecMapStatus');
             if (specStatus) {
-                specStatus.innerHTML = `<span style="color:#ff6666;font-weight:700;">No spec map in this SHOKK</span>`;
+                specStatus.innerHTML = `<span style="color:#ff6666;font-weight:700;">No spec map in this Shokk</span>`;
                 specStatus.style.color = '';
             }
             const clearBtn = document.getElementById('btnClearSpecMap');
             if (clearBtn) clearBtn.disabled = true;
-            _setShokkSpecUiState('missing', 'This SHOKK file does not contain a baked spec map.');
-            if (typeof showToast === 'function') showToast('This SHOKK has NO spec map payload.', true);
+            _setShokkSpecUiState('missing', 'This Shokk file does not contain a baked spec map.');
+            if (typeof showToast === 'function') showToast('This Shokk file has no spec map.', true);
         }
 
         // [ULTRACODE 2026-08-22 M4] snapshot zone layer restrictions BEFORE the
@@ -504,7 +505,7 @@ async function loadShokkFile(shokkPath, mode = 'full') {
                 }
 
                 if (!didLoadPaint) {
-                    showToast('Paint file not baked in SHOKK. Set Source Paint path and load manually.', true);
+                    showToast('This Shokk doesn\'t include the paint file. Set the Source Paint path and load it manually.', true);
                 }
             }
         }
@@ -537,11 +538,11 @@ async function loadShokkFile(shokkPath, mode = 'full') {
             if (typeof showToast === 'function') showToast('Spec loaded. Choose your paint TGA (e.g. from Photoshop)…');
             _triggerTgaFilePickerForShokk();
         } else {
-            if (typeof showToast === 'function') showToast(`✅ ${mode === 'full' ? 'Opened' : 'Imported'}: ${manifest.name || 'SHOKK'} [${parts.join(' · ')}]`);
+            if (typeof showToast === 'function') showToast(`${mode === 'full' ? 'Opened' : 'Imported'}: ${manifest.name || 'SHOKK'} [${parts.join(' · ')}]`);
             // [M4] honest warning when restrictions cannot bind to layers.
             if (_restrictionsDangling > 0 && typeof showToast === 'function') {
                 const _pf = (session_json && session_json.paintFile) ? session_json.paintFile.replace(/\\/g, '/').split('/').pop() : 'the original layered file';
-                showToast(`${_restrictionsDangling} zone(s) use LAYER restrictions this baked paint cannot provide — open ${_pf} (the layered original) to restore them fully.`, true);
+                showToast(`${_restrictionsDangling} zone(s) rely on layer restrictions this flattened paint can't provide. Open ${_pf} (the layered original) to restore them fully.`, true);
             }
         }
 
@@ -552,7 +553,7 @@ async function loadShokkFile(shokkPath, mode = 'full') {
 
     } catch (e) {
         console.error('[SHOKK] Open error:', e);
-        if (typeof showToast === 'function') showToast(`❌ SHOKK open failed: ${e.message}`, true);
+        if (typeof showToast === 'function') showToast(`Could not open Shokk: ${e.message}`, true);
     }
 }
 
@@ -704,7 +705,7 @@ function openSaveShokkDialog() {
         modal.style.display = 'flex';
     } catch (e) {
         console.error('[SHOKK] openSaveShokkDialog error:', e);
-        if (typeof showToast === 'function') showToast('Could not open Save SHOKK: ' + e.message, true);
+        if (typeof showToast === 'function') showToast('Could not open Save Shokk: ' + e.message, true);
     }
 }
 
@@ -721,7 +722,8 @@ function closeSaveShokkModal() {
 async function confirmSaveShokk() {
     try {
         const name = document.getElementById('shokkSaveName').value.trim();
-        if (!name) { alert('Please enter a name for your SHOKK file.'); return; }
+        // [SPB-CONFIRM-POLISH 2026-10-10] native alert() -> in-app SpbDialog.notice (kill switch SPB_CONFIRM_POLISH_OFF).
+        if (!name) { await SpbDialog.notice('Name Your Shokk File', { message: 'Please enter a name for your Shokk file.', nativeText: 'Please enter a name for your Shokk file.' }); return; }
 
         const author = (document.getElementById('shokkSaveAuthor').value || '').trim();
         const description = (document.getElementById('shokkSaveDesc').value || '').trim();
@@ -740,7 +742,7 @@ async function confirmSaveShokk() {
         }
 
         closeSaveShokkModal();
-        if (typeof showToast === 'function') showToast('Saving SHOKK…');
+        if (typeof showToast === 'function') showToast('Saving Shokk…');
 
         const hasLiveFlatSource = !!(typeof window !== 'undefined' && window._spbFlatPaintLiveSource);
 
@@ -751,11 +753,11 @@ async function confirmSaveShokk() {
         }
         if (includePaint && hasLiveFlatSource) {
             if (typeof buildLivePaintCompositeCanvas !== 'function' || typeof canvasToBase64Async !== 'function') {
-                throw new Error('Save SHOKK needs the live canvas capture helpers. Reload the app, then try again.');
+                throw new Error('Save Shokk needs the live canvas capture helpers. Reload the app, then try again.');
             }
             const liveCanvas = buildLivePaintCompositeCanvas();
             if (!liveCanvas) {
-                throw new Error('Save SHOKK could not capture the live Change File canvas.');
+                throw new Error('Save Shokk could not capture the live Change File canvas.');
             }
             savePayload.paint_image_base64 = await canvasToBase64Async(liveCanvas);
             savePayload.source_mode = 'live_flat_canvas';
@@ -776,11 +778,11 @@ async function confirmSaveShokk() {
             if (paintPartIndex >= 0) parts.splice(paintPartIndex, 1, '✓ Live paint');
         }
         const savedDir = (data.path || '').replace(/[\\/][^\\/]*$/, '');
-        if (typeof showToast === 'function') showToast(`✅ Saved: ${name}.shokk  [${parts.join(' · ')}]${savedDir ? '  →  ' + savedDir : ''}`);
+        if (typeof showToast === 'function') showToast(`Saved: ${name}.shokk [${parts.join(' · ')}]${savedDir ? ' in ' + savedDir : ''}`);
 
     } catch (e) {
         console.error('[SHOKK] Save error:', e);
-        if (typeof showToast === 'function') showToast(`❌ Save SHOKK failed: ${e.message}`, true);
+        if (typeof showToast === 'function') showToast(`Could not save Shokk: ${e.message}`, true);
     }
 }
 
@@ -788,7 +790,8 @@ async function confirmSaveShokk() {
 
 async function deleteShokkFile(filename, event) {
     event.stopPropagation();
-    if (!confirm(`Delete "${filename}"? This cannot be undone.`)) return;
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+    if (!(await SpbDialog.ask('Delete Shokk File?', { message: `"${filename}" will be deleted. This cannot be undone.`, okLabel: 'Delete File', danger: true, nativeText: `Delete "${filename}"? This cannot be undone.` }))) return;
     const base = _shokkApiBase();
     try {
         const res = await fetch(base + '/api/shokk/delete', {
@@ -798,7 +801,7 @@ async function deleteShokkFile(filename, event) {
         });
         const data = await res.json();
         if (data.ok) {
-            showToast('SHOKK file deleted.');
+            showToast('Shokk file deleted.');
             _loadShokkLibraryContents();
         } else {
             showToast(`Failed: ${data.error}`, true);
@@ -813,7 +816,9 @@ async function deleteShokkFile(filename, event) {
 async function renameShokkFile(filename, event) {
     event.stopPropagation();
     const currentName = filename.replace(/\.shokk$/i, '');
-    const newName = prompt(`Rename "${currentName}" to:`, currentName);
+    // [SPB-PROMPT-FIX 2026-10-10] window.prompt() throws in Electron (the rename pencil did nothing) -> in-app box (SpbDialog.prompt);
+    // event.stopPropagation() above still runs first. Esc = nothing renamed. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+    const newName = await SpbDialog.prompt('Rename Shokk File', currentName, { message: `Rename "${currentName}" to:`, okLabel: 'Rename', nativeText: `Rename "${currentName}" to:` });
     if (!newName || newName.trim() === '' || newName.trim() === currentName) return;
     const base = _shokkApiBase();
     try {
@@ -850,7 +855,7 @@ async function openShokkLibraryFolder() {
             window.electronAPI.openPath(_shokkLibraryPath);
         } else {
             navigator.clipboard.writeText(_shokkLibraryPath).then(() =>
-                showToast(`✅ Path copied: ${_shokkLibraryPath}`));
+                showToast(`Path copied: ${_shokkLibraryPath}`));
         }
     }
 }
@@ -873,7 +878,7 @@ async function exportSpecChannels(fromLibrary) {
         if (outputDir) body.output_dir = outputDir;
 
         if (fromLibrary && _selectedShokkPath) {
-            showToast('Exporting SHOKK channel PNGs for Photoshop inspection…');
+            showToast('Exporting Shokk channel PNGs for Photoshop inspection…');
             body.shokk_path = _selectedShokkPath;
         } else {
             showToast('Exporting channel PNGs for Photoshop inspection…');
@@ -893,7 +898,7 @@ async function exportSpecChannels(fromLibrary) {
         const dir = paths.length ? paths[0].replace(/[^/\\]*$/, '') : '';
         const fileCount = paths.length;
         if (dir && typeof localStorage !== 'undefined') localStorage.setItem(PS_EXPORT_FOLDER_KEY, dir);
-        showToast(`✅ ${fileCount} channel PNG files exported to: ${dir}`);
+        showToast(`${fileCount} channel PNG files exported to: ${dir}`);
 
         // Show a details panel
         const details = Object.entries(data.paths)
@@ -903,7 +908,7 @@ async function exportSpecChannels(fromLibrary) {
 
     } catch (e) {
         console.error('[SHOKK] Export spec channels error:', e);
-        showToast(`❌ Export failed: ${e.message}`, true);
+        showToast(`Could not export: ${e.message}`, true);
     }
 }
 
@@ -948,13 +953,13 @@ async function loadBlankCanvas(width = 2048, height = 2048, color = 'ffffff') {
         if (typeof window.setCurrentSourcePaintFile === 'function') {
             window.setCurrentSourcePaintFile(blankPath, { clearPSD: true, remember: true, validate: true });
         }
-        showToast('Blank canvas loaded - build your effects, then Save SHOKK!');
+        showToast('Blank canvas loaded - build your effects, then Save Shokk');
         return;
 
-        showToast('✅ Blank canvas loaded - build your effects, then Save SHOKK!');
+        showToast('Blank canvas loaded. Build your effects, then Save Shokk.');
     } catch (e) {
         console.error('[SHOKK] Blank canvas error:', e);
-        showToast(`❌ Blank canvas failed: ${e.message}`, true);
+        showToast(`Could not create blank canvas: ${e.message}`, true);
     }
 }
 

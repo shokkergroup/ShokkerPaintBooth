@@ -11,12 +11,12 @@
             '<button type="button" class="spb-pai-act" data-codex="copy" disabled>Copy config</button>' +
             '<div data-codex="review" hidden><p>Add the shown connection to the settings file above? Your other settings and model selection will be preserved.</p><button type="button" class="spb-pai-act" data-codex="confirm">Confirm add</button> <button type="button" class="spb-pai-act" data-codex="cancel">Cancel</button></div>' +
             '<p>The button adds only the shown SPB entry, with a 200-second tool timeout. Existing entries are preserved. Restart Codex afterward, switch the AI bridge on above, then ask: “Using Shokker Paint Booth, call spb_status.”</p>' +
-            '<p>If Node.js is missing, install it from <a href="https://nodejs.org/" target="_blank" rel="noopener">nodejs.org</a>, then restart SPB.</p>';
+            '<p>SPB checks its local runtime and bundled app knowledge before enabling setup. If that check fails, update or repair SPB, then reopen these settings.</p>';
         var status = box.querySelector('[data-codex="status"]'), config = box.querySelector('[data-codex="config"]'), install = box.querySelector('[data-codex="install"]'), copy = box.querySelector('[data-codex="copy"]'), payload;
         var url = (window.SPB_AI_BASE || '') + '/api/mcp/codex-setup';
         fetch(url).then(function (r) { return r.json(); }).then(function (p) {
-            payload = p; config.textContent = p.config || ''; status.textContent = p.ready ? 'Settings file: ' + p.configPath : (p.message || 'Setup unavailable.') + (!p.nodeFound ? ' Node.js was not found.' : '');
-            install.disabled = !p.ready; copy.disabled = !p.config;
+            payload = p; config.textContent = p.config || ''; status.textContent = p.ready ? 'SPB knowledge is ready. Settings file: ' + p.configPath : (p.message || 'Setup unavailable.');
+            install.disabled = !p.ready; copy.disabled = !p.ready || !p.config;
         }).catch(function () { status.textContent = 'Restart the SPB server to load Codex setup, then reopen these settings.'; });
         install.onclick = function () {
             if (payload) box.querySelector('[data-codex="review"]').hidden = false;
@@ -26,7 +26,7 @@
             if (!payload) return;
             box.querySelector('[data-codex="review"]').hidden = true;
             install.disabled = true;
-            fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ confirmed: true }) }).then(function (r) { return r.json(); }).then(function (p) { status.textContent = p.message; install.disabled = false; }).catch(function () { status.textContent = 'Could not complete setup. Copy the config and add it manually.'; install.disabled = false; });
+            fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ confirmed: true }) }).then(function (r) { return r.json(); }).then(function (p) { status.textContent = p.message; install.disabled = p.ready === false; if (p.ready === false) { payload = null; config.textContent = ''; copy.disabled = true; } }).catch(function () { status.textContent = 'Could not complete setup. Copy the config and add it manually.'; install.disabled = false; });
         };
         copy.onclick = function () {
             if (!navigator.clipboard) { config.focus(); status.textContent = 'Select and copy the config above.'; return; }

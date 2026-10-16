@@ -249,7 +249,7 @@
                 showToast('Selected zone has no finish to apply', true);
                 return;
             }
-            if (!confirmDialog('Apply "' + (src.base || src.finish) + '" to ALL ' + list.length + ' zones?')) return;
+            if (!confirmDialog('Apply "' + (src.base || src.finish) + '" to all ' + list.length + ' zones?')) return;
             pushZoneUndo('Apply finish to all zones');
             list.forEach(function (zone, index) {
                 if (index === selectedIndex) return;

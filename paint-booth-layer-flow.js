@@ -1,8 +1,8 @@
 // [SPB-HEADER-SLIM 2026-08-29] shared escape + the prominent EDITING ZONE chip renderer
 function _spbEsc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 function _spbZoneChipHtml(zi, zoneName, srcName) {
-    var head = 'EDITING ZONE ' + (zi + 1) + ': <strong>' + _spbEsc(zoneName || ('Zone ' + (zi + 1))) + '</strong>';
-    return srcName ? head + ' <span style="opacity:.8;font-weight:600;">\uD83D\uDD12 ' + _spbEsc(srcName) + '</span>' : head;
+    var head = 'Editing zone ' + (zi + 1) + ': <strong>' + _spbEsc(zoneName || ('Zone ' + (zi + 1))) + '</strong>';
+    return srcName ? head + ' <span style="opacity:.8;font-weight:600;">' + _spbEsc(srcName) + '</span>' : head;
 }
 /* ═══════════════════════════════════════════════════════════════════
    SHOKKER PAINT BOOTH — LAYER FLOW MODULE v3
@@ -20,7 +20,7 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
 
    PRESERVED:
    - Alpha-based layer mask logic (findTopmostLayerAt uses alpha > 16)
-   - Gold "🔒 Lock Active Zone to This Layer" button
+   - Gold "Lock active zone to this layer" button
    - Dock placement INSIDE .center-panel as a horizontal strip
    ═══════════════════════════════════════════════════════════════════ */
 
@@ -74,7 +74,7 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
         _effectIntensity = v;
         lsSet('effectIntensity', String(v));
         var pill = document.getElementById('layerDockFxPill');
-        if (pill) pill.textContent = '✨ FX × ' + v.toFixed(2);
+        if (pill) pill.textContent = 'FX × ' + v.toFixed(2);
     }
 
     // (#26)(#27) Effect preset library (saved combos).
@@ -215,11 +215,11 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
             '<span style="width: 1px; height: 22px; background: rgba(148, 163, 184, 0.18);"></span>' +
             '<button id="layerDockMove" title="Move tool — drag selected layer on canvas (no Ctrl needed)" style="background: rgba(148, 163, 184, 0.06); border: 1px solid rgba(148, 163, 184, 0.20); color: #8899aa; padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 120ms;">↔ Move</button>' +
             '<button id="layerDockTransform" title="Transform Selection / Layer (Ctrl+T) — draw a rectangle or lasso first to transform only that region; otherwise transforms the whole layer." style="background: rgba(148, 163, 184, 0.06); border: 1px solid rgba(148, 163, 184, 0.20); color: #8899aa; padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 120ms;">⊞ Sel/Layer</button>' +
-            '<button id="layerDockEffects" title="Layer Effects — Drop Shadow, Outer Glow, Stroke, Color Overlay, Bevel" style="background: rgba(148, 163, 184, 0.06); border: 1px solid rgba(148, 163, 184, 0.20); color: #8899aa; padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 120ms;">✨ Effects ▾</button>' +
+            '<button id="layerDockEffects" title="Layer Effects — Drop Shadow, Outer Glow, Stroke, Color Overlay, Bevel" style="background: rgba(148, 163, 184, 0.06); border: 1px solid rgba(148, 163, 184, 0.20); color: #8899aa; padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 120ms;">Effects ▾</button>' +
             // (#28) FX intensity pill
-            '<span id="layerDockFxPill" title="Global effect intensity multiplier — Shift-click to reset" style="font-size: 11px; color: #ff9a4a; background: rgba(255, 122, 24, 0.10); border: 1px solid rgba(255, 122, 24, 0.30); padding: 4px 8px; border-radius: 999px; cursor: pointer;">✨ FX × ' + getEffectIntensity().toFixed(2) + '</span>' +
+            '<span id="layerDockFxPill" title="Global effect intensity multiplier — Shift-click to reset" style="font-size: 11px; color: #ff9a4a; background: rgba(255, 122, 24, 0.10); border: 1px solid rgba(255, 122, 24, 0.30); padding: 4px 8px; border-radius: 999px; cursor: pointer;">FX × ' + getEffectIntensity().toFixed(2) + '</span>' +
             '<span style="width: 1px; height: 22px; background: rgba(148, 163, 184, 0.18);"></span>' +
-            '<button id="layerDockLockZone" title="Restrict the currently-selected zone\'s finish to ONLY apply to this layer\'s pixels — fixes paint bleeding through other layers (Ctrl+L)" style="background: rgba(255, 215, 0, 0.10); border: 1px solid rgba(255, 215, 0, 0.40); color: #ffd700; padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 120ms;">🔒 Lock Active Zone to This Layer</button>' +
+            '<button id="layerDockLockZone" title="Restrict the currently-selected zone\'s finish to ONLY apply to this layer\'s pixels — fixes paint bleeding through other layers (Ctrl+L)" style="background: rgba(255, 215, 0, 0.10); border: 1px solid rgba(255, 215, 0, 0.40); color: #ffd700; padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 120ms;">Lock active zone to this layer</button>' +
             '<button id="layerDockPick" title="Pick Layer — click on canvas to select the layer at that pixel" style="background: rgba(20, 184, 166, 0.10); border: 1px solid rgba(20, 184, 166, 0.30); color: #5eead4; padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 120ms;">⊕ Pick Different Layer</button>' +
             // (#33)(#34) Pan / fit-to-view buttons
             '<button id="layerDockPan" title="Pan canvas to show this layer\'s bbox" style="background: rgba(148, 163, 184, 0.06); border: 1px solid rgba(148, 163, 184, 0.20); color: #8899aa; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">⌖ Pan</button>' +
@@ -340,14 +340,22 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
             if (!sel || typeof _psdLayers === 'undefined') return;
             var L = _psdLayers.find(function(x) { return x.id === sel; });
             if (!L) return;
-            var nu = window.prompt('Rename layer:', L.name || '');
-            if (nu == null) return;
-            nu = String(nu).trim().slice(0, 80);
-            if (nu) {
-                L.name = nu;
-                showLayerDock(nu);
-                if (typeof renderLayerPanel === 'function') renderLayerPanel();
-            }
+            // [SPB-TLAY2 2026-10-10 L2-2] was window.prompt (dead in Electron). In-app popover; the commit goes through commitLayerRename so it is undoable
+            // (Ctrl+Z), trims / caps the name and refuses empty or duplicate names, exactly like the card's Rename.
+            askText({ title: 'Rename Layer', value: L.name || '', maxLength: 64, okLabel: 'Rename', anchor: document.getElementById('layerDockName') }, function(nu) {
+                if (nu == null) return;
+                if (window.SPB_TLAY2_OFF !== true && typeof renameLayer === 'function' && typeof commitLayerRename === 'function') {
+                    renameLayer(L.id);
+                    if (commitLayerRename(L.id, nu)) showLayerDock(L.name);
+                    return;
+                }
+                nu = String(nu).trim().slice(0, 80);
+                if (nu) {
+                    L.name = nu;
+                    showLayerDock(nu);
+                    if (typeof renderLayerPanel === 'function') renderLayerPanel();
+                }
+            });
         });
 
         // (#28) FX intensity pill — click cycles, shift-click resets.
@@ -422,6 +430,22 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
         lsSet('dockMinimized', _dockMinimized ? '1' : '0');
     }
 
+    // [SPB-TLAY2 2026-10-10 L2-2] Electron has no window.prompt() (it throws), so rename / comment / colour tag / preset name / JSON import all did
+    // nothing in the packaged app. askText / askTag open the in-app popovers from js/canvas/tlay2-dialogs.js (anchored, Enter / Esc, focus returns);
+    // window.SPB_TLAY2_OFF === true restores the old window.prompt calls (browser only). Callbacks get null on cancel.
+    function askText(opts, cb) {
+        if (window.SPB_TLAY2_OFF !== true && window.SPBTlay2Ui) { window.SPBTlay2Ui.prompt(opts).then(cb); return; }
+        var v = null;
+        try { v = window.prompt(opts.title, opts.value == null ? '' : opts.value); } catch (e) { safeToast('This build cannot show a text box', true); }
+        cb(v);
+    }
+    function askTag(current, anchor, cb) {
+        if (window.SPB_TLAY2_OFF !== true && window.SPBTlay2Ui) { window.SPBTlay2Ui.colorTag({ value: current, anchor: anchor }).then(cb); return; }
+        var c = null;
+        try { c = window.prompt('Color tag (red, orange, yellow, green, blue, purple, gray, none):', current || 'none'); } catch (e) { safeToast('This build cannot show a text box', true); }
+        cb(c == null ? null : String(c).trim().toLowerCase());
+    }
+
     // ── Effects quick-preset menu (#6, #7, #26) ─────────────────────
     function showEffectsMenu(anchor, layerId) {
         // Remove any previous menu
@@ -429,6 +453,7 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
         if (old) { old.remove(); }
         var menu = document.createElement('div');
         menu.id = 'layerDockFxMenu';
+        if (window.SPB_TLAY2_OFF !== true) menu.setAttribute('data-t2', '1'); // [SPB-TLAY2 2026-10-10] neutral (not orange) menu chrome via CSS
         var rect = anchor.getBoundingClientRect();
         menu.style.cssText = [
             'position: fixed',
@@ -484,8 +509,11 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
             if (typeof _psdLayers === 'undefined') return;
             var L = _psdLayers.find(function(x) { return x.id === layerId; });
             if (!L || !L.effects) { safeToast('No effects on this layer', true); return; }
-            var name = window.prompt('Preset name:', '');
-            if (name) { saveEffectPreset(name, L.effects); safeToast('Saved preset "' + name + '"'); }
+            // [SPB-TLAY2 2026-10-10 L2-2] was window.prompt (dead in Electron)
+            askText({ title: 'Save Effects Preset', value: '', placeholder: 'Preset name', maxLength: 40, okLabel: 'Save', anchor: anchor }, function(name) {
+                name = name == null ? '' : String(name).trim();
+                if (name) { saveEffectPreset(name, L.effects); safeToast('Saved preset "' + name + '"'); }
+            });
         });
         var presets = getEffectPresets();
         Object.keys(presets).forEach(function(pn) {
@@ -514,19 +542,21 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
             try {
                 var s = JSON.stringify(L.effects);
                 if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(s);
-                else { window.prompt('Copy this JSON:', s); }
+                else { askText({ title: 'Copy Effects JSON', value: s, multiline: true, rows: 5, readonly: true, noCancel: true, okLabel: 'Done', hint: 'Select all and copy (Ctrl+C).', anchor: anchor }, function() {}); return; } // [SPB-TLAY2 2026-10-10 L2-2] was window.prompt
                 safeToast('Effects JSON copied');
             } catch (e) { safeToast('Export failed', true); }
         });
         row('Import effects (paste JSON)…', function() {
-            var s = window.prompt('Paste effects JSON:', '');
-            if (!s) return;
-            try {
-                var fx = JSON.parse(s);
-                if (typeof _psdLayers === 'undefined') return;
-                var L = _psdLayers.find(function(x) { return x.id === layerId; });
-                if (L) { L.effects = fx; if (typeof recompositeFromLayers === 'function') recompositeFromLayers(); if (typeof triggerPreviewRender === 'function') triggerPreviewRender(); safeToast('Effects imported'); }
-            } catch (e) { safeToast('Invalid JSON', true); }
+            // [SPB-TLAY2 2026-10-10 L2-2] was window.prompt (dead in Electron): multi-line paste box, Ctrl+Enter imports
+            askText({ title: 'Import Effects JSON', value: '', multiline: true, rows: 5, placeholder: 'Paste effects JSON here', okLabel: 'Import', hint: 'Ctrl+Enter imports.', anchor: anchor }, function(s) {
+                if (!s || !String(s).trim()) return;
+                try {
+                    var fx = JSON.parse(s);
+                    if (typeof _psdLayers === 'undefined') return;
+                    var L = _psdLayers.find(function(x) { return x.id === layerId; });
+                    if (L) { L.effects = fx; if (typeof recompositeFromLayers === 'function') recompositeFromLayers(); if (typeof triggerPreviewRender === 'function') triggerPreviewRender(); safeToast('Effects imported'); }
+                } catch (e) { safeToast('Invalid JSON', true); }
+            });
         });
 
         document.body.appendChild(menu);
@@ -666,7 +696,7 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
                     var srcName = srcLayer ? srcLayer.name : z.sourceLayer;
                     statusEl.innerHTML = _spbZoneChipHtml(selectedZoneIndex, z.name, srcName);   // [SPB-HEADER-SLIM 2026-08-29] escaped (was raw innerHTML)
                 } else if (z) {
-                    statusEl.innerHTML = '⚠ Zone <strong style="color:#ff9a4a;">' + (_spbEsc(z.name) || ('Zone ' + (selectedZoneIndex + 1))) + '</strong> applies to ALL pixels — click 🔒 above to restrict to this layer';
+                    statusEl.innerHTML = 'Zone <strong style="color:#ff9a4a;">' + (_spbEsc(z.name) || ('Zone ' + (selectedZoneIndex + 1))) + '</strong> applies to all pixels — use Lock active zone above to restrict it to this layer';
                 } else {
                     statusEl.innerHTML = 'Tip: any tool on the left toolbar paints on this layer.';
                 }
@@ -879,6 +909,11 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
         var statusEl = document.getElementById('previewStatus');
         var status = statusEl ? (statusEl.textContent || '') : '';
         var isRendering = /render|pending|busy|queued/i.test(status);
+        // [S18 2026-10-12 owner: base/spec did nothing on a NUMBERS colour zone] "Server busy - retrying" /
+        // "Retrying preview" is paint-booth-3-canvas.js's own busy-retry loop (120 s budget, ends in its own
+        // "Server busy - press Refresh"). Calling that "Stuck" and auto-re-issuing at 45 s aborted the request
+        // the engine was about to answer: the exact chain that left Corn Snake Blotch off the car. Soft warn only.
+        var isRetrying = /retrying/i.test(status);
 
         if (isRendering && status === _stuckWatchdogLastStatus) {
             if (_stuckWatchdogStart === 0) { _stuckWatchdogStart = Date.now(); _stuckEscalationStage = 0; }
@@ -889,11 +924,11 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
                 _stuckEscalationStage = 1;
                 if (statusEl) {
                     statusEl.style.color = '#ffb86b';
-                    statusEl.title = 'Render is taking longer than usual…';
+                    statusEl.title = isRetrying ? 'The engine is finishing an earlier preview. Retrying automatically…' : 'Render is taking longer than usual…';
                 }
             }
             // Stage 2: 22s — clickable recovery hint + toast
-            if (elapsed > 22000 && _stuckEscalationStage < 2) {
+            if (elapsed > 22000 && _stuckEscalationStage < 2 && !isRetrying) {
                 _stuckEscalationStage = 2;
                 if (statusEl && !statusEl.dataset.stuckNoticed) {
                     statusEl.dataset.stuckNoticed = '1';
@@ -907,11 +942,11 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
                             else if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
                         });
                     }
-                    safeToast('⚠ Preview seems stuck. Click the status text or press F5 to recover.', true);
+                    safeToast('Preview seems stuck. Click the status text or press F5 to recover.', true);
                 }
             }
             // Stage 3: 45s — auto-attempt recovery once
-            if (elapsed > 45000 && _stuckEscalationStage < 3) {
+            if (elapsed > 45000 && _stuckEscalationStage < 3 && !isRetrying) {
                 _stuckEscalationStage = 3;
                 if (typeof forceRenderPreview === 'function') {
                     safeToast('Auto-recovery: re-issuing render request…', true);
@@ -1066,6 +1101,7 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
         if (old) old.remove();
         var menu = document.createElement('div');
         menu.id = 'layerCtxMenu';
+        if (window.SPB_TLAY2_OFF !== true) menu.setAttribute('data-t2', '1'); // [SPB-TLAY2 2026-10-10] neutral (not orange) menu chrome via CSS
         menu.style.cssText = 'position: fixed; left: ' + x + 'px; top: ' + y + 'px; min-width: 200px; background: #0f141c; border: 1px solid rgba(255, 122, 24, 0.30); border-radius: 6px; box-shadow: 0 6px 24px rgba(0,0,0,0.5); padding: 6px; z-index: 9999; font-family: "Segoe UI", "Inter", sans-serif; font-size: 12px;';
         function row(label, handler, color) {
             var d = document.createElement('div');
@@ -1081,22 +1117,29 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
             if (typeof _psdLayers === 'undefined') return;
             var L = _psdLayers.find(function(x) { return String(x.id) === String(layerId); });
             if (!L) return;
+            // [SPB-TLAY2 2026-10-10 L2-2] was window.prompt (dead in Electron): the same in-place name editor as the card's Rename (undoable, no duplicates)
+            if (window.SPB_TLAY2_OFF !== true && typeof renameLayer === 'function') { renameLayer(L.id); return; }
             var nu = window.prompt('Rename layer:', L.name || '');
             if (nu) { L.name = nu.trim().slice(0, 80); if (typeof renderLayerPanel === 'function') renderLayerPanel(); }
         });
         row('Solo (hide others)', function() { hideOthers(layerId); });
-        row('Pin to top', function() {
+        // [SPB-TLAY 2026-10-09 TL-13] "Pin to top" never moved anything (layer order IS the paint order); it only sets a gold marker on the row. Say so. Kill switch SPB_TLAY_OFF.
+        row(window.SPB_TLAY_OFF === true ? 'Pin to top' : 'Pin / unpin (gold marker)', function() {
             var meta = getLayerMeta(layerId);
             setLayerMeta(layerId, { pinned: !meta.pinned });
             if (typeof renderLayerPanel === 'function') renderLayerPanel();
         });
         row('Add comment…', function() {
-            var c = window.prompt('Comment:', getLayerMeta(layerId).comment || '');
-            if (c != null) setLayerMeta(layerId, { comment: c });
+            // [SPB-TLAY2 2026-10-10 L2-2] was window.prompt (dead in Electron): multi-line comment popover at the click point; empty text clears the comment
+            askText({ title: 'Layer Comment', value: getLayerMeta(layerId).comment || '', multiline: true, rows: 3, maxLength: 300, placeholder: 'Note for this layer', okLabel: 'Save', hint: 'Shows on hover. Ctrl+Enter saves.', anchor: { x: x, y: y } }, function(c) {
+                if (c != null) { setLayerMeta(layerId, { comment: String(c).trim() }); decorateLayerRows(); }
+            });
         });
         row('Color tag ▸', function() {
-            var c = window.prompt('Color tag (red, orange, yellow, green, blue, purple, gray, none):', getLayerMeta(layerId).color || 'none');
-            if (c != null) setLayerMeta(layerId, { color: c.trim().toLowerCase() });
+            // [SPB-TLAY2 2026-10-10 L2-2] was window.prompt (dead in Electron): eight swatches, one click
+            askTag(getLayerMeta(layerId).color || 'none', { x: x, y: y }, function(c) {
+                if (c != null) { setLayerMeta(layerId, { color: c }); decorateLayerRows(); }
+            });
         });
         row('Copy effects', function() { if (copyLayerFx(layerId)) safeToast('Effects copied'); });
         row('Paste effects', function() { if (pasteLayerFx(layerId)) safeToast('Effects pasted'); });
@@ -1183,7 +1226,9 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
             }
 
             // (#43) Esc deselects layer
-            if (e.key === 'Escape' && !isInput) {
+            // [SPB-TFX1 2026-10-09 TA-023] second Esc-deselect (the first is in canvas.js): after Esc, Move/brush/fill did nothing but a generic toast.
+            // Photoshop never deselects a layer on Esc; the layer panel DONE button stays the explicit deselect. Kill switch SPB_TFX1_OFF.
+            if (e.key === 'Escape' && !isInput && window.SPB_TFX1_OFF === true) {
                 if (currentSelectedLayerId()) {
                     deselectActiveLayer();
                 }
@@ -1271,8 +1316,8 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
             '[data-layer-id][data-color-tag="blue"] { box-shadow: inset 3px 0 0 #60a5fa; }',
             '[data-layer-id][data-color-tag="purple"] { box-shadow: inset 3px 0 0 #c084fc; }',
             '[data-layer-id][data-color-tag="gray"] { box-shadow: inset 3px 0 0 #94a3b8; }',
-            '[data-layer-id][data-locked-zone="1"]::after { content: "🔒"; position: absolute; right: 6px; top: 4px; font-size: 10px; opacity: 0.8; }',
-            '[data-layer-id][data-has-effects="1"]::before { content: "✨"; position: absolute; right: 22px; top: 4px; font-size: 10px; opacity: 0.7; }',
+            '[data-layer-id][data-locked-zone="1"]::after { content: ""; position: absolute; right: 6px; top: 5px; width: 10px; height: 10px; background: currentColor; opacity: 0.8; -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2016%2016%27%20fill=%27none%27%20stroke=%27black%27%20stroke-width=%271.6%27%20stroke-linecap=%27round%27%20stroke-linejoin=%27round%27%3E%3Crect%20x=%273%27%20y=%277%27%20width=%2710%27%20height=%277%27%20rx=%271.6%27/%3E%3Cpath%20d=%27M5%207V5a3%203%200%200%201%206%200v2%27/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2016%2016%27%20fill=%27none%27%20stroke=%27black%27%20stroke-width=%271.6%27%20stroke-linecap=%27round%27%20stroke-linejoin=%27round%27%3E%3Crect%20x=%273%27%20y=%277%27%20width=%2710%27%20height=%277%27%20rx=%271.6%27/%3E%3Cpath%20d=%27M5%207V5a3%203%200%200%201%206%200v2%27/%3E%3C/svg%3E") center / contain no-repeat; }',
+            '[data-layer-id][data-has-effects="1"]::before { content: ""; position: absolute; right: 22px; top: 5px; width: 10px; height: 10px; background: currentColor; opacity: 0.7; -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2016%2016%27%20fill=%27none%27%20stroke=%27black%27%20stroke-width=%271.6%27%20stroke-linecap=%27round%27%20stroke-linejoin=%27round%27%3E%3Cpath%20d=%27M8%202l1.4%204.2L14%208l-4.6%201.8L8%2014l-1.4-4.2L2%208l4.6-1.8z%27/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2016%2016%27%20fill=%27none%27%20stroke=%27black%27%20stroke-width=%271.6%27%20stroke-linecap=%27round%27%20stroke-linejoin=%27round%27%3E%3Cpath%20d=%27M8%202l1.4%204.2L14%208l-4.6%201.8L8%2014l-1.4-4.2L2%208l4.6-1.8z%27/%3E%3C/svg%3E") center / contain no-repeat; }',
             '[data-layer-id] { position: relative; }',
             '#layerActiveDock.minimized > *:not(#layerDockMinimize):not(#layerDockName) { display: none; }'
         ].join('\n');
@@ -1303,7 +1348,17 @@ function _spbZoneChipHtml(zi, zoneName, srcName) {
                 } else {
                     r.removeAttribute('data-has-effects');
                 }
-                if (meta.comment) r.title = (r.title || '') + '\n💬 ' + meta.comment;
+                // [SPB-TLAY2 2026-10-10 L2-2] bug: this ran on every decorate tick and APPENDED the comment again each time (tooltip grew without bound);
+                // now the row's own title is remembered once (data-t2-t0) and the comment is rebuilt from it. SPB_TLAY2_OFF restores the old append.
+                if (window.SPB_TLAY2_OFF === true) { if (meta.comment) r.title = (r.title || '') + '\nComment: ' + meta.comment; }
+                else {
+                    var t1 = r.getAttribute('data-t2-t1');
+                    if (t1 === null || t1 !== r.title) r.setAttribute('data-t2-t0', r.title || '');
+                    var t0 = r.getAttribute('data-t2-t0') || '';
+                    var nt = meta.comment ? ((t0 ? t0 + '\n' : '') + 'Comment: ' + meta.comment) : t0;
+                    if (r.title !== nt) r.title = nt;
+                    r.setAttribute('data-t2-t1', r.title);
+                }
             }
         });
     }

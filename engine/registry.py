@@ -735,6 +735,28 @@ def _build_registries_once():
     except Exception as ex:
         print(f"[V5 Registry] Warning: FRACTURED COSMOS install failed: {ex}")
 
+    # [S19 2026-10-12 owner: Fractured Cosmos rebuild] FRACTURED COSMOS R2 - 60 new
+    # cz_* finishes, each its own generator (R1 cos_* above stays installed so saved
+    # paints keep rendering). See engine/expansions/fractured_cosmos_r2/.
+    try:
+        from engine.expansions.fractured_cosmos_r2 import install_into_engine as _install_cos2
+
+        print("[V5 Registry] FRACTURED COSMOS R2: " + _install_cos2(mono_reg))
+    except Exception as ex:
+        print(f"[V5 Registry] Warning: FRACTURED COSMOS R2 install failed: {ex}")
+
+    # [S20 2026-10-12 owner: Fractured Wilds rebuild] FRACTURED WILDS R2 - 110 new wx_*
+    # finishes (CRYPTID 20 / MORPHO 50 / BLOOM 20 / PETRI 20), each its own generator.
+    # The R1 Wilds finishes (fc_/fmo_/fbl_/fpe_) are installed from shokker_engine_v2.py
+    # (~L14550-14700) and stay installed so saved paints keep rendering.
+    # See engine/expansions/fractured_wilds_r2/.
+    try:
+        from engine.expansions.fractured_wilds_r2 import install_into_engine as _install_wil2
+
+        print("[V5 Registry] FRACTURED WILDS R2: " + _install_wil2(mono_reg))
+    except Exception as ex:
+        print(f"[V5 Registry] Warning: FRACTURED WILDS R2 install failed: {ex}")
+
     # WORLD OF COLOR 2026-08-31 — COLORSHOXX repurposed. The old 77 cx_ ids were
     # three generations of colour-pair flips whose specs measured 2 material
     # cards over 2 families, roughness sigma 7 and clearcoat sigma 2.5. These 100

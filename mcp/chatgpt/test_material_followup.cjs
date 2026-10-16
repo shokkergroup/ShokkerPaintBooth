@@ -1,0 +1,33 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),assert=require('node:assert/strict'),N=require('./named-zone-material.js');
+const z={id:'exact-1',name:'Everything Else',specShiftG:10};
+const entry={role:'ai',undoable:true,lines:['rough +10'],editCtx:{named_material:{zoneId:z.id,zoneName:z.name,channel:'roughness',delta:10,documentStamp:3}},undoAfter:{zones:[{k:'u1',sig:'same'}],layers:[]}};
+const env={zones:[z],current:true,unchanged:true};
+assert.equal(N.followup('A little more.',entry,env).delta,10);
+assert.equal(N.followup('Make it less rough.',entry,env).delta,-10);
+assert.equal(N.followup('A little less.',entry,env).delta,-10);
+assert.equal(N.followup('More.',{...entry,editCtx:{named_material:{...entry.editCtx.named_material,delta:-10}}},env).delta,-10);
+for(const text of ['A little more and paint it red','What is more rough?','More on the roof','Do not make it rougher'])assert.equal(N.followup(text,entry,env),null,text);
+for(const changed of [{undone:true},{undoable:false},{lines:[]}])assert.equal(N.followup('more',{...entry,...changed},env).kind,'clarify');
+for(const changed of [{current:false},{unchanged:false},{zones:[{...z,id:'replacement'}]},{zones:[{...z,locked:true}]},{zones:[{...z,name:'Renamed'}]}])assert.equal(N.followup('more',entry,{...env,...changed}).kind,'clarify');
+assert.equal(N.previous([entry,{role:'user',text:'more'}]),entry);
+assert.equal(N.previous([entry,{role:'user',text:'question'},{role:'ai',text:'answer'},{role:'user',text:'more'}]).editCtx,undefined);
+// Execute the real generated adapter, including the existing Undo signature guards.
+const source=fs.readFileSync(path.join(__dirname,'candidates/spb-pro-ai.js'),'utf8');
+function fn(name){let a=source.indexOf('    function '+name+'('),b=source.slice(a+1).search(/^    function \w+\(/m)+a+1;assert.ok(a>=0);return source.slice(a,b);}
+let epoch=3,now=entry.undoAfter;
+const w={SpbNamedZoneMaterial:N,SpbConversationScope:{current:s=>s===epoch},zones:[z],_log:[entry,{role:'user',text:'more'}],undoSigNow:()=>now};w.window=w;vm.createContext(w);
+vm.runInContext(fn('undoSameZones'),w);w.undoSameLayers=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+vm.runInContext(fn('namedMaterialFollowup'),w);
+assert.equal(w.namedMaterialFollowup('more').zoneName,z.name);
+now={zones:[{k:'u1',sig:'manual-mask-change'}],layers:[]};assert.equal(w.namedMaterialFollowup('more').kind,'clarify');now=entry.undoAfter;
+epoch++;assert.equal(w.namedMaterialFollowup('more').kind,'clarify');epoch--;
+w._log.push({role:'ai',text:'A different topic'},{role:'user',text:'more'});assert.equal(w.namedMaterialFollowup('more'),null);
+const toolScope={zones:[z],_online:false,_editReg:{},_specOnlyReq:true,resolveZone:()=>0,normaliseSpec:a=>a,keepOwnColour(){},specOnlyGuard:()=>null,partScopeGuard:()=>null,bodyLayerNames:()=>['Body'],hasSelector:r=>!!r.layers,Z:{validate:()=>({errors:[]}),catchAll:()=> 'remaining'},protectDecals:s=>{s.region={layers:['Body']};return 'protected';}};
+toolScope.Z.probeRegion=()=>({share_pct:100});toolScope.zoneMadeColour=()=>null;
+vm.createContext(toolScope);vm.runInContext(fn('strip'),toolScope);
+const ds=source.indexOf('        function doEdit(a, Q) {'),de=source.indexOf('\n        // MCPSCEN',ds);assert.ok(ds>0&&de>ds);vm.runInContext(source.slice(ds,de),toolScope);
+let q=[];toolScope.doEdit({zone_id:z.id,expect_name:z.name,spec_shift:{rough:20},_spbNamedChannelTarget:z},q);assert.equal(q.length,1);assert.equal(q[0].spec.region,undefined,'trusted channel-only call retains existing selector');assert.equal(q[0].spec._spbNamedChannelTarget,undefined);
+q=[];toolScope.doEdit({zone_id:z.id,spec_shift:{rough:20},_spbNamedChannelTarget:{...z}},q);assert.equal(q[0].spec.region.layers[0],'Body','JSON lookalike cannot opt out of decal guard');
+q=[];toolScope.doEdit({zone_id:z.id,spec_shift:{rough:20},color:'#abcdef',_spbNamedChannelTarget:z},q);assert.equal(q[0].spec.region.layers[0],'Body','paint edit cannot opt out of decal guard');
+console.log(JSON.stringify({pass:true,natural_relative_followups:true,exact_zone_id:true,channel_direction:true,completed_edit_required:true,undo_document_manual_change_guards:true,intervening_turn_retires_context:true,actual_adapter_and_zone_signature_guard:true}));

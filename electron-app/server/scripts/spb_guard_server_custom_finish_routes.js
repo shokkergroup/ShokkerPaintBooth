@@ -25,10 +25,10 @@ const failures = [];
   'save_custom_finishes=_save_custom_finishes',
   'from server_routes.custom_finish_mixer_routes import register_custom_finish_mixer_routes',
   'register_custom_finish_mixer_routes(',
-  'engine_getter=lambda: engine',
-  'render_swatch_bytes=_render_swatch_bytes',
 ].forEach((needle) => {
-  if (!server.includes(needle)) failures.push(`server.py missing bridge: ${needle}`);
+  // [2026-09-05 RETIRED LEDGER] Finish Mixer SCRAPPED by the owner: server.py must NOT call these
+  // registrars any more (the modules stay on disk, inert). scripts/retired_catalog.json feature=finish_mixer.
+  if (server.includes(needle)) failures.push(`server.py re-registers the scrapped Finish Mixer: ${needle}`);
 });
 
 [

@@ -410,6 +410,13 @@ def register_ai_copilot_routes(app, logger=None):
     except Exception as e:  # pragma: no cover - the copilot must still start
         log('encyclopedia search not registered: %s' % e)
 
+    # HELPER V3 S9 (local half) 2026-10-06: POST/GET /api/ai/feedback -> output/ai_logs/feedback.jsonl ("this didn't do what I asked"; LOCAL ONLY, no sending).
+    try:
+        from server_routes.ai_feedback_routes import register_ai_feedback_routes
+        register_ai_feedback_routes(app, logger)
+    except Exception as e:  # pragma: no cover - the copilot must still start
+        log('ai feedback routes not registered: %s' % e)
+
     def guard():
         if not _origin_ok(request):
             return jsonify({'ok': False, 'error': 'origin', 'message': 'Blocked: AI routes are for the Shokker app only.'}), 403

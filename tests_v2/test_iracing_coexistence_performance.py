@@ -7,7 +7,8 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_iracing_coexistence_mode_is_loaded_last_and_default_on():
     html = (ROOT / "paint-booth-v2.html").read_text(encoding="utf-8")
 
-    coexistence_link = "css/spb-iracing-coexistence.css?v=spb-iracing-coexistence-20260824a"
+    # [2026-10-13] token-agnostic: the ?v= cache token changes on every CSS edit (it pinned ...20260824a while HEAD had spb-fxkill-20260830a)
+    coexistence_link = "css/spb-iracing-coexistence.css?v="
     gallery_link = "css/spb-look-gallery-20260728.css?v=spb-look-gallery-20260728a"
     assert coexistence_link in html
     assert html.index(coexistence_link) > html.index(gallery_link)

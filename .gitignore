@@ -457,3 +457,27 @@ engine/paint_v2/era_image_2026/authoring/*.gz
 engine/paint_v2/era_image_2026/authoring/*.svg
 electron-app/server/engine/paint_v2/era_image_2026/authoring/*.gz
 electron-app/server/engine/paint_v2/era_image_2026/authoring/*.svg
+
+# [Claude BETA-READINESS 2026-10-13] scratch / work dirs and editor backups from the 11.00 build-out (the release gate needs a clean tree)
+/_spb_marketing_work/
+/_ui_polish_2026-10-12/
+/_wilds_r2/
+/_cosmos_r2/
+/_zone_cost_bench/
+/_beta_prep/
+*.bak_*
+*.stackdump
+/_groups.json.stale-*
+*.mcpb.tmp
+*.mcpb-builder-*.backup
+
+# [Claude 11.0.0 RELEASE 2026-10-16] Codex mcp/chatgpt evidence/review dirs (1.7 GB) stay on disk, not in git.
+# Shipped sources ARE committed: top-level files + car-knowledge top level + car-knowledge/build (read by copy-server-assets.js).
+/mcp/chatgpt/*/
+!/mcp/chatgpt/car-knowledge/
+/mcp/chatgpt/car-knowledge/*/
+!/mcp/chatgpt/car-knowledge/build/
+/electron-app/server/mcp/chatgpt/*/
+!/electron-app/server/mcp/chatgpt/car-knowledge/
+/electron-app/server/mcp/chatgpt/car-knowledge/*/
+!/electron-app/server/mcp/chatgpt/car-knowledge/build/

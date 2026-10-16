@@ -65,7 +65,7 @@
                     var dna = data.dna || {};
                     meta.textContent = (data.name || finishId) +
                         (dna.style ? (' · DNA: ' + dna.style) : '') +
-                        (dna.gauntlet_passed ? ' · gauntlet PASS' : '');
+                        (dna.gauntlet_passed ? ' · gauntlet pass' : '');
                 }
                 var actions = document.getElementById('userImportPreviewActions');
                 if (actions) actions.style.display = 'none';

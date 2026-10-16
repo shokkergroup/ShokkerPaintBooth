@@ -56,7 +56,13 @@ node scripts/spb_release_gate_status.js
 
 Every mode checks version identity, context integrity, pinned Layer/Easy plans,
 featured-Easy quality, the canonical fixture, two-copy sync, file budgets, and
-generated drift. `prebuild` requires source/isolated/gauntlet evidence but does
+generated drift, plus the Claude Desktop connector gate
+(`python scripts/spb_mcpb_release_gate.py`, added 2026-10-13): the bundled
+`.mcpb` must equal the app version, match `electron-app/server/` byte for byte,
+start from an extracted copy, and list exactly the tools the server serves;
+from `prestage` on, the `.mcpb` inside `win-unpacked` must equal the fresh one.
+Fix a failure with `python scripts/build_mcpb.py --tools` (live app running) then
+`node scripts/sync-runtime-copies.js --write`. `prebuild` requires source/isolated/gauntlet evidence but does
 not require an installer or packaged smoke. `prestage` requires the built
 distributable/feed hashes but not packaged smoke; `activate` requires the full
 clean-machine record as well. The manifest and isolated proof must match

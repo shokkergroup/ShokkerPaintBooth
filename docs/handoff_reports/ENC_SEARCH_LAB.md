@@ -507,3 +507,77 @@ Mechanisms (no weight retune, no aliases):
 No set dropped. With qlock alone casual TUNE was 76.2; ADDELEM moves one TUNE item ("hw do i do raccing stripes") from `recipes.retro_stripes` to its twin `ideas.racing_stripes` (both stripes how-tos; still top-3).
 
 Gates (`gates_r4b.txt` + two scripts): helper_eval 297/297 · builder 136/136 · ft2 35/35 · edit_corpus 0 mismatches · stack 108/108 · convo 18/18 + held 15/15 · enc_test 27/27 · enc_v2 --final all PASS (6,173) · --depth A 66/66 B 63/63 C 198/198 · enc_reader_smoke 128/128 · PARITY 1689/1689 · rewrite parity 2043/2043 + 23/23 new phrasings · search parity on the 20 paraphrases 20/20 · `enc_stale_refs_check.py` PASS · `hidden_feature_check.py` PASS. No data change, so no rebuild. Synced `js/spb-enc-search.js` + `server_routes/encyclopedia_routes.py` to `electron-app/server/` (copy); token `spb-enc-search.js?v=20261005sl5` in both `paint-booth-v2.html`. No server restart, no in-app check (blind run on 59879). Lab files: `r4b_para.jsonl`, `r4b_probe.js`, `r4b_ch.js`, `r4b_dbg.js`, `r4b_edit.py`, `r4b_row.py/.txt`, backups `r4b_backup_*`.
+
+## ROUND 5 (real misses)
+
+Goal: fix the ranking misses other lanes found (8 from the real request log, `ENC_GAPS_FROM_LOGS.md` section 4, plus 4 CHOICE questions from the helper fix-pass notes) with general mechanisms, no test-question aliases. Ranker at start: VERSION 2026-10-05.8. casual150 NOT used (spent).
+
+**Sets.** `_easy_claude_work/search_lab/r5_miss.jsonl` = the 12 misses (gold = the target the orchestrator named; "explain pearl" -> `ideas.pearl_white`, whose summary opens "Pearl is a gentle metallic glow under the colour", i.e. the article that defines pearl; `recipes.flake_pearl` is a how-to). `r5_para.jsonl` = 37 NEW paraphrases I wrote (export 5, resize 5, where 4, diff 3, explain 3, visible 4, check 3, legible 4, choice 6); gold = the target plus its twin where one exists (export: + `help_support_1.how_export`; resize: + `tools.move_transform`; spec view: + `ui_shell.preview_channel_views`; "base vs pattern": + `workflows.six_words`, which defines both words; "matte or gloss": + `help_topics_1.matte_gloss`, title exact). Runner `r5.js <tag> [shared|reader]` (r4.js + the two sets; `V=1` prints r5 misses), per-item diff `r5_diff.js`, probe `r5_q.js`, rows applied from `r5_rows.txt` by `r5_apply.py` (between `R5 rows begin/end` markers; `SKIP=` for ablation).
+
+### Baseline (ranker .8, before any change)
+
+| set (top-1 / top-3) | shared | reader |
+|---|---|---|
+| r5 misses (12) | 33.3 / 58.3 (only the 4 CHOICE rows right: the two new articles already answer them) | 33.3 / 58.3 |
+| r5 paraphrases (37) | 27.0 / 62.2 | 27.0 / 67.6 |
+| DEV / HELD | 91.2 / 98.2 · 87.1 / 96.1 | 91.1 / 98.0 · 86.1 / 96.1 |
+| held2 / held3 | 78.7 / 97.1 · 74.7 / 88.5 | 77.9 / 97.1 · 74.7 / 87.4 |
+| casual TUNE / TEST | 75.5 / 87.2 · 67.2 / 83.0 | 76.8 / 87.2 · 65.6 / 80.3 |
+| r4b paraphrases (20) | 100 / 100 | 100 / 100 |
+
+(These start numbers differ a little from the R4b table because other lanes added articles since.)
+
+### Mechanisms (ranker VERSION 2026-10-05.9)
+
+Nine REWRITE rows (phrasing classes, between the `R5 rows begin/end` markers; the Python mirror reads them from the JS file as before), one widened R4b row, and one new ranking signal. No alias, no article change, no weight retune.
+- **EXPLAIN** "can you explain X", "tell me (more) about X" -> "what is X" (a definition question; "can you" no longer reads as a how-to).
+- **EXPORT** save / keep / store + iracing / sim / game / race(ing) -> + "export to iracing" (the purpose clause beats the verb "save"). Guards: not project / shokk / template / zip / psd / preset / where, not a negation (the "not showing in iRacing" symptom rows own those).
+- **RESIZE** numbers / logos / sponsors / decals / stickers / lettering within ~30 chars of bigger / smaller / larger / resize / scale up / shrink / enlarge / too big / too small -> + "move or resize a number or logo" (size words on placed art = transform, not add). Texture size stays with the R4 scale rows.
+- **WHERE** "where(s) ..." + spec / spec map / metallic / roughness / clearcoat / channel -> + "see view". First draft fired on every "where" question and cost 6 DEV/HELD/held3/TEST items ("where are the settings" -> spec view); narrowed to the spec viewer nouns and guarded against change / edit / slider / save / folder / files.
+- **VISIBLE** "see / spot / notice / find / recognise me / my car ... across / far / distance / away / track / pack / field / traffic", or "visible / noticeable / easy to see / spotted ... far / track / pack" -> + "stand out in a pack be seen". Guards: numbers / sponsors / logos (that is legibility) and any negation / others / friends (the "others cant see my paint" symptom).
+- **CHECK** "is / are that / this / it / my car|zone|paint|finish ... metallic / flat / matte / shiny / gloss / chrome / satin", or "tell / check / see / know if ... metallic / shiny ..." -> + "check spec channel view" (a question about what is on screen now). Guards: better / best / should / good / too / why (advice and symptoms).
+- **CHOICE** two base-finish words joined by or / vs / versus / compared to (not after "is that ...") -> + "finishes compared". Tried "compared" (+0), "difference between finishes compared" (-1 paraphrase) and the whole base list (help_howto_1.base_finishes took 5 of 6, ctune -0.4): "finishes compared" was best.
+- **ONBODY** colour or colour ... on / for / with a colour (car) -> + "accent colours for a coloured car".
+- **DIFF** "(whats the) difference between (a) A and (a) B (layer / one / thing / option / type)" -> "A vs B difference between A and B": strips the "whats" (a comparison is not a definition) and the trailing noun that pulled the layers card. Non-capturing prefix: a first draft used `$10`, which the Python `$n` converter reads as `$1` + "0" (rewrite parity 2097/2103 caught it).
+- **R4B-LEGIBILITY widened:** "easier to see" -> "(easier|easy|harder) to (see|read|spot)" ("make my sponsors easier to read").
+- **`P.idef = 3` + `RE_DEF` (new signal, JS + Python mirror).** At build time each article's summary is tested for an opening definition, `/^(a |an |the )?(subject of 1-4 words) (is|are|means) /i` (112 of 546 helper articles, e.g. "Pearl is a gentle metallic glow ...", "Chrome is metal 255 ..."). For a definition question (what-intent, not a symptom) whose content words are the subject plus at most one more word, that article's prior is x idef. Plateau 2.5-4 on the paraphrases with every old set equal; 1.3-1.8 lower; 3 taken. Without overlay aliases (an overlay "what is pearl" alias was tried first and dropped: it also moved casual TEST "pearl paint" off its gold). Side gains on DEV / HELD: "patterns explained", "zones explained", "whats the spec sculpt button", "whats a zone in shokker" now land on the what-is card.
+- Per-row ablation (`SKIP=<row> python r5_apply.py` + `r5.js`): every row adds at least one r5 item; removing any row changes no old-set number except RESIZE (DEV -0.2, ctune -0.4) and CHOICE (ctune -0.4), i.e. those two also carry old-set gains. A CHOOSE filler row ("which is better", "should i go with") was tried and dropped (no top-1 gain).
+
+### Results (rank of the gold in brackets; 0 = not in top 5)
+
+| miss | before (shared) | after (shared = helper = server) | after (reader) |
+|---|---|---|---|
+| how do i save this so i can use it in iracing | help_topics_1.save (0) | help_howto_1.export_iracing (1) | same (1) |
+| how do i get my number on the doors bigger | recipes.add_race_number (0) | help_howto_2.move_logo (1) | same (1) |
+| wheres the spec map thing at | help_howto_3.what_is_spec (3) | help_howto_3.see_spec (1) | same (1) |
+| whats the diffrence between base and pattern layer | patterns.layers_and_stacking (2) | workflows.six_words (2) | same (2) |
+| can you explain pearl to me | recipes.flake_pearl (2) | ideas.pearl_white (1) | same (1) |
+| i want people to see me from across the track | workflows.business_and_sharing (4) | ideas.stand_out_in_pack (1) | same (1) |
+| is that metallic or flat? | spec.channel_r_metallic (0) | ui_shell.preview_channel_views (1) | same (1) |
+| make my sponsors easier to read | recipes.mirror_side (0) | ideas.readable_on_tv (1) | same (1) |
+| white or black on blue / gold or silver for black | ideas.finishes_by_body_colour (1) | unchanged (1) | (1) |
+| satin or gloss / metallic vs pearl | finishes.base_compare (1) | unchanged (1) | (1) |
+
+The four CHOICE questions were already right at the start: the two new articles (`finishes.base_compare`, `ideas.finishes_by_body_colour`) carry them. The one left at rank 2 is "base and pattern layer": `workflows.six_words` (summary: "a base is a material; a pattern is a visible design ...") beats `finishes.four_kinds` on its title and FAQ words; both carry an exact "base(s) vs pattern(s)" alias. six_words honestly answers the question, and no general signal separates the two, so I did not force it (forcing it would need an article-specific alias or prior).
+
+| set (top-1 / top-3) | before shared | after shared | before reader | after reader |
+|---|---|---|---|---|
+| r5 misses (12) | 33.3 / 58.3 | **91.7 / 100** | 33.3 / 58.3 | **91.7 / 100** |
+| r5 paraphrases (37, new) | 27.0 / 62.2 | **91.9 / 100** | 27.0 / 67.6 | **94.6 / 97.3** |
+| DEV | 91.2 / 98.2 | 91.7 / 98.4 | 91.1 / 98.0 | 91.4 / 98.2 |
+| HELD | 87.1 / 96.1 | 87.4 / 96.1 | 86.1 / 96.1 | 86.4 / 96.1 |
+| held2 | 78.7 / 97.1 | 78.7 / 97.1 | 77.9 / 97.1 | 77.9 / 97.1 |
+| held3 | 74.7 / 88.5 | 74.7 / 88.5 | 74.7 / 87.4 | 74.7 / 87.4 |
+| casual TUNE | 75.5 / 87.2 | 76.2 / 87.6 | 76.8 / 87.2 | 77.5 / 87.6 |
+| casual TEST | 67.2 / 83.0 | 67.2 / 83.0 | 65.6 / 80.3 | 65.6 / 80.3 |
+| r4b paraphrases (20) | 100 / 100 | 100 / 100 | 100 / 100 | 100 / 100 |
+
+No old set dropped (shared or reader); per-item diff vs the start (`r5_diff.js base final`): shared 7 items gained (DEV 3, HELD 2, casual TUNE 2), reader 6, 0 losses on either. Paraphrase misses left at top-2/3: "where can i look at the metallic channel" (-> `spec.channel_r_metallic`, the metallic channel card, gold 2nd), "chrome vs candy" (-> `help_howto_1.decal_rescue`, whose title names chrome and candy; base_compare 2nd), "satin vs matte which is better" ("which is better" pulls the make-it-pop cards; base_compare 3rd).
+
+### Gates (`_easy_claude_work/search_lab/gates_r5.txt` + three scripts): all green
+helper_eval 297/297 (shared ranker preloaded) · builder 136/136 · ft2 35/35 · edit_corpus 509/0 mismatches · stack 108/108 · convo 18/18 + held 15/15 · enc_test 27/27 · enc_v2 --final all PASS (6,177) · --depth A 66/66, B 63/63, C 202/202 · enc_reader_smoke 128/128 · PARITY 1689/1689 = 100% · `r5_par.py`: rewrite parity JS vs Python 2103/2103 (every lab set + r5 + r4b) and full search top-1 parity on the 69 r5 + r4b questions 69/69 · `enc_stale_refs_check.py` PASS · `hidden_feature_check.py -q` PASS.
+Side effect to know about: `enc_v2_test.js --final` repaired 3 source anchors during the gate run, which rewrote `scripts/ai_atlas/enc_source_anchors.json` and 3 lines of `data/encyclopedia/zones.json` (the gate's own anchor repair, not a ranker change).
+
+### Files
+Changed: `js/spb-enc-search.js` (VERSION .9, R5 rows, widened R4B-LEGIBILITY, `RE_DEF`, `d.def`, `P.idef`), `server_routes/encyclopedia_routes.py` (`RE_DEF` read from the JS, `d['def']` in build, the idef multiplier in search). Both copied to `electron-app/server/` (they were identical to root before this round); `spb-enc-search.js?v=20261005sl6` (was sl5) in both `paint-booth-v2.html`. No data / alias-overlay / qbank change (an overlay entry was tried and reverted; the file is back to its HEAD content), so no rebuild. Lab: `r5.js`, `r5_q.js`, `r5_diff.js`, `r5_apply.py`, `r5_rows.txt`, `r5_par.py`, `r5_para.jsonl`, `r5_miss.jsonl`, backups `r5_backup/`, results `results/r5_*`.
+**Server restart needed** for the Python side of `idef` (new code in build/search). The rewrite rows, `P.idef` and `RE_DEF` themselves are re-read from the JS when its mtime changes, so an un-restarted server runs the new rows but without the definition boost (top-1 differs only on definition questions such as "can you explain pearl to me"). The app pages pick up the JS on reload.

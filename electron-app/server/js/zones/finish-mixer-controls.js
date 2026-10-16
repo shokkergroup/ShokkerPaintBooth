@@ -315,7 +315,7 @@
                     updateZonePanel(zi);
                 }
                 _loadCustomFinishes();
-                if (statusEl) statusEl.textContent = 'Applied!';
+                if (statusEl) statusEl.textContent = 'Applied';
                 if (typeof showToast === 'function') showToast('Mix applied: ' + tempName);
                 setTimeout(function() { closeMixerPanel(); }, 600);
             })
@@ -464,7 +464,7 @@
             // === BUILD PREVIEW AREA ===
             var previewImgHtml = _mixerState.previewImg
                 ? '<img id="mixerPreviewImg" src="' + _mixerState.previewImg + '" style="width:100%;max-width:400px;height:auto;border:1px solid #444;border-radius:4px;image-rendering:auto;">'
-                  + '<div style="display:flex;justify-content:space-around;font-size:9px;color:#666;margin-top:2px;"><span>PAINT</span><span>SPEC MAP</span></div>'
+                  + '<div style="display:flex;justify-content:space-around;font-size:9px;color:#666;margin-top:2px;"><span>Paint</span><span>Spec map</span></div>'
                 : '<img id="mixerPreviewImg" style="display:none;width:100%;max-width:400px;height:auto;border:1px solid #444;border-radius:4px;image-rendering:auto;">';
         
             // === BUILD SAVED MIXES LIST ===
@@ -484,7 +484,7 @@
             // === ASSEMBLE FULL PANEL ===
             var html = '<div style="background:#12122a;border:1px solid #e844e8;border-radius:10px;padding:18px 20px;width:520px;max-height:92vh;overflow-y:auto;box-shadow:0 8px 32px rgba(232,68,232,0.3);" onclick="event.stopPropagation();">'
                 + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
-                + '<h3 style="margin:0;color:#e844e8;font-size:15px;letter-spacing:1px;">&#129514; FINISH MIXER</h3>'
+                + '<h3 style="margin:0;color:#e844e8;font-size:15px;letter-spacing:1px;">Finish mixer</h3>'
                 + '<button onclick="closeMixerPanel()" style="background:none;border:none;color:#888;font-size:18px;cursor:pointer;">&times;</button>'
                 + '</div>'
                 // Slot cards
@@ -494,8 +494,8 @@
                 + pickerHtml
                 // Action buttons
                 + '<div style="display:flex;gap:6px;margin-bottom:10px;">'
-                + '<button onclick="_mixerPreview()" style="background:linear-gradient(135deg,#7c3aed,#e844e8);color:#fff;border:none;padding:7px 14px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:bold;flex:1;">&#128065; Preview</button>'
-                + '<button onclick="_mixerApplyDirect()" style="background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;border:none;padding:7px 14px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:bold;flex:1;">&#9889; Apply to Zone</button>'
+                + '<button onclick="_mixerPreview()" style="background:linear-gradient(135deg,#7c3aed,#e844e8);color:#fff;border:none;padding:7px 14px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:bold;flex:1;">Preview</button>'
+                + '<button onclick="_mixerApplyDirect()" style="background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;border:none;padding:7px 14px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:bold;flex:1;">Apply to zone</button>'
                 + '</div>'
                 // Mix mode selector
                 + '<div style="display:flex;gap:4px;margin-bottom:10px;justify-content:center;">'
@@ -513,7 +513,7 @@
                 + '<hr style="border-color:#333;margin:10px 0;">'
                 + '<div style="display:flex;gap:6px;align-items:center;">'
                 + '<input id="mixerSaveName" type="text" placeholder="My Chrome Candy Carbon" style="flex:1;background:#1a1a2e;color:#eee;border:1px solid #444;padding:6px 8px;border-radius:4px;font-size:11px;">'
-                + '<button onclick="_mixerSave()" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:bold;white-space:nowrap;">&#128190; Save</button>'
+                + '<button onclick="_mixerSave()" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:bold;white-space:nowrap;">Save</button>'
                 + '</div>'
                 // Saved custom mixes with delete
                 + savedHtml

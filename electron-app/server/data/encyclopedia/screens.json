@@ -1,0 +1,5506 @@
+{
+ "domain": "screens",
+ "version": 1,
+ "note": "Real pictures from the running app (lane S). Built by scripts/ai_atlas/enc_screens.py.",
+ "screens": [
+  {
+   "id": "car_astra_causal_origami",
+   "title": "Causal Origami on the car",
+   "caption": "Causal Origami on the example ARCA car (shelf: ASTRA). Spec character: metal 150, roughness 115, clearcoat 133.",
+   "file": "screens/car_astra_causal_origami.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Causal Origami applied to the body.",
+   "article_ids": [
+    "finish_astra_1.base.astra_causal_origami"
+   ],
+   "kind": "car_render",
+   "w": 792,
+   "h": 792,
+   "bytes": 215816,
+   "meta": {
+    "finish_key": "base::astra_causal_origami",
+    "shelf": "ASTRA"
+   }
+  },
+  {
+   "id": "car_at_flannel_forest",
+   "title": "Flannel: Flannel Forest on the car",
+   "caption": "Flannel: Flannel Forest on the example ARCA car (shelf: ALL THAT). Spec character: metal 2, roughness 206, clearcoat 224.",
+   "file": "screens/car_at_flannel_forest.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Flannel: Flannel Forest applied to the body.",
+   "article_ids": [
+    "finish_all_that_2.base.at_flannel_forest"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 240172,
+   "meta": {
+    "finish_key": "base::at_flannel_forest",
+    "shelf": "💿 ALL THAT"
+   }
+  },
+  {
+   "id": "car_beetle_stag",
+   "title": "Stag Carapace on the car",
+   "caption": "Stag Carapace on the example ARCA car (shelf: Iridescent Insects). Spec character: metal 111, roughness 179, clearcoat 50.",
+   "file": "screens/car_beetle_stag.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Stag Carapace applied to the body.",
+   "article_ids": [
+    "finish_iridescent_insects_1.base.beetle_stag"
+   ],
+   "kind": "car_render",
+   "w": 792,
+   "h": 792,
+   "bytes": 227518,
+   "meta": {
+    "finish_key": "base::beetle_stag",
+    "shelf": "Iridescent Insects"
+   }
+  },
+  {
+   "id": "car_bentley_silver",
+   "title": "Bentley Silver on the car",
+   "caption": "Bentley Silver on the example ARCA car (shelf: More Bases). Spec character: metal 185, roughness 35, clearcoat 36.",
+   "file": "screens/car_bentley_silver.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Bentley Silver applied to the body.",
+   "article_ids": [
+    "finish_more_bases_2.base.bentley_silver"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 209690,
+   "meta": {
+    "finish_key": "base::bentley_silver",
+    "shelf": "More Bases"
+   }
+  },
+  {
+   "id": "car_bugatti_blue",
+   "title": "Bugatti Blue on the car",
+   "caption": "Bugatti Blue on the example ARCA car (shelf: More Bases). Spec character: metal 124, roughness 29, clearcoat 48.",
+   "file": "screens/car_bugatti_blue.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Bugatti Blue applied to the body.",
+   "article_ids": [
+    "finish_more_bases_3.base.bugatti_blue"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 150086,
+   "meta": {
+    "finish_key": "base::bugatti_blue",
+    "shelf": "More Bases"
+   }
+  },
+  {
+   "id": "car_cbp_corp_glass",
+   "title": "Sprawl: Corporate Dichroic on the car",
+   "caption": "Sprawl: Corporate Dichroic on the example ARCA car (shelf: CYBERPUNK). Spec character: metal 62, roughness 88, clearcoat 125.",
+   "file": "screens/car_cbp_corp_glass.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Sprawl: Corporate Dichroic applied to the body.",
+   "article_ids": [
+    "finish_cyberpunk_1.base.cbp_corp_glass"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 230772,
+   "meta": {
+    "finish_key": "base::cbp_corp_glass",
+    "shelf": "🌃 CYBERPUNK"
+   }
+  },
+  {
+   "id": "car_cc_voltage_split",
+   "title": "Color Clash: Voltage Split on the car",
+   "caption": "Color Clash: Voltage Split on the example ARCA car (shelf: Color Clash). Spec character: metal 224, roughness 74, clearcoat 228.",
+   "file": "screens/car_cc_voltage_split.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Color Clash: Voltage Split applied to the body.",
+   "article_ids": [
+    "finish_color_clash_2.mono.cc_voltage_split"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 221052,
+   "meta": {
+    "finish_key": "monolithic::cc_voltage_split",
+    "shelf": "Color Clash"
+   }
+  },
+  {
+   "id": "car_chameleon_fire",
+   "title": "Chameleon Fire on the car",
+   "caption": "Chameleon Fire on the example ARCA car (shelf: Prizm). Spec character: metal 119, roughness 90, clearcoat 252.",
+   "file": "screens/car_chameleon_fire.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Chameleon Fire applied to the body.",
+   "article_ids": [
+    "finish_prizm_1.mono.chameleon_fire"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 242088,
+   "meta": {
+    "finish_key": "monolithic::chameleon_fire",
+    "shelf": "Prizm"
+   }
+  },
+  {
+   "id": "car_chrome",
+   "title": "Chrome on the car",
+   "caption": "Chrome on the example ARCA car, as the app's live preview shows it: LEFT the paint (silver), RIGHT the spec map. Solid red on the spec map = full metal with no roughness, which is what makes the mirror. The app preview is flat, so the mirror reflection itself shows in iRacing, not here. Numbers and sponsors are untouched.",
+   "file": "screens/car_chrome.webp",
+   "alt": "The example car painted silver next to its spec map, which is solid red (full metal, mirror smooth) on the body",
+   "article_ids": [
+    "finish_more_bases_5.base.chrome"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 508,
+   "bytes": 95926,
+   "meta": {
+    "finish_key": "base::chrome",
+    "look": true
+   }
+  },
+  {
+   "id": "car_cos_ice_moon",
+   "title": "Worlds: Ice Moon on the car",
+   "caption": "Worlds: Ice Moon on the example ARCA car (shelf: FRACTURED COSMOS). Spec character: metal 104, roughness 159, clearcoat 148.",
+   "file": "screens/car_cos_ice_moon.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Worlds: Ice Moon applied to the body.",
+   "article_ids": [
+    "finish_fractured_cosmos_2.mono.cos_ice_moon"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 238778,
+   "meta": {
+    "finish_key": "monolithic::cos_ice_moon",
+    "shelf": "🌌 FRACTURED COSMOS"
+   }
+  },
+  {
+   "id": "car_cx_blue_to_orange",
+   "title": "CX Blue Orange Abstract Shift on the car",
+   "caption": "CX Blue Orange Abstract Shift on the example ARCA car (shelf: More Specials). Spec character: metal 175, roughness 19, clearcoat 54.",
+   "file": "screens/car_cx_blue_to_orange.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish CX Blue Orange Abstract Shift applied to the body.",
+   "article_ids": [
+    "finish_more_specials_13.mono.cx_blue_to_orange"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 227578,
+   "meta": {
+    "finish_key": "monolithic::cx_blue_to_orange",
+    "shelf": "More Specials"
+   }
+  },
+  {
+   "id": "car_dkc_cobalt_night",
+   "title": "Cobalt Night on the car",
+   "caption": "Cobalt Night on the example ARCA car (shelf: DARK CITY). Spec character: metal 17, roughness 99, clearcoat 86.",
+   "file": "screens/car_dkc_cobalt_night.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Cobalt Night applied to the body.",
+   "article_ids": [
+    "finish_dark_city_1.mono.dkc_cobalt_night"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 216494,
+   "meta": {
+    "finish_key": "monolithic::dkc_cobalt_night",
+    "shelf": "🌃 DARK CITY"
+   }
+  },
+  {
+   "id": "car_efx_snow_crust",
+   "title": "Snow Crust on the car",
+   "caption": "Snow Crust on the example ARCA car (shelf: Foundation EFX). Spec character: metal 102, roughness 139, clearcoat 129.",
+   "file": "screens/car_efx_snow_crust.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Snow Crust applied to the body.",
+   "article_ids": [
+    "finish_foundation_efx_3.base.efx_snow_crust"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 238076,
+   "meta": {
+    "finish_key": "base::efx_snow_crust",
+    "shelf": "Foundation EFX"
+   }
+  },
+  {
+   "id": "car_elm_tide_race",
+   "title": "Water: Tide Race on the car",
+   "caption": "Water: Tide Race on the example ARCA car (shelf: FRACTURED ELEMENTS). Spec character: metal 111, roughness 21, clearcoat 16.",
+   "file": "screens/car_elm_tide_race.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Water: Tide Race applied to the body.",
+   "article_ids": [
+    "finish_fractured_elements_3.mono.elm_tide_race"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 237426,
+   "meta": {
+    "finish_key": "monolithic::elm_tide_race",
+    "shelf": "🌊 FRACTURED ELEMENTS"
+   }
+  },
+  {
+   "id": "car_f_chrome",
+   "title": "Foundation chrome over the car's own colours",
+   "caption": "Foundation Chrome over the car's own colours: LEFT the paint is unchanged (the yellow body stays yellow), RIGHT the spec map turns solid red (full metal, mirror smooth). Only the shine changes; the mirror reflection shows in iRacing.",
+   "file": "screens/car_f_chrome.webp",
+   "alt": "The example car's own yellow paint next to a solid red chrome spec map",
+   "article_ids": [
+    "finish_foundation_1.base.f_chrome",
+    "recipes.chrome_source",
+    "finishes.foundation_shine_only"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 508,
+   "bytes": 84936,
+   "meta": {
+    "finish_key": "base::f_chrome",
+    "look": true
+   }
+  },
+  {
+   "id": "car_fab_dragon_scale",
+   "title": "Dragon Scale on the car",
+   "caption": "Dragon Scale on the example ARCA car (shelf: FABLE). Spec character: metal 112, roughness 19, clearcoat 24.",
+   "file": "screens/car_fab_dragon_scale.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Dragon Scale applied to the body.",
+   "article_ids": [
+    "finish_fable_1.mono.fab_dragon_scale"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 244844,
+   "meta": {
+    "finish_key": "monolithic::fab_dragon_scale",
+    "shelf": "✨ FABLE"
+   }
+  },
+  {
+   "id": "car_fc_snakeskin",
+   "title": "Snakeskin on the car",
+   "caption": "Snakeskin on the example ARCA car (shelf: FRACTURED WILDS). Spec character: metal 55, roughness 47, clearcoat 107.",
+   "file": "screens/car_fc_snakeskin.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Snakeskin applied to the body.",
+   "article_ids": [
+    "finish_fractured_wilds_3.mono.fc_snakeskin"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 246748,
+   "meta": {
+    "finish_key": "monolithic::fc_snakeskin",
+    "shelf": "🌿 FRACTURED WILDS"
+   }
+  },
+  {
+   "id": "car_fd_brine_glass",
+   "title": "Brine Veins on the car",
+   "caption": "Brine Veins on the example ARCA car (shelf: More Specials). Spec character: metal 241, roughness 63, clearcoat 252.",
+   "file": "screens/car_fd_brine_glass.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Brine Veins applied to the body.",
+   "article_ids": [
+    "finish_more_specials_21.mono.fd_brine_glass"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 219888,
+   "meta": {
+    "finish_key": "monolithic::fd_brine_glass",
+    "shelf": "More Specials"
+   }
+  },
+  {
+   "id": "car_ff_leviathan_filaments",
+   "title": "Leviathan Filaments on the car",
+   "caption": "Leviathan Filaments on the example ARCA car (shelf: FRACTURED FORGE). Spec character: metal 243, roughness 56, clearcoat 253.",
+   "file": "screens/car_ff_leviathan_filaments.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Leviathan Filaments applied to the body.",
+   "article_ids": [
+    "finish_fractured_forge_2.mono.ff_leviathan_filaments"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 204128,
+   "meta": {
+    "finish_key": "monolithic::ff_leviathan_filaments",
+    "shelf": "⚛ FRACTURED FORGE"
+   }
+  },
+  {
+   "id": "car_ff_truchet_glass",
+   "title": "Truchet Glass on the car",
+   "caption": "Truchet Glass on the example ARCA car (shelf: FRACTURED TESSERA). Spec character: metal 244, roughness 55, clearcoat 253.",
+   "file": "screens/car_ff_truchet_glass.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Truchet Glass applied to the body.",
+   "article_ids": [
+    "finish_fractured_tessera_1.mono.ff_truchet_glass"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 215458,
+   "meta": {
+    "finish_key": "monolithic::ff_truchet_glass",
+    "shelf": "🔷 FRACTURED TESSERA"
+   }
+  },
+  {
+   "id": "car_ffl_obsidian_chill",
+   "title": "Molten: Obsidian Chill on the car",
+   "caption": "Molten: Obsidian Chill on the example ARCA car (shelf: FRACTURED FLAMES). Spec character: metal 34, roughness 83, clearcoat 78.",
+   "file": "screens/car_ffl_obsidian_chill.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Molten: Obsidian Chill applied to the body.",
+   "article_ids": [
+    "finish_fractured_flames_3.mono.ffl_obsidian_chill"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 230956,
+   "meta": {
+    "finish_key": "monolithic::ffl_obsidian_chill",
+    "shelf": "🔥 FRACTURED FLAMES"
+   }
+  },
+  {
+   "id": "car_ffo_fly_cut",
+   "title": "Fly Cut on the car",
+   "caption": "Fly Cut on the example ARCA car (shelf: FRACTURED FOUNDRY). Spec character: metal 214, roughness 80, clearcoat 75.",
+   "file": "screens/car_ffo_fly_cut.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Fly Cut applied to the body.",
+   "article_ids": [
+    "finish_fractured_foundry_2.mono.ffo_fly_cut"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 244772,
+   "meta": {
+    "finish_key": "monolithic::ffo_fly_cut",
+    "shelf": "⚒ FRACTURED FOUNDRY"
+   }
+  },
+  {
+   "id": "car_fl_chladni",
+   "title": "Chladni Figure on the car",
+   "caption": "Chladni Figure on the example ARCA car (shelf: FLAW LAB). Spec character: metal 17, roughness 91, clearcoat 132.",
+   "file": "screens/car_fl_chladni.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Chladni Figure applied to the body.",
+   "article_ids": [
+    "finish_flaw_lab_1.base.fl_chladni"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 251960,
+   "meta": {
+    "finish_key": "base::fl_chladni",
+    "shelf": "🔬 FLAW LAB"
+   }
+  },
+  {
+   "id": "car_fm_ion_drift",
+   "title": "Ion Drift on the car",
+   "caption": "Ion Drift on the example ARCA car (shelf: FRACTURED MINDS). Spec character: metal 245, roughness 48, clearcoat 253.",
+   "file": "screens/car_fm_ion_drift.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Ion Drift applied to the body.",
+   "article_ids": [
+    "finish_fractured_minds_2.mono.fm_ion_drift"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 190190,
+   "meta": {
+    "finish_key": "monolithic::fm_ion_drift",
+    "shelf": "🧠 FRACTURED MINDS"
+   }
+  },
+  {
+   "id": "car_fo_fondue_copper",
+   "title": "Shag: Fondue Copper on the car",
+   "caption": "Shag: Fondue Copper on the example ARCA car (shelf: FAR OUT). Spec character: metal 188, roughness 45, clearcoat 72.",
+   "file": "screens/car_fo_fondue_copper.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Shag: Fondue Copper applied to the body.",
+   "article_ids": [
+    "finish_far_out_1.base.fo_fondue_copper"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 238814,
+   "meta": {
+    "finish_key": "base::fo_fondue_copper",
+    "shelf": "🪩 FAR OUT"
+   }
+  },
+  {
+   "id": "car_frl_deep_one_gill",
+   "title": "Deep One Gill on the car",
+   "caption": "Deep One Gill on the example ARCA car (shelf: FRACTURED RELICS). Spec character: metal 147, roughness 118, clearcoat 151.",
+   "file": "screens/car_frl_deep_one_gill.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Deep One Gill applied to the body.",
+   "article_ids": [
+    "finish_fractured_relics_2.mono.frl_deep_one_gill"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 251118,
+   "meta": {
+    "finish_key": "monolithic::frl_deep_one_gill",
+    "shelf": "🏺 FRACTURED RELICS"
+   }
+  },
+  {
+   "id": "car_fs_night_tide",
+   "title": "Night Tide on the car",
+   "caption": "Night Tide on the example ARCA car (shelf: FRACTURED SOULS). Spec character: metal 246, roughness 41, clearcoat 254.",
+   "file": "screens/car_fs_night_tide.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Night Tide applied to the body.",
+   "article_ids": [
+    "finish_fractured_souls_2.mono.fs_night_tide"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 172118,
+   "meta": {
+    "finish_key": "monolithic::fs_night_tide",
+    "shelf": "💀 FRACTURED SOULS"
+   }
+  },
+  {
+   "id": "car_fsk_damascus",
+   "title": "Damascus on the car",
+   "caption": "Damascus on the example ARCA car (shelf: FRACTURED OPALFIRE). Spec character: metal 242, roughness 31, clearcoat 246.",
+   "file": "screens/car_fsk_damascus.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Damascus applied to the body.",
+   "article_ids": [
+    "finish_fractured_opalfire_3.mono.fsk_damascus"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 223478,
+   "meta": {
+    "finish_key": "monolithic::fsk_damascus",
+    "shelf": "🖤 FRACTURED OPALFIRE"
+   }
+  },
+  {
+   "id": "car_gf_x_9169",
+   "title": "Cherry Sunrise Halftone on the car",
+   "caption": "Cherry Sunrise Halftone on the example ARCA car (shelf: GRUNGE & FUN). Spec character: metal 199, roughness 50, clearcoat 116.",
+   "file": "screens/car_gf_x_9169.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Cherry Sunrise Halftone applied to the body.",
+   "article_ids": [
+    "finish_grunge_fun_3.mono.gf_x_9169"
+   ],
+   "kind": "car_render",
+   "w": 792,
+   "h": 792,
+   "bytes": 214522,
+   "meta": {
+    "finish_key": "monolithic::gf_x_9169",
+    "shelf": "GRUNGE & FUN"
+   }
+  },
+  {
+   "id": "car_grad_ocean_depths_h",
+   "title": "Ocean Depths H on the car",
+   "caption": "Ocean Depths H on the example ARCA car (shelf: Gradient Directional). Spec character: metal 117, roughness 117, clearcoat 123.",
+   "file": "screens/car_grad_ocean_depths_h.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Ocean Depths H applied to the body.",
+   "article_ids": [
+    "finish_gradient_directional_2.mono.grad_ocean_depths_h"
+   ],
+   "kind": "car_render",
+   "w": 901,
+   "h": 901,
+   "bytes": 247912,
+   "meta": {
+    "finish_key": "monolithic::grad_ocean_depths_h",
+    "shelf": "Gradient Directional"
+   }
+  },
+  {
+   "id": "car_grad_storm_front",
+   "title": "Storm Front on the car",
+   "caption": "Storm Front on the example ARCA car (shelf: Gradient Extended). Spec character: metal 117, roughness 116, clearcoat 124.",
+   "file": "screens/car_grad_storm_front.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Storm Front applied to the body.",
+   "article_ids": [
+    "finish_gradient_extended_6.mono.grad_storm_front"
+   ],
+   "kind": "car_render",
+   "w": 792,
+   "h": 792,
+   "bytes": 244392,
+   "meta": {
+    "finish_key": "monolithic::grad_storm_front",
+    "shelf": "Gradient Extended"
+   }
+  },
+  {
+   "id": "car_grd_oklab_flow",
+   "title": "OKLab Flow Gradient on the car",
+   "caption": "OKLab Flow Gradient on the example ARCA car (shelf: GRADIENTS). Spec character: metal 117, roughness 117, clearcoat 123.",
+   "file": "screens/car_grd_oklab_flow.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish OKLab Flow Gradient applied to the body.",
+   "article_ids": [
+    "finish_gradients_2.mono.grd_oklab_flow"
+   ],
+   "kind": "car_render",
+   "w": 792,
+   "h": 792,
+   "bytes": 228446,
+   "meta": {
+    "finish_key": "monolithic::grd_oklab_flow",
+    "shelf": "🌈 GRADIENTS"
+   }
+  },
+  {
+   "id": "car_materials2_forged",
+   "title": "Forged Carbon on the car",
+   "caption": "Forged Carbon on the example ARCA car (shelf: Materials & Physics). Spec character: metal 165, roughness 167, clearcoat 17.",
+   "file": "screens/car_materials2_forged.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Forged Carbon applied to the body.",
+   "article_ids": [
+    "finish_materials_physics_2.mono.materials2_forged"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 218420,
+   "meta": {
+    "finish_key": "monolithic::materials2_forged",
+    "shelf": "Materials & Physics"
+   }
+  },
+  {
+   "id": "car_mclaren_orange",
+   "title": "McLaren Orange on the car",
+   "caption": "McLaren Orange on the example ARCA car (shelf: More Bases). Spec character: metal 141, roughness 25, clearcoat 50.",
+   "file": "screens/car_mclaren_orange.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish McLaren Orange applied to the body.",
+   "article_ids": [
+    "finish_more_bases_11.base.mclaren_orange"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 175396,
+   "meta": {
+    "finish_key": "base::mclaren_orange",
+    "shelf": "More Bases"
+   }
+  },
+  {
+   "id": "car_msk_timelock",
+   "title": "Vault: Timelock on the car",
+   "caption": "Vault: Timelock on the example ARCA car (shelf: MONEY SHOKK). Spec character: metal 169, roughness 86, clearcoat 69.",
+   "file": "screens/car_msk_timelock.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Vault: Timelock applied to the body.",
+   "article_ids": [
+    "finish_money_shokk_3.mono.msk_timelock"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 217910,
+   "meta": {
+    "finish_key": "monolithic::msk_timelock",
+    "shelf": "★ MONEY SHOKK"
+   }
+  },
+  {
+   "id": "car_neon2_sign_tubes",
+   "title": "Signglass Shatter on the car",
+   "caption": "Signglass Shatter on the example ARCA car (shelf: NEON UNDERGROUND). Spec character: metal 23, roughness 62, clearcoat 123.",
+   "file": "screens/car_neon2_sign_tubes.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Signglass Shatter applied to the body.",
+   "article_ids": [
+    "finish_neon_underground_1.mono.neon2_sign_tubes"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 178668,
+   "meta": {
+    "finish_key": "monolithic::neon2_sign_tubes",
+    "shelf": "★ NEON UNDERGROUND"
+   }
+  },
+  {
+   "id": "car_ns2_sonar_ghost",
+   "title": "Ns2 Sonar Ghost on the car",
+   "caption": "Ns2 Sonar Ghost on the example ARCA car (shelf: More Specials). Spec character: metal 80, roughness 162, clearcoat 244.",
+   "file": "screens/car_ns2_sonar_ghost.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Ns2 Sonar Ghost applied to the body.",
+   "article_ids": [
+    "finish_more_specials_52.mono.ns2_sonar_ghost"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 237294,
+   "meta": {
+    "finish_key": "monolithic::ns2_sonar_ghost",
+    "shelf": "More Specials"
+   }
+  },
+  {
+   "id": "car_nsx_aqua_betrayal",
+   "title": "Aqua Betrayal on the car",
+   "caption": "Aqua Betrayal on the example ARCA car (shelf: FRACTURED NIGHTSHIFT). Spec character: metal 105, roughness 81, clearcoat 85.",
+   "file": "screens/car_nsx_aqua_betrayal.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Aqua Betrayal applied to the body.",
+   "article_ids": [
+    "finish_fractured_nightshift_1.mono.nsx_aqua_betrayal"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 254968,
+   "meta": {
+    "finish_key": "monolithic::nsx_aqua_betrayal",
+    "shelf": "🌗 FRACTURED NIGHTSHIFT"
+   }
+  },
+  {
+   "id": "car_optics2_fiber",
+   "title": "Fiber-Optic Bundle on the car",
+   "caption": "Fiber-Optic Bundle on the example ARCA car (shelf: Light & Optics). Spec character: metal 214, roughness 35, clearcoat 234.",
+   "file": "screens/car_optics2_fiber.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Fiber-Optic Bundle applied to the body.",
+   "article_ids": [
+    "finish_light_optics_2.mono.optics2_fiber"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 196704,
+   "meta": {
+    "finish_key": "monolithic::optics2_fiber",
+    "shelf": "Light & Optics"
+   }
+  },
+  {
+   "id": "car_pdg_knit_liquid",
+   "title": "Woven: Knit Liquid on the car",
+   "caption": "Woven: Knit Liquid on the example ARCA car (shelf: PARADIGM). Spec character: metal 8, roughness 71, clearcoat 58.",
+   "file": "screens/car_pdg_knit_liquid.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Woven: Knit Liquid applied to the body.",
+   "article_ids": [
+    "finish_paradigm_2.mono.pdg_knit_liquid"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 249366,
+   "meta": {
+    "finish_key": "monolithic::pdg_knit_liquid",
+    "shelf": "PARADIGM"
+   }
+  },
+  {
+   "id": "car_pf_bright_magenta_arc",
+   "title": "PF: Bright Magenta Arc on the car",
+   "caption": "PF: Bright Magenta Arc on the example ARCA car (shelf: PRISM FORGE). Spec character: metal 181, roughness 109, clearcoat 88.",
+   "file": "screens/car_pf_bright_magenta_arc.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish PF: Bright Magenta Arc applied to the body.",
+   "article_ids": [
+    "finish_prism_forge_1.base.pf_bright_magenta_arc"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 218224,
+   "meta": {
+    "finish_key": "base::pf_bright_magenta_arc",
+    "shelf": "★ PRISM FORGE"
+   }
+  },
+  {
+   "id": "car_rad_bezel_black",
+   "title": "Arcade: Neon Bezel Inlay on the car",
+   "caption": "Arcade: Neon Bezel Inlay on the example ARCA car (shelf: BAD & RAD). Spec character: metal 77, roughness 96, clearcoat 129.",
+   "file": "screens/car_rad_bezel_black.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Arcade: Neon Bezel Inlay applied to the body.",
+   "article_ids": [
+    "finish_bad_rad_1.base.rad_bezel_black"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 250078,
+   "meta": {
+    "finish_key": "base::rad_bezel_black",
+    "shelf": "⚡ BAD & RAD"
+   }
+  },
+  {
+   "id": "car_reactive_stealth_pop",
+   "title": "Reactive Stealth Pop on the car",
+   "caption": "Reactive Stealth Pop on the example ARCA car (shelf: Surface & Grain). Spec character: metal 222, roughness 43, clearcoat 161.",
+   "file": "screens/car_reactive_stealth_pop.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Reactive Stealth Pop applied to the body.",
+   "article_ids": [
+    "finish_surface_grain_2.mono.reactive_stealth_pop"
+   ],
+   "kind": "car_render",
+   "w": 901,
+   "h": 901,
+   "bytes": 238496,
+   "meta": {
+    "finish_key": "monolithic::reactive_stealth_pop",
+    "shelf": "Surface & Grain"
+   }
+  },
+  {
+   "id": "car_rs_koi_ascension",
+   "title": "Koi Ascension on the car",
+   "caption": "Koi Ascension on the example ARCA car (shelf: RISING SUN). Spec character: metal 145, roughness 40, clearcoat 25.",
+   "file": "screens/car_rs_koi_ascension.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Koi Ascension applied to the body.",
+   "article_ids": [
+    "finish_rising_sun_2.mono.rs_koi_ascension"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 255664,
+   "meta": {
+    "finish_key": "monolithic::rs_koi_ascension",
+    "shelf": "RISING SUN"
+   }
+  },
+  {
+   "id": "car_slt_cycloid_gloss",
+   "title": "Sea Snake Gloss on the car",
+   "caption": "Sea Snake Gloss on the example ARCA car (shelf: SHOKK WORKS). Spec character: metal 107, roughness 65, clearcoat 80.",
+   "file": "screens/car_slt_cycloid_gloss.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Sea Snake Gloss applied to the body.",
+   "article_ids": [
+    "finish_shokk_works_4.base.slt_cycloid_gloss"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 246594,
+   "meta": {
+    "finish_key": "base::slt_cycloid_gloss",
+    "shelf": "SHOKK WORKS"
+   }
+  },
+  {
+   "id": "car_sodium_lamp",
+   "title": "Sodium Lamp on the car",
+   "caption": "Sodium Lamp on the example ARCA car (shelf: Signal). Spec character: metal 128, roughness 63, clearcoat 58.",
+   "file": "screens/car_sodium_lamp.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Sodium Lamp applied to the body.",
+   "article_ids": [
+    "finish_signal_2.mono.sodium_lamp"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 221568,
+   "meta": {
+    "finish_key": "monolithic::sodium_lamp",
+    "shelf": "Signal"
+   }
+  },
+  {
+   "id": "car_spectraflame",
+   "title": "Sentient Polycarbonate on the car",
+   "caption": "Sentient Polycarbonate on the example ARCA car (shelf: Foundation). Spec character: metal 184, roughness 33, clearcoat 16.",
+   "file": "screens/car_spectraflame.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Sentient Polycarbonate applied to the body.",
+   "article_ids": [
+    "finish_foundation_2.base.spectraflame"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 215876,
+   "meta": {
+    "finish_key": "base::spectraflame",
+    "shelf": "Foundation"
+   }
+  },
+  {
+   "id": "car_spectrum_event_horizon",
+   "title": "Event Horizon on the car",
+   "caption": "Event Horizon on the example ARCA car (shelf: Spectrum Shift). Spec character: metal 62, roughness 96, clearcoat 24.",
+   "file": "screens/car_spectrum_event_horizon.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Event Horizon applied to the body.",
+   "article_ids": [
+    "finish_spectrum_shift_2.mono.spectrum_event_horizon"
+   ],
+   "kind": "car_render",
+   "w": 792,
+   "h": 792,
+   "bytes": 209818,
+   "meta": {
+    "finish_key": "monolithic::spectrum_event_horizon",
+    "shelf": "★ Spectrum Shift"
+   }
+  },
+  {
+   "id": "car_tac_m81_woodland",
+   "title": "Camo: M81 Woodland on the car",
+   "caption": "Camo: M81 Woodland on the example ARCA car (shelf: TACTICAL & FIELD). Spec character: metal 6, roughness 138, clearcoat 121.",
+   "file": "screens/car_tac_m81_woodland.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Camo: M81 Woodland applied to the body.",
+   "article_ids": [
+    "finish_tactical_field_2.base.tac_m81_woodland"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 247140,
+   "meta": {
+    "finish_key": "base::tac_m81_woodland",
+    "shelf": "🎯 TACTICAL & FIELD"
+   }
+  },
+  {
+   "id": "car_trizone_ceramic_flake_satin",
+   "title": "TriZone Ceramic/Flake/Satin on the car",
+   "caption": "TriZone Ceramic/Flake/Satin on the example ARCA car (shelf: Depth & Geometry). Spec character: metal 174, roughness 60, clearcoat 141.",
+   "file": "screens/car_trizone_ceramic_flake_satin.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish TriZone Ceramic/Flake/Satin applied to the body.",
+   "article_ids": [
+    "finish_depth_geometry_3.mono.trizone_ceramic_flake_satin"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 251744,
+   "meta": {
+    "finish_key": "monolithic::trizone_ceramic_flake_satin",
+    "shelf": "Depth & Geometry"
+   }
+  },
+  {
+   "id": "car_uj_liverpool_echo_lace",
+   "title": "Liverpool Echo Lace on the car",
+   "caption": "Liverpool Echo Lace on the example ARCA car (shelf: UNION JACKED). Spec character: metal 6, roughness 70, clearcoat 57.",
+   "file": "screens/car_uj_liverpool_echo_lace.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Liverpool Echo Lace applied to the body.",
+   "article_ids": [
+    "finish_union_jacked_2.mono.uj_liverpool_echo_lace"
+   ],
+   "kind": "car_render",
+   "w": 901,
+   "h": 901,
+   "bytes": 250488,
+   "meta": {
+    "finish_key": "monolithic::uj_liverpool_echo_lace",
+    "shelf": "UNION JACKED"
+   }
+  },
+  {
+   "id": "car_vm_copper_canyon",
+   "title": "Copper Canyon on the car",
+   "caption": "Copper Canyon on the example ARCA car (shelf: VIVA MEXICO). Spec character: metal 105, roughness 83, clearcoat 77.",
+   "file": "screens/car_vm_copper_canyon.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Copper Canyon applied to the body.",
+   "article_ids": [
+    "finish_viva_mexico_2.mono.vm_copper_canyon"
+   ],
+   "kind": "car_render",
+   "w": 792,
+   "h": 792,
+   "bytes": 210244,
+   "meta": {
+    "finish_key": "monolithic::vm_copper_canyon",
+    "shelf": "VIVA MEXICO"
+   }
+  },
+  {
+   "id": "car_woc_amazon_canopy",
+   "title": "Brazil: Amazon Canopy on the car",
+   "caption": "Brazil: Amazon Canopy on the example ARCA car (shelf: WORLD OF COLOR). Spec character: metal 2, roughness 98, clearcoat 81.",
+   "file": "screens/car_woc_amazon_canopy.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Brazil: Amazon Canopy applied to the body.",
+   "article_ids": [
+    "finish_world_of_color_1.mono.woc_amazon_canopy"
+   ],
+   "kind": "car_render",
+   "w": 901,
+   "h": 901,
+   "bytes": 246810,
+   "meta": {
+    "finish_key": "monolithic::woc_amazon_canopy",
+    "shelf": "🌍 WORLD OF COLOR"
+   }
+  },
+  {
+   "id": "car_xlab_chiral_mercury",
+   "title": "Chiral Mercury on the car",
+   "caption": "Chiral Mercury on the example ARCA car (shelf: X LAB). Spec character: metal 108, roughness 60, clearcoat 119.",
+   "file": "screens/car_xlab_chiral_mercury.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Chiral Mercury applied to the body.",
+   "article_ids": [
+    "finish_x_lab_1.mono.xlab_chiral_mercury"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 234558,
+   "meta": {
+    "finish_key": "monolithic::xlab_chiral_mercury",
+    "shelf": "X LAB"
+   }
+  },
+  {
+   "id": "cat_all_that",
+   "title": "Cdrom: Disc Rainbow on the car",
+   "caption": "Cdrom: Disc Rainbow on the example ARCA car (shelf: ALL THAT). Spec character: metal 177, roughness 84, clearcoat 126.",
+   "file": "screens/cat_all_that.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Cdrom: Disc Rainbow applied to the body.",
+   "article_ids": [
+    "finish_all_that_2.base.at_disc_rainbow"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 240422,
+   "meta": {
+    "finish_key": "base::at_disc_rainbow",
+    "shelf": "💿 ALL THAT"
+   }
+  },
+  {
+   "id": "cat_anime_inspired",
+   "title": "Raiton Lightning on the car",
+   "caption": "Raiton Lightning on the example ARCA car (shelf: ANIME INSPIRED). Spec character: metal 103, roughness 123, clearcoat 144.",
+   "file": "screens/cat_anime_inspired.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Raiton Lightning applied to the body.",
+   "article_ids": [
+    "finish_anime_inspired_1.mono.anime2_energy_aura"
+   ],
+   "kind": "car_render",
+   "w": 696,
+   "h": 696,
+   "bytes": 201958,
+   "meta": {
+    "finish_key": "monolithic::anime2_energy_aura",
+    "shelf": "★ ANIME INSPIRED"
+   }
+  },
+  {
+   "id": "cat_astra",
+   "title": "Event Horizon on the car",
+   "caption": "Event Horizon on the example ARCA car (shelf: ASTRA). Spec character: metal 121, roughness 118, clearcoat 136.",
+   "file": "screens/cat_astra.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Event Horizon applied to the body.",
+   "article_ids": [
+    "finish_astra_1.base.astra_event_horizon",
+    "finishes.astra"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 246876,
+   "meta": {
+    "finish_key": "base::astra_event_horizon",
+    "shelf": "ASTRA"
+   }
+  },
+  {
+   "id": "cat_bad_rad",
+   "title": "Arcade: Vector Glow on the car",
+   "caption": "Arcade: Vector Glow on the example ARCA car (shelf: BAD & RAD). Spec character: metal 121, roughness 64, clearcoat 115.",
+   "file": "screens/cat_bad_rad.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Arcade: Vector Glow applied to the body.",
+   "article_ids": [
+    "finish_bad_rad_4.base.rad_vector_glow"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 226344,
+   "meta": {
+    "finish_key": "base::rad_vector_glow",
+    "shelf": "⚡ BAD & RAD"
+   }
+  },
+  {
+   "id": "cat_color_clash",
+   "title": "Color Clash: Solar Clash on the car",
+   "caption": "Color Clash: Solar Clash on the example ARCA car (shelf: Color Clash). Spec character: metal 225, roughness 62, clearcoat 234.",
+   "file": "screens/cat_color_clash.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Color Clash: Solar Clash applied to the body.",
+   "article_ids": [
+    "finish_color_clash_2.mono.cc_solar_clash"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 228784,
+   "meta": {
+    "finish_key": "monolithic::cc_solar_clash",
+    "shelf": "Color Clash"
+   }
+  },
+  {
+   "id": "cat_cyberpunk",
+   "title": "Street: Neon Sign Enamel on the car",
+   "caption": "Street: Neon Sign Enamel on the example ARCA car (shelf: CYBERPUNK). Spec character: metal 102, roughness 87, clearcoat 125.",
+   "file": "screens/cat_cyberpunk.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Street: Neon Sign Enamel applied to the body.",
+   "article_ids": [
+    "finish_cyberpunk_2.base.cbp_kanji_signage",
+    "finishes.nature_tactical_cyberpunk"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 243144,
+   "meta": {
+    "finish_key": "base::cbp_kanji_signage",
+    "shelf": "🌃 CYBERPUNK"
+   }
+  },
+  {
+   "id": "cat_dark_city",
+   "title": "Abyss Blue on the car",
+   "caption": "Abyss Blue on the example ARCA car (shelf: DARK CITY). Spec character: metal 17, roughness 74, clearcoat 65.",
+   "file": "screens/cat_dark_city.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Abyss Blue applied to the body.",
+   "article_ids": [
+    "finish_dark_city_1.mono.dkc_abyss_blue"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 249336,
+   "meta": {
+    "finish_key": "monolithic::dkc_abyss_blue",
+    "shelf": "🌃 DARK CITY"
+   }
+  },
+  {
+   "id": "cat_depth_geometry",
+   "title": "TriZone Mercury/Obsidian/Candy on the car",
+   "caption": "TriZone Mercury/Obsidian/Candy on the example ARCA car (shelf: Depth & Geometry). Spec character: metal 173, roughness 59, clearcoat 81.",
+   "file": "screens/cat_depth_geometry.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish TriZone Mercury/Obsidian/Candy applied to the body.",
+   "article_ids": [
+    "finish_depth_geometry_3.mono.trizone_mercury_obsidian_candy"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 239364,
+   "meta": {
+    "finish_key": "monolithic::trizone_mercury_obsidian_candy",
+    "shelf": "Depth & Geometry"
+   }
+  },
+  {
+   "id": "cat_fable",
+   "title": "Crown Jewel on the car",
+   "caption": "Crown Jewel on the example ARCA car (shelf: FABLE). Spec character: metal 107, roughness 14, clearcoat 26.",
+   "file": "screens/cat_fable.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Crown Jewel applied to the body.",
+   "article_ids": [
+    "finish_fable_1.mono.fab_crown_jewel"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 227870,
+   "meta": {
+    "finish_key": "monolithic::fab_crown_jewel",
+    "shelf": "✨ FABLE"
+   }
+  },
+  {
+   "id": "cat_far_out",
+   "title": "Van: Candy Apple on the car",
+   "caption": "Van: Candy Apple on the example ARCA car (shelf: FAR OUT). Spec character: metal 166, roughness 36, clearcoat 29.",
+   "file": "screens/cat_far_out.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Van: Candy Apple applied to the body.",
+   "article_ids": [
+    "finish_far_out_1.base.fo_candy_apple"
+   ],
+   "kind": "car_render",
+   "w": 792,
+   "h": 792,
+   "bytes": 213804,
+   "meta": {
+    "finish_key": "base::fo_candy_apple",
+    "shelf": "🪩 FAR OUT"
+   }
+  },
+  {
+   "id": "cat_flames",
+   "title": "Smoke & Fire on the car",
+   "caption": "Smoke & Fire on the example ARCA car (shelf: Flames). Spec character: metal 148, roughness 115, clearcoat 114.",
+   "file": "screens/cat_flames.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Smoke & Fire applied to the body.",
+   "article_ids": [
+    "finish_flames_1.base.flame_smoke"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 156762,
+   "meta": {
+    "finish_key": "base::flame_smoke",
+    "shelf": "Flames"
+   }
+  },
+  {
+   "id": "cat_flaw_lab",
+   "title": "Isochromatic Fringe on the car",
+   "caption": "Isochromatic Fringe on the example ARCA car (shelf: FLAW LAB). Spec character: metal 30, roughness 34, clearcoat 34.",
+   "file": "screens/cat_flaw_lab.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Isochromatic Fringe applied to the body.",
+   "article_ids": [
+    "finish_flaw_lab_2.base.fl_photoelastic_iso"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 255482,
+   "meta": {
+    "finish_key": "base::fl_photoelastic_iso",
+    "shelf": "🔬 FLAW LAB"
+   }
+  },
+  {
+   "id": "cat_forbidden_dragon",
+   "title": "Abyssal Sea on the car",
+   "caption": "Abyssal Sea on the example ARCA car (shelf: FORBIDDEN DRAGON). Spec character: metal 184, roughness 52, clearcoat 33.",
+   "file": "screens/cat_forbidden_dragon.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Abyssal Sea applied to the body.",
+   "article_ids": [
+    "finish_forbidden_dragon_1.mono.fd_abyssal_sea"
+   ],
+   "kind": "car_render",
+   "w": 696,
+   "h": 696,
+   "bytes": 206760,
+   "meta": {
+    "finish_key": "monolithic::fd_abyssal_sea",
+    "shelf": "FORBIDDEN DRAGON"
+   }
+  },
+  {
+   "id": "cat_foundation",
+   "title": "Moonstone on the car",
+   "caption": "Moonstone on the example ARCA car (shelf: Foundation). Spec character: metal 65, roughness 68, clearcoat 15.",
+   "file": "screens/cat_foundation.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Moonstone applied to the body.",
+   "article_ids": [
+    "finish_foundation_2.base.moonstone",
+    "finishes.foundation_and_efx"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 219062,
+   "meta": {
+    "finish_key": "base::moonstone",
+    "shelf": "Foundation"
+   }
+  },
+  {
+   "id": "cat_foundation_efx",
+   "title": "Tempered Spectrum on the car",
+   "caption": "Tempered Spectrum on the example ARCA car (shelf: Foundation EFX). Spec character: metal 175, roughness 64, clearcoat 100.",
+   "file": "screens/cat_foundation_efx.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Tempered Spectrum applied to the body.",
+   "article_ids": [
+    "finish_foundation_efx_3.base.efx_tempered_spectrum",
+    "finishes.foundation_and_efx"
+   ],
+   "kind": "car_render",
+   "w": 792,
+   "h": 792,
+   "bytes": 227796,
+   "meta": {
+    "finish_key": "base::efx_tempered_spectrum",
+    "shelf": "Foundation EFX"
+   }
+  },
+  {
+   "id": "cat_fractured_cosmos",
+   "title": "Vessel: Beacon Strobe on the car",
+   "caption": "Vessel: Beacon Strobe on the example ARCA car (shelf: FRACTURED COSMOS). Spec character: metal 121, roughness 59, clearcoat 52.",
+   "file": "screens/cat_fractured_cosmos.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Vessel: Beacon Strobe applied to the body.",
+   "article_ids": [
+    "finish_fractured_cosmos_1.mono.cos_beacon_strobe"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 224204,
+   "meta": {
+    "finish_key": "monolithic::cos_beacon_strobe",
+    "shelf": "🌌 FRACTURED COSMOS"
+   }
+  },
+  {
+   "id": "cat_fractured_elements",
+   "title": "Water: Glassy Swell on the car",
+   "caption": "Water: Glassy Swell on the example ARCA car (shelf: FRACTURED ELEMENTS). Spec character: metal 91, roughness 21, clearcoat 21.",
+   "file": "screens/cat_fractured_elements.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Water: Glassy Swell applied to the body.",
+   "article_ids": [
+    "finish_fractured_elements_1.mono.elm_glassy_swell"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 217534,
+   "meta": {
+    "finish_key": "monolithic::elm_glassy_swell",
+    "shelf": "🌊 FRACTURED ELEMENTS"
+   }
+  },
+  {
+   "id": "cat_fractured_flames",
+   "title": "Flame: Crown Fire on the car",
+   "caption": "Flame: Crown Fire on the example ARCA car (shelf: FRACTURED FLAMES). Spec character: metal 103, roughness 77, clearcoat 122.",
+   "file": "screens/cat_fractured_flames.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Flame: Crown Fire applied to the body.",
+   "article_ids": [
+    "finish_fractured_flames_2.mono.ffl_crown_fire"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 219010,
+   "meta": {
+    "finish_key": "monolithic::ffl_crown_fire",
+    "shelf": "🔥 FRACTURED FLAMES"
+   }
+  },
+  {
+   "id": "cat_fractured_forge",
+   "title": "Abyssal Currents on the car",
+   "caption": "Abyssal Currents on the example ARCA car (shelf: FRACTURED FORGE). Spec character: metal 243, roughness 56, clearcoat 253.",
+   "file": "screens/cat_fractured_forge.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Abyssal Currents applied to the body.",
+   "article_ids": [
+    "finish_fractured_forge_1.mono.ff_abyssal_currents"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 250298,
+   "meta": {
+    "finish_key": "monolithic::ff_abyssal_currents",
+    "shelf": "⚛ FRACTURED FORGE"
+   }
+  },
+  {
+   "id": "cat_fractured_foundry",
+   "title": "Diamond Knurl on the car",
+   "caption": "Diamond Knurl on the example ARCA car (shelf: FRACTURED FOUNDRY). Spec character: metal 194, roughness 123, clearcoat 76.",
+   "file": "screens/cat_fractured_foundry.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Diamond Knurl applied to the body.",
+   "article_ids": [
+    "finish_fractured_foundry_1.mono.ffo_diamond_knurl"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 229102,
+   "meta": {
+    "finish_key": "monolithic::ffo_diamond_knurl",
+    "shelf": "⚒ FRACTURED FOUNDRY"
+   }
+  },
+  {
+   "id": "cat_fractured_minds",
+   "title": "Dragonfly Wing on the car",
+   "caption": "Dragonfly Wing on the example ARCA car (shelf: FRACTURED MINDS). Spec character: metal 235, roughness 82, clearcoat 250.",
+   "file": "screens/cat_fractured_minds.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Dragonfly Wing applied to the body.",
+   "article_ids": [
+    "finish_fractured_minds_1.mono.fm_dragonfly"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 219798,
+   "meta": {
+    "finish_key": "monolithic::fm_dragonfly",
+    "shelf": "🧠 FRACTURED MINDS"
+   }
+  },
+  {
+   "id": "cat_fractured_nightshift",
+   "title": "Anchor Rust on the car",
+   "caption": "Anchor Rust on the example ARCA car (shelf: FRACTURED NIGHTSHIFT). Spec character: metal 100, roughness 102, clearcoat 116.",
+   "file": "screens/cat_fractured_nightshift.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Anchor Rust applied to the body.",
+   "article_ids": [
+    "finish_fractured_nightshift_1.mono.nsx_anchor_rust"
+   ],
+   "kind": "car_render",
+   "w": 901,
+   "h": 901,
+   "bytes": 252850,
+   "meta": {
+    "finish_key": "monolithic::nsx_anchor_rust",
+    "shelf": "🌗 FRACTURED NIGHTSHIFT"
+   }
+  },
+  {
+   "id": "cat_fractured_opalfire",
+   "title": "Carbon Weave on the car",
+   "caption": "Carbon Weave on the example ARCA car (shelf: FRACTURED OPALFIRE). Spec character: metal 242, roughness 31, clearcoat 246.",
+   "file": "screens/cat_fractured_opalfire.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Carbon Weave applied to the body.",
+   "article_ids": [
+    "finish_fractured_opalfire_2.mono.fsk_carbon_weave"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 233936,
+   "meta": {
+    "finish_key": "monolithic::fsk_carbon_weave",
+    "shelf": "🖤 FRACTURED OPALFIRE"
+   }
+  },
+  {
+   "id": "cat_fractured_relics",
+   "title": "Black Mirror on the car",
+   "caption": "Black Mirror on the example ARCA car (shelf: FRACTURED RELICS). Spec character: metal 149, roughness 100, clearcoat 149.",
+   "file": "screens/cat_fractured_relics.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Black Mirror applied to the body.",
+   "article_ids": [
+    "finish_fractured_relics_1.mono.frl_black_mirror"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 250292,
+   "meta": {
+    "finish_key": "monolithic::frl_black_mirror",
+    "shelf": "🏺 FRACTURED RELICS"
+   }
+  },
+  {
+   "id": "cat_fractured_shokk",
+   "title": "R1 REJECTED — Nacre Cascade on the car",
+   "caption": "R1 REJECTED — Nacre Cascade on the example ARCA car (shelf: FRACTURED SHOKK). Spec character: metal 216, roughness 111, clearcoat 178.",
+   "file": "screens/cat_fractured_shokk.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish R1 REJECTED — Nacre Cascade applied to the body.",
+   "article_ids": [
+    "finish_fractured_shokk_2.mono.fsh_nacre_cascade"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 254258,
+   "meta": {
+    "finish_key": "monolithic::fsh_nacre_cascade",
+    "shelf": "⚡ FRACTURED SHOKK"
+   }
+  },
+  {
+   "id": "cat_fractured_souls",
+   "title": "Aurora Threads — Green→Violet Curtains on the car",
+   "caption": "Aurora Threads — Green→Violet Curtains on the example ARCA car (shelf: FRACTURED SOULS). Spec character: metal 240, roughness 65, clearcoat 252.",
+   "file": "screens/cat_fractured_souls.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Aurora Threads — Green→Violet Curtains applied to the body.",
+   "article_ids": [
+    "finish_fractured_souls_1.mono.fs_aurora_threads"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 187468,
+   "meta": {
+    "finish_key": "monolithic::fs_aurora_threads",
+    "shelf": "💀 FRACTURED SOULS"
+   }
+  },
+  {
+   "id": "cat_fractured_tessera",
+   "title": "Droste Well on the car",
+   "caption": "Droste Well on the example ARCA car (shelf: FRACTURED TESSERA). Spec character: metal 150, roughness 54, clearcoat 80.",
+   "file": "screens/cat_fractured_tessera.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Droste Well applied to the body.",
+   "article_ids": [
+    "finish_fractured_tessera_1.mono.fts_droste_well"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 230008,
+   "meta": {
+    "finish_key": "monolithic::fts_droste_well",
+    "shelf": "🔷 FRACTURED TESSERA"
+   }
+  },
+  {
+   "id": "cat_fractured_wilds",
+   "title": "Lilac Starburst on the car",
+   "caption": "Lilac Starburst on the example ARCA car (shelf: FRACTURED WILDS). Spec character: metal 121, roughness 123, clearcoat 115.",
+   "file": "screens/cat_fractured_wilds.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Lilac Starburst applied to the body.",
+   "article_ids": [
+    "finish_fractured_wilds_1.mono.fbl_lilac_stamen"
+   ],
+   "kind": "car_render",
+   "w": 792,
+   "h": 792,
+   "bytes": 206962,
+   "meta": {
+    "finish_key": "monolithic::fbl_lilac_stamen",
+    "shelf": "🌿 FRACTURED WILDS"
+   }
+  },
+  {
+   "id": "cat_glass_surface",
+   "title": "Exotic Dark Glass on the car",
+   "caption": "Exotic Dark Glass on the example ARCA car (shelf: Glass & Surface). Spec character: metal 101, roughness 104, clearcoat 141.",
+   "file": "screens/cat_glass_surface.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Exotic Dark Glass applied to the body.",
+   "article_ids": [
+    "finish_glass_surface_1.mono.exotic_dark_glass"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 216788,
+   "meta": {
+    "finish_key": "monolithic::exotic_dark_glass",
+    "shelf": "Glass & Surface"
+   }
+  },
+  {
+   "id": "cat_gradient_directional",
+   "title": "Ocean Depths on the car",
+   "caption": "Ocean Depths on the example ARCA car (shelf: Gradient Directional). Spec character: metal 116, roughness 117, clearcoat 124.",
+   "file": "screens/cat_gradient_directional.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Ocean Depths applied to the body.",
+   "article_ids": [
+    "finish_gradient_directional_2.mono.grad_ocean_depths"
+   ],
+   "kind": "car_render",
+   "w": 792,
+   "h": 792,
+   "bytes": 189806,
+   "meta": {
+    "finish_key": "monolithic::grad_ocean_depths",
+    "shelf": "Gradient Directional"
+   }
+  },
+  {
+   "id": "cat_gradient_extended",
+   "title": "Black Gold on the car",
+   "caption": "Black Gold on the example ARCA car (shelf: Gradient Extended). Spec character: metal 117, roughness 117, clearcoat 123.",
+   "file": "screens/cat_gradient_extended.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Black Gold applied to the body.",
+   "article_ids": [
+    "finish_gradient_extended_1.mono.grad_black_gold"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 226892,
+   "meta": {
+    "finish_key": "monolithic::grad_black_gold",
+    "shelf": "Gradient Extended"
+   }
+  },
+  {
+   "id": "cat_gradients",
+   "title": "Duotone Grain Gradient on the car",
+   "caption": "Duotone Grain Gradient on the example ARCA car (shelf: GRADIENTS). Spec character: metal 116, roughness 117, clearcoat 123.",
+   "file": "screens/cat_gradients.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Duotone Grain Gradient applied to the body.",
+   "article_ids": [
+    "finish_gradients_1.mono.grd_duotone_grain"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 237592,
+   "meta": {
+    "finish_key": "monolithic::grd_duotone_grain",
+    "shelf": "🌈 GRADIENTS"
+   }
+  },
+  {
+   "id": "cat_groovy_vibes",
+   "title": "Lava Lamp Groovy on the car",
+   "caption": "Lava Lamp Groovy on the example ARCA car (shelf: Groovy Vibes). Spec character: metal 84, roughness 135, clearcoat 39.",
+   "file": "screens/cat_groovy_vibes.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Lava Lamp Groovy applied to the body.",
+   "article_ids": [
+    "finish_groovy_vibes_1.base.lava_lamp_groovy"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 154614,
+   "meta": {
+    "finish_key": "base::lava_lamp_groovy",
+    "shelf": "Groovy Vibes"
+   }
+  },
+  {
+   "id": "cat_grunge_fun",
+   "title": "Deep Blue Dot Fade on the car",
+   "caption": "Deep Blue Dot Fade on the example ARCA car (shelf: GRUNGE & FUN). Spec character: metal 131, roughness 57, clearcoat 110.",
+   "file": "screens/cat_grunge_fun.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Deep Blue Dot Fade applied to the body.",
+   "article_ids": [
+    "finish_grunge_fun_2.mono.gf_x_283511752_c9a714fc_a791_4c92_a2af_e3b8537ecaef"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 200954,
+   "meta": {
+    "finish_key": "monolithic::gf_x_283511752_c9a714fc_a791_4c92_a2af_e3b8537ecaef",
+    "shelf": "GRUNGE & FUN"
+   }
+  },
+  {
+   "id": "cat_impossible_finishes",
+   "title": "Hologram Ice on the car",
+   "caption": "Hologram Ice on the example ARCA car (shelf: IMPOSSIBLE FINISHES). Spec character: metal 121, roughness 129, clearcoat 91.",
+   "file": "screens/cat_impossible_finishes.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Hologram Ice applied to the body.",
+   "article_ids": [
+    "finish_impossible_finishes_1.mono.impossible_hologram_ice"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 244648,
+   "meta": {
+    "finish_key": "monolithic::impossible_hologram_ice",
+    "shelf": "⚡ IMPOSSIBLE FINISHES"
+   }
+  },
+  {
+   "id": "cat_iridescent_insects",
+   "title": "Click Beetle Plasma on the car",
+   "caption": "Click Beetle Plasma on the example ARCA car (shelf: Iridescent Insects). Spec character: metal 131, roughness 127, clearcoat 115.",
+   "file": "screens/cat_iridescent_insects.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Click Beetle Plasma applied to the body.",
+   "article_ids": [
+    "finish_iridescent_insects_1.base.beetle_click"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 240882,
+   "meta": {
+    "finish_key": "base::beetle_click",
+    "shelf": "Iridescent Insects"
+   }
+  },
+  {
+   "id": "cat_let_freedom_ring",
+   "title": "Eagle Ascendant on the car",
+   "caption": "Eagle Ascendant on the example ARCA car (shelf: LET FREEDOM RING). Spec character: metal 39, roughness 157, clearcoat 57.",
+   "file": "screens/cat_let_freedom_ring.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Eagle Ascendant applied to the body.",
+   "article_ids": [
+    "finish_let_freedom_ring_1.mono.lfr_eagle_ascendant",
+    "finishes.retro_cultural"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 229322,
+   "meta": {
+    "finish_key": "monolithic::lfr_eagle_ascendant",
+    "shelf": "LET FREEDOM RING"
+   }
+  },
+  {
+   "id": "cat_light_optics",
+   "title": "Aurora Veil on the car",
+   "caption": "Aurora Veil on the example ARCA car (shelf: Light & Optics). Spec character: metal 217, roughness 39, clearcoat 236.",
+   "file": "screens/cat_light_optics.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Aurora Veil applied to the body.",
+   "article_ids": [
+    "finish_light_optics_1.mono.optics2_aurora"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 174878,
+   "meta": {
+    "finish_key": "monolithic::optics2_aurora",
+    "shelf": "Light & Optics"
+   }
+  },
+  {
+   "id": "cat_materials_physics",
+   "title": "Engine-Turned Metal on the car",
+   "caption": "Engine-Turned Metal on the example ARCA car (shelf: Materials & Physics). Spec character: metal 185, roughness 126, clearcoat 21.",
+   "file": "screens/cat_materials_physics.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Engine-Turned Metal applied to the body.",
+   "article_ids": [
+    "finish_materials_physics_1.mono.materials2_engine"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 241976,
+   "meta": {
+    "finish_key": "monolithic::materials2_engine",
+    "shelf": "Materials & Physics"
+   }
+  },
+  {
+   "id": "cat_money_shokk",
+   "title": "Vault: Deposit Brass on the car",
+   "caption": "Vault: Deposit Brass on the example ARCA car (shelf: MONEY SHOKK). Spec character: metal 148, roughness 77, clearcoat 70.",
+   "file": "screens/cat_money_shokk.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Vault: Deposit Brass applied to the body.",
+   "article_ids": [
+    "finish_money_shokk_1.mono.msk_deposit_brass"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 235258,
+   "meta": {
+    "finish_key": "monolithic::msk_deposit_brass",
+    "shelf": "★ MONEY SHOKK"
+   }
+  },
+  {
+   "id": "cat_more_bases",
+   "title": "Redline Rush on the car",
+   "caption": "Redline Rush on the example ARCA car (shelf: More Bases). Spec character: metal 119, roughness 41, clearcoat 72.",
+   "file": "screens/cat_more_bases.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Redline Rush applied to the body.",
+   "article_ids": [
+    "finish_more_bases_16.base.neon_red_alert"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 204816,
+   "meta": {
+    "finish_key": "base::neon_red_alert",
+    "shelf": "More Bases"
+   }
+  },
+  {
+   "id": "cat_more_specials",
+   "title": "Ns2 Singularity on the car",
+   "caption": "Ns2 Singularity on the example ARCA car (shelf: More Specials). Spec character: metal 80, roughness 160, clearcoat 243.",
+   "file": "screens/cat_more_specials.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Ns2 Singularity applied to the body.",
+   "article_ids": [
+    "finish_more_specials_52.mono.ns2_singularity"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 221954,
+   "meta": {
+    "finish_key": "monolithic::ns2_singularity",
+    "shelf": "More Specials"
+   }
+  },
+  {
+   "id": "cat_neon_underground",
+   "title": "Laser Lane on the car",
+   "caption": "Laser Lane on the example ARCA car (shelf: NEON UNDERGROUND). Spec character: metal 63, roughness 65, clearcoat 79.",
+   "file": "screens/cat_neon_underground.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Laser Lane applied to the body.",
+   "article_ids": [
+    "finish_neon_underground_1.mono.neon2_laser_web",
+    "finishes.fractured_mortal_neon"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 185446,
+   "meta": {
+    "finish_key": "monolithic::neon2_laser_web",
+    "shelf": "★ NEON UNDERGROUND"
+   }
+  },
+  {
+   "id": "cat_paradigm",
+   "title": "Woven: Denim Chrome on the car",
+   "caption": "Woven: Denim Chrome on the example ARCA car (shelf: PARADIGM). Spec character: metal 105, roughness 95, clearcoat 84.",
+   "file": "screens/cat_paradigm.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Woven: Denim Chrome applied to the body.",
+   "article_ids": [
+    "finish_paradigm_2.mono.pdg_denim_chrome"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 251040,
+   "meta": {
+    "finish_key": "monolithic::pdg_denim_chrome",
+    "shelf": "PARADIGM"
+   }
+  },
+  {
+   "id": "cat_prism_forge",
+   "title": "PF: Bright Cerulean Pop on the car",
+   "caption": "PF: Bright Cerulean Pop on the example ARCA car (shelf: PRISM FORGE). Spec character: metal 186, roughness 130, clearcoat 94.",
+   "file": "screens/cat_prism_forge.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish PF: Bright Cerulean Pop applied to the body.",
+   "article_ids": [
+    "finish_prism_forge_1.base.pf_bright_cerulean_pop",
+    "finishes.plates_xlab_works"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 221496,
+   "meta": {
+    "finish_key": "base::pf_bright_cerulean_pop",
+    "shelf": "★ PRISM FORGE"
+   }
+  },
+  {
+   "id": "cat_prizm",
+   "title": "Prizm Phoenix on the car",
+   "caption": "Prizm Phoenix on the example ARCA car (shelf: Prizm). Spec character: metal 223, roughness 65, clearcoat 230.",
+   "file": "screens/cat_prizm.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Prizm Phoenix applied to the body.",
+   "article_ids": [
+    "finish_prizm_3.mono.prizm_phoenix"
+   ],
+   "kind": "car_render",
+   "w": 792,
+   "h": 792,
+   "bytes": 227858,
+   "meta": {
+    "finish_key": "monolithic::prizm_phoenix",
+    "shelf": "Prizm"
+   }
+  },
+  {
+   "id": "cat_rising_sun",
+   "title": "Kitsune Ember on the car",
+   "caption": "Kitsune Ember on the example ARCA car (shelf: RISING SUN). Spec character: metal 131, roughness 63, clearcoat 50.",
+   "file": "screens/cat_rising_sun.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Kitsune Ember applied to the body.",
+   "article_ids": [
+    "finish_rising_sun_2.mono.rs_kitsune_ember",
+    "finishes.retro_cultural"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 247998,
+   "meta": {
+    "finish_key": "monolithic::rs_kitsune_ember",
+    "shelf": "RISING SUN"
+   }
+  },
+  {
+   "id": "cat_shokk_works",
+   "title": "Ceramic Levelled Glaze on the car",
+   "caption": "Ceramic Levelled Glaze on the example ARCA car (shelf: SHOKK WORKS). Spec character: metal 17, roughness 44, clearcoat 44.",
+   "file": "screens/cat_shokk_works.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Ceramic Levelled Glaze applied to the body.",
+   "article_ids": [
+    "finish_shokk_works_4.base.wrap_ceramic_coat",
+    "finishes.plates_xlab_works"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 231412,
+   "meta": {
+    "finish_key": "base::wrap_ceramic_coat",
+    "shelf": "SHOKK WORKS"
+   }
+  },
+  {
+   "id": "cat_signal",
+   "title": "Bioluminescent Wave on the car",
+   "caption": "Bioluminescent Wave on the example ARCA car (shelf: Signal). Spec character: metal 69, roughness 84, clearcoat 41.",
+   "file": "screens/cat_signal.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Bioluminescent Wave applied to the body.",
+   "article_ids": [
+    "finish_signal_1.mono.bioluminescent_wave"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 250222,
+   "meta": {
+    "finish_key": "monolithic::bioluminescent_wave",
+    "shelf": "Signal"
+   }
+  },
+  {
+   "id": "cat_sock_hop",
+   "title": "Atomic Charcoal on the car",
+   "caption": "Atomic Charcoal on the example ARCA car (shelf: Sock Hop). Spec character: metal 146, roughness 152, clearcoat 115.",
+   "file": "screens/cat_sock_hop.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Atomic Charcoal applied to the body.",
+   "article_ids": [
+    "finish_sock_hop_1.base.atomic_charcoal",
+    "finishes.retro_cultural"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 186636,
+   "meta": {
+    "finish_key": "base::atomic_charcoal",
+    "shelf": "Sock Hop"
+   }
+  },
+  {
+   "id": "cat_source_pattern_plates",
+   "title": "Marble Flow Pearl on the car",
+   "caption": "Marble Flow Pearl on the example ARCA car (shelf: SOURCE PATTERN PLATES). Spec character: metal 74, roughness 89, clearcoat 169.",
+   "file": "screens/cat_source_pattern_plates.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Marble Flow Pearl applied to the body.",
+   "article_ids": [
+    "finish_source_pattern_plates_2.mono.pp_marble_flow_pearl",
+    "finishes.plates_xlab_works"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 236608,
+   "meta": {
+    "finish_key": "monolithic::pp_marble_flow_pearl",
+    "shelf": "SOURCE PATTERN PLATES"
+   }
+  },
+  {
+   "id": "cat_spectrum_shift",
+   "title": "Star Temperature on the car",
+   "caption": "Star Temperature on the example ARCA car (shelf: Spectrum Shift). Spec character: metal 115, roughness 97, clearcoat 37.",
+   "file": "screens/cat_spectrum_shift.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Star Temperature applied to the body.",
+   "article_ids": [
+    "finish_spectrum_shift_4.mono.spectrum_star_temperature",
+    "finishes.colorshoxx_and_shift",
+    "spec.angle_reveal"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 246226,
+   "meta": {
+    "finish_key": "monolithic::spectrum_star_temperature",
+    "shelf": "★ Spectrum Shift"
+   }
+  },
+  {
+   "id": "cat_surface_grain",
+   "title": "Reactive Chrome Fade on the car",
+   "caption": "Reactive Chrome Fade on the example ARCA car (shelf: Surface & Grain). Spec character: metal 245, roughness 31, clearcoat 173.",
+   "file": "screens/cat_surface_grain.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Reactive Chrome Fade applied to the body.",
+   "article_ids": [
+    "finish_surface_grain_2.mono.reactive_chrome_fade"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 254686,
+   "meta": {
+    "finish_key": "monolithic::reactive_chrome_fade",
+    "shelf": "Surface & Grain"
+   }
+  },
+  {
+   "id": "cat_tactical_field",
+   "title": "Hardware: Carbon Handguard on the car",
+   "caption": "Hardware: Carbon Handguard on the example ARCA car (shelf: TACTICAL & FIELD). Spec character: metal 15, roughness 32, clearcoat 30.",
+   "file": "screens/cat_tactical_field.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Hardware: Carbon Handguard applied to the body.",
+   "article_ids": [
+    "finish_tactical_field_1.base.tac_carbon_handguard",
+    "finishes.nature_tactical_cyberpunk"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 252298,
+   "meta": {
+    "finish_key": "base::tac_carbon_handguard",
+    "shelf": "🎯 TACTICAL & FIELD"
+   }
+  },
+  {
+   "id": "cat_union_jacked",
+   "title": "Blueblood Beatline on the car",
+   "caption": "Blueblood Beatline on the example ARCA car (shelf: UNION JACKED). Spec character: metal 6, roughness 72, clearcoat 58.",
+   "file": "screens/cat_union_jacked.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Blueblood Beatline applied to the body.",
+   "article_ids": [
+    "finish_union_jacked_1.mono.uj_blueblood_beatline",
+    "finishes.retro_cultural"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 223180,
+   "meta": {
+    "finish_key": "monolithic::uj_blueblood_beatline",
+    "shelf": "UNION JACKED"
+   }
+  },
+  {
+   "id": "cat_viva_mexico",
+   "title": "Cenote Lace on the car",
+   "caption": "Cenote Lace on the example ARCA car (shelf: VIVA MEXICO). Spec character: metal 15, roughness 45, clearcoat 39.",
+   "file": "screens/cat_viva_mexico.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Cenote Lace applied to the body.",
+   "article_ids": [
+    "finish_viva_mexico_1.mono.vm_cenote_lace",
+    "finishes.retro_cultural"
+   ],
+   "kind": "car_render",
+   "w": 792,
+   "h": 792,
+   "bytes": 207274,
+   "meta": {
+    "finish_key": "monolithic::vm_cenote_lace",
+    "shelf": "VIVA MEXICO"
+   }
+  },
+  {
+   "id": "cat_wave_flow",
+   "title": "Wave Diagonal Sweep on the car",
+   "caption": "Wave Diagonal Sweep on the example ARCA car (shelf: Wave & Flow). Spec character: metal 157, roughness 133, clearcoat 168.",
+   "file": "screens/cat_wave_flow.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Wave Diagonal Sweep applied to the body.",
+   "article_ids": [
+    "finish_wave_flow_1.mono.wave_diagonal_sweep"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 251920,
+   "meta": {
+    "finish_key": "monolithic::wave_diagonal_sweep",
+    "shelf": "Wave & Flow"
+   }
+  },
+  {
+   "id": "cat_world_of_color",
+   "title": "Japan: Aizome Vat on the car",
+   "caption": "Japan: Aizome Vat on the example ARCA car (shelf: WORLD OF COLOR). Spec character: metal 6, roughness 125, clearcoat 106.",
+   "file": "screens/cat_world_of_color.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Japan: Aizome Vat applied to the body.",
+   "article_ids": [
+    "finish_world_of_color_1.mono.woc_aizome_vat"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 254218,
+   "meta": {
+    "finish_key": "monolithic::woc_aizome_vat",
+    "shelf": "🌍 WORLD OF COLOR"
+   }
+  },
+  {
+   "id": "cat_x_lab",
+   "title": "Abyssal Lens on the car",
+   "caption": "Abyssal Lens on the example ARCA car (shelf: X LAB). Spec character: metal 104, roughness 51, clearcoat 119.",
+   "file": "screens/cat_x_lab.webp",
+   "alt": "The app's live preview of the example ARCA car with the finish Abyssal Lens applied to the body.",
+   "article_ids": [
+    "finish_x_lab_1.mono.xlab_abyssal_lens",
+    "finishes.plates_xlab_works"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 251060,
+   "meta": {
+    "finish_key": "monolithic::xlab_abyssal_lens",
+    "shelf": "X LAB"
+   }
+  },
+  {
+   "id": "flow_step1_loaded",
+   "title": "Step 1: your paint is loaded",
+   "caption": "Load your paint with Source Paint, set the iRacing car folder, then add zones. Nothing is changed yet.",
+   "file": "screens/flow_step1_loaded.webp",
+   "alt": "The Shokker window with a paint loaded and no zones yet, with five numbered callouts.",
+   "article_ids": [
+    "workflows.first_paint",
+    "workflows.what_is_shokker",
+    "workflows.one_flat_sheet",
+    "workflows.loading_paint",
+    "workflows.user_id_and_folder"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 824,
+   "bytes": 116222,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "SOURCE PAINT box (your PSD or TGA)"
+    },
+    {
+     "n": 2,
+     "label": "IRACING CAR FOLDER box"
+    },
+    {
+     "n": 3,
+     "label": "Your paint, untouched"
+    },
+    {
+     "n": 4,
+     "label": "+ Add Zone"
+    },
+    {
+     "n": 5,
+     "label": "RENDER (not yet)"
+    }
+   ]
+  },
+  {
+   "id": "flow_step2_zone_added",
+   "title": "Step 2: a zone added",
+   "caption": "A zone is a card in the left column. Its settings open in the popout and the live preview changes at once.",
+   "file": "screens/flow_step2_zone_added.webp",
+   "alt": "The window with one zone added and the live preview showing a red body.",
+   "article_ids": [
+    "workflows.first_paint",
+    "workflows.what_is_shokker",
+    "workflows.one_flat_sheet",
+    "zones.what_is_a_zone",
+    "zones.popout_panel",
+    "zones.recipe_split_car"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 824,
+   "bytes": 123136,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "The new zone card"
+    },
+    {
+     "n": 2,
+     "label": "Base material (the finish)"
+    },
+    {
+     "n": 3,
+     "label": "COLOR and APPLY AREA: which pixels it covers"
+    },
+    {
+     "n": 4,
+     "label": "LIVE PREVIEW updates"
+    }
+   ]
+  },
+  {
+   "id": "flow_step5_rendering",
+   "title": "Step 5: RENDER",
+   "caption": "Press RENDER (or Ctrl+R). The button shows RENDERING for a few seconds while the app builds the paint and the spec map.",
+   "file": "screens/flow_step5_rendering.webp",
+   "alt": "The window while a render is running, with the RENDER button marked.",
+   "article_ids": [
+    "workflows.first_paint",
+    "workflows.what_is_shokker",
+    "workflows.one_flat_sheet",
+    "preview_render.render_button",
+    "preview_render.preview_vs_render"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 824,
+   "bytes": 128088,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "RENDER button (shows RENDERING while it works)"
+    }
+   ]
+  },
+  {
+   "id": "flow_step6_recipe_card",
+   "title": "Step 6: the render recipe card",
+   "caption": "When the render lands, this card shows what was made, the paint and the spec map. Set the iRacing car folder in the header and the banner confirms where the files were saved; with no folder set it warns you, as here.",
+   "file": "screens/flow_step6_recipe_card.webp",
+   "alt": "The render recipe card full screen with six numbered callouts.",
+   "article_ids": [
+    "workflows.first_paint",
+    "workflows.what_is_shokker",
+    "workflows.one_flat_sheet",
+    "preview_render.render_button",
+    "preview_render.render_history_stats",
+    "preview_render.output_files",
+    "ui_shell.render_results_panel",
+    "preview_render.where_files_go",
+    "spec.colour_space_and_files"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 824,
+   "bytes": 99176,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Copy Card"
+    },
+    {
+     "n": 2,
+     "label": "Share Recipe"
+    },
+    {
+     "n": 3,
+     "label": "Save to keep"
+    },
+    {
+     "n": 4,
+     "label": "Recent renders"
+    },
+    {
+     "n": 5,
+     "label": "CLOSE"
+    },
+    {
+     "n": 6,
+     "label": "Status banner (here: no iRacing folder set yet)"
+    }
+   ]
+  },
+  {
+   "id": "look_carbon",
+   "title": "Carbon fibre pattern on the car",
+   "caption": "Carbon fibre pattern on the car: the app's live preview of the example ARCA car with the carbon fiber pattern over gloss on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_carbon.webp",
+   "alt": "The example ARCA car in the app preview showing carbon fibre pattern on the car",
+   "article_ids": [
+    "patterns.what_is_a_pattern",
+    "patterns.choosing_at_car_scale"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 224886,
+   "meta": {
+    "finish_key": "carbon_fiber",
+    "look": true
+   }
+  },
+  {
+   "id": "look_cerakote",
+   "title": "Cerakote grey on the car",
+   "caption": "Cerakote grey on the car: the app's live preview of the example ARCA car with tac cerakote grey on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_cerakote.webp",
+   "alt": "The example ARCA car in the app preview showing cerakote grey on the car",
+   "article_ids": [
+    "ideas.fighter_jet"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 247560,
+   "meta": {
+    "finish_key": "base::tac_cerakote_grey",
+    "look": true
+   }
+  },
+  {
+   "id": "look_dragon",
+   "title": "Dragon scales on the car",
+   "caption": "Dragon scales on the car: the app's live preview of the example ARCA car with ms dragon ascent on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_dragon.webp",
+   "alt": "The example ARCA car in the app preview showing dragon scales on the car",
+   "article_ids": [
+    "ideas.dragon_snake_scales"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 244748,
+   "meta": {
+    "finish_key": "base::ms_dragon_ascent",
+    "look": true
+   }
+  },
+  {
+   "id": "look_fde_polymer",
+   "title": "Flat dark earth polymer on the car",
+   "caption": "Flat dark earth polymer on the car: the app's live preview of the example ARCA car with tac fde polymer on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_fde_polymer.webp",
+   "alt": "The example ARCA car in the app preview showing flat dark earth polymer on the car",
+   "article_ids": [
+    "ideas.military_tactical"
+   ],
+   "kind": "car_render",
+   "w": 901,
+   "h": 901,
+   "bytes": 246308,
+   "meta": {
+    "finish_key": "base::tac_fde_polymer",
+    "look": true
+   }
+  },
+  {
+   "id": "look_flat_black",
+   "title": "Flat black, the whole body",
+   "caption": "Flat black, the whole body: the app's live preview of the example ARCA car with flat black on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_flat_black.webp",
+   "alt": "The example ARCA car in the app preview showing flat black, the whole body",
+   "article_ids": [
+    "ideas.stealth_murdered_out",
+    "recipes.matte_black"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 128602,
+   "meta": {
+    "finish_key": "base::flat_black",
+    "look": true
+   }
+  },
+  {
+   "id": "look_jdm_sun",
+   "title": "Rising sun flare on the car",
+   "caption": "Rising sun flare on the car: the app's live preview of the example ARCA car with rs rising sun flare on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_jdm_sun.webp",
+   "alt": "The example ARCA car in the app preview showing rising sun flare on the car",
+   "article_ids": [
+    "ideas.jdm"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 249994,
+   "meta": {
+    "finish_key": "monolithic::rs_rising_sun_flare",
+    "look": true
+   }
+  },
+  {
+   "id": "look_marble",
+   "title": "Marble on the car",
+   "caption": "Marble on the car: the app's live preview of the example ARCA car with ff marble on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_marble.webp",
+   "alt": "The example ARCA car in the app preview showing marble on the car",
+   "article_ids": [
+    "ideas.marble_stone"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 234292,
+   "meta": {
+    "finish_key": "monolithic::ff_marble",
+    "look": true
+   }
+  },
+  {
+   "id": "look_marpat",
+   "title": "Digital camo on the car",
+   "caption": "Digital camo on the car: the app's live preview of the example ARCA car with tac marpat digital on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_marpat.webp",
+   "alt": "The example ARCA car in the app preview showing digital camo on the car",
+   "article_ids": [
+    "ideas.camo_digital_urban"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 223550,
+   "meta": {
+    "finish_key": "base::tac_marpat_digital",
+    "look": true
+   }
+  },
+  {
+   "id": "look_nebula",
+   "title": "Nebula on the car",
+   "caption": "Nebula on the car: the app's live preview of the example ARCA car with ff nebula on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_nebula.webp",
+   "alt": "The example ARCA car in the app preview showing nebula on the car",
+   "article_ids": [
+    "ideas.space_galaxy"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 216014,
+   "meta": {
+    "finish_key": "monolithic::ff_nebula",
+    "look": true
+   }
+  },
+  {
+   "id": "look_neon_glow",
+   "title": "Dual neon glow on the car",
+   "caption": "Dual neon glow on the car: the app's live preview of the example ARCA car with neon dual glow on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_neon_glow.webp",
+   "alt": "The example ARCA car in the app preview showing dual neon glow on the car",
+   "article_ids": [
+    "ideas.neon_night"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 228832,
+   "meta": {
+    "finish_key": "base::neon_dual_glow",
+    "look": true
+   }
+  },
+  {
+   "id": "look_old_glory",
+   "title": "Stars and stripes on the car",
+   "caption": "Stars and stripes on the car: the app's live preview of the example ARCA car with lfr old glory flux on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_old_glory.webp",
+   "alt": "The example ARCA car in the app preview showing stars and stripes on the car",
+   "article_ids": [
+    "ideas.patriotic_rwb"
+   ],
+   "kind": "car_render",
+   "w": 901,
+   "h": 901,
+   "bytes": 251980,
+   "meta": {
+    "finish_key": "monolithic::lfr_old_glory_flux",
+    "look": true
+   }
+  },
+  {
+   "id": "look_pastel",
+   "title": "Miami pastel on the car",
+   "caption": "Miami pastel on the car: the app's live preview of the example ARCA car with rad miami pastel on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_pastel.webp",
+   "alt": "The example ARCA car in the app preview showing miami pastel on the car",
+   "article_ids": [
+    "ideas.pastel"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 252172,
+   "meta": {
+    "finish_key": "base::rad_miami_pastel",
+    "look": true
+   }
+  },
+  {
+   "id": "look_racing_green",
+   "title": "Gloss racing green",
+   "caption": "Gloss racing green: the app's live preview of the example ARCA car with gloss on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_racing_green.webp",
+   "alt": "The example ARCA car in the app preview showing gloss racing green",
+   "article_ids": [
+    "ideas.racing_green_heritage"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 134016,
+   "meta": {
+    "finish_key": "base::gloss",
+    "look": true
+   }
+  },
+  {
+   "id": "look_retro60s",
+   "title": "60s sunburst on the car",
+   "caption": "60s sunburst on the car: the app's live preview of the example ARCA car with sunburst 60s on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_retro60s.webp",
+   "alt": "The example ARCA car in the app preview showing 60s sunburst on the car",
+   "article_ids": [
+    "ideas.retro_60s"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 240730,
+   "meta": {
+    "finish_key": "base::sunburst_60s",
+    "look": true
+   }
+  },
+  {
+   "id": "look_retro80s",
+   "title": "80s outrun stripes on the car",
+   "caption": "80s outrun stripes on the car: the app's live preview of the example ARCA car with rad outrun stripe on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_retro80s.webp",
+   "alt": "The example ARCA car in the app preview showing 80s outrun stripes on the car",
+   "article_ids": [
+    "ideas.retro_80s"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 220438,
+   "meta": {
+    "finish_key": "base::rad_outrun_stripe",
+    "look": true
+   }
+  },
+  {
+   "id": "look_splatter_tee",
+   "title": "Teal, purple and pink splatter on the car",
+   "caption": "Teal, purple and pink splatter on the car: the app's live preview of the example ARCA car with rad splatter tee on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_splatter_tee.webp",
+   "alt": "The example ARCA car in the app preview showing teal, purple and pink splatter on the car",
+   "article_ids": [
+    "ideas.retro_90s"
+   ],
+   "kind": "car_render",
+   "w": 1024,
+   "h": 1024,
+   "bytes": 216200,
+   "meta": {
+    "finish_key": "base::rad_splatter_tee",
+    "look": true
+   }
+  },
+  {
+   "id": "look_tsunami",
+   "title": "Indigo wave on the car",
+   "caption": "Indigo wave on the car: the app's live preview of the example ARCA car with rs indigo tsunami on the body paint (numbers and sponsors untouched).",
+   "file": "screens/look_tsunami.webp",
+   "alt": "The example ARCA car in the app preview showing indigo wave on the car",
+   "article_ids": [
+    "ideas.japanese_art"
+   ],
+   "kind": "car_render",
+   "w": 901,
+   "h": 901,
+   "bytes": 255536,
+   "meta": {
+    "finish_key": "monolithic::rs_indigo_tsunami",
+    "look": true
+   }
+  },
+  {
+   "id": "pair_base_scale",
+   "title": "Base Scale: small or large pattern",
+   "caption": "The same plaid finish with Base Scale 0.5 on the left and 2.0 on the right.",
+   "file": "screens/pair_base_scale.webp",
+   "alt": "A plaid finish at two scales on the example car.",
+   "article_ids": [
+    "finishes.base_scale_rotation",
+    "spec.scale_rotation"
+   ],
+   "kind": "before_after",
+   "w": 1400,
+   "h": 729,
+   "bytes": 246780
+  },
+  {
+   "id": "pair_base_strength",
+   "title": "Base Strength: how much of the finish shows",
+   "caption": "Same finish, Base Strength 35 percent on the left and 100 percent on the right.",
+   "file": "screens/pair_base_strength.webp",
+   "alt": "A finish at low and full base strength on the example car.",
+   "article_ids": [
+    "finishes.base_colour_tuning",
+    "zones.popout_panel"
+   ],
+   "kind": "before_after",
+   "w": 1400,
+   "h": 729,
+   "bytes": 219820
+  },
+  {
+   "id": "pair_base_vs_foundation",
+   "title": "A base repaints; a Foundation keeps your paint",
+   "caption": "Same zone, two chrome looks. The Chrome base replaces the colours, the Foundation Chrome keeps your paint and changes only how it shines.",
+   "file": "screens/pair_base_vs_foundation.webp",
+   "alt": "Two renders of the example car, chrome base and foundation chrome.",
+   "article_ids": [
+    "finishes.foundation_shine_only",
+    "finishes.four_kinds",
+    "finishes.colour_source_modes",
+    "spec.paint_spec_marriage"
+   ],
+   "kind": "before_after",
+   "w": 1400,
+   "h": 729,
+   "bytes": 214480
+  },
+  {
+   "id": "pair_colour_source",
+   "title": "Where the colour comes from",
+   "caption": "The same Candy base. Left: Use source paint (your colours stay). Right: a picked red replaces them.",
+   "file": "screens/pair_colour_source.webp",
+   "alt": "Candy applied with the source paint colour and with a picked red.",
+   "article_ids": [
+    "finishes.colour_source_modes",
+    "finishes.base_colour_tuning",
+    "spec.paint_spec_marriage"
+   ],
+   "kind": "before_after",
+   "w": 1400,
+   "h": 729,
+   "bytes": 171850
+  },
+  {
+   "id": "pair_hue_shift",
+   "title": "Hue Shift turns the colours",
+   "caption": "The same finish with Hue Shift at 0 on the left and 140 on the right.",
+   "file": "screens/pair_hue_shift.webp",
+   "alt": "A finish at two hue shift values.",
+   "article_ids": [
+    "finishes.base_colour_tuning",
+    "finishes.what_makes_a_finish_pop"
+   ],
+   "kind": "before_after",
+   "w": 1400,
+   "h": 729,
+   "bytes": 253698
+  },
+  {
+   "id": "pair_layer_hidden",
+   "title": "Hide a layer and it leaves the render",
+   "caption": "Left: all layers on. Right: the sponsor, tape, logo and pit-box layers switched off in the LAYERS column.",
+   "file": "screens/pair_layer_hidden.webp",
+   "alt": "The example car with sponsor layers visible and hidden.",
+   "article_ids": [
+    "layers.roles",
+    "layers.panel"
+   ],
+   "kind": "before_after",
+   "w": 1400,
+   "h": 729,
+   "bytes": 151710
+  },
+  {
+   "id": "pair_wire_mask_visible",
+   "title": "Wire, Mask and Car Mandatory must be off",
+   "caption": "Left: the template guide layers switched on over the paint. Right: switched off, the way you render and export.",
+   "file": "screens/pair_wire_mask_visible.webp",
+   "alt": "The example car with the Wire, Mask and Car Mandatory layers shown and hidden.",
+   "article_ids": [
+    "layers.turn_off_before_export",
+    "layers.wire_mask_mandatory",
+    "ui_shell.template_layer_views"
+   ],
+   "kind": "before_after",
+   "w": 1400,
+   "h": 729,
+   "bytes": 217578
+  },
+  {
+   "id": "pair_zone_added",
+   "title": "Add zones and the car changes",
+   "caption": "Left: the loaded paint with no zones. Right: four zones (chrome numbers, carbon panels, pearl stripes, red candy body).",
+   "file": "screens/pair_zone_added.webp",
+   "alt": "The example car before and after four zones are added.",
+   "article_ids": [
+    "zones.what_is_a_zone",
+    "workflows.first_paint",
+    "zones.priority",
+    "zones.recipe_split_car"
+   ],
+   "kind": "before_after",
+   "w": 1400,
+   "h": 729,
+   "bytes": 189482
+  },
+  {
+   "id": "pair_zone_priority",
+   "title": "Zone order decides the winner",
+   "caption": "Two zones cover the same body. Left: Red candy is zone 1 (top). Right: Chrome is zone 1. The lower number wins.",
+   "file": "screens/pair_zone_priority.webp",
+   "alt": "Two overlapping zones in both orders.",
+   "article_ids": [
+    "zones.priority",
+    "zones.what_is_a_zone",
+    "zones.card_controls"
+   ],
+   "kind": "before_after",
+   "w": 1400,
+   "h": 729,
+   "bytes": 195310
+  },
+  {
+   "id": "sculpt_auto_protect",
+   "title": "Auto-detect decals",
+   "caption": "Tick it for a flat paint with no layers: the lab finds numbers and sponsors itself and keeps them out of the heavy shine.",
+   "file": "screens/sculpt_auto_protect.webp",
+   "alt": "The Auto-detect decals tick box and its strength controls.",
+   "article_ids": [
+    "spec_sculpt.auto_protect"
+   ],
+   "kind": "ui",
+   "w": 800,
+   "h": 840,
+   "bytes": 45320,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Auto-detect decals (no PSD needed)"
+    },
+    {
+     "n": 2,
+     "label": "Detection strength and edge controls"
+    }
+   ]
+  },
+  {
+   "id": "sculpt_controls_reference",
+   "title": "The sculpting tool buttons",
+   "caption": "Auto-Sculpt, Auto-Zone, a smart variation, Shokk the World and the spotlight, colour, tone, brush and gradient tools.",
+   "file": "screens/sculpt_controls_reference.webp",
+   "alt": "A row of sculpting tool buttons numbered one to nine.",
+   "article_ids": [
+    "spec_sculpt.controls_reference",
+    "spec_sculpt.power_features"
+   ],
+   "kind": "ui",
+   "w": 730,
+   "h": 876,
+   "bytes": 39828,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Auto-Sculpt: read my paint"
+    },
+    {
+     "n": 2,
+     "label": "Auto-Zone: a material per region"
+    },
+    {
+     "n": 3,
+     "label": "Another Smart Look"
+    },
+    {
+     "n": 4,
+     "label": "Shokk the World: 20 smart looks"
+    },
+    {
+     "n": 5,
+     "label": "Material Spotlight"
+    },
+    {
+     "n": 6,
+     "label": "Colour to Material"
+    },
+    {
+     "n": 7,
+     "label": "Tone to Material"
+    },
+    {
+     "n": 8,
+     "label": "Region Brush"
+    },
+    {
+     "n": 9,
+     "label": "Material Gradient"
+    }
+   ]
+  },
+  {
+   "id": "sculpt_diagnostics",
+   "title": "Diagnostics: the spec in false colour",
+   "caption": "The strip packs M/R/Cc into colour and tints each channel; the box below reads the whole map back as gloss, metal and matte.",
+   "file": "screens/sculpt_diagnostics.webp",
+   "alt": "The channel strip and the What this spec reads as readout.",
+   "article_ids": [
+    "spec_sculpt.diagnostics",
+    "spec.reading_by_colour"
+   ],
+   "kind": "ui",
+   "w": 1200,
+   "h": 328,
+   "bytes": 45860,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Source paint"
+    },
+    {
+     "n": 2,
+     "label": "Spec map in false colour (red=metal, green=rough, blue=coat)"
+    },
+    {
+     "n": 3,
+     "label": "Metallic channel (red tint)"
+    },
+    {
+     "n": 4,
+     "label": "Roughness channel (green tint)"
+    },
+    {
+     "n": 5,
+     "label": "Clearcoat channel (blue tint)"
+    },
+    {
+     "n": 6,
+     "label": "What this spec reads as: gloss / metal / matte shares and averages"
+    }
+   ]
+  },
+  {
+   "id": "sculpt_generation_dna",
+   "title": "Generation DNA",
+   "caption": "Four one-click DNA presets, the detail slider above them, and the advanced void and flatten sliders below.",
+   "file": "screens/sculpt_generation_dna.webp",
+   "alt": "The Generation DNA presets and detail slider.",
+   "article_ids": [
+    "spec_sculpt.generation_dna"
+   ],
+   "kind": "ui",
+   "w": 800,
+   "h": 800,
+   "bytes": 51510,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Catalog signature (the shipped look)"
+    },
+    {
+     "n": 2,
+     "label": "Rich detail"
+    },
+    {
+     "n": 3,
+     "label": "Softer"
+    },
+    {
+     "n": 4,
+     "label": "Ink-heavy panels"
+    },
+    {
+     "n": 5,
+     "label": "Procedural detail intensity"
+    }
+   ]
+  },
+  {
+   "id": "sculpt_iron_safe_export",
+   "title": "The Physically valid badge",
+   "caption": "Every build is checked against the iron rules; this badge turns green when the spec map is legal and warns when it is not.",
+   "file": "screens/sculpt_iron_safe_export.webp",
+   "alt": "The Physically valid badge under the material summary bar.",
+   "article_ids": [
+    "spec_sculpt.iron_safe_export",
+    "spec.iron_rules"
+   ],
+   "kind": "ui",
+   "w": 1200,
+   "h": 372,
+   "bytes": 19558,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Physically valid: the iron-rule check on the current spec"
+    }
+   ]
+  },
+  {
+   "id": "sculpt_overview",
+   "title": "The Spec Sculpt Lab",
+   "caption": "A separate page that builds the shine map for a finished paint: pick the paint on the left, pick a look, build.",
+   "file": "screens/sculpt_overview.webp",
+   "alt": "The Spec Sculpt Lab in Simple view with seven numbered callouts.",
+   "article_ids": [
+    "spec_sculpt.what_is_spec_sculpt",
+    "spec_sculpt.recipes"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 824,
+   "bytes": 112420,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Lab title"
+    },
+    {
+     "n": 2,
+     "label": "Simple / Advanced switch"
+    },
+    {
+     "n": 3,
+     "label": "SOURCE IMAGE: your paint file"
+    },
+    {
+     "n": 4,
+     "label": "IDENTITY & DEPLOY: member id and car folder"
+    },
+    {
+     "n": 5,
+     "label": "Live channel strip: source, spec, metal, rough, coat"
+    },
+    {
+     "n": 6,
+     "label": "Back to Paint Booth"
+    },
+    {
+     "n": 7,
+     "label": "STYLE GALLERY: one-click looks"
+    }
+   ]
+  },
+  {
+   "id": "sculpt_paint_response",
+   "title": "Paint response",
+   "caption": "Tie the shine to the colours in your paint: more gloss on the bright areas, or on one hue.",
+   "file": "screens/sculpt_paint_response.webp",
+   "alt": "The Paint response section opened in the lab.",
+   "article_ids": [
+    "spec_sculpt.paint_response"
+   ],
+   "kind": "ui",
+   "w": 734,
+   "h": 796,
+   "bytes": 37272,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Paint response (optional) section"
+    }
+   ]
+  },
+  {
+   "id": "sculpt_power_features",
+   "title": "Favorites, saved looks and actions",
+   "caption": "Star a look to keep it, save the whole setup under a name, then build from the ACTIONS card.",
+   "file": "screens/sculpt_power_features.webp",
+   "alt": "The left column showing favorites, saved looks and actions.",
+   "article_ids": [
+    "spec_sculpt.power_features"
+   ],
+   "kind": "ui",
+   "w": 800,
+   "h": 1760,
+   "bytes": 74336,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Favorite this look"
+    },
+    {
+     "n": 2,
+     "label": "Save a named look"
+    },
+    {
+     "n": 3,
+     "label": "ACTIONS card"
+    }
+   ]
+  },
+  {
+   "id": "sculpt_scratch_presets",
+   "title": "Style presets and stacks",
+   "caption": "125 presets in six groups plus Designer sets; tick up to five to stack them, with a weight each.",
+   "file": "screens/sculpt_scratch_presets.webp",
+   "alt": "The preset list in the lab with group headings and tick boxes.",
+   "article_ids": [
+    "spec_sculpt.scratch_presets",
+    "spec_sculpt.recipes"
+   ],
+   "kind": "ui",
+   "w": 754,
+   "h": 1700,
+   "bytes": 77608,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Quick path: Wet + pearl"
+    },
+    {
+     "n": 2,
+     "label": "Quick path: Matte duo"
+    },
+    {
+     "n": 3,
+     "label": "Preset group heading (six groups)"
+    },
+    {
+     "n": 4,
+     "label": "Tick boxes stack up to five presets"
+    }
+   ]
+  },
+  {
+   "id": "sculpt_smart_separate",
+   "title": "PSD layers: pick what to sculpt",
+   "caption": "Checked layers get the shine; unchecked ones (numbers, sponsors) stay flat. The green map shows what is protected.",
+   "file": "screens/sculpt_smart_separate.webp",
+   "alt": "The PSD layer picker with a layer list and a protection map.",
+   "article_ids": [
+    "spec_sculpt.smart_separate",
+    "spec_sculpt.auto_protect"
+   ],
+   "kind": "ui",
+   "w": 1200,
+   "h": 665,
+   "bytes": 35508,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "All: sculpt every layer"
+    },
+    {
+     "n": 2,
+     "label": "None: protect every layer"
+    },
+    {
+     "n": 3,
+     "label": "Invert the ticks"
+    },
+    {
+     "n": 4,
+     "label": "One row per layer: its tick box and its own finish"
+    },
+    {
+     "n": 5,
+     "label": "Sculpt map: green = stays flat"
+    },
+    {
+     "n": 6,
+     "label": "Protect edge (grow or shrink the flat area)"
+    }
+   ]
+  },
+  {
+   "id": "sculpt_three_modes",
+   "title": "LOOK BLEND: Scratch, Catalog, Fusion",
+   "caption": "Three ways to build the shine: from scratch on your paint, from real Paint Booth materials, or both blended. Fracture and Candy Depth are extras.",
+   "file": "screens/sculpt_three_modes.webp",
+   "alt": "The LOOK BLEND card with five mode tiles numbered.",
+   "article_ids": [
+    "spec_sculpt.three_modes",
+    "spec_sculpt.what_is_spec_sculpt"
+   ],
+   "kind": "ui",
+   "w": 754,
+   "h": 1120,
+   "bytes": 68150,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Scratch: procedural styles tuned to your paint"
+    },
+    {
+     "n": 2,
+     "label": "Catalog: real Paint Booth materials"
+    },
+    {
+     "n": 3,
+     "label": "Fusion: blend the two"
+    },
+    {
+     "n": 4,
+     "label": "FRACTURE: colour-flipping glass look"
+    },
+    {
+     "n": 5,
+     "label": "CANDY DEPTH: wet-candy gloss"
+    }
+   ]
+  },
+  {
+   "id": "spec_astra",
+   "title": "Spec map of an ASTRA finish",
+   "caption": "A busy full finish: every channel carries its own pattern, so the shine varies across the car.",
+   "file": "screens/spec_astra.webp",
+   "alt": "Four views of the spec map for an ASTRA finish.",
+   "article_ids": [
+    "spec.what_is_spec_map",
+    "spec.reading_by_colour",
+    "spec.channel_r_metallic",
+    "spec.channel_g_roughness",
+    "spec.channel_b_clearcoat"
+   ],
+   "kind": "spec_view",
+   "w": 1600,
+   "h": 452,
+   "bytes": 200676,
+   "meta": {
+    "finish_key": "base::astra_event_horizon"
+   }
+  },
+  {
+   "id": "spec_candy",
+   "title": "Spec map of a Candy finish",
+   "caption": "The app's spec map viewer for a red Candy base: mostly clearcoat, very little metal.",
+   "file": "screens/spec_candy.webp",
+   "alt": "Four views of the spec map: combined, metal, rough and coat channels, for a candy finish.",
+   "article_ids": [
+    "spec.what_is_spec_map",
+    "spec.reading_by_colour",
+    "spec.channel_r_metallic",
+    "spec.channel_g_roughness",
+    "spec.channel_b_clearcoat",
+    "shortcuts.spec_cheat_sheet",
+    "spec.metal_rough_grid"
+   ],
+   "kind": "spec_view",
+   "w": 1600,
+   "h": 452,
+   "bytes": 125846,
+   "meta": {
+    "finish_key": "base::candy"
+   }
+  },
+  {
+   "id": "spec_carbon",
+   "title": "Spec map of Carbon Fibre",
+   "caption": "A woven finish shows its weave in the spec channels, not only in the paint.",
+   "file": "screens/spec_carbon.webp",
+   "alt": "Four views of the spec map for carbon fibre.",
+   "article_ids": [
+    "spec.what_is_spec_map",
+    "spec.reading_by_colour",
+    "spec.channel_r_metallic",
+    "spec.channel_g_roughness",
+    "spec.channel_b_clearcoat"
+   ],
+   "kind": "spec_view",
+   "w": 1600,
+   "h": 452,
+   "bytes": 152702,
+   "meta": {
+    "finish_key": "base::carbon_base"
+   }
+  },
+  {
+   "id": "spec_chrome",
+   "title": "Spec map of a Chrome finish",
+   "caption": "The same four views for Chrome: the R METAL channel lights up, roughness stays dark.",
+   "file": "screens/spec_chrome.webp",
+   "alt": "Four views of the spec map for a chrome finish.",
+   "article_ids": [
+    "spec.what_is_spec_map",
+    "spec.reading_by_colour",
+    "spec.channel_r_metallic",
+    "spec.channel_g_roughness",
+    "spec.channel_b_clearcoat",
+    "shortcuts.spec_cheat_sheet",
+    "spec.metal_rough_grid",
+    "finishes.surface_intent"
+   ],
+   "kind": "spec_view",
+   "w": 1600,
+   "h": 452,
+   "bytes": 59096,
+   "meta": {
+    "finish_key": "base::chrome"
+   }
+  },
+  {
+   "id": "spec_fractured_forge",
+   "title": "Spec map of a Fractured Forge finish",
+   "caption": "Fine filaments drawn in metal and roughness as well as colour.",
+   "file": "screens/spec_fractured_forge.webp",
+   "alt": "Four views of the spec map for a Fractured Forge finish.",
+   "article_ids": [
+    "spec.what_is_spec_map",
+    "spec.reading_by_colour",
+    "spec.channel_r_metallic",
+    "spec.channel_g_roughness",
+    "spec.channel_b_clearcoat"
+   ],
+   "kind": "spec_view",
+   "w": 1600,
+   "h": 452,
+   "bytes": 123952,
+   "meta": {
+    "finish_key": "monolithic::ff_leviathan_filaments"
+   }
+  },
+  {
+   "id": "spec_ghost_hex",
+   "title": "Spec map of a Ghost Geometry finish",
+   "caption": "Ghost Hex Grid keeps the paint colour as it was; the hexagon grid lives only in the shine channels, so it shows when light hits the car.",
+   "file": "screens/spec_ghost_hex.webp",
+   "alt": "Four views of the spec map for a Ghost Hex Grid finish: combined, metal, rough and coat.",
+   "article_ids": [
+    "finishes.ghost_geometry_clearcoat",
+    "finishes.surface_intent",
+    "spec.how_layers_combine"
+   ],
+   "kind": "spec_view",
+   "w": 1600,
+   "h": 452,
+   "bytes": 206292,
+   "meta": {
+    "finish_key": "monolithic::ghost_hex"
+   }
+  },
+  {
+   "id": "spec_ghost_stripes",
+   "title": "Spec map of Ghost Stripes",
+   "caption": "Ghost Stripes hides its stripes in the spec map; the paint stays plain.",
+   "file": "screens/spec_ghost_stripes.webp",
+   "alt": "Four views of the spec map for a Ghost Stripes finish.",
+   "article_ids": [
+    "finishes.ghost_geometry_clearcoat",
+    "finishes.surface_intent"
+   ],
+   "kind": "spec_view",
+   "w": 1600,
+   "h": 452,
+   "bytes": 142478,
+   "meta": {
+    "finish_key": "monolithic::ghost_stripes"
+   }
+  },
+  {
+   "id": "spec_matte",
+   "title": "Spec map of a soft matte Foundation",
+   "caption": "A soft matte Foundation: high roughness, little metal, dull coat.",
+   "file": "screens/spec_matte.webp",
+   "alt": "Four views of the spec map for a soft matte foundation.",
+   "article_ids": [
+    "spec.what_is_spec_map",
+    "spec.reading_by_colour",
+    "spec.channel_r_metallic",
+    "spec.channel_g_roughness",
+    "spec.channel_b_clearcoat",
+    "shortcuts.spec_cheat_sheet",
+    "spec.metal_rough_grid"
+   ],
+   "kind": "spec_view",
+   "w": 1600,
+   "h": 452,
+   "bytes": 60822,
+   "meta": {
+    "finish_key": "base::f_soft_matte"
+   }
+  },
+  {
+   "id": "spec_viewer_buttons",
+   "title": "The spec map viewer",
+   "caption": "Open the preview full screen and flip between PAINT and SPEC MAP, then pick one channel.",
+   "file": "screens/spec_viewer_buttons.webp",
+   "alt": "The full-screen spec map viewer showing the metal channel of a chrome zone, with six numbered callouts.",
+   "article_ids": [
+    "ui_shell.preview_channel_views",
+    "spec.what_is_spec_map",
+    "spec.reading_by_colour"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 824,
+   "bytes": 80078,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "PAINT (the colour picture)"
+    },
+    {
+     "n": 2,
+     "label": "SPEC MAP (how the surface reflects)"
+    },
+    {
+     "n": 3,
+     "label": "ALL channels as colour"
+    },
+    {
+     "n": 4,
+     "label": "R Metal channel (selected here)"
+    },
+    {
+     "n": 5,
+     "label": "G Rough channel"
+    },
+    {
+     "n": 6,
+     "label": "B Coat channel"
+    }
+   ]
+  },
+  {
+   "id": "spec_wear",
+   "title": "Spec map of a worn Chrome zone",
+   "caption": "Chrome with Wear at 80: chips and dulling are drawn into the metal, rough and coat channels (compare the clean Chrome spec map).",
+   "file": "screens/spec_wear.webp",
+   "alt": "Four views of the spec map for a Chrome zone with strong wear.",
+   "article_ids": [
+    "finishes.wear",
+    "finishes.base_colour_tuning"
+   ],
+   "kind": "spec_view",
+   "w": 1600,
+   "h": 452,
+   "bytes": 89270,
+   "meta": {
+    "finish_key": "base::chrome",
+    "wear": 80
+   }
+  },
+  {
+   "id": "ui_ai_panel",
+   "title": "The AI copilot panel",
+   "caption": "The helper that builds paint from words. It starts offline; type what you want or tap a suggestion.",
+   "file": "screens/ui_ai_panel.webp",
+   "alt": "The AI copilot panel with five numbered callouts.",
+   "article_ids": [
+    "ai_copilot.panel_tour",
+    "ai_copilot.chat_mode",
+    "ai_copilot.offline_vs_ai"
+   ],
+   "kind": "ui",
+   "w": 784,
+   "h": 1660,
+   "bytes": 101858,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Quick suggestion chip"
+    },
+    {
+     "n": 2,
+     "label": "Message box"
+    },
+    {
+     "n": 3,
+     "label": "Send"
+    },
+    {
+     "n": 4,
+     "label": "Build it step by step"
+    },
+    {
+     "n": 5,
+     "label": "Encyclopedia"
+    }
+   ]
+  },
+  {
+   "id": "ui_chat_car_parts",
+   "title": "Named car parts in CHAT mode",
+   "caption": "Car parts shows the parts Shokker knows on this car (front bumper, hood, roof, left and right side, trunk, spoiler) so you can say 'carbon on the roof'.",
+   "file": "screens/ui_chat_car_parts.webp",
+   "alt": "CHAT mode with the Car parts tab on: the sheet shows the named parts.",
+   "article_ids": [
+    "zones.named_parts",
+    "ai_copilot.chat_mode",
+    "zones.regions"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 824,
+   "bytes": 175034,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Car parts tab"
+    },
+    {
+     "n": 2,
+     "label": "The car sheet with each named part outlined and labelled"
+    },
+    {
+     "n": 3,
+     "label": "The helper knows the parts and uses them when you type a request"
+    }
+   ]
+  },
+  {
+   "id": "ui_chat_mode",
+   "title": "CHAT mode",
+   "caption": "CHAT is the guided front door: the AI copilot on the left, your car in the middle, your layers on the right.",
+   "file": "screens/ui_chat_mode.webp",
+   "alt": "CHAT mode with eight numbered callouts.",
+   "article_ids": [
+    "workflows.pro_or_chat",
+    "ui_shell.mode_pill",
+    "ai_copilot.chat_mode"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 824,
+   "bytes": 150750,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "AI copilot panel (type what you want)"
+    },
+    {
+     "n": 2,
+     "label": "Paint / Shine (spec) / Car parts tabs"
+    },
+    {
+     "n": 3,
+     "label": "The car"
+    },
+    {
+     "n": 4,
+     "label": "SOURCE, LIVE PREVIEW and channel views"
+    },
+    {
+     "n": 5,
+     "label": "LAYERS"
+    },
+    {
+     "n": 6,
+     "label": "Your zones as chips"
+    },
+    {
+     "n": 7,
+     "label": "Render & save"
+    },
+    {
+     "n": 8,
+     "label": "Full editor (back to PRO)"
+    }
+   ]
+  },
+  {
+   "id": "ui_decal_rescue",
+   "title": "The Decal Rescue kit",
+   "caption": "Give numbers and sponsors a vinyl-like spec (flat, satin or gloss) so they do not shine like the paint.",
+   "file": "screens/ui_decal_rescue.webp",
+   "alt": "The Decal Rescue kit open over the window.",
+   "article_ids": [
+    "layers.decal_rescue",
+    "spec_sculpt.spec_tools_menu",
+    "ui_shell.number_modes"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 1041,
+   "bytes": 99434,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Decal Rescue title"
+    },
+    {
+     "n": 2,
+     "label": "Selection summary"
+    },
+    {
+     "n": 3,
+     "label": "Restriction note"
+    }
+   ]
+  },
+  {
+   "id": "ui_export_photoshop",
+   "title": "The Photoshop round trip",
+   "caption": "Save the paint and spec as named TGA files for Photoshop, then bring the edited files back.",
+   "file": "screens/ui_export_photoshop.webp",
+   "alt": "The Export to Photoshop dialog.",
+   "article_ids": [
+    "layers.export_photoshop",
+    "layers.merge"
+   ],
+   "kind": "ui",
+   "w": 1088,
+   "h": 516,
+   "bytes": 48740,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Cancel"
+    },
+    {
+     "n": 2,
+     "label": "Export"
+    }
+   ]
+  },
+  {
+   "id": "ui_finish_picker",
+   "title": "The finish picker (SEARCH FINISHES)",
+   "caption": "Click the base material and this full-screen picker opens: search, filter, then click a finish.",
+   "file": "screens/ui_finish_picker.webp",
+   "alt": "The top of the full-screen finish picker with six numbered callouts.",
+   "article_ids": [
+    "finishes.picker_library_browser",
+    "finishes.catalogue_overview",
+    "finishes.finish_cards",
+    "shortcuts.finish_shelves"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 272,
+   "bytes": 30846,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Search box (names, ids, tags)"
+    },
+    {
+     "n": 2,
+     "label": "Favorites"
+    },
+    {
+     "n": 3,
+     "label": "Grouped (by shelf)"
+    },
+    {
+     "n": 4,
+     "label": "My Rating"
+    },
+    {
+     "n": 5,
+     "label": "Surprise Me"
+    },
+    {
+     "n": 6,
+     "label": "Close"
+    }
+   ]
+  },
+  {
+   "id": "ui_finish_picker_cards",
+   "title": "Inside a shelf: finish cards",
+   "caption": "Open a shelf and every finish is a card: the left half of the swatch is the paint, the right half its spec map.",
+   "file": "screens/ui_finish_picker_cards.webp",
+   "alt": "The picker inside the ASTRA shelf showing finish cards with paint and spec swatches.",
+   "article_ids": [
+    "finishes.finish_cards",
+    "finishes.picker_library_browser",
+    "finishes.astra",
+    "spec.what_is_spec_map",
+    "shortcuts.finish_shelves",
+    "finishes.surface_intent"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 824,
+   "bytes": 231758,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "ALL CATEGORIES (back to the shelves)"
+    },
+    {
+     "n": 2,
+     "label": "A finish card: name, shelf and a one-line look"
+    },
+    {
+     "n": 3,
+     "label": "Add button (stack it as another layer)"
+    },
+    {
+     "n": 4,
+     "label": "Strength slider on the card"
+    }
+   ]
+  },
+  {
+   "id": "ui_header_rows",
+   "title": "Header: User ID, Source Paint, car folder",
+   "caption": "The top boxes that tell the app who you are, which paint to load and where your iRacing car folder is.",
+   "file": "screens/ui_header_rows.webp",
+   "alt": "The header rows with eight numbered callouts on the User ID, number checkboxes, Source Paint and car folder boxes.",
+   "article_ids": [
+    "ui_shell.source_paint",
+    "ui_shell.car_folder",
+    "ui_shell.number_modes",
+    "workflows.user_id_and_folder",
+    "workflows.loading_paint",
+    "layers.open_psd"
+   ],
+   "kind": "ui",
+   "w": 1200,
+   "h": 84,
+   "bytes": 16240,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "iRacing User ID"
+    },
+    {
+     "n": 2,
+     "label": "CUSTOM NUMBER checkbox"
+    },
+    {
+     "n": 3,
+     "label": "SIM-STAMPED NUMBER checkbox"
+    },
+    {
+     "n": 4,
+     "label": "SOURCE PAINT box"
+    },
+    {
+     "n": 5,
+     "label": "TGA/PNG/JPEG button"
+    },
+    {
+     "n": 6,
+     "label": "PSD/XCF/ORA button"
+    },
+    {
+     "n": 7,
+     "label": "IRACING CAR FOLDER box"
+    },
+    {
+     "n": 8,
+     "label": "Pick detected iRacing car arrow"
+    }
+   ]
+  },
+  {
+   "id": "ui_layer_actions_menu",
+   "title": "The layer Actions menu",
+   "caption": "Blank layer, merge visible, flatten, the Photoshop round trip and thumbnail size.",
+   "file": "screens/ui_layer_actions_menu.webp",
+   "alt": "The layer Actions menu open with numbered items.",
+   "article_ids": [
+    "layers.merge",
+    "layers.export_photoshop",
+    "layers.open_psd",
+    "layers.panel"
+   ],
+   "kind": "ui",
+   "w": 412,
+   "h": 534,
+   "bytes": 18892,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "+ Blank layer"
+    },
+    {
+     "n": 2,
+     "label": "Flatten document"
+    },
+    {
+     "n": 3,
+     "label": "Merge visible"
+    },
+    {
+     "n": 4,
+     "label": "Photoshop round-trip ⇄"
+    },
+    {
+     "n": 5,
+     "label": "Thumbnail size ▣"
+    }
+   ]
+  },
+  {
+   "id": "ui_layer_card_open",
+   "title": "A layer card, opened",
+   "caption": "Click a layer and its card opens with opacity, blend, colour tuning and action buttons.",
+   "file": "screens/ui_layer_card_open.webp",
+   "alt": "An opened layer card with ten numbered callouts.",
+   "article_ids": [
+    "layers.card_buttons",
+    "layers.opacity_blend",
+    "layers.lock_zone_to_layer",
+    "layers.effects"
+   ],
+   "kind": "ui",
+   "w": 478,
+   "h": 784,
+   "bytes": 37158,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Layer row"
+    },
+    {
+     "n": 2,
+     "label": "Opacity"
+    },
+    {
+     "n": 3,
+     "label": "Blend mode"
+    },
+    {
+     "n": 4,
+     "label": "Hue / Sat / Bright"
+    },
+    {
+     "n": 5,
+     "label": "Overlay colour"
+    },
+    {
+     "n": 6,
+     "label": "DUPE (duplicate layer)"
+    },
+    {
+     "n": 7,
+     "label": "MAKE ZONE"
+    },
+    {
+     "n": 8,
+     "label": "SOLO"
+    },
+    {
+     "n": 9,
+     "label": "LOCK ZONE"
+    },
+    {
+     "n": 10,
+     "label": "DONE"
+    }
+   ]
+  },
+  {
+   "id": "ui_layer_groups",
+   "title": "The template layers group",
+   "caption": "Wire, Mask and Car Mandatory live in the Turn Off Before Exporting TGA group; your paintable layers are in the group below.",
+   "file": "screens/ui_layer_groups.webp",
+   "alt": "The Wire, Mask and Car Mandatory layers shown switched off, with the Paintable Area group below.",
+   "article_ids": [
+    "layers.turn_off_before_export",
+    "layers.wire_mask_mandatory",
+    "ui_shell.template_layer_views",
+    "layers.paintable_area"
+   ],
+   "kind": "ui",
+   "w": 490,
+   "h": 476,
+   "bytes": 19070,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Group: Turn Off Before Exporting TGA"
+    },
+    {
+     "n": 2,
+     "label": "Wire"
+    },
+    {
+     "n": 3,
+     "label": "Mask"
+    },
+    {
+     "n": 4,
+     "label": "Car Mandatory"
+    },
+    {
+     "n": 5,
+     "label": "Group: Paintable Area"
+    }
+   ]
+  },
+  {
+   "id": "ui_layers_column",
+   "title": "The LAYERS column",
+   "caption": "Every layer of the loaded template, grouped.",
+   "file": "screens/ui_layers_column.webp",
+   "alt": "The right column showing the layers with eight numbered callouts.",
+   "article_ids": [
+    "layers.panel",
+    "layers.roles",
+    "layers.turn_off_before_export",
+    "layers.paintable_area",
+    "layers.open_psd"
+   ],
+   "kind": "ui",
+   "w": 552,
+   "h": 1692,
+   "bytes": 60968,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Open Layered (load a PSD)"
+    },
+    {
+     "n": 2,
+     "label": "+ Layer"
+    },
+    {
+     "n": 3,
+     "label": "Actions menu"
+    },
+    {
+     "n": 4,
+     "label": "Layer filter"
+    },
+    {
+     "n": 5,
+     "label": "Group: Turn Off Before Exporting TGA"
+    },
+    {
+     "n": 6,
+     "label": "Wire layer (template guide)"
+    },
+    {
+     "n": 7,
+     "label": "Group: Paintable Area"
+    },
+    {
+     "n": 8,
+     "label": "A paintable layer (Tape)"
+    }
+   ]
+  },
+  {
+   "id": "ui_menu_adjust",
+   "title": "The ADJUST menu",
+   "caption": "Brightness, hue, colour replace, invert, grayscale, gradient map and more.",
+   "file": "screens/ui_menu_adjust.webp",
+   "alt": "The ADJUST menu open with numbered items.",
+   "article_ids": [
+    "layers.opacity_blend",
+    "tools.retouch"
+   ],
+   "kind": "ui",
+   "w": 468,
+   "h": 656,
+   "bytes": 26740,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Brightness and Contrast"
+    },
+    {
+     "n": 2,
+     "label": "Hue and Saturation"
+    },
+    {
+     "n": 3,
+     "label": "Color Replace"
+    },
+    {
+     "n": 4,
+     "label": "Invert Colors"
+    },
+    {
+     "n": 5,
+     "label": "Grayscale"
+    },
+    {
+     "n": 6,
+     "label": "Gradient Map"
+    },
+    {
+     "n": 7,
+     "label": "Vibrance"
+    },
+    {
+     "n": 8,
+     "label": "Color Temperature"
+    }
+   ]
+  },
+  {
+   "id": "ui_menu_history",
+   "title": "The HISTORY menu",
+   "caption": "Undo, Redo and the Undo History panel.",
+   "file": "screens/ui_menu_history.webp",
+   "alt": "The HISTORY menu open with numbered items.",
+   "article_ids": [
+    "tools.undo_redo"
+   ],
+   "kind": "ui",
+   "w": 468,
+   "h": 342,
+   "bytes": 13440,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Undo"
+    },
+    {
+     "n": 2,
+     "label": "Redo"
+    },
+    {
+     "n": 3,
+     "label": "Open undo history"
+    }
+   ]
+  },
+  {
+   "id": "ui_menu_mask",
+   "title": "The MASK menu",
+   "caption": "Select material area, paint area, exclude area and the mask stroke tools.",
+   "file": "screens/ui_menu_mask.webp",
+   "alt": "The MASK menu open with numbered items.",
+   "article_ids": [
+    "tools.mask_vs_layer",
+    "tools.refine_selection",
+    "zones.exclude_set_use_region"
+   ],
+   "kind": "ui",
+   "w": 468,
+   "h": 694,
+   "bytes": 27194,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Select material area"
+    },
+    {
+     "n": 2,
+     "label": "Paint area in"
+    },
+    {
+     "n": 3,
+     "label": "Exclude area"
+    },
+    {
+     "n": 4,
+     "label": "Erase mask strokes"
+    },
+    {
+     "n": 5,
+     "label": "Pixel detail · 1:1"
+    }
+   ]
+  },
+  {
+   "id": "ui_menu_mask_refine",
+   "title": "MASK menu: Refine edges and advanced masks",
+   "caption": "Grow, shrink, smooth, feather and fill the edge of a selection from the MASK menu's refine list.",
+   "file": "screens/ui_menu_mask_refine.webp",
+   "alt": "The MASK menu with the refine-edges list open and numbered items.",
+   "article_ids": [
+    "ui_shell.selection_bar",
+    "tools.refine_selection"
+   ],
+   "kind": "ui",
+   "w": 468,
+   "h": 1748,
+   "bytes": 65174,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Grow Selection 1 pixel"
+    },
+    {
+     "n": 2,
+     "label": "Grow Selection 2 pixels"
+    },
+    {
+     "n": 3,
+     "label": "Shrink Selection 1 pixel"
+    },
+    {
+     "n": 4,
+     "label": "Shrink Selection 2 pixels"
+    },
+    {
+     "n": 5,
+     "label": "Fill Selection Holes"
+    },
+    {
+     "n": 6,
+     "label": "Feather Selection 2 pixels"
+    },
+    {
+     "n": 7,
+     "label": "Smooth Edges"
+    },
+    {
+     "n": 8,
+     "label": "Invert Mask"
+    }
+   ]
+  },
+  {
+   "id": "ui_menu_retouch",
+   "title": "The RETOUCH menu",
+   "caption": "Brushes that paint on a layer: Color Brush, Recolor, Healing Brush, Smudge and Burn.",
+   "file": "screens/ui_menu_retouch.webp",
+   "alt": "The RETOUCH menu open with numbered items.",
+   "article_ids": [
+    "tools.retouch",
+    "tools.brush_eraser"
+   ],
+   "kind": "ui",
+   "w": 468,
+   "h": 808,
+   "bytes": 43510,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Add blank for Color Brush"
+    },
+    {
+     "n": 2,
+     "label": "Color Brush"
+    },
+    {
+     "n": 3,
+     "label": "Recolor Tool"
+    },
+    {
+     "n": 4,
+     "label": "Healing Brush"
+    },
+    {
+     "n": 5,
+     "label": "Smudge Tool"
+    },
+    {
+     "n": 6,
+     "label": "Burn Tool"
+    }
+   ]
+  },
+  {
+   "id": "ui_menu_select",
+   "title": "The SELECT menu",
+   "caption": "More ways to pick pixels: Select All Color, Select Object, Smart Region Fill and more.",
+   "file": "screens/ui_menu_select.webp",
+   "alt": "The SELECT menu open with numbered items.",
+   "article_ids": [
+    "tools.select_shapes",
+    "tools.selection_modes",
+    "tools.refine_selection"
+   ],
+   "kind": "ui",
+   "w": 468,
+   "h": 588,
+   "bytes": 26330,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Select All Color"
+    },
+    {
+     "n": 2,
+     "label": "Select Object"
+    },
+    {
+     "n": 3,
+     "label": "Smart Region Fill"
+    },
+    {
+     "n": 4,
+     "label": "Move Selection Border"
+    },
+    {
+     "n": 5,
+     "label": "Pick Item"
+    },
+    {
+     "n": 6,
+     "label": "Zone sub-piece Pick"
+    },
+    {
+     "n": 7,
+     "label": "Elliptical Marquee"
+    }
+   ]
+  },
+  {
+   "id": "ui_menu_spec_tools",
+   "title": "The spec helpers: MASK menu, Advanced spec utilities",
+   "caption": "Decal Rescue, Lighting Mask, Material Sampler and the Material Range Remapper (the four SPEC TOOLS) open from the MASK menu, under Advanced spec utilities.",
+   "file": "screens/ui_menu_spec_tools.webp",
+   "alt": "The MASK menu open with the Advanced spec utilities list of four spec helper buttons.",
+   "article_ids": [
+    "spec_sculpt.spec_tools_menu",
+    "spec.material_override_remap_lighting",
+    "spec.inspector",
+    "layers.decal_rescue",
+    "spec.channel_a_mask"
+   ],
+   "kind": "ui",
+   "w": 468,
+   "h": 954,
+   "bytes": 39986,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Decal Rescue Kit"
+    },
+    {
+     "n": 2,
+     "label": "iRacing Lighting Mask"
+    },
+    {
+     "n": 3,
+     "label": "Material Sampler"
+    },
+    {
+     "n": 4,
+     "label": "Material Range Remapper"
+    }
+   ]
+  },
+  {
+   "id": "ui_menu_transform",
+   "title": "The TRANSFORM menu",
+   "caption": "Free transform, rotate 90 degrees, flip and fit a layer to a selection.",
+   "file": "screens/ui_menu_transform.webp",
+   "alt": "The TRANSFORM menu open with numbered items.",
+   "article_ids": [
+    "tools.move_transform",
+    "tools.mirror_symmetry"
+   ],
+   "kind": "ui",
+   "w": 468,
+   "h": 646,
+   "bytes": 29360,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Select an object to transform"
+    },
+    {
+     "n": 2,
+     "label": "Free Transform · Ctrl+T"
+    },
+    {
+     "n": 3,
+     "label": "Transform selected pixels"
+    },
+    {
+     "n": 4,
+     "label": "Transform entire layer"
+    },
+    {
+     "n": 5,
+     "label": "Rotate 90° clockwise"
+    },
+    {
+     "n": 6,
+     "label": "Flip horizontal"
+    },
+    {
+     "n": 7,
+     "label": "Flip vertical"
+    },
+    {
+     "n": 8,
+     "label": "Fit Layer to Zone Selection"
+    }
+   ]
+  },
+  {
+   "id": "ui_mode_pill",
+   "title": "The PRO / CHAT pill",
+   "caption": "Pick your door: PRO is the full paint shop, CHAT is the guided front door.",
+   "file": "screens/ui_mode_pill.webp",
+   "alt": "The PRO and CHAT buttons with the interface size control beside them.",
+   "article_ids": [
+    "ui_shell.mode_pill",
+    "workflows.pro_or_chat"
+   ],
+   "kind": "ui",
+   "w": 540,
+   "h": 96,
+   "bytes": 6778,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "PRO"
+    },
+    {
+     "n": 2,
+     "label": "CHAT"
+    },
+    {
+     "n": 3,
+     "label": "UI size (percent)"
+    }
+   ]
+  },
+  {
+   "id": "ui_placement_mode",
+   "title": "Placement mode",
+   "caption": "Placement mode lets you drag a base or pattern around on the template; the blue banner says what you are moving.",
+   "file": "screens/ui_placement_mode.webp",
+   "alt": "The window in placement mode with the blue banner above the canvas.",
+   "article_ids": [
+    "ui_shell.placement_overlay",
+    "finishes.base_scale_rotation",
+    "patterns.layers_and_stacking"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 824,
+   "bytes": 148182,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Placement banner"
+    },
+    {
+     "n": 2,
+     "label": "The template you drag on"
+    }
+   ]
+  },
+  {
+   "id": "ui_presets_gallery",
+   "title": "The Preset Gallery",
+   "caption": "Ready-made zone sets in groups. Click one to load it onto your car; each card shows its zone colours.",
+   "file": "screens/ui_presets_gallery.webp",
+   "alt": "The Preset Gallery dialog listing ready-made zone sets in groups.",
+   "article_ids": [
+    "zones.presets_templates",
+    "ui_shell.zones_more_menu",
+    "workflows.first_paint"
+   ],
+   "kind": "ui",
+   "w": 1200,
+   "h": 706,
+   "bytes": 59846,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Preset Gallery"
+    },
+    {
+     "n": 2,
+     "label": "A preset card (name, summary, zone colours, zone count)"
+    },
+    {
+     "n": 3,
+     "label": "A group heading (Show Car, Clean, Aggressive)"
+    },
+    {
+     "n": 4,
+     "label": "Another preset"
+    }
+   ]
+  },
+  {
+   "id": "ui_render_bar",
+   "title": "The RENDER bar",
+   "caption": "The RENDER button, the colour picker readout and the zoom controls above the preview.",
+   "file": "screens/ui_render_bar.webp",
+   "alt": "The render bar with eight numbered callouts.",
+   "article_ids": [
+    "preview_render.render_button",
+    "zones.add_pick_colour",
+    "zones.exclude_set_use_region",
+    "tools.zoom_pan"
+   ],
+   "kind": "ui",
+   "w": 1200,
+   "h": 89,
+   "bytes": 14748,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "RENDER"
+    },
+    {
+     "n": 2,
+     "label": "Colour picked from the car"
+    },
+    {
+     "n": 3,
+     "label": "+ Add Color"
+    },
+    {
+     "n": 4,
+     "label": "Exclude"
+    },
+    {
+     "n": 5,
+     "label": "Set"
+    },
+    {
+     "n": 6,
+     "label": "Use Region"
+    },
+    {
+     "n": 7,
+     "label": "Zoom"
+    },
+    {
+     "n": 8,
+     "label": "Edit Big"
+    }
+   ]
+  },
+  {
+   "id": "ui_render_history_menu",
+   "title": "The RENDER HISTORY menu",
+   "caption": "Thumbnails of your recent renders, with the Gallery and Recent lists.",
+   "file": "screens/ui_render_history_menu.webp",
+   "alt": "The render history menu with two numbered callouts.",
+   "article_ids": [
+    "preview_render.render_history_stats",
+    "ui_shell.render_results_panel"
+   ],
+   "kind": "ui",
+   "w": 588,
+   "h": 582,
+   "bytes": 67000,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Gallery"
+    },
+    {
+     "n": 2,
+     "label": "Recent"
+    }
+   ]
+  },
+  {
+   "id": "ui_selection_bar",
+   "title": "The selection bar under the canvas",
+   "caption": "After you drag a selection, this bar sets how it combines (Mode), feathers it, and offers Erase, Move Border and Transform Base.",
+   "file": "screens/ui_selection_bar.webp",
+   "alt": "The bar under the canvas with five numbered controls for a selection.",
+   "article_ids": [
+    "ui_shell.selection_bar",
+    "tools.refine_selection",
+    "tools.select_shapes",
+    "tools.selection_modes"
+   ],
+   "kind": "ui",
+   "w": 1200,
+   "h": 160,
+   "bytes": 13654,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Mode: Replace, Add, Subtract, Intersect"
+    },
+    {
+     "n": 2,
+     "label": "Feather (soft edge)"
+    },
+    {
+     "n": 3,
+     "label": "Erase the selection"
+    },
+    {
+     "n": 4,
+     "label": "Move Border"
+    },
+    {
+     "n": 5,
+     "label": "Transform Base"
+    }
+   ]
+  },
+  {
+   "id": "ui_settings_menu",
+   "title": "The SETTINGS dropdown",
+   "caption": "Licence, looks, file picker and the other app settings.",
+   "file": "screens/ui_settings_menu.webp",
+   "alt": "The Settings dropdown with eight numbered callouts.",
+   "article_ids": [
+    "settings.overview",
+    "settings.looks_training_wheels",
+    "settings.file_picker",
+    "settings.activation_license"
+   ],
+   "kind": "ui",
+   "w": 696,
+   "h": 1888,
+   "bytes": 115666,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "LICENSE"
+    },
+    {
+     "n": 2,
+     "label": "LOOKS: pick your shop vibe"
+    },
+    {
+     "n": 3,
+     "label": "File Picker (Shokker Browser or Windows File Explorer)"
+    },
+    {
+     "n": 4,
+     "label": "Export ZIP Package"
+    },
+    {
+     "n": 5,
+     "label": "Training Wheels"
+    },
+    {
+     "n": 6,
+     "label": "Report a Problem"
+    },
+    {
+     "n": 7,
+     "label": "Keyboard Shortcuts"
+    },
+    {
+     "n": 8,
+     "label": "Import TGA (spec map)"
+    }
+   ]
+  },
+  {
+   "id": "ui_shortcuts_dialog",
+   "title": "Keyboard shortcuts",
+   "caption": "Press ? any time for this list: tools, editing, view and zone operations.",
+   "file": "screens/ui_shortcuts_dialog.webp",
+   "alt": "The keyboard shortcuts dialog with five numbered callouts.",
+   "article_ids": [
+    "ui_shell.dialogs_reference",
+    "tools.eyedropper_pick",
+    "tools.undo_redo",
+    "shortcuts.table",
+    "tools.shortcuts_quick"
+   ],
+   "kind": "ui",
+   "w": 1200,
+   "h": 960,
+   "bytes": 87572,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Canvas tools (B brush, E eraser, P eyedropper...)"
+    },
+    {
+     "n": 2,
+     "label": "Editing (undo, copy, merge, select all)"
+    },
+    {
+     "n": 3,
+     "label": "View and navigation (zoom, pan)"
+    },
+    {
+     "n": 4,
+     "label": "Zone operations (Ctrl+R render, Shift+N new zone)"
+    },
+    {
+     "n": 5,
+     "label": "Close (Esc)"
+    }
+   ]
+  },
+  {
+   "id": "ui_source_and_live",
+   "title": "SOURCE and LIVE PREVIEW",
+   "caption": "Left is your paint as loaded; right is what the zones do to it.",
+   "file": "screens/ui_source_and_live.webp",
+   "alt": "Source paint and live preview side by side.",
+   "article_ids": [
+    "ui_shell.canvas_overlays",
+    "preview_render.preview_vs_render",
+    "workflows.one_flat_sheet"
+   ],
+   "kind": "ui",
+   "w": 1200,
+   "h": 906,
+   "bytes": 57704,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "SOURCE (your loaded paint)"
+    },
+    {
+     "n": 2,
+     "label": "LIVE PREVIEW (with your zones applied)"
+    },
+    {
+     "n": 3,
+     "label": "Refresh"
+    },
+    {
+     "n": 4,
+     "label": "Zoom controls"
+    }
+   ]
+  },
+  {
+   "id": "ui_spec_inspector",
+   "title": "The Material Sampler (Spec Map Inspector)",
+   "caption": "Look at the spec channels one at a time and read the exact numbers from any spot on the car.",
+   "file": "screens/ui_spec_inspector.webp",
+   "alt": "The Spec Map Inspector with the spec map and value readout.",
+   "article_ids": [
+    "spec.inspector",
+    "spec_sculpt.spec_tools_menu",
+    "spec.reading_by_colour",
+    "spec.material_override_remap_lighting"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 878,
+   "bytes": 38432,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Title and channel views"
+    },
+    {
+     "n": 2,
+     "label": "The compiled spec map (click to sample)"
+    },
+    {
+     "n": 3,
+     "label": "Exact Metal / Rough / Coat / Alpha values"
+    },
+    {
+     "n": 4,
+     "label": "Hint line"
+    }
+   ]
+  },
+  {
+   "id": "ui_spec_lighting_mask",
+   "title": "The Lighting Mask (alpha channel)",
+   "caption": "Switch iRacing lighting on or off for chosen spots: grille openings, vents, fake holes.",
+   "file": "screens/ui_spec_lighting_mask.webp",
+   "alt": "The Lighting Mask tool open over the window.",
+   "article_ids": [
+    "spec.channel_a_mask",
+    "spec.material_override_remap_lighting",
+    "spec_sculpt.spec_tools_menu"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 1171,
+   "bytes": 99556,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Lighting Mask title"
+    },
+    {
+     "n": 2,
+     "label": "Selection summary"
+    }
+   ]
+  },
+  {
+   "id": "ui_spec_remap",
+   "title": "The Material Range Remapper",
+   "caption": "Squeeze the Metal, Rough or Coat channel of the active zone into a new low-to-high range.",
+   "file": "screens/ui_spec_remap.webp",
+   "alt": "The Material Range Remapper with three range bars.",
+   "article_ids": [
+    "spec.material_override_remap_lighting",
+    "spec_sculpt.spec_tools_menu",
+    "spec.channel_sliders"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 1004,
+   "bytes": 87654,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Remapper title"
+    },
+    {
+     "n": 2,
+     "label": "Metal range bar"
+    },
+    {
+     "n": 3,
+     "label": "Roughness range bar"
+    },
+    {
+     "n": 4,
+     "label": "Clearcoat range bar"
+    },
+    {
+     "n": 5,
+     "label": "Selection summary"
+    }
+   ]
+  },
+  {
+   "id": "ui_spec_strip",
+   "title": "The spec channel strip",
+   "caption": "Four small views of the same car: the combined picture and the R METAL, G ROUGH and B COAT channels.",
+   "file": "screens/ui_spec_strip.webp",
+   "alt": "The four spec channel views under the preview.",
+   "article_ids": [
+    "ui_shell.preview_channel_views",
+    "spec.what_is_spec_map",
+    "spec.reading_by_colour",
+    "spec.channel_r_metallic"
+   ],
+   "kind": "spec_view",
+   "w": 1200,
+   "h": 212,
+   "bytes": 26652,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "COMBINED (all channels as colour)"
+    },
+    {
+     "n": 2,
+     "label": "R METAL (brighter = more metal)"
+    },
+    {
+     "n": 3,
+     "label": "G ROUGH (brighter = rougher)"
+    },
+    {
+     "n": 4,
+     "label": "B COAT (brighter = duller clearcoat)"
+    }
+   ]
+  },
+  {
+   "id": "ui_template_library",
+   "title": "The Livery Template Library",
+   "caption": "A library of livery layouts (racing stripes, two-tone, GT3, chrome and more). Pick one and paint it with the brush.",
+   "file": "screens/ui_template_library.webp",
+   "alt": "The Livery Template Library with a grid of template cards.",
+   "article_ids": [
+    "zones.presets_templates",
+    "shokk_drop.shokk_library_files",
+    "ui_shell.zones_more_menu"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 824,
+   "bytes": 54042,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Library title and count"
+    },
+    {
+     "n": 2,
+     "label": "Template card: Racing Stripe"
+    },
+    {
+     "n": 3,
+     "label": "Template card: Two-Tone Split"
+    },
+    {
+     "n": 4,
+     "label": "Close"
+    }
+   ]
+  },
+  {
+   "id": "ui_tool_options",
+   "title": "The tool options bar",
+   "caption": "The strip under the preview changes with the tool you pick. This is the Brush: size, hardness, opacity and more.",
+   "file": "screens/ui_tool_options.webp",
+   "alt": "The tool options bar for the Brush tool with numbered callouts.",
+   "article_ids": [
+    "ui_shell.tool_options_bar",
+    "tools.brush_eraser"
+   ],
+   "kind": "ui",
+   "w": 1200,
+   "h": 96,
+   "bytes": 10198,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Size"
+    },
+    {
+     "n": 2,
+     "label": "Opacity"
+    },
+    {
+     "n": 3,
+     "label": "Hardness"
+    },
+    {
+     "n": 4,
+     "label": "Flow"
+    },
+    {
+     "n": 5,
+     "label": "Spacing"
+    }
+   ]
+  },
+  {
+   "id": "ui_toolbar_menus",
+   "title": "Toolbar menus and ZONE / LAYER",
+   "caption": "The menus on the tool row, and the ZONE / LAYER switch that decides what your tools edit.",
+   "file": "screens/ui_toolbar_menus.webp",
+   "alt": "The toolbar menus with eight numbered callouts.",
+   "article_ids": [
+    "tools.mask_vs_layer",
+    "tools.undo_redo",
+    "tools.retouch",
+    "tools.refine_selection",
+    "ui_shell.tool_options_bar",
+    "preview_render.render_history_stats"
+   ],
+   "kind": "ui",
+   "w": 1200,
+   "h": 90,
+   "bytes": 18506,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "HISTORY"
+    },
+    {
+     "n": 2,
+     "label": "SELECT"
+    },
+    {
+     "n": 3,
+     "label": "RETOUCH"
+    },
+    {
+     "n": 4,
+     "label": "MASK"
+    },
+    {
+     "n": 5,
+     "label": "TRANSFORM"
+    },
+    {
+     "n": 6,
+     "label": "ADJUST"
+    },
+    {
+     "n": 7,
+     "label": "ZONE / LAYER switch"
+    },
+    {
+     "n": 8,
+     "label": "RENDER HISTORY"
+    }
+   ]
+  },
+  {
+   "id": "ui_toolbar_right",
+   "title": "Tutorial, Settings, Save / Open",
+   "caption": "The right end of the top bar: Tutorial, Settings, Save / Open and Import Recipe.",
+   "file": "screens/ui_toolbar_right.webp",
+   "alt": "Four buttons at the top right with numbered callouts.",
+   "article_ids": [
+    "ui_shell.save_open_projects",
+    "settings.overview",
+    "workflows.tutorial_quests"
+   ],
+   "kind": "ui",
+   "w": 540,
+   "h": 260,
+   "bytes": 11636,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "TUTORIAL"
+    },
+    {
+     "n": 2,
+     "label": "SETTINGS"
+    },
+    {
+     "n": 3,
+     "label": "Save / Open"
+    },
+    {
+     "n": 4,
+     "label": "Import Recipe"
+    }
+   ]
+  },
+  {
+   "id": "ui_toolbar_tools",
+   "title": "The tool buttons",
+   "caption": "The tool row: Move, Pick, Color, Wand, Lasso, Rect, Brush, Fill and Erase.",
+   "file": "screens/ui_toolbar_tools.webp",
+   "alt": "Nine tool buttons numbered in a row.",
+   "article_ids": [
+    "tools.select_shapes",
+    "tools.eyedropper_pick",
+    "tools.brush_eraser",
+    "tools.fill_bucket",
+    "tools.move_transform",
+    "zones.add_pick_colour"
+   ],
+   "kind": "ui",
+   "w": 900,
+   "h": 120,
+   "bytes": 14596,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Move"
+    },
+    {
+     "n": 2,
+     "label": "Pick"
+    },
+    {
+     "n": 3,
+     "label": "Color (eyedropper)"
+    },
+    {
+     "n": 4,
+     "label": "Wand"
+    },
+    {
+     "n": 5,
+     "label": "Lasso"
+    },
+    {
+     "n": 6,
+     "label": "Rect"
+    },
+    {
+     "n": 7,
+     "label": "Brush"
+    },
+    {
+     "n": 8,
+     "label": "Fill"
+    },
+    {
+     "n": 9,
+     "label": "Erase"
+    }
+   ]
+  },
+  {
+   "id": "ui_top_bar_buttons",
+   "title": "Top-bar buttons",
+   "caption": "The row of big buttons under the header: Spec Sculpt, Shokk Drop, Encyclopedia and Fracture This Paint.",
+   "file": "screens/ui_top_bar_buttons.webp",
+   "alt": "Four header buttons with numbered callouts.",
+   "article_ids": [
+    "ui_shell.top_bar_buttons",
+    "shokk_drop.fracture_this_paint"
+   ],
+   "kind": "ui",
+   "w": 1120,
+   "h": 96,
+   "bytes": 11734,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "SPEC SCULPT"
+    },
+    {
+     "n": 2,
+     "label": "Shokk Drop"
+    },
+    {
+     "n": 3,
+     "label": "Encyclopedia"
+    },
+    {
+     "n": 4,
+     "label": "FRACTURE THIS PAINT"
+    }
+   ]
+  },
+  {
+   "id": "ui_ui_size_box",
+   "title": "The UI size box",
+   "caption": "The minus / percent / plus box in the header makes the toolbars and panels smaller or larger without zooming the canvas.",
+   "file": "screens/ui_ui_size_box.webp",
+   "alt": "The UI size box with minus, percent and plus numbered.",
+   "article_ids": [
+    "ui_shell.panels_and_ui_size",
+    "ui_shell.window_tour"
+   ],
+   "kind": "ui",
+   "w": 720,
+   "h": 190,
+   "bytes": 15206,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "UI smaller"
+    },
+    {
+     "n": 2,
+     "label": "Current UI size"
+    },
+    {
+     "n": 3,
+     "label": "UI larger"
+    }
+   ]
+  },
+  {
+   "id": "ui_undo_history",
+   "title": "The Undo History panel",
+   "caption": "Every change is listed, newest first, with how long ago it happened. Click a step to go back to it.",
+   "file": "screens/ui_undo_history.webp",
+   "alt": "The Undo History panel listing recent changes.",
+   "article_ids": [
+    "tools.undo_redo",
+    "tools.undo_redo",
+    "history.panel"
+   ],
+   "kind": "ui",
+   "w": 560,
+   "h": 1800,
+   "bytes": 81464,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Current state (top of the list)"
+    }
+   ]
+  },
+  {
+   "id": "ui_update_banner",
+   "title": "The update banner",
+   "caption": "When a newer Shokker is ready this banner appears under the title bar. Download now or be reminded later (test message shown).",
+   "file": "screens/ui_update_banner.webp",
+   "alt": "The update banner under the title bar with two buttons.",
+   "article_ids": [
+    "ui_shell.update_banner",
+    "workflows.install_update"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 165,
+   "bytes": 29580,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "What is new"
+    },
+    {
+     "n": 2,
+     "label": "Download Update"
+    },
+    {
+     "n": 3,
+     "label": "Remind Me Later"
+    }
+   ]
+  },
+  {
+   "id": "ui_window_tour",
+   "title": "The whole window, labelled",
+   "caption": "The Pro window with a layered paint loaded and four zones set up.",
+   "file": "screens/ui_window_tour.webp",
+   "alt": "The full Shokker Paint Booth window with ten numbered callouts.",
+   "article_ids": [
+    "ui_shell.window_tour",
+    "workflows.what_is_shokker",
+    "workflows.one_flat_sheet",
+    "workflows.first_paint"
+   ],
+   "kind": "ui",
+   "w": 1400,
+   "h": 824,
+   "bytes": 122296,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Header: iRacing User ID, Source Paint, car folder"
+    },
+    {
+     "n": 2,
+     "label": "PRO / CHAT pill"
+    },
+    {
+     "n": 3,
+     "label": "Tool row"
+    },
+    {
+     "n": 4,
+     "label": "ZONES column"
+    },
+    {
+     "n": 5,
+     "label": "Zone popout panel"
+    },
+    {
+     "n": 6,
+     "label": "RENDER button"
+    },
+    {
+     "n": 7,
+     "label": "Spec channel strip (COMBINED, R METAL, G ROUGH, B COAT)"
+    },
+    {
+     "n": 8,
+     "label": "SOURCE paint"
+    },
+    {
+     "n": 9,
+     "label": "LIVE PREVIEW"
+    },
+    {
+     "n": 10,
+     "label": "Right column: layers"
+    }
+   ]
+  },
+  {
+   "id": "ui_zone_apply_area",
+   "title": "APPLY AREA: draw a box or lasso",
+   "caption": "Limit a zone to an area you draw, on top of its colour or layer choice.",
+   "file": "screens/ui_zone_apply_area.webp",
+   "alt": "The APPLY AREA section of the zone popout with box and lasso buttons.",
+   "article_ids": [
+    "zones.regions",
+    "zones.how_pixels_picked",
+    "zones.popout_panel",
+    "zones.recipe_split_car"
+   ],
+   "kind": "ui",
+   "w": 940,
+   "h": 1660,
+   "bytes": 69714,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "APPLY AREA section"
+    },
+    {
+     "n": 2,
+     "label": "Draw box"
+    },
+    {
+     "n": 3,
+     "label": "Lasso"
+    },
+    {
+     "n": 4,
+     "label": "Clear"
+    }
+   ]
+  },
+  {
+   "id": "ui_zone_base_material",
+   "title": "Zone popout: BASE material and colour sliders",
+   "caption": "The BASE section: the material, where its colour comes from, and the colour sliders.",
+   "file": "screens/ui_zone_base_material.webp",
+   "alt": "The BASE section of the zone popout with nine numbered callouts.",
+   "article_ids": [
+    "finishes.base_colour_tuning",
+    "finishes.colour_source_modes",
+    "finishes.foundation_shine_only",
+    "finishes.picker_library_browser",
+    "zones.popout_panel"
+   ],
+   "kind": "ui",
+   "w": 940,
+   "h": 1660,
+   "bytes": 71290,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Base material (click to choose a finish)"
+    },
+    {
+     "n": 2,
+     "label": "BASE COLOR source (here: Use source paint, spec only)"
+    },
+    {
+     "n": 3,
+     "label": "Hue Shift"
+    },
+    {
+     "n": 4,
+     "label": "Saturation"
+    },
+    {
+     "n": 5,
+     "label": "Brightness"
+    },
+    {
+     "n": 6,
+     "label": "Base Strength"
+    },
+    {
+     "n": 7,
+     "label": "Spec Strength"
+    },
+    {
+     "n": 8,
+     "label": "Base Scale"
+    },
+    {
+     "n": 9,
+     "label": "Base Rotation"
+    }
+   ]
+  },
+  {
+   "id": "ui_zone_base_more",
+   "title": "Zone popout: depth, flip, underglow, spec scale",
+   "caption": "The lower BASE controls: Color Depth, Color Flip, Underglow, Spec Scale, Spec Rotation and Spec Blend.",
+   "file": "screens/ui_zone_base_more.webp",
+   "alt": "The lower BASE controls with six numbered callouts.",
+   "article_ids": [
+    "finishes.gradients_flip_depth_underglow",
+    "spec.scale_rotation",
+    "spec.blend_modes",
+    "finishes.base_scale_rotation"
+   ],
+   "kind": "ui",
+   "w": 940,
+   "h": 1660,
+   "bytes": 80100,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Color Depth"
+    },
+    {
+     "n": 2,
+     "label": "Color Flip"
+    },
+    {
+     "n": 3,
+     "label": "Underglow"
+    },
+    {
+     "n": 4,
+     "label": "Spec Scale"
+    },
+    {
+     "n": 5,
+     "label": "Spec Rotation"
+    },
+    {
+     "n": 6,
+     "label": "Spec Blend (how the spec combines)"
+    }
+   ]
+  },
+  {
+   "id": "ui_zone_card",
+   "title": "One zone card",
+   "caption": "The small buttons on a zone card.",
+   "file": "screens/ui_zone_card.webp",
+   "alt": "A single zone card with seven numbered callouts.",
+   "article_ids": [
+    "zones.card_controls",
+    "zones.priority",
+    "zones.what_is_a_zone"
+   ],
+   "kind": "ui",
+   "w": 350,
+   "h": 208,
+   "bytes": 10706,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Drag handle (reorder)"
+    },
+    {
+     "n": 2,
+     "label": "Zone number (priority)"
+    },
+    {
+     "n": 3,
+     "label": "Zone name"
+    },
+    {
+     "n": 4,
+     "label": "Eye: switch the zone off or on"
+    },
+    {
+     "n": 5,
+     "label": "Duplicate"
+    },
+    {
+     "n": 6,
+     "label": "Link to another zone"
+    },
+    {
+     "n": 7,
+     "label": "Delete"
+    }
+   ]
+  },
+  {
+   "id": "ui_zone_empty_message",
+   "title": "A zone that shows nothing",
+   "caption": "A brand-new zone has no finish and no way to pick pixels yet; the card badge and the popout both say so until you give it both.",
+   "file": "screens/ui_zone_empty_message.webp",
+   "alt": "The ZONES column with an empty Zone 3 and its popout asking for a colour.",
+   "article_ids": [
+    "zones.not_showing",
+    "zones.what_is_a_zone",
+    "zones.card_controls"
+   ],
+   "kind": "ui",
+   "w": 1200,
+   "h": 960,
+   "bytes": 71908,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Grey dot on the card: no colour picked yet"
+    },
+    {
+     "n": 2,
+     "label": "The popout asks for a base material and a colour"
+    },
+    {
+     "n": 3,
+     "label": "No colour or region set yet: nothing for this zone to cover"
+    }
+   ]
+  },
+  {
+   "id": "ui_zone_overlays",
+   "title": "Zone popout: second base and overlays",
+   "caption": "The OVERLAYS section: a second base material blended over the first.",
+   "file": "screens/ui_zone_overlays.webp",
+   "alt": "The OVERLAYS section with four numbered callouts.",
+   "article_ids": [
+    "finishes.second_base_overlays",
+    "zones.priority"
+   ],
+   "kind": "ui",
+   "w": 940,
+   "h": 1660,
+   "bytes": 72882,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "OVERLAYS (5-layer material stack)"
+    },
+    {
+     "n": 2,
+     "label": "2ND BASE OVERLAY"
+    },
+    {
+     "n": 3,
+     "label": "+ Add 3rd overlay"
+    }
+   ]
+  },
+  {
+   "id": "ui_zone_popout_color",
+   "title": "Zone popout: COLOR and APPLY AREA",
+   "caption": "The top of the zone popout panel: which pixels this zone covers.",
+   "file": "screens/ui_zone_popout_color.webp",
+   "alt": "The top of the zone popout panel with seven numbered callouts.",
+   "article_ids": [
+    "zones.popout_panel",
+    "zones.how_pixels_picked",
+    "zones.add_pick_colour",
+    "zones.restrict_layers",
+    "zones.tolerance"
+   ],
+   "kind": "ui",
+   "w": 940,
+   "h": 1660,
+   "bytes": 103808,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Reset Zone"
+    },
+    {
+     "n": 2,
+     "label": "COLOR section"
+    },
+    {
+     "n": 3,
+     "label": "RESTRICT TO LAYERS list"
+    },
+    {
+     "n": 4,
+     "label": "PICK COLOR FROM CAR"
+    },
+    {
+     "n": 5,
+     "label": "HEX box"
+    },
+    {
+     "n": 6,
+     "label": "Hard Edge"
+    },
+    {
+     "n": 7,
+     "label": "APPLY AREA section"
+    }
+   ]
+  },
+  {
+   "id": "ui_zone_rgb_sliders",
+   "title": "Zone popout: R, G and B channel sliders",
+   "caption": "Push the metal, roughness and clearcoat channels of a zone up or down.",
+   "file": "screens/ui_zone_rgb_sliders.webp",
+   "alt": "The three channel sliders R Metal, G Rough and B Coat with numbered callouts.",
+   "article_ids": [
+    "spec.channel_sliders",
+    "spec.channel_r_metallic",
+    "spec.channel_g_roughness",
+    "spec.channel_b_clearcoat"
+   ],
+   "kind": "ui",
+   "w": 940,
+   "h": 1660,
+   "bytes": 99516,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "R Metal slider"
+    },
+    {
+     "n": 2,
+     "label": "G Rough slider"
+    },
+    {
+     "n": 3,
+     "label": "B Coat slider"
+    }
+   ]
+  },
+  {
+   "id": "ui_zone_sections_overview",
+   "title": "How base, pattern and spec stack in one zone",
+   "caption": "Every zone builds from BASE first, then SPEC OVERLAYS and PATTERN on top, then the OVERLAYS stack.",
+   "file": "screens/ui_zone_sections_overview.webp",
+   "alt": "The zone popout sections BASE, SPEC OVERLAYS, PATTERN and OVERLAYS in order.",
+   "article_ids": [
+    "spec.how_layers_combine",
+    "spec.overlays_stack",
+    "zones.popout_panel",
+    "finishes.second_base_overlays"
+   ],
+   "kind": "ui",
+   "w": 940,
+   "h": 1660,
+   "bytes": 69488,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "SPEC OVERLAYS (detail in the shine, on top of BASE above)"
+    },
+    {
+     "n": 2,
+     "label": "PATTERN (shape on top)"
+    },
+    {
+     "n": 3,
+     "label": "OVERLAYS (second base and more)"
+    }
+   ]
+  },
+  {
+   "id": "ui_zone_spec_overlays",
+   "title": "Zone popout: spec overlays and pattern",
+   "caption": "Add a spec overlay (detail in how the surface reflects) or a paint pattern.",
+   "file": "screens/ui_zone_spec_overlays.webp",
+   "alt": "Spec overlays and pattern sections with four numbered callouts.",
+   "article_ids": [
+    "spec.overlays_stack",
+    "spec.pattern_groups",
+    "patterns.what_is_a_pattern",
+    "patterns.layers_and_stacking"
+   ],
+   "kind": "ui",
+   "w": 940,
+   "h": 1660,
+   "bytes": 70886,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "SPEC OVERLAYS (up to 5)"
+    },
+    {
+     "n": 2,
+     "label": "+ ADD SPEC OVERLAY"
+    },
+    {
+     "n": 3,
+     "label": "PATTERN section"
+    },
+    {
+     "n": 4,
+     "label": "+ Add Layer (pattern)"
+    }
+   ]
+  },
+  {
+   "id": "ui_zone_spec_row",
+   "title": "Auto-Pop and spec presets (Feels)",
+   "caption": "Under Spec Sliders: one click of Auto-Pop for a safe boost of shine, and the Feels preset list.",
+   "file": "screens/ui_zone_spec_row.webp",
+   "alt": "The Auto-Pop button and spec preset list in the zone popout.",
+   "article_ids": [
+    "spec.auto_pop",
+    "spec.presets_feels",
+    "spec.channel_sliders"
+   ],
+   "kind": "ui",
+   "w": 940,
+   "h": 1660,
+   "bytes": 84158,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Auto-Pop"
+    },
+    {
+     "n": 2,
+     "label": "Spec preset (Feels)"
+    },
+    {
+     "n": 3,
+     "label": "R Metal slider"
+    },
+    {
+     "n": 4,
+     "label": "Spec Sliders heading"
+    }
+   ]
+  },
+  {
+   "id": "ui_zone_spec_strength",
+   "title": "Spec Strength and independent spec scale",
+   "caption": "Spec Strength fades the spec toward neutral; the Spec Scale box lets the spec have its own size apart from the paint.",
+   "file": "screens/ui_zone_spec_strength.webp",
+   "alt": "Spec Strength and Spec Scale controls in the zone popout.",
+   "article_ids": [
+    "spec.strength_and_independent",
+    "spec.scale_rotation",
+    "finishes.base_colour_tuning"
+   ],
+   "kind": "ui",
+   "w": 940,
+   "h": 1660,
+   "bytes": 80200,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Spec Strength"
+    },
+    {
+     "n": 2,
+     "label": "Spec Scale (tick to make it independent)"
+    },
+    {
+     "n": 3,
+     "label": "Spec Rotation"
+    },
+    {
+     "n": 4,
+     "label": "Base Strength (paint side)"
+    }
+   ]
+  },
+  {
+   "id": "ui_zones_column",
+   "title": "The ZONES column",
+   "caption": "Every zone is a card. The top card wins where zones overlap.",
+   "file": "screens/ui_zones_column.webp",
+   "alt": "The left column listing five zones with numbered callouts.",
+   "article_ids": [
+    "zones.what_is_a_zone",
+    "zones.priority",
+    "zones.everything_else",
+    "zones.card_controls",
+    "zones.recipe_split_car"
+   ],
+   "kind": "ui",
+   "w": 384,
+   "h": 1692,
+   "bytes": 32246,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Zone count"
+    },
+    {
+     "n": 2,
+     "label": "Zone 1 (top priority)"
+    },
+    {
+     "n": 3,
+     "label": "Zone 4"
+    },
+    {
+     "n": 4,
+     "label": "Everything Else (catch-all, last)"
+    },
+    {
+     "n": 5,
+     "label": "+ Add Zone"
+    },
+    {
+     "n": 6,
+     "label": "Reset All Zones"
+    },
+    {
+     "n": 7,
+     "label": "More menu"
+    }
+   ]
+  },
+  {
+   "id": "ui_zones_more_menu",
+   "title": "Zones: the More menu",
+   "caption": "Presets gallery, randomise, apply one finish to all zones, save as template and load a SHOKK file.",
+   "file": "screens/ui_zones_more_menu.webp",
+   "alt": "The zone More menu open with numbered items.",
+   "article_ids": [
+    "ui_shell.zones_more_menu",
+    "zones.presets_templates",
+    "shokk_drop.shokk_library_files"
+   ],
+   "kind": "ui",
+   "w": 350,
+   "h": 736,
+   "bytes": 29810,
+   "callouts": [
+    {
+     "n": 1,
+     "label": "Presets Gallery"
+    },
+    {
+     "n": 2,
+     "label": "Rand Current Zone"
+    },
+    {
+     "n": 3,
+     "label": "Rand All Zones"
+    },
+    {
+     "n": 4,
+     "label": "Apply Finish to All"
+    },
+    {
+     "n": 5,
+     "label": "Shokker Library"
+    },
+    {
+     "n": 6,
+     "label": "Undo History"
+    },
+    {
+     "n": 7,
+     "label": "Save as Template"
+    },
+    {
+     "n": 8,
+     "label": "LOAD SHOKK FILE"
+    },
+    {
+     "n": 9,
+     "label": "SAVE SHOKK"
+    }
+   ]
+  }
+ ],
+ "count": 221,
+ "articles": []
+}

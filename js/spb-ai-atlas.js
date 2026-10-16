@@ -62,7 +62,7 @@
         if (window.SPB_ATLAS_DATA) return Promise.resolve(install(window.SPB_ATLAS_DATA));
         if (LOADING) return LOADING;
         LOADING = new Promise(function (resolve) {
-            var sc = document.createElement('script'); sc.async = true; sc.src = BASE() + 'js/spb-ai-atlas-data.js?v=' + (window.SPB_ATLAS_V || '20261004fc2');
+            var sc = document.createElement('script'); sc.async = true; sc.src = BASE() + 'js/spb-ai-atlas-data.js?v=' + (window.SPB_ATLAS_V || '20261008r5r1');
             sc.onload = function () { try { resolve(window.SPB_ATLAS_DATA ? install(window.SPB_ATLAS_DATA) : null); } catch (e) { try { console.warn('[AI ATLAS]', e); } catch (x) {} resolve(null); } };
             sc.onerror = function () { LOADING = null; try { console.warn('[AI ATLAS] could not load the data file'); } catch (x) {} resolve(null); };
             document.head.appendChild(sc);

@@ -88,11 +88,16 @@ function walk(dir, out = []) {
 
 function readLines(relPath) {
   const abs = path.join(ROOT, relPath);
+  if (!fs.existsSync(abs)) {
+    console.warn(`[spb_context] missing slice source: ${relPath} (skipped)`);
+    return null;
+  }
   return fs.readFileSync(abs, 'utf8').split(/\r?\n/);
 }
 
 function printSlice(relPath, start, end) {
   const lines = readLines(relPath);
+  if (!lines) return false;
   const safeStart = Math.max(1, start);
   const safeEnd = Math.min(lines.length, end);
   console.log(`\n--- ${relPath}:${safeStart}-${safeEnd} ---`);
@@ -100,6 +105,7 @@ function printSlice(relPath, start, end) {
     const line = lines[i - 1];
     console.log(`${String(i).padStart(5, ' ')}: ${line.length > 240 ? line.slice(0, 237) + '...' : line}`);
   }
+  return true;
 }
 
 function listTargets() {

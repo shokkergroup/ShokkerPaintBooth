@@ -28,7 +28,7 @@ def test_layer_recovery_is_crash_only_fingerprint_matched_and_confirmed():
 def test_zone_badge_cannot_claim_full_success_after_layer_failure():
     source = STATE.read_text(encoding="utf-8")
     assert "const layerResult = _spbWriteLayerAutosaveComponent();" in source
-    assert "Zone settings saved · layer recovery FAILED" in source
+    assert "Zone settings saved · layer recovery failed" in source
     assert "Project saves layer pixels" in source
     assert "window.__spbAutosaveStatus" in source
 

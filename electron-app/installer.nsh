@@ -18,6 +18,8 @@
   ; future 10.x -> 10.y upgrade (or a re-install over a running 10.0.0) would hit the
   ; exact locked-file hang this whole file exists to prevent. The older names stay so
   ; upgrades FROM V8/V7/V6 keep working.
+  ; 11.00: stop either generation when upgrading; preserve the prior entries.
+  nsExec::Exec 'taskkill /F /T /IM "Shokker Paint Booth V11.exe"'
   nsExec::Exec 'taskkill /F /T /IM "Shokker Paint Booth V10.exe"'
   nsExec::Exec 'taskkill /F /T /IM "Shokker Paint Booth V8.exe"'
   nsExec::Exec 'taskkill /F /T /IM "Shokker Paint Booth V7.exe"'

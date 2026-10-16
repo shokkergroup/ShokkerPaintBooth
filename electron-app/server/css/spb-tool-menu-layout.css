@@ -26,13 +26,13 @@
     }
     /* Edit Big is an explicit, temporary canvas workspace. Keep panel state
        intact: Exit Big restores the same Zone editor, layer and scroll state. */
-    body:has(#splitViewContainer.spb-focus-source) .main-container > #leftPanel,
-    body:has(#splitViewContainer.spb-focus-source) .main-container > #rightPanel,
-    body:has(#splitViewContainer.spb-focus-source) .main-container > #zoneEditorFloat,
-    body:has(#splitViewContainer.spb-focus-source) .zone-float-expand-tab {
+    body.spb-pf-split:not(#spb-pf-nx) .main-container > #leftPanel,
+    body.spb-pf-split:not(#spb-pf-nx) .main-container > #rightPanel,
+    body.spb-pf-split:not(#spb-pf-nx) .main-container > #zoneEditorFloat,
+    body.spb-pf-split:not(#spb-pf-nx) .zone-float-expand-tab {
         display: none !important;
     }
-    body:has(#splitViewContainer.spb-focus-source) .main-container > #centerPanel {
+    body.spb-pf-split:not(#spb-pf-nx) .main-container > #centerPanel {
         padding-left: 0 !important;
         min-width: 0 !important;
         transition: none !important;

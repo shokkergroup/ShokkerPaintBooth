@@ -109,7 +109,7 @@
 
     window.showConfigImportPreview = function showConfigImportPreview(json) {
       const previewInfo = window.previewImportedConfig(json);
-      if (!previewInfo) { showToast('Invalid config JSON', true); return false; }
+      if (!previewInfo) { showToast('That config isn\'t valid. Check the text and try again.', true); return false; }
       const msg = 'Import this config?\n\n' +
         'Zones: ' + previewInfo.zoneCount + '\n' +
         'Driver: ' + previewInfo.driver + '\n' +
@@ -138,8 +138,8 @@
     };
 
     window.getSpecialColorExplanation = function getSpecialColorExplanation(value) {
-      if (value === 'remaining') return 'Catches every pixel NOT already claimed by a zone above this one. Use as a safety net for unclaimed body paint.';
-      if (value === 'everything') return 'Targets ALL pixels on the car (overrides other zones). Use sparingly - typically for a base monolithic finish covering the whole car.';
+      if (value === 'remaining') return 'Catches every pixel not already claimed by a zone above this one. Use as a safety net for unclaimed body paint.';
+      if (value === 'everything') return 'Targets all pixels on the car (overrides other zones). Use sparingly - typically for a base monolithic finish covering the whole car.';
       return value;
     };
 

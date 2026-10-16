@@ -285,7 +285,7 @@
       triggerPreviewRender();
       showToast(enabled
         ? 'Fit-to-Selection ON - base color and spec will compress into your selected area'
-        : 'Fit-to-Selection OFF - base will sample from full canvas');
+        : 'Fit-to-Selection off - base will sample from full canvas');
     }
 
     function setZoneBaseHueOffset(index, val) {

@@ -27,7 +27,7 @@ def _function_source(name: str) -> str:
 def test_t44_rail_uses_layer_style_stroke_instead_of_baking_pixels():
     panel = _function_source("renderLayerPanel")
     assert "openLayerEffects('${l.id}', 'stroke')" in panel
-    assert ">STROKE FX</button>" in panel
+    assert ">Stroke FX</button>" in panel
     assert "non-destructive Stroke" in panel
     assert "addLayerOutline('${l.id}'" not in panel
 

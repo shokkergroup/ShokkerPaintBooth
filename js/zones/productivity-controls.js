@@ -293,7 +293,7 @@
       });
     };
     window.unlinkAllZones = function unlinkAllZones() {
-      if (!confirm('Unlink ALL zones from their groups?')) return;
+      if (!confirm('Unlink all zones from their groups?')) return;
       pushZoneUndo('Unlink all zones');
       zones().forEach(function (z) { delete z.linkGroup; });
       renderZones();

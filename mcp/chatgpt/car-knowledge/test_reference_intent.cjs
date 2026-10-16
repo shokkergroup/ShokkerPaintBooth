@@ -1,0 +1,20 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict'),K=require('./lookup.cjs');
+const data=K.load(),articles=JSON.parse(fs.readFileSync(path.join(__dirname,'build/cars.json'),'utf8')).articles;
+const w={console};w.window=w;vm.createContext(w);
+for(const f of ['core.js','offline-answer.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,f),'utf8'),w,{filename:f});
+w.SpbCarReferenceAnswer.index(articles);
+const positive=['Anything unusual about the Skip Barber template? Explain only.','Are there any gotchas with the Ruf RT12R AWD template?','What should I know before painting this car?','Any quirks with my car?','What do I need to watch out for with this template?','Can I recolor wheel rims on the Formula Vee Sabre?','Can I add sponsors to the Mercedes-AMG W12 E Performance?'];
+for(const q of positive)assert.equal(K.referenceIntent(q,!!K.select(data,{query:q}).matches.length).question,true,q);
+for(const q of ['Make the Skip Barber red','Can you paint the Skip Barber red?','Anything unusual about the Skip Barber template? Then paint the Body red.','Are there any gotchas with the Ruf template and resize the sponsor?','What should I know before painting this car; apply chrome to its numbers','Anything unusual about this template please delete the wire layer','What palette would suit the Skip Barber?','Can I paint the Skip Barber black and gold?','Any tips for my garden?'])assert.equal(K.referenceIntent(q,true).question,false,q);
+for(const q of ['What should I know before painting this car?','Any quirks with my car?'])assert.equal(K.referenceIntent(q,false).current_context,true,q);
+const skip=w.SpbCarReferenceAnswer.readOnlyQuestion(positive[0]);assert.ok(skip);assert.match(skip.answer.text,/2048/);assert.match(skip.answer.text,/simulator artwork|simulator.*4K/i);assert.ok(skip.answer.sources.length);assert.equal(skip.answer.actions.length,0);assert.ok(!skip.answer.text.includes('choose one main colour'));
+const ruf=w.SpbCarReferenceAnswer.readOnlyQuestion(positive[1]);assert.ok(ruf);assert.match(ruf.answer.text,/same official ZIP|top-level group named base/);assert.match(ruf.answer.text,/do not verify a panel location/);
+assert.equal(K.select(data,{query:'Anything unusual about the SRX template?'}).matches[0].id,'srx');assert.equal(K.select(data,{query:'This is not the SRX template.'}).matches.length,0);assert.equal(K.select(data,{query:'A bold SRX look'}).matches.length,0,'Short canonical name still needs explicit template context');
+let covered=0;
+for(const c of data.cars){const q='Anything unusual about the '+c.name+' template? Explain only.';assert.equal(w.SpbCarReferenceAnswer.isReferenceQuestion(q),true,c.id);const r=w.SpbCarReferenceAnswer.readOnlyQuestion(q);assert.ok(r,c.id);assert.equal(r.answer.actions.length,0,c.id);covered++;}
+for(const q of ['Anything unusual about the Skip Barber template? Then paint Body red.','Any quirks with my car and undo the last edit?'])assert.equal(w.SpbCarReferenceAnswer.readOnlyQuestion(q),null,q);
+const unavailable=w.SpbCarReferenceAnswer.readOnlyQuestion('What should I know before painting this car?');assert.ok(unavailable);assert.match(unavailable.answer.text,/identify|confirm|choose|reference/i);
+w.SpbTemplateIdentity={read:()=>({configured_paint_folder:'stockcars2 arcachevy25'})};
+const current=w.SpbCarReferenceAnswer.readOnlyQuestion('What should I know before painting this car? Explain only.');assert.ok(current);assert.match(current.answer.text,/loaded file has not been verified/);assert.match(current.answer.chat_summary,/loaded file has not been verified/,'Visible chat must preserve the expanded answer identity limit');
+console.log(JSON.stringify({pass:true,natural_reference_routes:covered,real_compiled_articles:true,skip_resolution_vs_simulator_texture:true,ruf_labels_qualified:true,mixed_edits_and_design_requests_preserved:true,unknown_identity_qualified:true,no_actions:true}));

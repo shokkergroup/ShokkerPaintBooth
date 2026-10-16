@@ -1,0 +1,26 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const articles=JSON.parse(fs.readFileSync('mcp/chatgpt/car-knowledge/build/cars.json','utf8')).articles;
+let stamp=1;const w={console};w.window=w;w.SpbConversationScope={stamp:()=>stamp,current:s=>s===stamp};vm.createContext(w);
+for(const f of ['core.js','offline-answer.js'])vm.runInContext(fs.readFileSync('mcp/chatgpt/car-knowledge/'+f,'utf8'),w);
+w.SpbCarReferenceAnswer.index(articles);
+const api=w.SpbCarReferenceAnswer;
+const car=articles.find(a=>a.car_reference && a.car_reference.status==='legacy').car_reference;
+const first=api.readOnlyQuestion('Anything unusual about the '+car.name+' template? Explain only.');
+assert.equal(first.answer.reference_car_id,car.id);
+w.SpbTemplateIdentity={read:()=>({configured_paint_folder:'stockcars2 arcachevy25'})};
+const next=api.followup('Is that the Legacy one?',first);assert.ok(next);assert.match(next.answer.text,/classified as Legacy/);assert.equal(next.answer.reference_car_id,car.id);assert.equal(next.answer.actions.length,0);assert.match(next.answer.text,/does not verify purchase/);assert.ok(next.answer.sources.some(s=>/user-manuals/.test(s.url)),'Legacy classification exposes its documented roster basis');
+assert.ok(api.followup('Can I still paint it?',next));
+for(const q of ['Is that the Legacy one? Then paint it red','Can I still paint it and delete the layer?','Make that chrome','Is ARCA the Legacy one?'])assert.equal(api.followup(q,first),null,q);
+const retired=articles.find(a=>a.car_reference && a.car_reference.status==='retired').car_reference;
+const historical=api.readOnlyQuestion('Anything unusual about the '+retired.name+' template? Explain only.');
+assert.equal(historical.answer.reference_car_id,retired.id);
+const retiredFollow=api.followup('Can I still paint it?',historical);assert.match(retiredFollow.answer.text,/painting this exact model is unavailable/);assert.ok(retiredFollow.answer.sources.some(s=>/iracing/.test(s.url)),'Retirement answer keeps official evidence');
+const arca=api.readOnlyQuestion('Anything unusual about the ARCA Chevrolet SS template? Explain only.');
+const currentFollow=api.followup('Is that the Legacy one?',arca);assert.match(currentFollow.answer.text,/current-listed/);assert.doesNotMatch(currentFollow.answer.text,/painting this exact model is unavailable/);
+const material=api.followup('What about the green channel?',first);assert.ok(material);assert.equal(material.answer.reference_car_id,car.id);assert.ok(api.followup('Is that the Legacy one?',material),'Material turn retains the discussed reference');
+assert.equal(api.followup('Is that the Legacy one?',api.readOnlyQuestion('Anything unusual about the RUF template?')),null,'Ambiguous variants never acquire an exact follow-up identity');
+stamp++;assert.equal(api.followup('Is that the Legacy one?',first),null,'New document retires the reference');
+assert.equal(api.followup('Is that the Legacy one?',{answer:{reference_context:true,document_stamp:stamp}}),null,'No exact identity means no guess');
+console.log('PASS: exact Legacy reference survives a different open-car hint; mixed edits and stale documents are not consumed');
+

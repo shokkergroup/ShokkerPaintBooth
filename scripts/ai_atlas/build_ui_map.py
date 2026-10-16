@@ -84,7 +84,7 @@ def main_md():
              '**Import Recipe** / **Share Recipe** move just the zone recipe (colours, finishes, effects) as a .shokkerrecipe file, which works across cars. There is no File menu; Ctrl+S is not documented for projects, so point to the **Save / Open** button.')
     L.append('')
     L.append('## Adding a logo or an image')
-    L.append('Use the Layers panel (right column, LAYERS tab): **+ Layer** adds a PNG / JPG / WebP / GIF as a new image layer; **Open Layered** imports a whole PSD / XCF / ORA template. '
+    L.append('Use the Layers panel (right column, LAYERS tab): **+ Layer** adds a blank layer; **Actions > Place image...** adds a PNG / JPG / WebP / GIF as a new image layer; **Open Layered** imports a whole PSD / XCF / ORA template. '
              'Spec Stamps (**Import Stamp**) take a transparent PNG whose alpha marks an area that only changes the spec map. The copilot itself cannot import files.')
     L.append('')
     DST.write_text('\n'.join(L), encoding='utf-8', newline='\n')
@@ -353,7 +353,7 @@ zone.restrict_layers|RESTRICT TO LAYERS (checkboxes per PSD layer)|toggle|{ZE} >
 zone.pick_color_from_car|PICK COLOR FROM CAR|button|{ZE} > COLOR|Arms an eyedropper: click a colour on the car and this zone grabs every pixel of that colour. Each further click ADDS another colour.|Select one colour area (the red stripe, the green body) without drawing anything.|zone,paint|Anti-aliased edges need tolerance; if edges are left over raise tolerance. Colours that also appear on logos need a layer or box restriction.|zone.tolerance,zone.hex,vtModeEyedropper|zone_region_colours
 zone.remaining|Remaining|button|{ZE} > COLOR|Makes this zone the catch-all: it gets every pixel no zone above it claims.|The classic body zone - "everything else".|zone|Put it at the BOTTOM of the zone list; higher zones win overlaps.|zone.order|zone_order_priority
 zone.hex|HEX (colour box and colour wheel) + Apply|text input|{ZE} > COLOR|Type or pick a colour to select by (with Apply), or use the wheel which applies live.|You know the exact colour of the area you want to select.|zone,paint|This chooses which paint pixels to catch, it does not recolour them. To RECOLOUR use BASE > Base Color > Use solid color.|zone.base_color_mode,zone.tolerance|zone_region_colours
-zone.tolerance|Colour tolerance (sliders next to the colour chips)|slider|{ZE} > COLOR|How close a pixel must be to the picked colour to belong to the zone (about 30-50 normal; 6 = exact shade, 100 = loose).|The edges of the area look chewed (raise it) or neighbours get caught (lower it).|zone,paint|Too high grabs neighbouring colours; too low leaves fringes around lettering.|zone.pick_color_from_car|zone_region_colours
+zone.tolerance|Color Match (the Exact to Loose slider on each picked colour chip)|slider|{ZE} > COLOR|How many nearby shades of the picked colour the zone grabs. Slide toward Exact for only that shade, toward Loose for lighter, darker and similar shades too (about 30-50 is normal). Every picked colour chip has its own slider; there is no zone-wide one.|The edges of the area look chewed (raise it) or neighbours get caught (lower it).|zone,paint|Too high grabs neighbouring colours; too low leaves fringes around lettering.|zone.pick_color_from_car|zone_region_colours
 zone.hard_edge|Hard Edge|toggle|{ZE} > COLOR|Cuts the zone edge sharp instead of softly anti-aliased.|Crisp lettering and thin lines are getting fuzzy edges.|zone|Hard edges can look jagged on diagonal lines.|zone.section_color|
 zone.section_apply_area|APPLY AREA (section)|section|{ZE} > APPLY AREA|Limits the zone to a drawn shape (box or lasso) or a refined colour area, on top of the colour/layer choice.|Only the hood, only the left side, only the bottom half.|zone,paint|"Draw box" boxes are on the flat unwrapped sheet; one box may cover several car panels.|zone.draw_box,zone.lasso,zone.refine_color,zone.activate_area,zone.clear_area|zone_region_scope
 zone.draw_box|Draw box|button|{ZE} > APPLY AREA|Click, then drag a rectangle on the paint; the zone only affects what is inside it.|Quick way to restrict a zone to one panel.|zone,paint|The box is on the flat sheet - the hood and the roof are different rectangles, not one.|zone.lasso,zone.clear_area|zone_region_scope
@@ -398,7 +398,7 @@ zone.pattern_paint_mode|Paint mode (Overlay / Blend)|dropdown|{ZE} > PATTERN|Ove
 zone.pattern_opacity|Opacity (pattern)|slider|{ZE} > PATTERN|How visible the pattern is, 0-100%.|Pattern too loud.|zone|-|zone.pattern_strength|zone_pattern_opacity
 zone.pattern_strength|Strength (pattern)|slider|{ZE} > PATTERN|Pattern paint strength in 5% steps; spec amount is separate.|-|zone|-|zone.pattern_opacity|zone_pattern_strength
 zone.pattern_hue|Hue / Saturation (pattern)|slider|{ZE} > PATTERN|Recolours only the pattern artwork (hue -180..180, saturation -100..100). Overlay mode uses this colour.|Pattern has the wrong colour but the base colour is right.|zone|-|zone.pattern_paint_mode|zone_pattern_hue_sat
-zone.pattern_spec_amount|Spec amount (pattern)|slider|{ZE} > PATTERN|Starts at 0% so your base shine stays; raise to reveal the pattern's own metal / rough / coat.|Pattern should also change the shine.|zone|Spec starts at 0 on purpose.|zone.spec_sliders|zone_pattern_strength
+zone.pattern_spec_amount|Spec amount (pattern)|slider|{ZE} > PATTERN|Starts at 0% so your base shine stays; raise to reveal the pattern's own metal / rough / coat.|Pattern should also change the shine.|zone|Spec starts at 0 on purpose.|zone.spec_sliders|zone_pattern_spec_amount
 zone.pattern_scale|Scale (pattern)|slider|{ZE} > PATTERN|Size of the pattern: smaller = more repeats, larger = zoomed in (0.1x to 4x).|"Crush the pattern finer", or make it bigger.|zone|On a whole-car canvas a normal-size pattern looks huge: go below 1.0x for fine detail.|zone.pattern_rotation,zone.base_scale|zone_pattern_scale
 zone.pattern_rotation|Rotate (pattern)|slider|{ZE} > PATTERN|Rotates the pattern 0-359 degrees (also a number box).|Stripes / weave at the wrong angle.|zone|-|zone.pattern_scale|zone_pattern_rotation
 zone.pattern_placement|Pattern placement: Full Canvas / Fit to Zone / Edit on Template|button|{ZE} > PATTERN|Choose how the pattern is placed: tiled over the sheet, fitted to the zone, or dragged by hand on the template.|Place a pattern on one spot.|zone,paint|-|zone.pattern_position|zone_pattern_placement
@@ -410,7 +410,7 @@ zone.mute|Zone eye / duplicate / link / x icons on each zone card|button|Pro > l
 """
 
 ROWS_LAYERS = """
-layer.eye|Layer eye icon|toggle|Pro > LAYERS tab > layer row|Shows / hides the layer. Alt+click isolates that layer.|Turn template layers (Mask, Wire, Car_Mandatory) OFF before export; hide a sponsor to see the paint under it.|psd|Leaving Mask / Wire / Car_Mandatory on paints them into the car.|pro.render,layer.search|
+layer.eye|Layer eye icon|toggle|Pro > LAYERS tab > layer row|Shows / hides the layer. Alt+click isolates that layer.|RENDER leaves the template layers (Mask, Wire, Car_Mandatory) out for you; hide a sponsor to see the paint under it.|psd|RENDER leaves Mask / Wire / Car_Mandatory out of the car paint, so leaving them on in the editor is fine.|pro.render,layer.search|
 layer.opacity|Layer opacity|slider|Pro > LAYERS tab > layer row|Fades the layer 0-100% (drag, or type an exact number).|A sponsor or decal is too strong.|psd|-|layer.blend|
 layer.blend|Layer blend mode|dropdown|Pro > LAYERS tab > layer row|How the layer mixes with those below (Normal, Multiply, Screen, Overlay ...).|Wants a shadow / glow effect.|psd|-|layer.opacity|
 layer.lock|Layer lock|toggle|Pro > LAYERS tab > layer row|Locks the layer so it cannot be painted or changed.|Protect finished art.|psd|The Shokker AI cannot edit locked layers - unlock first.|layer.eye|
@@ -467,10 +467,10 @@ mcp.chatgpt|Connect ChatGPT / Codex|toggle|Shokker AI panel > gear > bridge sett
 
 # static overlay: key|does|when|needs|mistakes|related   (only where the DOM title is not already buyer-friendly)
 CUR = """
-paintFile|The paint file Shokker works on (a flat TGA / PNG / JPEG, or a PSD): type or paste a path, or use the buttons beside it.|Start of every job; "I loaded my paint and nothing happened".|none|Pasting a folder path here does not load a paint. A flat TGA has no layers; a PSD does.|pro.header.tga_png_jpeg,pro.header.psd_xcf_ora,onboardingImportPsdBtn
-pro.header.tga_png_jpeg|Browse for a flat paint picture (TGA / PNG / JPEG / BMP) and load it as the paint.|You have a single flat paint file.|none|Dropping an image on the canvas also REPLACES the paint; it does not add a logo (use + Layer for that).|paintFile,pro.header.psd_xcf_ora
-pro.header.psd_xcf_ora|Browse for a layered PSD / XCF / ORA template so every layer (body, numbers, sponsors, tape) stays separate.|You want layer-level control: numbers only, sponsors only.|none|Make sure the template layers (Mask, Wire, Car_Mandatory) are OFF before exporting.|onboardingImportPsdBtn,pro.layers.open_layered
-outputDir|The iRacing car folder the finished paint and spec files are written to.|Paint is not showing in iRacing, or choosing which car.|none|Point to the car FOLDER, not a TGA file. It sets the file names car_num_ID.tga or car_ID.tga and car_spec_ID.tga.|carPickBtn,iracingId
+paintFile|The paint file Shokker works on (a flat TGA / PNG / JPEG, or a PSD): click the file chip to type or paste a path, or use Open Paint... beside it.|Start of every job; "I loaded my paint and nothing happened".|none|Pasting a folder path here does not load a paint. A flat TGA has no layers; a PSD does.|pro.header.tga_png_jpeg,pro.header.psd_xcf_ora,onboardingImportPsdBtn
+pro.header.tga_png_jpeg|Open Paint... > Flat image: browse for a flat paint picture (TGA / PNG / JPEG / BMP) and load it as the paint.|You have a single flat paint file.|none|Dropping an image on the canvas also REPLACES the paint; it does not add a logo (use Actions > Place image... for that).|paintFile,pro.header.psd_xcf_ora
+pro.header.psd_xcf_ora|Open Paint... > Layered template: browse for a layered PSD / XCF / ORA template so every layer (body, numbers, sponsors, tape) stays separate.|You want layer-level control: numbers only, sponsors only.|none|RENDER leaves the template layers (Mask, Wire, Car_Mandatory) out of the car paint for you.|onboardingImportPsdBtn,pro.layers.open_layered
+outputDir|The iRacing car folder the finished paint and spec files are written to. It shows as a folder chip: click it to type or paste a path.|Paint is not showing in iRacing, or choosing which car.|none|Point to the car FOLDER, not a TGA file. It sets the file names car_num_ID.tga or car_ID.tga and car_spec_ID.tga.|carPickBtn,iracingId
 carPickBtn|Pick your car from the list of iRacing cars Shokker detected (most recently painted first).|Faster than browsing for the folder.|none|If your car is missing, paint it once in iRacing or browse for the folder.|outputDir
 iracingId|Your iRacing customer number (4-7 digits); it is part of the saved file names.|First setup; paint does not show in iRacing.|none|A wrong ID means iRacing ignores the files.|outputDir
 useCustomNumberCheckbox|Custom Number: the number is part of your paint and iRacing will not add one.|You drew your own number.|none|Needs Settings > Graphics > Hide Car Numbers ON in iRacing to load car_num_.|useSimStampedCheckbox
@@ -479,26 +479,26 @@ spbModeProBtn|Switch to the full Pro shop.|-|none|-|mode.pro
 spbModeChatBtn|Switch to Chat (talk to Shokker).|-|none|-|mode.chat
 spbModeEasyBtn|Switch to Easy (paint by numbers).|-|none|-|mode.easy
 spbGuideToggle|Training Wheels: step-by-step quests that teach the app as you use it (load, zone, finish, render, then patterns, spec, overlays), plus a hint chip for your next move.|A buyer says "I'm lost" or "what now".|none|Toggle it any time; it is also a checkbox in Settings.|trainingWheelsCheckbox
-btnFractureThisPaint|One click puts a Soul Core Emerald / Pink Flash finish into the selected zone's base (and its colour unless Color Lock is on).|A quick dramatic look.|zone|Changes the zone's colour too unless the Lock is on.|zone.lock_base_color
+btnFractureThisPaint|One click shows a summary and, once you confirm, puts a Soul Core Emerald / Pink Flash finish into the selected zone's base (and its colour unless Color Lock is on).|A quick dramatic look.|zone|Changes the zone's colour too unless the Lock is on.|zone.lock_base_color
 settingsGearBtn|Opens Settings: licence, keyboard shortcuts, ZIP export, spec map import, Live Link, Training Wheels.|Licence problems, auto-copy to iRacing.|none|-|liveLinkCheckbox,exportZipCheckbox
 liveLinkCheckbox|Auto-deploy: copies every render to your iRacing car folder automatically.|Paint is not reaching iRacing.|car_folder|Only matters when the car folder is empty; with a car folder set, files are copied after each render anyway.|outputDir
-exportZipCheckbox|Bundles paint TGA, spec TGA and preview into a ZIP on every render.|Share or archive.|none|-|btnRender
+exportZipCheckbox|Bundles paint TGA, spec TGA and preview into a ZIP on every render; the ZIP stays in that render's job folder and is never copied to iRacing.|Share or archive.|none|-|btnRender
 pro.settings.import_tga|Import an existing spec map TGA to merge under your render.|You made a spec map elsewhere.|paint|Use Clear to go back to the default spec.|btnClearSpecMap
 vtModeLayerMove|Move tool (V): in Layer mode click a sponsor / number to drag it; Alt forces the whole layer.|Move or resize a number or logo.|psd|Switch ZONE / LAYER to LAYER first.|btnToolbarModeLayer
 vtModePickItem|Pick Item (Y): pick one sponsor / number inside a layer for independent move / rotate.|Move a single logo on a crowded layer.|psd|-|vtModeLayerPick
-vtModeEyedropper|Color (P): click a colour on the paint to select by it. In Pro zone mode it feeds the selected zone's colour list.|Select a colour area for a zone.|zone,paint|-|zone.pick_color_from_car,eyedropperAddColorBtn
+vtModeEyedropper|Color (I): click a colour on the paint to select by it. In Pro zone mode it feeds the selected zone's colour list.|Select a colour area for a zone.|zone,paint|-|zone.pick_color_from_car,eyedropperAddColorBtn
 vtModeWand|Magic Wand (W): click to select similar colour; Shift adds, Alt subtracts; Tolerance sets how similar.|Select an area by colour on the canvas.|paint|-|wandTolerance
 vtModeLasso|Lasso (L): draw a free-hand selection.|Select an odd-shaped area.|paint|Enter closes the shape.|vtModeRect
-vtModeRect|Rectangle select (O): drag a box selection.|Select a panel.|paint|-|vtModeLasso
+vtModeRect|Rectangle select (M): drag a box selection; press M again for Elliptical.|Select a panel.|paint|-|vtModeLasso
 vtModeBrush|Brush (B): paint the zone's mask, or the selected layer's pixels.|Hand-draw where a zone applies.|paint|ZONE mode paints a mask; LAYER mode paints pixels.|btnToolbarModeZone,brushSize
 vtModeFill|Fill bucket (K): fill a region of the zone mask or the layer.|Fill a closed area.|paint|-|vtModeBrush
 vtModeErase|Eraser (E): erase zone mask or layer pixels.|Fix an overpaint.|paint|-|vtModeBrush
-vtModeGrabObject|Grab Object (G): click inside a number or logo and its whole outline is selected.|Select the numbers on a flat TGA.|paint|Works best on clear solid shapes.|vtModeSelectAll
+vtModeGrabObject|Grab Object (Shift+W cycles to it): click inside a number or logo and its whole outline is selected.|Select the numbers on a flat TGA.|paint|Works best on clear solid shapes.|vtModeSelectAll
 vtModeSelectAll|Select All Color (A): select every pixel of the sampled colour across the whole paint.|Select all of one colour.|paint|-|vtModeWand
 vtModeEdge|Smart Region Fill: click inside an edge-bounded area to select it.|Select a stripe or panel bounded by lines.|paint|-|wandTolerance
 vtModeZonePick|Zone Pick: click a spec pattern / base piece to move, rotate and resize it independently.|Adjust one pattern piece.|zone|-|vtModePickItem
 vtModeColorBrush|Color Brush (C): paint solid colour or a pattern brush onto the selected layer.|Retouch artwork.|psd|Needs a blank paintable layer (use + Blank layer).|pro.layers.blank_layer
-vtModeRecolor|Recolor (R): paint a new hue over a sampled colour on the selected layer.|Recolour a sponsor.|psd|-|pro.toolbar.color_replace
+vtModeRecolor|Recolor (Shift+B cycles Brush, Pencil, Recolor): paint a new hue over a sampled colour on the selected layer.|Recolour a sponsor.|psd|-|pro.toolbar.color_replace
 btnToolbarModeZone|ZONE mode: toolbar tools edit zones and masks.|Making areas for finishes.|paint|Tools behave differently in ZONE vs LAYER mode - check this switch if a tool "does nothing".|btnToolbarModeLayer
 btnToolbarModeLayer|LAYER mode: toolbar tools edit the selected layer's pixels.|Moving / painting artwork.|psd|-|btnToolbarModeZone
 pro.toolbar.undo_ctrl_z|Undo the last stroke, transform or layer action (Ctrl+Z).|Any mistake.|paint|-|pro.toolbar.redo_ctrl_y,pro.history.undo
@@ -522,7 +522,7 @@ pro.zones_more.save_shokk|Saves the zones and finishes (and optionally the paint
 pro.zones_more.png_channels_export|Exports the paint and the spec channels as PNG pictures for inspection or Photoshop.|Check or edit the spec in another app.|render|-|pro.preview
 btnRender|RENDER (Ctrl+R): builds the finished paint TGA and the spec TGA and writes them to the iRacing car folder.|When the look is right and you want it in iRacing.|paint,car_folder|It will not start if the paint, customer ID or car folder is missing, or template layers are still on.|pro.render,easy.save
 btnPreviewRefresh|Refresh preview (F5): aborts a stuck render and re-runs the live preview.|Preview is stale, blank or not changing.|paint|-|pro.preview
-btnBeforeAfter|Before / After (B): compare the last preview with the current one.|See what a change did.|render|-|btnCompare
+btnBeforeAfter|See your source paint against the preview: use Compare (before/after slider) or SPLIT (Shift+V).|See what a change did.|render|-|btnCompare
 btnSpecMapInspector|Channels inspector: spec map channels with numeric values.|Understand the shine.|render|-|pro.preview
 btnSourceFocus|Edit Big: hide the live preview and edit the source canvas larger.|Precise selection work.|paint|-|btnCanvasViewSource
 btnCanvasViewSource|SOURCE view: the original paint canvas where tools work.|-|paint|-|btnCanvasViewRendered
@@ -537,7 +537,7 @@ btnSaveToKeep|Copies this render to a subfolder so the next render does not over
 rpTabFinishes|FINISHES tab: opens the full-screen finish library.|Browse looks without a zone.|none|-|pro.finish_library
 rpTabLayers|LAYERS tab: PSD layer list.|-|psd|-|pro.layers
 pro.layers.open_layered|Import a layered PSD / XCF / ORA with its layer tree.|You have a layered template.|none|-|onboardingImportPsdBtn
-pro.layers.layer|+ Layer: adds a PNG / JPG / WebP / GIF as a NEW image layer on top (a logo, a sponsor).|Add a logo.|psd|Dropping a file on the canvas instead REPLACES the paint.|layer.rename
+pro.layers.layer|+ Layer: adds a blank transparent layer on top. To bring in a picture (PNG / JPG / WebP / GIF, such as a logo or sponsor) use Actions > Place image...|Add a logo.|psd|Dropping a file on the canvas instead REPLACES the paint.|layer.rename
 layerActionsMenuBtn|Actions: + Blank layer, Flatten document, Merge visible, Photoshop round-trip, Thumbnail size.|Document-wide layer operations.|psd|Flatten discards layer separation.|pro.layers.open_layered
 finishSearch|Search the finish library by name, description or #tag.|Find a look by words.|none|Try plain words ("gold chrome") or hashtags (#carbon).|swatchSearchInput
 swatchSearchInput|Search finishes in the base picker by name, idea or #tag.|Find a finish for the zone.|zone|-|swatchDiceBtn
@@ -546,7 +546,7 @@ swatchDiceBtn|Surprise me: rolls a high-ranked finish onto the On-Car Stage; con
 swatchStageUseBtn|USE IT: applies the previewed finish to this zone.|-|zone|-|swatchDiceBtn
 swatchSeeOnPaintBtn|See on paint: previews the selected finish on your paint file.|Check before applying.|paint|-|swatchStageUseBtn
 fbSearch|Search the catalogue browser.|-|none|-|fbFilterType
-brushSize|Brush / eraser size in pixels (1-300); [ and ] keys change it.|-|paint|-|brushHardness
+brushSize|Brush / eraser size as a diameter in pixels (1-300); [ and ] change it in proportional steps (bigger steps at bigger sizes).|-|paint|-|brushHardness
 wandTolerance|How different a colour can be and still get picked (higher = more colours).|Wand picks too little or too much.|paint|-|vtModeWand
 overlayOpacity|Zone overlay opacity: how strongly the zone colour overlay shows on the canvas (default 50%).|Overlay hides the paint.|zone|-|vtModeSpatialInclude
 eyedropperAddColorBtn|+ Add Color: adds the clicked colour to the chosen zone.|Select several colours in one zone.|zone,paint|-|zone.pick_color_from_car
@@ -560,7 +560,7 @@ pro.center.blank_canvas|Blank Canvas: start from plain white to design from scra
 ROWS_MISC = """
 leftCollapseBtn|Collapse arrow (left column)|button|Pro > left column edge|Collapses or expands the ZONES column.|More room for the canvas.|none|-|rightCollapseBtn|
 rightCollapseBtn|Collapse arrow (right column)|button|Pro > right column edge|Collapses or expands the FINISHES / LAYERS column.|More room for the canvas.|none|-|leftCollapseBtn|
-zoneFloatExpandTab|Zone editor tab (E)|button|Pro > left of the canvas|Shows or hides the floating ZONE POPOUT PANEL (press E).|The zone controls vanished or are in the way.|zone|-|zone.section_base|
+zoneFloatExpandTab|Zone editor tab (Shift+E)|button|Pro > left of the canvas|Shows or hides the floating ZONE POPOUT PANEL (press Shift+E).|The zone controls vanished or are in the way.|zone|-|zone.section_base|
 """
 
 CUR2 = """
@@ -569,7 +569,7 @@ spbUpdateBannerSnooze|Hides the update banner for now.|You are mid-job.|none|-|s
 pro.header.browse_car_folder|Browse for the iRacing car folder in Windows.|You cannot find your car in the list.|none|Pick the car's own folder inside Documents/iRacing/paint, not a TGA file.|outputDir,carPickBtn
 pro.toolbar.history|HISTORY menu: Undo, Redo, Undo History.|Take back changes.|paint|-|pro.toolbar.undo_ctrl_z
 pro.toolbar.select|SELECT menu: Select All Color, Grab Object, Smart Region Fill, Move Selection Border, Pick Layer Element, Zone Pick, Elliptical Marquee.|Selecting areas or elements.|paint|-|vtModeSelectAll,vtModeGrabObject
-pro.toolbar.retouch|RETOUCH menu: Color Brush, Recolor, Healing Brush, Smudge, Burn - pixel retouching on the selected layer.|Fix or paint artwork.|psd|Grey until a blank layer exists: use the Add blank for Color Brush button.|vtModeColorBrush
+pro.toolbar.retouch|RETOUCH menu: Color Brush, Recolor, Healing Brush, Clone Stamp, Smudge, Blur, Sharpen, Dodge, Burn, Pencil, History Brush, Gradient - pixel retouching on the selected layer.|Fix or paint artwork.|psd|Grey until a blank layer exists: use the Add blank for Color Brush button.|vtModeColorBrush
 pro.toolbar.add_blank_for_color_brush|Adds a blank layer so the Color Brush has somewhere to paint.|Color Brush is greyed out.|psd|-|pro.toolbar.retouch
 pro.toolbar.mask|MASK menu: Grow / Shrink / Fill Holes / Feather / Smooth / Invert / Copy / Mirror a zone's area, plus Include / Exclude Region.|Clean up where a zone applies.|zone|-|pro.toolbar.grow_1_px
 pro.toolbar.spec_tools|SPEC TOOLS menu: Decal Rescue Kit, Lighting Mask, Material Sampler, Range Remapper.|Fixing the spec (shine) map.|paint|-|pro.toolbar.decal_rescue_kit
@@ -592,7 +592,7 @@ eraserMode|Eraser style: soft brush, hard block, or clear the whole layer / zone
 gradientType|Shape of the gradient tool: linear, reflected, radial, angular, diamond.|-|paint|-|gradientReverse
 gradientReverse|Flips the gradient direction.|-|paint|-|gradientType
 gradientFgToTransparent|Fade the foreground colour to transparent instead of to the background colour.|-|paint|-|gradientType
-textFont|Font for text options.|-|psd|There is no Text button in the main tool row; add lettering as a PNG layer.|hdi.add_text
+textFont|Font for text options.|-|psd|Use the Text tool (T): its text stays editable (double-click it to change it; RASTERIZE turns it into pixels). A PNG layer also works for lettering.|hdi.add_text
 textBold|Bold text option.|-|psd|-|textFont
 textItalic|Italic text option.|-|psd|-|textFont
 textTransform|Text case: as typed, UPPERCASE, lowercase, Capitalize.|-|psd|-|textFont
@@ -688,7 +688,7 @@ def _how_do_i(valid_ids):
 def _write_app_map(items, panel_nodes):
     L = ['# Where everything is: the app map (AI knowledge card, generated from scripts/ai_atlas/ui_map.json)', '',
          'Use these names exactly. Modes: PRO (full shop), CHAT (talk to Shokker). The Pro zone editor is the ZONE POPOUT PANEL that opens when a zone card is clicked. '
-         'There is no File menu: saving a project is the "Save / Open" button. Dropping a picture on the canvas replaces the paint; "+ Layer" adds a logo.', '']
+         'There is no File menu: saving a project is the "Save / Open" button. Dropping a picture on the canvas replaces the paint; Actions > Place image... adds a logo.', '']
     skip_panels = {'pro.dialogs', 'pro.modes', 'misc'}
     for p in panel_nodes:
         if p['id'] in skip_panels and p['id'] != 'pro.modes':
@@ -783,8 +783,10 @@ LABEL_FIX = {
     'leftPanelPsExportFolder': 'Export folder box (PNG channels)', 'trainingWheelsCheckbox': 'Training Wheels checkbox',
     'exportZipCheckbox': 'ZIP export checkbox', 'liveLinkCheckbox': 'Auto-deploy (Live Link) checkbox',
     'selectionMode': 'Selection mode dropdown (Add / Replace / Subtract)', 'brushShape': 'Brush shape dropdown',
+    # UI-POLISH-E (2026-10-10): the two old header buttons now live in the Open Paint... menu
+    'pro.header.tga_png_jpeg': 'Open Paint... > Flat image', 'pro.header.psd_xcf_ora': 'Open Paint... > Layered template',
 }
-PANEL_WHERE = {'pro.header': 'Pro > top of the window, first rows (iRacing User ID, Source Paint, iRacing Car Folder)'}
+PANEL_WHERE = {'pro.header': 'Pro > top of the window, one row (Source Paint and iRacing Car Folder file chips, Open Paint..., the Car group with iRacing ID and Custom / Sim-Stamped Number)'}
 
 
 def _camel_label(i):

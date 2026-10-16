@@ -117,7 +117,7 @@
 
     window.setAllZonesTolerance = function setAllZonesTolerance(tolerance) {
       if (typeof tolerance !== 'number' || tolerance < 1 || tolerance > 200) {
-        const v = prompt('Tolerance for ALL zones (1-200):', '40');
+        const v = prompt('Tolerance for all zones (1-200):', '40');
         tolerance = parseInt(v, 10);
         if (isNaN(tolerance)) return;
       }

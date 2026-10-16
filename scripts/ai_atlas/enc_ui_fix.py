@@ -85,7 +85,56 @@ RULES = [
     ('SPEC TOOLS menu: ', 'Advanced spec utilities (MASK menu): '),
     ('Transform (Spec Tools)', 'Transform'),
     (re.compile(r'\bSPEC TOOLS\b|\bSpec Tools\b(?: menu)?'), MASKADV),
+    # --- ENC-GEN 2026-10-10: spec-channel teaching must carry the floors the renderer applies (iron rules, engine/core.py + compose.py):
+    #     blue 0-15 = NO clearcoat (16 = strongest, 255 = dull); roughness under 15 is lifted to 15 unless the metal is chrome-tier (240+).
+    #     "low / dark blue = strong coat" was wrong below 16; "black = gloss" was wrong too (true black = coat off, normal gloss = dark green-black 0,30,16). ---
+    ('green is roughness (0 is a mirror), blue is clearcoat (16 is the glossiest, higher is duller) and alpha is the specular mask',
+     'green is roughness (0 is a mirror, but only chrome-tier metal, about 240 and up, can go under 15), blue is clearcoat (16 is the strongest, 0 to 15 means none, higher is duller) and alpha is the specular mask'),
+    # support.flat_or_shiny summary must stay within the gate's 330 chars / 2 sentences: keep the 0-15 caveat, move the rest to the FAQ answer
+    ('green is roughness (0 is a mirror) and blue is clearcoat (16 is the glossiest, higher is duller). No shine at all in iRacing usually means car_spec_<ID>.tga is missing or old in the car folder (render, then Ctrl+R to reload); else check the spec views and change the finish or sliders.',
+     'green is roughness (0 is a mirror on chrome-tier metal, 15 at least otherwise), blue is clearcoat (16 is the glossiest, 0 to 15 is none, higher is duller). No shine at all in iRacing usually means car_spec_<ID>.tga is missing or old in the car folder (render, then Ctrl+R to reload).'),
+    ('green is roughness (0 is a mirror, but only chrome-tier metal, about 240 and up, can go under 15) and blue is clearcoat (16 is the glossiest, 0 to 15 means none, higher is duller). No shine at all in iRacing usually means car_spec_<ID>.tga is missing or old in the car folder (render, then Ctrl+R to reload); else check the spec views and change the finish or sliders.',
+     'green is roughness (0 is a mirror on chrome-tier metal, 15 at least otherwise), blue is clearcoat (16 is the glossiest, 0 to 15 is none, higher is duller). No shine at all in iRacing usually means car_spec_<ID>.tga is missing or old in the car folder (render, then Ctrl+R to reload).'),
+    ('green is roughness (0 is a mirror) and blue is clearcoat (16 is the glossiest, 0 to 15 is none, higher is duller). No shine at all in iRacing usually means car_spec_<ID>.tga is missing or old in the car folder (render, then Ctrl+R to reload).',
+     'green is roughness (0 is a mirror on chrome-tier metal, 15 at least otherwise), blue is clearcoat (16 is the glossiest, 0 to 15 is none, higher is duller). No shine at all in iRacing usually means car_spec_<ID>.tga is missing or old in the car folder (render, then Ctrl+R to reload).'),
+    ('green is roughness (0 is a mirror) and blue is clearcoat (16 is the glossiest, higher is duller)',
+     'green is roughness (0 is a mirror, but only chrome-tier metal, about 240 and up, can go under 15) and blue is clearcoat (16 is the glossiest, 0 to 15 means none, higher is duller)'),
+    ('blue is clearcoat (16 is the glossiest, higher is duller)', 'blue is clearcoat (16 is the glossiest, 0 to 15 means none, higher is duller)'),
+    ('green is roughness (0 is a mirror), blue is clearcoat (0 to 15 is none, 16 is maximum gloss, 255 is dull) and alpha is the mask',
+     'green is roughness (0 is a mirror, but only chrome-tier metal, about 240 and up, can go under 15), blue is clearcoat (0 to 15 is none, 16 is maximum gloss, 255 is dull) and alpha is the mask'),
+    ('green is roughness (0 is a mirror), blue is clearcoat (16 is the glossiest) and alpha is a lighting mask',
+     'green is roughness (0 is a mirror, but only chrome-tier metal, about 240 and up, can go under 15), blue is clearcoat (16 is the glossiest, 0 to 15 means none) and alpha is a lighting mask'),
+    ('low blue values are a strong clearcoat (16 is maximum gloss in the game) and high blue is dull',
+     'a blue value of 16 is the strongest clearcoat in the game, 0 to 15 means no clearcoat at all, and higher blue is duller'),
+    ('Low blue means strong clearcoat; 16 is maximum gloss and high values are dull.',
+     'Blue 16 is the strongest clearcoat, 0 to 15 means no clearcoat, and higher values are duller.'),
+    ('Dull clearcoat. Low blue is glossier.', 'Dull clearcoat. Blue near 16 is the glossiest, 0 to 15 means no clearcoat, and higher is duller.'),
+    ('darker blue means a glassier clearcoat', 'blue closest to 16 (very dark, but not black) means the glassiest clearcoat, and black means none'),
+    ('Black in G ROUGH is a mirror; dark in B COAT is a glossy coat.',
+     'Black in G ROUGH is a mirror (only chrome-tier metal can really go that low); a very dark but not black B COAT (about 16) is the glossiest coat, and pure black there means no coat.'),
+    ('Black does not mean empty. It means smooth, non-metal, glossy coat.',
+     'Black does not mean empty or glossy: true black (0, 0, 0) has the coat off. Normal gloss is a dark green-black such as 0, 30, 16.'),
+    ('The strongest coat is a dark blue channel. Check B COAT.',
+     'The strongest coat is a blue of 16, a very dark blue but not black. Blue 0 to 15 means no coat. Check B COAT.'),
+    ('red means metal, teal means matte and black means gloss', 'red means metal, teal means matte and dark green-black means gloss'),
+    ('On the blue channel 16 is the glossiest and bigger numbers get duller.',
+     'On the blue channel 16 is the glossiest, 0 to 15 means no clearcoat, and bigger numbers get duller.'),
+    ('Blue channel: Clearcoat (16 = max gloss, 255 = dull).', 'Blue channel: Clearcoat (16 = max gloss, 0-15 = none, 255 = dull).'),
+    # --- ENC-GEN: the buttons on a layer card are labelled "More > ..." (no "Now" prefix); "Click to choose a base" shows only on an EMPTY zone ---
+    ('Now More > ', 'More > '),
+    ('Click the BASE MATERIAL box ("Click to choose a base") to open the finish library.',
+     'Click the Base Material box under BASE (it shows "Click to choose a base" on an empty zone) to open the finish library.'),
 ]
+
+# --- ENC-FIX 2026-10-10: the 9 corrections the APP-IQ exam found (rules + code anchors live in enc_fix_rules.py) ---
+def _load_encfix_rules():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('enc_fix_rules', Path(__file__).with_name('enc_fix_rules.py'))
+    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+    return list(mod.ENCFIX_RULES)
+
+
+RULES += _load_encfix_rules()
 
 _SELF_FIX = re.compile(r'(MASK > Advanced spec utilities)( > Advanced spec utilities)+')
 

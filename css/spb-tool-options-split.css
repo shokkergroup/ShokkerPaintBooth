@@ -1,0 +1,78 @@
+/* SPB-TOOLROW 2026-10-09 (owner): primary tool controls live in a band ABOVE the SOURCE / LIVE PREVIEW
+   panes (#spbToolRowTop, built by js/canvas/tool-options-split.js); the rest stay in the bottom bar,
+   which now WRAPS instead of scrolling sideways. Every rule is scoped to body.spb-toolrow-on, so the
+   kill switch (window.SPB_TOOLROW_OFF = true) leaves spb-tool-options-rail.css exactly as it was. */
+
+body.spb-toolrow-on #spbToolRowTop {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    min-height: 32px;
+    margin: 4px 4px 2px;
+    padding: 4px 10px;
+    position: relative;
+    z-index: 2;
+    border: 1px solid rgba(34, 211, 238, 0.16);
+    border-radius: 10px;
+    background:
+        linear-gradient(90deg, rgba(34, 211, 238, 0.10), rgba(255, 122, 24, 0.055)),
+        rgba(3, 7, 15, 0.80);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.028);
+}
+body.spb-toolrow-on #spbToolRowTop.spb-tr-empty { display: none; }
+body.spb-toolrow-on #spbToolRowTop > * { flex-shrink: 0; }
+body.spb-toolrow-on #spbToolRowTop input[type="range"] { height: 4px !important; }
+body.spb-toolrow-on #spbToolRowTop .spb-tr-group { align-items: center; gap: 4px; flex-wrap: nowrap; }
+/* compound option spans may wrap internally on a narrow window instead of forcing a sideways scroll */
+body.spb-toolrow-on #spbToolRowTop > span[id],
+body.spb-toolrow-on #toolSpecificOptions > span[id] { max-width: 100%; flex-wrap: wrap; row-gap: 3px; }
+
+/* bottom bar: wrap, never scroll sideways. The bar may grow to a second row. */
+html body.spb-toolrow-on #centerPanel > .workbench-command-bar.spb-cmdbar-bottom:not(.spb-ctx-empty) {
+    height: auto !important;
+    min-height: 44px !important;
+    max-height: none !important;
+    flex: 0 0 auto !important;
+    overflow: visible !important;
+}
+html body.spb-toolrow-on #centerPanel > .workbench-command-bar.spb-cmdbar-bottom:not(.spb-ctx-empty) #paintPreviewLoaded {
+    height: auto !important;
+}
+html body.spb-toolrow-on #centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolOptionsBar.tool-options-bar {
+    flex-wrap: wrap !important;
+    overflow: visible !important;
+    max-height: none !important;
+    min-height: 34px !important;
+    height: auto !important;
+    gap: 3px 6px !important;
+    padding: 3px 7px !important;
+    scrollbar-gutter: auto;
+}
+html body.spb-toolrow-on #centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolOptionsBar > #toolSpecificOptions,
+html body.spb-toolrow-on #centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolOptionsBar > #contextActionsBar {
+    flex: 0 1 auto !important;
+    flex-wrap: wrap !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    row-gap: 3px !important;
+}
+html body.spb-toolrow-on #centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolSpecificOptions > *,
+html body.spb-toolrow-on #centerPanel > .workbench-command-bar.spb-cmdbar-bottom #contextActionsBar > * {
+    flex-shrink: 0 !important;
+}
+html body.spb-toolrow-on #centerPanel > .workbench-command-bar.spb-cmdbar-bottom #selectionModifierHint,
+html body.spb-toolrow-on #centerPanel > .workbench-command-bar.spb-cmdbar-bottom #fillSampleSource {
+    white-space: normal !important;
+    min-width: 0 !important;
+    flex-shrink: 1 !important;
+}
+/* the usage hints are long one-liners; let them shrink/wrap so they never force a scrollbar */
+html body.spb-toolrow-on #centerPanel > .workbench-command-bar.spb-cmdbar-bottom #toolModifierHint,
+html body.spb-toolrow-on #centerPanel > .workbench-command-bar.spb-cmdbar-bottom #contextActionHint {
+    white-space: normal !important;
+    flex-shrink: 1 !important;
+    min-width: 0 !important;
+}

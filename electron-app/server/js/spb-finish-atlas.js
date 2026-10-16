@@ -40,21 +40,21 @@
 
     /* ---------------- section model (owner's order) ---------------- */
     A.SECTIONS = [
-        { id: 'spec_overlays', label: 'SPEC OVERLAYS', icon: '◈', cols: 4,
+        { id: 'spec_overlays', label: 'Spec overlays', icon: '◈', cols: 4,
           intro: 'Fine material constructions for your existing paint. Explore a family, inspect the surface, then stack its metallic, roughness and clearcoat detail.' },
-        { id: 'foundations', label: 'FOUNDATIONS', icon: '🏁', cols: 3,
+        { id: 'foundations', label: 'Foundations', icon: '🏁', cols: 3,
           intro: 'Start here. Clean, dependable paint that looks right on every car — the base coats everything else builds on.' },
-        { id: 'core', label: 'THE CORE COLLECTION', icon: '💎', cols: 4,
+        { id: 'core', label: 'The core collection', icon: '💎', cols: 4,
           intro: 'The material library — real-world surfaces from candy lacquer to raw carbon, plus the Optic Lab effect series. If you can park it in a showroom, it lives here.' },
-        { id: 'fractured', label: 'FRACTURED', icon: '⚡', cols: 4,
+        { id: 'fractured', label: 'Fractured', icon: '⚡', cols: 4,
           intro: 'Its own universe. Generative finishes that shatter, flow, burn and bloom — no two panels repeat, and new Fractured families land here constantly. This is where the wild ones live.' },
-        { id: 'shokker', label: 'SHOKKER', icon: '🔥', cols: 4,
+        { id: 'shokker', label: 'Shokker', icon: '🔥', cols: 4,
           intro: 'The house collection — everything born in the Shokker lab. Signature series, guest slots, imports from Shokk Drop, atmosphere and signal experiments. The deepest bench in the booth.' },
-        { id: 'cultural', label: 'CULTURAL', icon: '🌍', cols: 5,
+        { id: 'cultural', label: 'Cultural', icon: '🌍', cols: 5,
           intro: 'Hand-built tribute collections — full liveries of layered, hand-authored art. The most detailed finishes in the entire catalog.' },
-        { id: 'colorsci', label: 'COLOR SCIENCE', icon: '🧪', cols: 4,
-          intro: 'Finishes about COLOR itself — chameleon flips, prism splits, gradients and clash sets. Pick these when the color story is the whole point.' },
-        { id: 'fusion', label: 'FUSION LAB', icon: '◈', cols: 4,
+        { id: 'colorsci', label: 'Color science', icon: '🧪', cols: 4,
+          intro: 'Finishes about color itself — chameleon flips, prism splits, gradients and clash sets. Pick these when the color story is the whole point.' },
+        { id: 'fusion', label: 'Fusion lab', icon: '◈', cols: 4,
           intro: 'Physics experiments: light, grain, depth and material math fused into finishes that behave like nothing on a real shelf.' }
     ];
 
@@ -84,7 +84,28 @@
     A.displayName = function (g) {
         if (g === 'Foundation') return 'Foundation Bases';
         if (g === 'Foundation EFX') return 'Foundation EFX';
-        return g;
+        return A.calmName(g);
+    };
+
+    /* [S5-CASE 2026-10-12 owner: "MUST lose this vibecoded look"] Display only (keys untouched): 43 shelf names
+       were ALL CAPS and 41 led with an emoji/star, next to Title Case shelves ("Flames", "Sock Hop"). Strip the
+       leading symbol and Title Case an all-caps name; short tokens in KEEP stay upper. Kill: window.SPB_CAT_CASE_OFF = true. */
+    A.calmName = function (g) {
+        var s = String(g == null ? '' : g);
+        if (window.SPB_CAT_CASE_OFF) return s;
+        var core = s.replace(/^[^A-Za-z0-9(]+/, '');
+        if (!core) return s;
+        if (!/[A-Z]/.test(core) || /[a-z]/.test(core)) return core;
+        var KEEP = { 'X': 1, 'EFX': 1, 'UV': 1, 'CD': 1, 'LED': 1, 'II': 1, 'III': 1 };
+        var SMALL = { 'OF': 1, 'THE': 1, 'AND': 1, 'A': 1, 'AN': 1, 'IN': 1, 'ON': 1, 'TO': 1, 'FOR': 1 };
+        var first = true;
+        return core.split(/(\s+|&|-|\/)/).map(function (w) {
+            if (!w || !/[A-Z]/.test(w)) return w;
+            var isFirst = first; first = false;
+            if (KEEP[w]) return w;
+            if (!isFirst && SMALL[w]) return w.toLowerCase();
+            return w.charAt(0) + w.slice(1).toLowerCase();
+        }).join('');
     };
 
     A.sortKey = function (g) {
@@ -102,10 +123,10 @@
     'Foundation EFX': 'Foundations with texture — holographic foil, frost, mercury, kintsugi, obsidian, damascus and stardust that carry their own paint and spec. Still a base coat: use source paint or a solid colour over the top, or let the finish own the whole car.',
     'Candy & Pearl': 'Deep candy lacquers and pearl coats — color with dimension. Candies glow from inside like hard sugar over metal; pearls flip soft secondary tones as the car turns. The classic show-car look: rich at a distance, alive up close.',
     'Carbon & Composite': 'Woven carbon fiber, kevlar, forged composite and technical weaves. Reads as raw material, not paint — the motorsport look. Run it whole-car for a prototype feel or zone it into hoods and splitters to break up a bright livery.',
-    'Ceramic & Glass': 'Nano-ceramic smoothness, frosted glass, porcelain and vitreous shine. These finishes feel ENGINEERED — ultra-clean surfaces with cold, precise light response. The choice when you want laboratory-clean rather than hot-rod loud.',
+    'Ceramic & Glass': 'Nano-ceramic smoothness, frosted glass, porcelain and vitreous shine. These finishes feel engineered — ultra-clean surfaces with cold, precise light response. The choice when you want laboratory-clean rather than hot-rod loud.',
     'Chrome & Mirror': 'Full mirror chrome and its family — polished, brushed, smoked and tinted reflection. The loudest material in the booth: it does not have a color so much as it steals everyone else\'s. Small doses electrify a livery; whole-car chrome is a statement you cannot take back.',
     'Exotic Metal': 'Metals you cannot buy at a parts counter — anodized titanium, heat-blued steel, raw magnesium, acid-etched alloys. Industrial, expensive-looking surfaces with real grain and temper marks. For cars that should look machined, not painted.',
-    'Tactical & Cyberpunk': 'Stealth coatings, night-ops matte, hex-plate armor and neon-edged tech surfaces. Low-vis military on one end, Night City on the other. These finishes make a car look ARMED.',
+    'Tactical & Cyberpunk': 'Stealth coatings, night-ops matte, hex-plate armor and neon-edged tech surfaces. Low-vis military on one end, Night City on the other. These finishes make a car look armed.',
     'Metallic Standard': 'The complete standard metallic range — fine flake through coarse sparkle in every practical tone. The workhorse family: brighter than Foundation, calmer than the exotics, correct on basically any panel of any car.',
     'Flames': 'Painted fire — traditional hot-rod licks, airbrushed realism and stylized burn patterns. These carry their own artwork, so they zone beautifully: run flames on the nose and let a foundation carry the tail.',
     'Marble & Onyx': 'Polished stone — white Carrara veining, black onyx depth, travertine and slate. Unexpected on a race car, which is exactly the appeal: it reads as sculpture at speed.',
@@ -150,7 +171,7 @@
     'Shokk Series': 'The original house line — thirty-three builds that defined the Shokker look before the labs split off. Still carries some of the hardest-hitting finishes in the catalog.',
     'Atelier — Ultra Detail': 'The fine-brush room — seventeen ultra-detail builds where the interest lives at millimeter scale. Made to be zoomed into; unreal in close-up shots.',
     'SOURCE PATTERN PLATES': 'Twenty-four source plates — the raw pattern stock the design lab builds from, exposed as paintable finishes. Industrial honesty: what patterns look like before styling.',
-    'GRUNGE & FUN': 'Forty-eight builds of beautiful mess — sticker-bomb, spray-tag, scuff, splatter and shop-floor character. The anti-showroom: cars that look LIVED.',
+    'GRUNGE & FUN': 'Forty-eight builds of beautiful mess — sticker-bomb, spray-tag, scuff, splatter and shop-floor character. The anti-showroom: cars that look lived.',
     'Glass & Surface': 'Glass, stone, masonry and wet-clearcoat studies on one substantial shelf — transparent depth, etched faces, mineral grain and liquid gloss without a one-off effects drawer.',
     'Atmosphere': 'Weather as paint — fog banks, storm fronts, golden-hour haze and pressure light. Soft, cinematic surfaces that make a car look like it drove out of a film still.',
     'Signal': 'Broadcast interference as a finish — scan lines, static bursts, test-pattern color and transmission ghosts. The glitch family: analog TV meets asphalt.',
@@ -166,11 +187,11 @@
     'Chameleon': 'True color-flip paint — fifteen builds that travel green-to-purple, gold-to-teal, whole families of hue in one finish. The angle decides; the car never wears just one color.',
     'Prizm': 'The complete split-light lab — hard prism bands, angle-driven chameleon travel and flowing aurora color share one deep shelf. Ordered refraction, whole-body hue flips and soft chromatic current without three undersized drawers.',
     'Aurora & Chromatic Flow': 'Thirty builds of northern-lights motion — soft chromatic currents that drift across panels rather than flipping. The gentlest color-shift in the booth, and one of the prettiest.',
-    'Chromatic Flake': 'Color-shift carried entirely in the FLAKE — thirty builds where the sparkle itself changes hue while the base holds steady. Subtle at rest, wild in sunlight.',
+    'Chromatic Flake': 'Color-shift carried entirely in the flake — thirty builds where the sparkle itself changes hue while the base holds steady. Subtle at rest, wild in sunlight.',
     'Color-Shift Duos': 'The full two-color travel library — complementary, warm/cool, subtle and extreme shifts collected together so every angle-driven pairing is in one place.',
     'Color Clash': 'Twenty-five deliberate collisions — complementary pairs slammed together at full saturation. Uncomfortable on a swatch, spectacular on a car.',
     'Gradient Directional': 'Engineered fades with nose-to-tail, roof-to-rocker, diagonal and vortex travel. The clean way to move two colors across a body without a hard line.',
-    'Gradient Vortex': 'Ten gradients that ROTATE — color spiraling around a center instead of fading across. Hypnotic on wheels-turning footage.',
+    'Gradient Vortex': 'Ten gradients that rotate — color spiraling around a center instead of fading across. Hypnotic on wheels-turning footage.',
     'Gradient Extended': 'The big multi-stop gradient library, covering practically every color pairing worth running. If a fade exists, it is in here.',
 
     /* ---- FUSION LAB ---- */
@@ -179,22 +200,146 @@
     'Light & Optics': 'Twenty-nine experiments in pure light behavior — caustics, lens flare, refraction patterns baked into paint.',
     'Surface & Grain': 'The tactile library — leather and cloth, organic growth, weathering, particles, micro-grain, brushed direction and tooling marks. Finishes you can almost feel through the screen.',
     'Depth & Geometry': 'Structured finishes that fake dimension — architectural grids, lattices, parallax layers, carved relief and impossible depth on a flat panel.',
-    '🌿 FRACTURED WILDS': 'The living branch of Fractured — 110 distinct fine-scale cryptid, structural-color, botanical and microscopic finishes. Every design keeps a recognizable natural signature and true angle-driven opposing-color flip: if it grows, it fractures here.',
+    '🌿 FRACTURED WILDS': 'The living branch of Fractured: 110 finishes in four chapters (Cryptid, Morpho, Bloom, Petri). Creature hides and feathers, shells, gems and thin films, flowers and plants, and life under the microscope. Each is its own design, built to follow the paint.',
     '🌊 FRACTURED ELEMENTS': 'Weather and water as generative math — ocean-floor pressure, storm tempests and hoarfrost merged into the elemental family. Deep currents, lightning energy and ice crystallography on one shelf.',
-    '🌌 FRACTURED COSMOS': 'Everything off-planet — saucer alloys and alien glyphs, nebula gas fields, and prismatic split-light ribbons merged into the space family. The UFO landed in a nebula and left a rainbow.',
+    '👣 FRACTURED CRYPTID: FIRST SET': 'The original Fractured Cryptid shelf, kept so saved paints still render: fine fur, scale, membrane and hide fields in one recoloured generator.',
+    '🦋 FRACTURED MORPHO: FIRST SET': 'The original Fractured Morpho shelf, kept so saved paints still render: fifty structural-colour studies of wing, shell, nacre, film and mineral.',
+    '🌸 FRACTURED BLOOM: FIRST SET': 'The original Fractured Bloom shelf, kept so saved paints still render: botanical petal, pollen, vein and whorl fields in colour variations.',
+    '🧫 FRACTURED PETRI: FIRST SET': 'The original Fractured Petri shelf, kept so saved paints still render: microscopic colony, membrane, diatom and hypha fields in colour variations.',
+    '🌌 FRACTURED COSMOS': 'Sixty space finishes in six chapters of ten, each its own design: stars and pulsars, nebulae, alien worlds, black holes and wormholes, galaxies and large-scale structure, and the craft that visit them. [S19 2026-10-12 rebuild]',
+    '🌌 FRACTURED COSMOS: FIRST SET': 'The original Fractured Cosmos shelf, kept so saved paints still render: saucer alloys and alien glyphs, nebula gas fields and prismatic split-light ribbons. Superseded by the rebuilt shelf.',
     '🏺 FRACTURED RELICS': 'The crafted-and-ancient family — occult ritual geometry, kintsugi gold-seam ceramics, cathedral stained glass, excavated artifacts and clockwork guilloche in one reliquary. Made by hands, broken by time, repaired in gold.',
     '★ OPTIC LAB': 'The full Optic Lab — fifty light-bending effect finishes in one wing. Mineral flash (labradorite, ammolite, black opal), retroreflective night-bloom sheeting that ignites under headlights, hard two-tone Two-Face splits, frozen acrylic fluid pours and mirror-ball sequin fields. If it plays tricks with light, it lives here.',
     'Materials & Physics': 'Material behavior and surface treatment in one lab — ferrofluid spikes, crystal growth, magnetic fields, anodizing, etching, corrosion and fracture. The maddest science in the booth.'
     };
 
     A.DESC = D;   // exposed so sibling catalog injectors (nightshift lab) can add entries
+    /* [S17 2026-10-12 owner: stable category covers + better descriptions]
+       Owner: some categories said only "Curated finish family" (Astra, Flaw Lab, Fractured Shokk, Optical & Light) and
+       several descriptions had stale counts or were cut off mid-list on the card. These 15 entries override A.DESC /
+       _SPB_GROUP_BLURBS for the picker only (keys = lowercased group name, emoji/punctuation stripped, same key
+       as _spbGroupBlurb). Each is <= 160 chars. The Encyclopedia data was NOT touched: sync these there if wanted. */
+    var S17_DESC = {
+        'astra': 'Fifty detailed designs in five lines: surf and sea life, circuit and foil tech, two-tone lacquer over metal, lab science, and gold, meteorite and nacre.',
+        'flaw lab': 'Industrial inspection imagery as paint: ultrasonic scans, radiographs, stress fringes, strain gauges, crack fields and thermal images, in colour.',
+        'fractured wilds': 'One hundred and ten natural finishes in four chapters: cryptid hides, shells and gems, flowers and plants, and microscope life. Every one is its own design.',
+        'fractured cryptid first set': 'The original Fractured Cryptid finishes, kept so saved paints still render: fine fur, scale, membrane and hide fields.',
+        'fractured morpho first set': 'The original Fractured Morpho finishes, kept so saved paints still render: structural-colour wing, shell, nacre, film and mineral studies.',
+        'fractured bloom first set': 'The original Fractured Bloom finishes, kept so saved paints still render: botanical petal, pollen, vein and whorl fields.',
+        'fractured petri first set': 'The original Fractured Petri finishes, kept so saved paints still render: microscopic colony, membrane, diatom and hypha fields.',
+        'fractured cosmos': 'Sixty space finishes in six chapters: stars and pulsars, nebulae, alien worlds, black holes, galaxies and the craft that visit them. Every one is its own design.',
+        'fractured cosmos first set': 'The original Fractured Cosmos finishes, kept so saved paints still render: saucer alloys, alien glyphs, nebula gas and split-light ribbons.',
+        'fractured shokk': 'Work-in-progress Fractured studies: four development tests and sixteen rejected rounds, kept for reference. Choose another shelf for finished looks.',
+        'optical & light': 'Three oil-slick finishes: Oil Slick, Oil Slick Base and Black Rainbow Holo X, with a rainbow sheen that shifts as the viewing angle changes.',
+        'foundation': 'Plain base coats: wet look, gloss, satin, matte, primer, pearl, metallic, candy, chrome and brushed. Put your own colour on top.',
+        'foundation efx': 'Textured base coats that bring their own paint and spec: frost, gold leaf, kintsugi, damascus, hammered, holo flake and more. Use as a base or as the finish.',
+        'gradients': 'Forty-three multicolour fades built on the Fusion Lab gradient engine, from infrared glacier and cosmic heatmap to holographic maelstrom.',
+        'spectrum shift': 'Sixty-one finishes where the whole spectrum slides across the car in one move: black opal, event horizon, ghost prism, liquid crystal and more.',
+        'fractured forge': 'Eighty-eight generative finishes built around metal and mineral: split alloys, energy welds, banded agate, geode facets and golden seams.',
+        'fractured nightshift': 'Fifty colour-flip finishes: a matte colour by day that turns into a different tinted metal the moment a light hits it.',
+        'iridescent insects': 'Fifty beetle, moth, butterfly and dragonfly finishes with jewel-shell colour that flips between greens, purples and bronzes as the angle changes.',
+        'paradigm': 'Fifty finishes in five families: grown, made, mineral, woven and ruined. Each gives a real-world texture a material it would not normally have.',
+        'x lab': 'Fifty experimental optical skins: dichroic skin, anamorphic pearl, ferrofluid silk, aerogel fire and more. Each card is its own design, not a recolour.',
+        'fractured motion': 'Fifty finishes built so the highlight travels across the body as the light angle changes: arc strikes, aurora curtains, chrono rings and heat mirage.',
+        'impossible finishes': 'Ten surfaces that should not exist as paint: four Cinder finishes, four Hologram finishes, Nacre Terrace and Penrose Reactor.'
+    };
+    A.S17_DESC = S17_DESC;
+    function _s17Key(g) { return String(g == null ? '' : g).toLowerCase().replace(/[^a-z0-9 &]/g, ' ').replace(/\s+/g, ' ').trim(); }
+
+    /* [S17 2026-10-12 owner: stable category covers + better descriptions]
+       ONE fixed cover finish per category card (no rotation on the overview). Key = same normalised group key as
+       S17_DESC; value = finish id inside that group. Picked from each category's own baked picker thumbnails by
+       richness (luminance spread + colour, no near-blank paint half) blended with the M7 composite, rejected/dev
+       studies excluded, 8 hand-swapped after looking at a contact sheet (Foundation, Shokk Works, Tactical & Field,
+       Fractured Opalfire/Relics/Shokk/Motion, Source Pattern Plates). A missing id falls back to the first finish
+       in the card (see _spbStableCoverIndex in paint-booth-2-state-zones.js). Fractured Motion has no baked
+       thumbnails yet (503 'run scripts/bake_faithful_picker.py'), so its cover shows the swatch colour chip. */
+    A.COVERS = {
+        'all that': 'at_nameplate_gold',
+        'anime inspired': 'anime2_energy_aura',
+        'astra': 'astra_klein_circuit',
+        'bad & rad': 'rad_skate_deck',
+        'color clash': 'cc_voltage_split',
+        'color shift duos': 'dualshift_ice_fire',
+        'cyberpunk': 'cbp_taxi_panel',
+        'dark city': 'dkc_ink_well',
+        'depth & geometry': 'trizone_anodized_candy_silk',
+        'fable': 'fab_enchanted_ice',
+        'far out': 'fo_sunset_stripe',
+        'flames': 'flame_plasma',
+        'flaw lab': 'fl_hardness_indent',
+        'forbidden dragon': 'fd_guardian_foo_lion',
+        'foundation': 'moonstone',
+        'foundation efx': 'efx_raku_glaze',
+        'fractured cosmos': 'cz_bok_globules',                    // [S19 2026-10-12] rebuilt shelf cover
+        'fractured cosmos first set': 'cos_sulfur_volcanics',     // the old cover moves with the old set
+        'fractured elements': 'elm_hoarfrost',
+        'fractured flames': 'ffl_pinch_instability',
+        'fractured forge': 'ff_resonance',
+        'fractured foundry': 'ffo_swage_block',
+        'fractured minds': 'fm_magma',
+        'fractured motion': 'mo_aurora_curtain',
+        'fractured nightshift': 'nsx_kiln_blue',
+        'fractured opalfire': 'fof_abyssal_vents',
+        'fractured relics': 'frl_deep_one_gill',
+        'fractured shokk': 'fsh_opal_fault',
+        'fractured souls': 'fs_phantom_lattice',
+        'fractured tessera': 'fts_cafe_wall',
+        'fractured wilds': 'wx_peacock_ocelli',                   // [S20 2026-10-12] rebuilt shelf cover
+        'fractured cryptid first set': 'fc_sasquatch_fur',        // the old covers move with the old sets
+        'fractured morpho first set': 'fmo_abalone_drift',
+        'fractured bloom first set': 'fbl_butter_mosaic',
+        'fractured petri first set': 'fpe_amber_moldring',
+        'glass & surface': 'exotic_wet_void',
+        'gradient directional': 'grad_fire_vortex',
+        'gradient extended': 'grad_frostbite',
+        'gradients': 'grd_infrared_glacier',
+        'groovy vibes': 'neon_acid_blob',
+        'grunge & fun': 'gf_x_9121',
+        'impossible finishes': 'impossible_nacre_terrace',
+        'iridescent insects': 'moth_luna',
+        'let freedom ring': 'lfr_amber_waves',
+        'light & optics': 'optics2_dvd',
+        'materials & physics': 'fractal_liquid_fire',
+        'money shokk': 'msk_bullion_pour',
+        'mortal shokk': 'ms_cryo_shard',
+        'neon underground': 'neon_pink_blaze',
+        'optical & light': 'gd_lyons_black_rainbow_holo_x',
+        'paradigm': 'pdg_burlap_glaze',
+        'prism forge': 'pf_bright_canary_glass',
+        'prizm': 'prizm_phoenix',
+        'rising sun': 'rs_iris_rain',
+        'shokk series': 'electric_ice',
+        'shokk works': 'wrap_holographic',
+        'signal': 'sodium_lamp',
+        'sock hop': 'atomic_charcoal',
+        'source pattern plates': 'pp_psychedelic_floral_spin',
+        'spectrum shift': 'spectral_rainbow_metal',
+        'surface & grain': 'reactive_mirror_shadow',
+        'tactical & field': 'tac_thermal_white_hot',
+        'union jacked': 'uj_bentley_brooklands_mist',
+        'viva mexico': 'vm_xolo_candy_desert',
+        'world of color': 'woc_spice_heap',
+        'x lab': 'xlab_comet_terrace'
+    };
     A.desc = function (g) {
+        if (S17_DESC[_s17Key(g)]) return S17_DESC[_s17Key(g)];   // [S17 2026-10-12 owner: stable category covers + better descriptions]
         var overlayFamily = window.SPB_SPEC_OVERLAY_V2 && window.SPB_SPEC_OVERLAY_V2.families.find(function (family) { return family.name === g; });
         if (overlayFamily) return overlayFamily.desc;
         if (D[g]) return D[g];
         // fall back to the app's short blurb, then to a generic line
         try { if (typeof _spbGroupBlurb === 'function') { var b = _spbGroupBlurb(g); if (b) return b; } } catch (e) {}
-        return 'A curated Shokker finish family.';
+        return '';   // [S17b 2026-10-12 owner: pickers show real descriptions] was the filler 'A curated Shokker finish family.'; _spbGroupBlurb now describes the group from its contents, so this is only reached for an empty group
+    };
+    /* [S17 2026-10-12 owner: stable category covers + better descriptions] CARD text: the card clamps to two lines, so a long
+       rich description was cut off mid-sentence ("...so the"). Cards now show the complete first sentence (the tagline the
+       header comment above always intended); the zoomed category header still shows the full A.desc text. S17_DESC
+       entries are already <= 160 chars and show whole. */
+    A.cardDesc = function (g) {
+        var d = A.desc(g);
+        if (S17_DESC[_s17Key(g)] || d.length <= 160) return d;
+        var t = A.tagline(g);
+        return (t && t.length >= 50 && t.length < d.length) ? t : d;
     };
     A.tagline = function (g) {
         var d = A.desc(g);
@@ -255,21 +400,31 @@
             var needles = [ _norm(t.slice(1)) ];
             if (syn && syn.length) needles = syn.map(_norm).filter(Boolean);
             var n = 0;
-            for (var i = 0; i < hays.length; i++) {
-                for (var j = 0; j < needles.length; j++) { if (hays[i].indexOf(needles[j]) >= 0) { n++; break; } }
+            /* [SPB-PERF2 2026-10-10] one alternation regex per tag (same "any needle occurs in the haystack" test) instead of tags x needles x cards indexOf calls: ~0.2 s -> ~0.05 s. Kill switch SPB_PERF2_OFF. */
+            var rx = null;
+            if (window.SPB_PERF2_OFF !== true && needles.length) {
+                try { rx = new RegExp(needles.map(function (x) { return String(x).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|')); } catch (e) { rx = null; }
+            }
+            if (rx) {
+                for (var i0 = 0; i0 < hays.length; i0++) { if (rx.test(hays[i0])) n++; }
+            } else {
+                for (var i = 0; i < hays.length; i++) {
+                    for (var j = 0; j < needles.length; j++) { if (hays[i].indexOf(needles[j]) >= 0) { n++; break; } }
+                }
             }
             out[t] = n;
         });
         return out;
     }
 
-    A.renderTagBar = function () {
+    A.renderTagBar = function (pre) {
         var grid = document.getElementById('swatchPopupGrid');
         // the static "Try" row: parent of any setSwatchSmartSearch button
         var probe = document.querySelector('#swatchPopup [onclick*="setSwatchSmartSearch"]');
         var host = probe ? probe.parentElement : null;
         if (!grid || !host) return;
-        var counts = _tagCounts(grid);
+        var counts = pre || _tagCounts(grid);
+        A._lastCounts = counts;          /* [SPB-PERF2] kept so a parked wall can re-render the bar without recounting */
         var order = A.TAGS.slice().sort(function (a, b) { return (counts[b] || 0) - (counts[a] || 0); });
         var top = order.slice(0, 14).filter(function (t) { return counts[t] > 0; });
         var rest = order.slice(14).filter(function (t) { return counts[t] > 0; });
@@ -287,7 +442,7 @@
             });
             h += '</span>';
         }
-        h += '<button type="button" class="atlas-tag atlas-tag-lucky" data-lucky="1" title="Jump to one random finish you haven\'t tried yet">🎲 SURPRISE ME</button>';
+        h += '<button type="button" class="atlas-tag atlas-tag-lucky" data-lucky="1" title="Jump to one random finish you haven\'t tried yet">Surprise me</button>';
         host.classList.add('atlas-tag-bar');
         host.innerHTML = h;
         host.onclick = function (ev) {
@@ -349,7 +504,7 @@
             var id = c.getAttribute('data-finish-id');
             if (!used[id]) { used[id] = 1; picks.push(c); }
         }
-        var h = '<div class="atlas-daily"><span class="atlas-daily-lead">🗓 TODAY\'S 5 <em>— fresh picks every day</em></span>';
+        var h = '<div class="atlas-daily"><span class="atlas-daily-lead">Today\'s 5 <em>— fresh picks every day</em></span>';
         picks.forEach(function (c, i) {
             var name = (c.getAttribute('data-sort-name') || c.getAttribute('data-name') || '').split(' ').slice(0, 4).join(' ');
             var sq = c.querySelector('.swatch-square, .swatch-split');
@@ -360,6 +515,9 @@
         h += '</div>';
         grid.insertAdjacentHTML('afterbegin', h);
         var bar = grid.querySelector('.atlas-daily');
+        // [S17 2026-10-12 owner: stable category covers + better descriptions] the row is built AFTER the stock lazy loader
+        // captured its image list, so its thumbnails never got a src on first open: hydrate them here.
+        try { bar.querySelectorAll('img.deferred-swatch[data-swatch-url]').forEach(function (im) { if (typeof window._hydrateDeferredSwatchImage === 'function') window._hydrateDeferredSwatchImage(im); else if (!im.getAttribute('src')) im.src = im.getAttribute('data-swatch-url'); }); } catch (e) {}
         bar.onclick = function (ev) {
             var b = ev.target.closest('.atlas-daily-card'); if (!b) return;
             A.jumpTo(picks[Number(b.dataset.idx)]);
@@ -425,7 +583,7 @@
         var n = grp.querySelectorAll('.swatch-item[data-finish-id]').length;
         var bar = document.createElement('div');
         bar.className = 'atlas-zoom-bar';
-        bar.innerHTML = '<button type="button" class="atlas-zoom-back">&larr; ALL CATEGORIES</button>'
+        bar.innerHTML = '<button type="button" class="atlas-zoom-back">&larr; All categories</button>'
             + '<span class="atlas-zoom-name">' + A.displayName(name).replace(/</g, '&lt;') + '</span>'
             + '<span class="atlas-zoom-count">' + n + ' finishes</span>'
             + '<div class="atlas-zoom-desc">' + A.desc(name).replace(/</g, '&lt;') + '</div>';
@@ -572,7 +730,9 @@
     };
 
     /* ---------------- the organizer ---------------- */
-    A.organize = function () {
+    A.organize = function (cache) {
+        /* [SPB-PERF2 2026-10-10] `cache` = { counts } when this open re-used a parked, already-organised wall: only the idempotent tail runs (steps 6-7, tag bar, daily picks, meters). */
+        A._lastCounts = null;
         var grid = document.getElementById('swatchPopupGrid');
         if (!grid) return;
         var groups = Array.prototype.slice.call(grid.querySelectorAll('.swatch-group'));
@@ -586,6 +746,7 @@
         groups.forEach(function (g) { kinds[g.getAttribute('data-picker-types') || ''] = 1; });
         if (kinds['pattern'] && !kinds['base'] && !kinds['monolithic']) return;
 
+        if (!cache) {
         // 1. drop the old full-width section divider bars
         grid.querySelectorAll('.swatch-section-divider').forEach(function (d) { d.remove(); });
 
@@ -656,6 +817,8 @@
             cards.forEach(function (c) { c.dataset.originalIndex = String(idx++); row.appendChild(c); });
         });
 
+        }   /* [SPB-PERF2] end of steps 1-5 (skipped for a parked wall) */
+
         // 6. tried badges
         grid.querySelectorAll('.swatch-item[data-finish-id]').forEach(function (c) {
             c.classList.toggle('atlas-tried', A.isTried(c.getAttribute('data-finish-id')));
@@ -666,9 +829,30 @@
         grid.querySelectorAll('.atlas-section .swatch-group').forEach(function (g) { g.classList.add('collapsed'); });
         A._router(grid);
 
-        A.renderTagBar();
+        A.renderTagBar(cache ? cache.counts : undefined);
         A.renderDailyPicks();
         A.refreshMeters();
+    };
+
+    /* [SPB-PERF2 2026-10-10] bring a finished wall to the resting state organize() leaves a fresh one in (not zoomed, not searching, every category a closed card) before it is parked. */
+    A.p2Normalize = function (grid) {
+        var bar = grid.querySelector('.atlas-zoom-bar'); if (bar) bar.remove();
+        grid.querySelectorAll('.atlas-subsection-hidden').forEach(function (c) { c.classList.remove('atlas-subsection-hidden'); });
+        var t = grid.querySelector('.atlas-zoom-target'); if (t) t.classList.remove('atlas-zoom-target');
+        var h = grid.querySelector('.atlas-zoom-host'); if (h) h.classList.remove('atlas-zoom-host');
+        grid.classList.remove('atlas-zoomed', 'atlas-searching');
+        grid.querySelectorAll('.atlas-section .swatch-group').forEach(function (g) { g.classList.add('collapsed'); });
+        grid.querySelectorAll('.atlas-section[style=""]').forEach(function (s) { s.removeAttribute('style'); });   /* un-zooming leaves an empty style attribute behind; a fresh section has none */
+        /* the user's sort chips (Name / Best / ...) re-order the cards inside each row; organize() leaves them A-Z with ascending data-original-index - put them back */
+        grid.querySelectorAll('.swatch-grid-row').forEach(function (row) {
+            var cards = Array.prototype.slice.call(row.children).filter(function (c) { return c.classList && c.classList.contains('swatch-item'); });
+            if (cards.length !== row.children.length || cards.length < 2) return;
+            var ok = true, prev = -Infinity, i, v;
+            for (i = 0; i < cards.length; i++) { v = Number(cards[i].dataset.originalIndex); if (!(v > prev)) { ok = false; break; } prev = v; }
+            if (ok) return;
+            cards.sort(function (a, b) { return Number(a.dataset.originalIndex) - Number(b.dataset.originalIndex); });
+            cards.forEach(function (c) { row.appendChild(c); });
+        });
     };
 
     /* Card dressing: tagline + full description + explored meter on each group. */
@@ -690,7 +874,8 @@
         }
         desc.textContent = (g.getAttribute('data-picker-types') === 'spec_overlay')
             ? (window.SPB_SPEC_OVERLAY_V2?.families.find(f => f.name === name)?.desc || 'Legacy spec overlays retained for existing recipes and familiar constructions.')
-            : A.desc(name);
+            : A.cardDesc(name);   // [S17 2026-10-12 owner: stable category covers + better descriptions]
+        try { desc.title = (g.getAttribute('data-picker-types') === 'spec_overlay') ? desc.textContent : A.desc(name); } catch (e) {}   // [S17] full text on hover when the card clamps it
         // v2: no per-card listener. The capture-phase router (A._router) owns
         // ALL atlas clicks. v1's card listener only ever REMOVED .collapsed, so
         // the label's stock toggle got instantly reverted by the bubbling click
@@ -765,8 +950,12 @@
             var _open = window.openSwatchPicker;
             window.openSwatchPicker = function () {
                 var r = _open.apply(this, arguments);
-                try { A.organize(); } catch (e) { console.warn('[Atlas] organize failed', e); }
+                var PK = window.__spbPerf2Picker, cached = null;      /* [SPB-PERF2 2026-10-10] a re-opened parked wall only needs the idempotent tail of organize() */
+                try { cached = (PK && PK.takeRestored) ? PK.takeRestored() : null; } catch (e) {}
+                try { if (!cached && PK && PK.preOrganize) PK.preOrganize(); } catch (e) {}      /* remember the pre-reshuffle group order (see PK.firstSelected) */
+                try { A.organize(cached || undefined); } catch (e) { console.warn('[Atlas] organize failed', e); }
                 try { A.openCurrentCategory(arguments[1]); } catch (e) {}
+                try { if (PK && PK.built) PK.built(arguments[1]); } catch (e) {}
                 return r;
             };
             window.openSwatchPicker._atlas = true;

@@ -34,7 +34,7 @@
         var out = document.getElementById('shokkWildnessVal');
         if (!el || !out) return;
         var v = parseFloat(el.value);
-        out.textContent = v < 28 ? 'Subtle' : (v < 45 ? 'Easy' : (v <= 58 ? 'Balanced' : (v < 80 ? 'Wild' : 'INSANE')));
+        out.textContent = v < 28 ? 'Subtle' : (v < 45 ? 'Easy' : (v <= 58 ? 'Balanced' : (v < 80 ? 'Wild' : 'Insane')));
     }
 
     function _remixEls() {
@@ -158,9 +158,9 @@
         el.innerHTML =
             '<div class="shokk-world-panel">' +
             '<header class="shokk-world-head">' +
-            '<div><h2>SHOKK THE WORLD</h2><p class="shokk-world-sub" id="shokkWorldSub">Generating spec universes…</p></div>' +
+            '<div><h2>Shokk the World</h2><p class="shokk-world-sub" id="shokkWorldSub">Generating spec universes…</p></div>' +
             '<div class="shokk-world-head-actions">' +
-            '<label class="shokk-world-pick" style="margin-right:8px;" title="Try in Booth: apply your SHOKK DROP upload as zone paint + spec">' +
+            '<label class="shokk-world-pick" style="margin-right:8px;" title="Try in Booth: apply your Shokk Drop upload as zone paint + spec">' +
             '<input type="checkbox" id="shokkWorldUsePaintSource" checked />' +
             '<span class="shokk-world-pick-label">Drop as paint source</span></label>' +
             '<button type="button" class="btn" id="shokkWorldSelectAll">Select all</button>' +
@@ -169,8 +169,8 @@
             '<button type="button" class="btn shokk-world-chip" data-chip="all" title="Show every slot">All</button>' +
             '<button type="button" class="btn shokk-world-chip" data-chip="standard" title="Single-style specs (8)">Standard</button>' +
             '<button type="button" class="btn shokk-world-chip" data-chip="remix" title="Two-style blends (7)">Mix</button>' +
-            '<button type="button" class="btn shokk-world-chip" data-chip="insane" title="4-way INSANE blends (5)">INSANE</button>' +
-            '<button type="button" class="btn shokk-world-chip" data-chip="picked" title="Only the slots you picked">✔ Picked</button>' +
+            '<button type="button" class="btn shokk-world-chip" data-chip="insane" title="4-way insane blends (5)">Insane</button>' +
+            '<button type="button" class="btn shokk-world-chip" data-chip="picked" title="Only the slots you picked">Picked</button>' +
             '</span>' +
             '<button type="button" class="btn primary" id="shokkWorldSaveBtn" disabled>Save selected (0)</button>' +
             '<button type="button" class="btn" id="shokkWorldCloseBtn">Close</button>' +
@@ -279,12 +279,12 @@
         var burst = 0;
         function draw() {
             var t = (Date.now() - t0) / 1000;
-            ctx.fillStyle = '#060a10';
+            // [S5 2026-10-12] calm activity trace: Pro-skin sunken surface, thin cyan line, no neon glow (was #62d7ff 2px + amber shadowBlur 4-17).
+            ctx.fillStyle = '#0e1013';
             ctx.fillRect(0, 0, w, h);
-            ctx.strokeStyle = '#62d7ff';
-            ctx.lineWidth = 2;
-            ctx.shadowColor = '#f0c040';
-            ctx.shadowBlur = burst > 0 ? 12 + burst * 4 : 4;
+            ctx.strokeStyle = 'rgba(79,188,210,0.85)';
+            ctx.lineWidth = 1.5;
+            ctx.shadowBlur = 0;
             ctx.beginPath();
             for (var x = 0; x < w; x += 3) {
                 var phase = t * 6 + x * 0.04;
@@ -326,16 +326,16 @@
             slot.dataset.index = String(i);
             slot.innerHTML =
                 '<div class="shokk-world-slot-inner">' +
-                '<div class="shokk-world-slot-wait">⚡ ' + (i + 1) + '</div>' +
+                '<div class="shokk-world-slot-wait">Slot ' + (i + 1) + '</div>' +
                 '</div>' +
                 '<label class="shokk-world-pick">' +
                 '<input type="checkbox" data-idx="' + i + '" disabled />' +
                 '<span class="shokk-world-pick-label">Pick</span></label>' +
                 '<div class="shokk-world-slot-actions" style="display:none;flex-wrap:wrap;gap:4px;">' +
-                '<button type="button" class="btn btn-sm shokk-world-zoom" data-idx="' + i + '" title="Zoom full-size — browse with ← →, Space picks">🔍</button>' +
-                '<button type="button" class="btn btn-sm shokk-world-ball" data-idx="' + i + '" title="Spin this finish on the Finish Viewer ball with iRacing-style lighting">🔮 View on Ball</button>' +
+                '<button type="button" class="btn btn-sm shokk-world-zoom" data-idx="' + i + '" title="Zoom full-size — browse with ← →, Space picks">Zoom</button>' +
+                '<button type="button" class="btn btn-sm shokk-world-ball" data-idx="' + i + '" title="Spin this finish on the Finish Viewer ball with iRacing-style lighting">View on ball</button>' +
                 '<button type="button" class="btn btn-sm shokk-world-try" data-idx="' + i + '">Try in Booth</button>' +
-                '<button type="button" class="btn btn-sm shokk-world-reroll" data-idx="' + i + '" title="Rebake this slot with a fresh seed">↻ Reroll</button>' +
+                '<button type="button" class="btn btn-sm shokk-world-reroll" data-idx="' + i + '" title="Rebake this slot with a fresh seed">Reroll</button>' +
                 '<button type="button" class="btn btn-sm shokk-world-save-recipe" data-idx="' + i + '">Save recipe</button>' +
                 '</div>';
             grid.appendChild(slot);
@@ -421,8 +421,8 @@
         var picked = !!_selected[_lightboxIdx];
         lb.querySelector('#shokkWorldLbCap').textContent =
             'Slot ' + (_lightboxIdx + 1) + ' / ' + WORLD_TOTAL + ' — ' + (v.label || '') +
-            (v.gauntlet_passed ? ' · gauntlet PASS' : '') + (picked ? ' · ✔ PICKED' : '');
-        lb.querySelector('#shokkWorldLbPick').textContent = picked ? '✔ Picked — click to unpick' : 'Pick this one';
+            (v.gauntlet_passed ? ' · gauntlet pass' : '') + (picked ? ' · picked' : '');
+        lb.querySelector('#shokkWorldLbPick').textContent = picked ? 'Picked — click to unpick' : 'Pick this one';
     }
     function stepWorldLightbox(dir) {
         if (_lightboxIdx === null) return;
@@ -452,7 +452,7 @@
         var slot = document.querySelector('.shokk-world-slot[data-index="' + index + '"]');
         if (slot) {
             var inner = slot.querySelector('.shokk-world-slot-inner');
-            if (inner) inner.innerHTML = '<div class="shokk-world-slot-wait">↻ rerolling ' + (index + 1) + '…</div>';
+            if (inner) inner.innerHTML = '<div class="shokk-world-slot-wait">Rerolling ' + (index + 1) + '…</div>';
             slot.classList.remove('shokk-world-slot-ready');
         }
         fetch('/api/user-imports/shokk-the-world/reroll', {
@@ -471,13 +471,16 @@
             });
     }
 
-    function saveVariantRecipe(index) {
+    // [SPB-PROMPT-FIX 2026-10-10] async: window.prompt() throws in Electron (Save Recipe did nothing) -> in-app box (SpbDialog.prompt).
+    // _session / _variants are re-read AFTER the box (they can change while it is open). Esc = nothing saved. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+    async function saveVariantRecipe(index) {
         if (!_session || !_variants[index]) {
             toast('Wait for this card to finish baking', 'info');
             return;
         }
-        var label = window.prompt('Name this DNA recipe (optional):', _variants[index].label || '');
+        var label = await SpbDialog.prompt('Name This DNA Recipe', _variants[index].label || '', { message: 'Name (optional).', okLabel: 'Save', nativeText: 'Name this DNA recipe (optional):' });
         if (label === null) return;
+        if (!_session || !_variants[index]) { toast('Wait for this card to finish baking', 'info'); return; }
         fetch('/api/user-imports/dna-presets', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -502,14 +505,14 @@
         var passed = data.gauntlet_passed;
         var kindTag = '';
         if (data.is_insane || data.kind === 'insane') {
-            kindTag = '<span class="drop-gauntlet-badge drop-gauntlet-pass" style="margin-left:4px;background:#6a1a8a;">INSANE</span>';
+            kindTag = '<span class="drop-gauntlet-badge drop-gauntlet-pass" style="margin-left:4px;">Insane</span>';
         } else if (data.kind === 'remix') {
-            kindTag = '<span class="drop-gauntlet-badge drop-gauntlet-pass" style="margin-left:4px;background:#1a4a6a;">MIX</span>';
+            kindTag = '<span class="drop-gauntlet-badge drop-gauntlet-pass" style="margin-left:4px;">Mix</span>';
         } else if (data.exotic_amp || (data.dna && data.dna.exotic_amp)) {
-            kindTag = '<span class="drop-gauntlet-badge drop-gauntlet-pass" style="margin-left:4px;">EXOTIC</span>';
+            kindTag = '<span class="drop-gauntlet-badge drop-gauntlet-pass" style="margin-left:4px;">Exotic</span>';
         }
         var badge = passed
-            ? '<span class="drop-gauntlet-badge drop-gauntlet-pass">PASS</span>' + kindTag
+            ? '<span class="drop-gauntlet-badge drop-gauntlet-pass">Pass</span>' + kindTag
             : '<span class="drop-gauntlet-badge drop-gauntlet-fail">!</span>' + kindTag;
         var imgSrc = data.preview_spec || data.preview_combined || '';
         var innerEl = slot.querySelector('.shokk-world-slot-inner');
@@ -641,8 +644,8 @@
             }
             if (sub) {
                 sub.textContent = nFail
-                    ? ('Done with ' + nFail + ' failure(s) — hit "↻ Retry" on the failed card(s).')
-                    : 'Done — 8 standard · 7 mix · 5 INSANE. Save recipe or finish to library.';
+                    ? ('Done with ' + nFail + ' failure(s) — hit "Retry" on the failed card(s).')
+                    : 'Done — 8 standard · 7 mix · 5 insane. Save recipe or finish to library.';
             }
             stopEkg();
         });
@@ -658,7 +661,7 @@
         if (!inner) return;
         inner.innerHTML =
             '<div class="shokk-world-slot-wait" style="color:#f0a8a8;animation:none;">Spec ' + (index + 1) + ' failed</div>' +
-            '<button type="button" class="btn btn-sm shokk-world-retry-one" style="width:100%;margin-top:4px;">↻ Retry</button>';
+            '<button type="button" class="btn btn-sm shokk-world-retry-one" style="width:100%;margin-top:4px;">Retry</button>';
         var btn = inner.querySelector('.shokk-world-retry-one');
         if (btn) btn.addEventListener('click', function (e) {
             e.stopPropagation();
@@ -670,7 +673,7 @@
         if (!_session || !_session.session_id) return;
         var slot = document.querySelector('.shokk-world-slot[data-index="' + index + '"]');
         var inner = slot && slot.querySelector('.shokk-world-slot-inner');
-        if (inner) inner.innerHTML = '<div class="shokk-world-slot-wait">↻ retrying ' + (index + 1) + '…</div>';
+        if (inner) inner.innerHTML = '<div class="shokk-world-slot-wait">Retrying ' + (index + 1) + '…</div>';
         fetchVariantWithRetry(_session.session_id, index, 3)
             .then(function (data) {
                 revealVariant(index, data);
@@ -708,7 +711,7 @@
         stopEkg();
         _ekgPulse = startEkg(canvas);
         runVariantStream(session.session_id).catch(function (err) {
-            toast('SHOKK THE WORLD failed: ' + err.message, 'error');
+            toast('Shokk the World failed: ' + err.message, 'error');
             stopEkg();
         });
     }
@@ -727,7 +730,7 @@
     // stream; cached variants reveal instantly and picks survive.
     function reopenLastShokkWorld() {
         if (!_session || !_session.session_id) {
-            toast('No World session yet this visit — hit ⚡ SHOKK THE WORLD first', 'info');
+            toast('Run Shokk the World first, then try again.', 'info');
             return;
         }
         openShokkWorldOverlay(_session, true);
@@ -757,7 +760,7 @@
         }).then(function (r) { return r.json(); })
             .then(function (data) {
                 if (data.error) throw new Error(data.error);
-                toast('Saved ' + (data.imported && data.imported.length) + ' to SHOKK DROP', 'success');
+                toast('Saved ' + (data.imported && data.imported.length) + ' to Shokk Drop', 'success');
                 closeShokkWorld();
                 if (typeof loadUserImports === 'function') loadUserImports();
                 if (typeof refreshGallery === 'function') refreshGallery(data.imported);
@@ -833,7 +836,7 @@
                 window.open(url, '_blank');
                 toast('Opened on the spinning ball — slot ' + (index + 1), 'success');
             })
-            .catch(function (err) { toast('View on Ball failed: ' + err.message, 'error'); });
+            .catch(function (err) { toast('View on ball failed: ' + err.message, 'error'); });
     }
 
     function startShokkTheWorld(fileList) {
@@ -861,7 +864,7 @@
             var ov = window.getDnaPaletteOverrides();
             if (ov && Object.keys(ov).length) fd.append('palette_overrides', JSON.stringify(ov));
         }
-        toast('SHOKK THE WORLD — normalizing to 2048²…', 'info');
+        toast('Shokk the World — normalizing to 2048²…', 'info');
         return fetch('/api/user-imports/shokk-the-world/start', { method: 'POST', body: fd })
             .then(function (r) { return r.json(); })
             .then(function (data) {
@@ -882,7 +885,7 @@
                 return data;
             })
             .catch(function (err) {
-                toast('SHOKK THE WORLD: ' + err.message, 'error');
+                toast('Shokk the World: ' + err.message, 'error');
                 throw err;
             });
     }

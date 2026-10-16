@@ -62,7 +62,7 @@ console.log(JSON.stringify({invalid,valid,bbox:layer.bbox,size:[layer.img.width,
 def test_t44_layer_panel_routes_outline_need_to_nondestructive_stroke_fx():
     source = _function_source("renderLayerPanel")
     assert "openLayerEffects('${l.id}', 'stroke')" in source
-    assert ">STROKE FX</button>" in source
+    assert ">Stroke FX</button>" in source
     assert "Open non-destructive Stroke in Layer Effects" in source
     assert "addLayerOutline('${l.id}'" not in source
 

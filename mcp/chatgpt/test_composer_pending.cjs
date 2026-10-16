@@ -1,0 +1,24 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const src=fs.readFileSync(path.join(__dirname,'candidates/spb-pro-ai.js'),'utf8');
+const start=src.indexOf('    var _composerFinishing = 0'),end=src.indexOf('    // ------------------------------------------------------------------ FIRSTTEST',start);
+assert.ok(start>0&&end>start);
+const button={disabled:false,textContent:'Send',setAttribute(k,v){this[k]=v;}},input={value:'A little finer again.',disabled:false},status={};
+let calls=0,ends=0,resolve,reject;const pending=[];
+const docks={'.spb-pbn':{hidden:false},'.spb-ob':{hidden:false}},attrs={};
+const ctx={Promise,Math,_busy:false,_panel:{setAttribute(k,v){attrs[k]=v;},querySelectorAll(){return [];},querySelector(s){return s==='[data-act="send"]'?button:s==='.spb-pai-input'?input:docks[s]||status;}},window:{SpbAiLease:{holdInternal:()=>true,end:()=>ends++}},finishCore(){calls++;return new Promise((yes,no)=>{resolve=yes;reject=no;pending.push({resolve:yes,reject:no});});}};
+vm.createContext(ctx);vm.runInContext(src.slice(start,end),ctx);
+const sendStart=src.indexOf('    function send(text, o) {');
+assert.ok(src.indexOf('if (composerPending())',sendStart)<src.indexOf('SpbConversationScope.observe()',sendStart),'Gate before all advice/relay/log/input paths');
+vm.runInContext(src.slice(sendStart,src.indexOf('        if (window.SpbConversationScope)',sendStart))+'\nthrow new Error("should not reach dispatch");}',ctx);
+(async()=>{
+ const turn=ctx.finish({},'first','ask');
+ assert.equal(button.disabled,true);assert.equal(button.textContent,'Checking…');assert.equal(input.disabled,false);assert.match(status.textContent,/Checking/);
+ ctx.send(input.value);assert.equal(input.value,'A little finer again.');assert.equal(calls,0,'No nested turn dispatched');
+ await Promise.resolve();assert.equal(calls,1);
+ ctx._busy=true;ctx.composerSync();assert.equal(button.textContent,'Working…');ctx._busy=false;ctx.composerSync();assert.equal(button.disabled,true,'Late verification still blocks Send');
+ resolve('done');assert.equal(await turn,'done');assert.equal(ends,1);assert.equal(button.disabled,false);assert.equal(button.textContent,'Send');assert.equal(input.value,'A little finer again.');assert.equal(status.hidden,true);assert.equal(calls,1,'Draft was not auto-sent');
+ const fail=ctx.finish({},'second','ask');await Promise.resolve();reject(new Error('verification failed'));await assert.rejects(fail,/verification failed/);assert.equal(button.disabled,false);assert.equal(ends,2);assert.equal(input.value,'A little finer again.');
+ const a=ctx.finish({},'a','ask'),b=ctx.finish({},'b','ask');assert.equal(ctx._composerFinishing,2);await Promise.resolve();pending[2].resolve('a');await a;assert.equal(button.disabled,true,'Overlapping completion does not unlock early');pending[3].resolve('b');await b;assert.equal(button.disabled,false);assert.equal(ends,4);
+ console.log(JSON.stringify({pass:true,generated_finish_and_send_guard:true,late_verification_gated:true,draft_preserved:true,no_auto_replay:true,rejection_unlocks:true}));
+})().catch(e=>{console.error(e);process.exitCode=1;});

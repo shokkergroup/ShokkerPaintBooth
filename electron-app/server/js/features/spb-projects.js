@@ -153,6 +153,16 @@
                     adjBri: Number(layer.adjBri) || 0,
                     bbox: Array.isArray(layer.bbox) ? layer.bbox.slice(0, 4) : null,
                     pixelState: layer.img ? 'embedded' : 'source',
+                    // [SPB-TFX2 2026-10-09 TA-034] live-text payload (additive, optional: older files have none)
+                    textData: (layer.img && layer.img.__spbText) ? _clone(layer.img.__spbText) : undefined,
+                    // [SPB-TLAY 2026-10-10 TL-15] layer-mask payload (additive, optional: older files have none)
+                    pcMask: (window.SPBPcLayerMask && typeof window.SPBPcLayerMask.serialize === 'function') ? window.SPBPcLayerMask.serialize(layer) : undefined,
+                    // [SPB-TLAY 2026-10-10 TL-16] adjustment-layer payload (additive, optional: older files have none)
+                    pcAdj: (window.SPBPcAdjust && typeof window.SPBPcAdjust.serialize === 'function') ? window.SPBPcAdjust.serialize(layer) : undefined,
+                    // [SPB-REV-LAYERMAT 2026-10-10] layer material (additive, optional: older files have none)
+                    spbMaterial: (window.SPBRevLayerMat && typeof window.SPBRevLayerMat.serialize === 'function') ? window.SPBRevLayerMat.serialize(layer) : undefined,
+                    numKit: (window.SpbRevNumbers && typeof window.SpbRevNumbers.serialize === 'function') ? window.SpbRevNumbers.serialize(layer) : undefined, // [SPB-REV-NUMBERS 2026-10-10] Number Kit payload (optional)
+                    sponsorKit: (window.SpbRevSponsor && typeof window.SpbRevSponsor.serialize === 'function') ? window.SpbRevSponsor.serialize(layer) : undefined, // [SPB-REV-SPONSOR 2026-10-10] Sponsor Kit payload + the cleaned logo on the kit's first layer (optional)
                 };
             } catch (error) {
                 errors.push((layer && (layer.name || layer.id) || ('Layer ' + index)) +
@@ -182,7 +192,54 @@
         return 'spbproj_' + Date.now() + '_' + Math.random().toString(36).slice(2);
     }
 
+    // [SPB-REV-MATERIAL 2026-10-10] ONE optional field: the brushed Material / Spec / Wear strokes
+    // (js/rev/material/rev-material-core.js serialize(): cropped PNGs, not full buffers). undefined when there are
+    // none, so a project without strokes is byte-for-byte what it was. Kill switch: SPB_REV_MAT_OFF.
+    function _revMaterialForSave() {
+        try {
+            var m = window.SPBRevMaterial;
+            // [SPB-TICKETS-FIX 2026-10-10 T-10] a kill switch hides the tool, it must never destroy saved data: while SPB_REV_MAT_OFF is on,
+            // the Material strokes the opened project carried are passed through to the next save untouched (window.__spbRevMatHeld, set on Open
+            // below). Only when the canvas size still matches. Kill switch window.SPB_TFIX_OFF / SPB_TFIX_T10_OFF.
+            if (m && m.off && m.off() && !window.SPB_TFIX_OFF && !window.SPB_TFIX_T10_OFF) {
+                var h = window.__spbRevMatHeld, pc = document.getElementById('paintCanvas');
+                if (h && h.size && pc && h.size[0] === pc.width && h.size[1] === pc.height) return h;
+                return undefined;
+            }
+            return (m && !m.off() && typeof m.serialize === 'function') ? (m.serialize() || undefined) : undefined;
+        } catch (e) { return undefined; }
+    }
+
+    // [SPB-REV-FADE 2026-10-10 FADE-2] ONE optional field: the Car-Space Fades (js/rev/fade/fade-ui.js serialize(): settings + an optional
+    // cropped clip PNG per fade). undefined when there are none, so a project without fades is byte-for-byte what it was. Kill switch: SPB_REV_FADE_OFF.
+    function _revFadeForSave() {
+        try {
+            var f = window.SpbRevFadeUI;
+            return (f && typeof f.serialize === 'function') ? (f.serialize() || undefined) : undefined;
+        } catch (e) { return undefined; }
+    }
+    // [SPB-REV-WEAR 2026-10-10] ONE optional field: the Race Wear layer (js/rev/wear/wear-ui.js serialize(): look, laps, seed, strength, flags + an optional
+    // masked-off area PNG). undefined when there is none, so a project without wear is byte-for-byte what it was.
+    function _revWearForSave() {
+        try {
+            var w = window.SpbRevWearUI;
+            return (w && typeof w.serialize === 'function') ? (w.serialize() || undefined) : undefined;
+        } catch (e) { return undefined; }
+    }
+
+    // [SPB-PERSIST-ALL 2026-10-10 lane PERSIST-ALL] ONE optional field: tool state that had no project home (Edge Bleed on/off). undefined when there is nothing to add or SPB_PERSIST_ALL_OFF is set,
+    // so a project is byte-for-byte what it was. Fade / Wear / Material keep their own fields above.
+    function _persistForSave() {
+        try { var P = window.SPB_PERSIST; return (P && typeof P.collect === 'function') ? (P.collect() || undefined) : undefined; } catch (e) { return undefined; }
+    }
+
     function buildProjectPayload(name) {
+        // CX4: a pending import can expose an empty/previous layer list.
+        // Check here after the asynchronous name dialog as well as at entry.
+        if (window._spbPsdImportInFlight === true) {
+            _toast('Project was not saved: paint layers are still loading. Wait for PSD ready, then save again.', true);
+            return null;
+        }
         try {
             if (typeof window._settleActiveLayerStrokeBeforeTargetChange === 'function') {
                 window._settleActiveLayerStrokeBeforeTargetChange();
@@ -215,11 +272,13 @@
             ? String(window._selectedLayerId)
             : null;
         var canvas = document.getElementById('paintCanvas');
+        var designProjectId = _newProjectId();
         return {
             _spb_project: true,
             version: '2.0',
             schemaVersion: SCHEMA_VERSION,
-            projectId: _newProjectId(),
+            projectId: designProjectId,
+            assistantBrief: window.SpbDesignBrief ? SpbDesignBrief.capture(designProjectId) : null,
             name: name,
             sourcePaintFile: source,
             canvas: canvas ? { width: canvas.width, height: canvas.height } : null,
@@ -231,6 +290,10 @@
                 : null,
             appBuild: window.SPB_BUILD_HASH || window.SPB_VERSION || null,
             savedAt: new Date().toISOString(),
+            revMaterial: _revMaterialForSave(), // [SPB-REV-MATERIAL 2026-10-10]
+            revFade: _revFadeForSave(), // [SPB-REV-FADE 2026-10-10 FADE-2]
+            revWear: _revWearForSave(), // [SPB-REV-WEAR 2026-10-10] Race Wear layer settings (undefined = none); kill switch SPB_REV_WEAR_OFF
+            persist: _persistForSave(), // [SPB-PERSIST-ALL 2026-10-10 lane PERSIST-ALL; matrix Save/Open: 1 of 14 lost -> 0, IQ2-5] Edge Bleed {on, px} (undefined = nothing); kill switch SPB_PERSIST_ALL_OFF
         };
     }
 
@@ -268,7 +331,7 @@
                 if (!chunk.out || !chunk.out.ok) return chunk;
                 index++;
             }
-            return _fetchJson(API + '/save/commit/' + encodeURIComponent(uploadId), {
+            return await _fetchJson(API + '/save/commit/' + encodeURIComponent(uploadId), {
                 method: 'POST', headers: { 'X-Shokker-Internal': '1' },
             });
         } finally {
@@ -283,6 +346,10 @@
     }
 
     async function saveSpbProject() {
+        if (window._spbPsdImportInFlight === true) {
+            _toast('Project was not saved: paint layers are still loading. Wait for PSD ready, then save again.', true);
+            return false;
+        }
         var defaultName = '';
         try {
             var source = _currentSource();
@@ -306,7 +373,7 @@
             var out = result.out;
             if (out && out.ok) {
                 _toast('Project saved: ' + out.file + ' (' +
-                    Math.round((out.bytes || 0) / 1024) + ' KB) — all live Layer pixels included');
+                    Math.round((out.bytes || 0) / 1024) + ' KB) — all live Layer pixels included' + (payload.assistantBrief ? '; design discussion included' : ''));
                 return true;
             }
             if (_apiMissing(res, out)) _toast(RESTART_MSG, true);
@@ -446,6 +513,8 @@
                 ok: true,
                 transaction: transaction,
                 sourceState: transaction.captureDocumentState(),
+                designBriefState: window.SpbDesignBrief ? SpbDesignBrief.captureSession() : null,
+                templateReferenceState: window.SpbTemplateIdentity ? SpbTemplateIdentity.captureSession() : null,
                 config: config,
                 sourcePath: _currentSource(),
             };
@@ -484,6 +553,8 @@
         if ((snapshot.sourcePath || currentPath) && !_samePath(currentPath, snapshot.sourcePath)) {
             errors.push('restored source identity did not match the pre-open document');
         }
+        if (window.SpbTemplateIdentity) { if (!errors.length) SpbTemplateIdentity.restoreSession(snapshot.templateReferenceState); else SpbTemplateIdentity._sourceChanged(); }
+        if (window.SpbDesignBrief) { if (!errors.length && snapshot.designBriefState) SpbDesignBrief.restoreSession(snapshot.designBriefState); else SpbDesignBrief.forget(); }
         return {
             ok: errors.length === 0,
             error: errors.join('; '),
@@ -703,6 +774,20 @@
             if (Array.isArray(record.pathParts)) layer.pathParts = record.pathParts.slice();
             if (record.rasterKey != null) layer.rasterKey = String(record.rasterKey);
             if (descriptor.pixels) layer.img = descriptor.pixels;
+            // [SPB-TFX2 2026-10-09 TA-034] re-attach the live-text payload so the layer stays editable after reopen
+            if (record.textData && layer.img && window.SPBTextEdit && typeof window.SPBTextEdit.attach === 'function') window.SPBTextEdit.attach(layer, record.textData);
+            // [SPB-TLAY 2026-10-10 TL-15] layer mask: re-attach (decodes async, recomposites when ready) or drop a stale one
+            if (window.SPBPcLayerMask && typeof window.SPBPcLayerMask.deserialize === 'function') {
+                if (record.pcMask) window.SPBPcLayerMask.deserialize(layer, record.pcMask); else delete layer.pcMask;
+            }
+            // [SPB-TLAY 2026-10-10 TL-16] adjustment layer: restore the frozen parameter object, or drop a stale one
+            if (window.SPBPcAdjust && typeof window.SPBPcAdjust.deserialize === 'function') {
+                if (record.pcAdj) window.SPBPcAdjust.deserialize(layer, record.pcAdj); else delete layer.pcAdj;
+            }
+            // [SPB-REV-LAYERMAT 2026-10-10] layer material: restore it, or drop a stale one (old files have none)
+            if (window.SPBRevLayerMat && typeof window.SPBRevLayerMat.deserialize === 'function') window.SPBRevLayerMat.deserialize(layer, record.spbMaterial);
+            if (window.SpbRevNumbers && typeof window.SpbRevNumbers.deserialize === 'function') window.SpbRevNumbers.deserialize(layer, record.numKit); // [SPB-REV-NUMBERS 2026-10-10] restore the Number Kit payload (old files have none)
+            if (window.SpbRevSponsor && typeof window.SpbRevSponsor.deserialize === 'function') window.SpbRevSponsor.deserialize(layer, record.sponsorKit); // [SPB-REV-SPONSOR 2026-10-10] restore the Sponsor Kit payload + logo (old files have none)
             ordered.push(layer);
         });
 
@@ -745,6 +830,7 @@
                     pathParts: layer.pathParts,
                     rasterKey: layer.rasterKey,
                     img: layer.img,
+                    spbMaterial: layer.spbMaterial,   // [SPB-REV-LAYERMAT 2026-10-10] rollback keeps the layer material
                 };
             }),
         };
@@ -771,7 +857,12 @@
         } catch (e) {}
     }
 
+    // [SPB-PERSIST-ALL 2026-10-10 lane PERSIST-ALL] a project open owns the document-level tools: the registry's autosave neither restores over it nor decides against it (js/rev/persist/persist-core.js)
     async function loadSpbProject(file) {
+        var P = window.SPB_PERSIST; try { if (P && P.openBegin) P.openBegin(); } catch (e) {}
+        try { return await _loadSpbProjectInner(file); } finally { try { if (P && P.openEnd) P.openEnd(); } catch (e) {} }
+    }
+    async function _loadSpbProjectInner(file) {
         var result;
         try {
             result = await _fetchJson(API + '/open', {
@@ -826,7 +917,7 @@
             var rollback = _restoreProjectOpenState(preOpen);
             var suffix = rollback.ok
                 ? ' The previous document was restored.'
-                : ' CRITICAL: the previous document could not be restored exactly: ' + rollback.error;
+                : ' Critical: the previous document could not be restored exactly: ' + rollback.error;
             _toast(message + suffix, true);
             return false;
         }
@@ -891,6 +982,9 @@
         try {
             if (plan.descriptors.length || plan.extras.length) {
                 _commitLayerRestore(plan);
+                // [SPB-FLATWIPE 2026-10-10 lane FLAT-WIPE] project made from a FLAT TGA/PNG: the restored layers stayed uncomposited
+                // (_psdLayersLoaded false -> canvas = bare source, stroke gone). Composite them over the Background. Kill switch SPB_FLATWIPE_OFF.
+                try { if (window.SPBFlatBg && window.SPBFlatBg.afterProjectRestore) window.SPBFlatBg.afterProjectRestore(); } catch (_) {}
                 if (typeof window.recompositeFromLayers === 'function') window.recompositeFromLayers();
                 if (typeof window.renderLayerPanel === 'function') window.renderLayerPanel();
             }
@@ -905,13 +999,52 @@
                 '. Saved Layer/config changes were not kept.');
         }
 
+        // [SPB-REV-MATERIAL 2026-10-10] the project's brushed strokes (absent field = none; it replaces whatever the
+        // previous document had brushed). Never fails the open; kill switch SPB_REV_MAT_OFF.
+        var matInfo = '';
+        try {
+            window.__spbRevMatHeld = project.revMaterial || null;   // [SPB-TICKETS-FIX 2026-10-10 T-10] kept for pass-through on the next Save when the Material tools are switched off
+            var revMat = window.SPBRevMaterial;
+            if (revMat && !revMat.off() && typeof revMat.restore === 'function') {
+                var matRes = await revMat.restore(project.revMaterial || null);
+                if (window.SPBRevMaterialPersist) window.SPBRevMaterialPersist.adopt();
+                if (matRes && matRes.ok && (matRes.coats || matRes.spec || matRes.paint)) matInfo = ' Material strokes restored.';
+                else if (matRes && !matRes.ok && project.revMaterial) matInfo = ' (Material strokes could not be restored: ' + matRes.why + '.)';
+            }
+        } catch (e) {}
+
+        // [SPB-REV-FADE 2026-10-10 FADE-2] the project's Car-Space Fades (absent field = none; it replaces the previous document's). Never fails the open.
+        try {
+            var revFade = window.SpbRevFadeUI;
+            if (revFade && typeof revFade.restore === 'function') {
+                var fadeRes = await revFade.restore(project.revFade || null);
+                if (fadeRes && fadeRes.ok && fadeRes.n) matInfo += ' ' + fadeRes.n + ' Car-Space Fade' + (fadeRes.n > 1 ? 's' : '') + ' restored.';
+                else if (fadeRes && !fadeRes.ok && project.revFade) matInfo += ' (Car-Space Fades could not be restored: ' + fadeRes.why + '.)';
+            }
+        } catch (e) {}
+
+        // [SPB-REV-WEAR 2026-10-10] the project's Race Wear layer (absent field = none; it replaces the previous document's). Never fails the open.
+        try {
+            var revWear = window.SpbRevWearUI;
+            if (revWear && typeof revWear.restore === 'function') {
+                var wearRes = await revWear.restore(project.revWear || null);
+                if (wearRes && wearRes.ok && wearRes.n) matInfo += ' Race Wear restored.';
+                else if (wearRes && !wearRes.ok && project.revWear) matInfo += ' (Race Wear could not be restored: ' + wearRes.why + '.)';
+            }
+        } catch (e) {}
+
+        // [SPB-PERSIST-ALL 2026-10-10 lane PERSIST-ALL] tool state with no other project field (Edge Bleed). Absent field (an old project) = nothing changes. Never fails the open.
+        try { if (window.SPB_PERSIST && typeof window.SPB_PERSIST.restoreProject === 'function') await window.SPB_PERSIST.restoreProject(project.persist || null); } catch (e) {}
+
+        if (window.SpbTemplateIdentity) SpbTemplateIdentity.sourceVerified(project, out.sourceStatus, file);
+        var briefRestored = window.SpbDesignBrief ? SpbDesignBrief.restore(project.assistantBrief, project.projectId, !gate.legacyUnverified) : false;
         var zoneCount = ((remapped.config || {}).zones || []).length;
         var layerCount = plan.descriptors.length;
         var suffix = gate.legacyUnverified
             ? ' Warning: this legacy v1 project had no saved source fingerprint; save it again to upgrade.'
             : '';
         _toast('Project "' + (project.name || file) + '" restored — ' + zoneCount +
-            ' zone(s), ' + layerCount + ' Layer state(s), source verified.' + suffix,
+            ' zone(s), ' + layerCount + ' Layer state(s), source verified.' + (briefRestored ? ' Design discussion restored.' : '') + matInfo + suffix,
             gate.legacyUnverified);
         return true;
     }
@@ -942,20 +1075,20 @@
         var row = _element('div', 'display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border,#1a1a3a);border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,0.02);');
         var info = _element('div', 'flex:1;min-width:0;');
         var title = _element('div', 'font-weight:700;color:var(--text-bright,#f0f0ff);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;',
-            (project.name || project.file || 'Untitled Project') + (project.corrupt ? ' ⚠' : ''));
+            (project.name || project.file || 'Untitled Project') + (project.corrupt ? ' (damaged)' : ''));
         var when = project.modified ? new Date(project.modified * 1000).toLocaleString() : '';
         var sourceName = String(project.sourcePaintFile || '').replace(/\\/g, '/').split('/').pop();
         var details = [when];
         if (sourceName) details.push(sourceName);
         if (project.zoneCount != null) details.push(project.zoneCount + ' zones');
         if (project.layerCount != null) details.push(project.layerCount + ' Layers');
-        if (project.sourceAvailable === false) details.push('SOURCE MISSING');
+        if (project.sourceAvailable === false) details.push('Source missing');
         var meta = _element('div', 'font-size:10px;color:' +
             (project.sourceAvailable === false ? '#ff9966' : 'var(--text-dim,#8a96b3)') + ';', details.filter(Boolean).join(' · '));
         info.appendChild(title);
         info.appendChild(meta);
         row.appendChild(info);
-        var open = _button('OPEN', 'Open this project', function () {
+        var open = _button('Open', 'Open this project', function () {
             loadSpbProject(String(project.file || ''));
         }, 'padding:4px 12px;');
         open.disabled = !!project.corrupt;
@@ -991,20 +1124,20 @@
         modal.id = 'spbProjectsModal';
         var card = _element('div', 'width:min(560px,92vw);max-height:80vh;display:flex;flex-direction:column;background:var(--bg-card,#0e0e22);border:1px solid var(--border,#2a2a4a);border-radius:12px;padding:14px 16px;');
         var header = _element('div', 'display:flex;align-items:center;margin-bottom:10px;');
-        header.appendChild(_element('b', 'font-size:14px;color:var(--text-bright,#f0f0ff);letter-spacing:0.04em;', 'SPB PROJECTS'));
+        header.appendChild(_element('b', 'font-size:14px;color:var(--text-bright,#f0f0ff);letter-spacing:0.04em;', 'Projects'));
         header.appendChild(_element('span', 'font-size:9px;color:var(--text-dim,#8a96b3);margin-left:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;', directory));
-        header.appendChild(_button('💾 SAVE CURRENT', 'Save this exact workflow', async function () {
+        header.appendChild(_button('Save current', 'Save this exact workflow', async function () {
             if (await saveSpbProject()) openSpbProjects();
         }, 'padding:2px 10px;'));
-        header.appendChild(_button('✕ CLOSE', 'Close Projects', closeSpbProjectsModal, 'padding:2px 8px;margin-left:6px;'));
+        header.appendChild(_button('✕ Close', 'Close Projects', closeSpbProjectsModal, 'padding:2px 8px;margin-left:6px;'));
         card.appendChild(header);
 
         var body = _element('div', 'overflow-y:auto;min-height:60px;');
         if (needsRestart) {
-            body.appendChild(_element('div', 'color:#ffcc66;font-size:12px;padding:12px 4px;line-height:1.5;', '⟳ One restart needed. ' + RESTART_MSG));
+            body.appendChild(_element('div', 'color:#ffcc66;font-size:12px;padding:12px 4px;line-height:1.5;', 'One restart needed. ' + RESTART_MSG));
         } else if (!list.length) {
             body.appendChild(_element('div', 'color:var(--text-dim,#8a96b3);font-size:12px;padding:12px 4px;',
-                'No projects yet. SAVE CURRENT captures the open source, every zone, Layer setting, and live Layer pixels.'));
+                'No projects yet. Save current captures the open source, every zone, Layer setting, and live Layer pixels.'));
         } else {
             list.forEach(function (project) { body.appendChild(_projectRow(project)); });
         }
@@ -1014,10 +1147,30 @@
             if (event.target === modal) closeSpbProjectsModal();
         });
         document.body.appendChild(modal);
+        // INTEGRATION-QA 2026-10-10 (ticket T-4): this overlay was not keyboard-modal. With focus on <body> (nothing typed into yet) every tool
+        // letter, Ctrl+A (select-all region on Zone 1) and Ctrl+Z reached the document BEHIND the dialog: 20 stray keys typed here switched tools
+        // and drew a zone region + pushed a zone undo entry. While the modal is up: Esc closes it, and bare printable keys / Delete / Backspace /
+        // Ctrl+Z/Y/A are swallowed unless typed into an input (the project-name box keeps working; Tab/Enter/Space still drive the buttons).
+        // Kill switch: window.SPB_PROJECTS_KEYTRAP_OFF = true. Measured: shots/s75_a_modal_keys.png (before), s75 harness (after).
+        if (!window.SPB_PROJECTS_KEYTRAP_OFF) {
+            var trap = function (event) {
+                if (!document.getElementById('spbProjectsModal')) { document.removeEventListener('keydown', trap, true); return; }
+                if (document.getElementById('spbProjectNameInput')) return;          // the name dialog on top owns the keyboard
+                var t = event.target, tag = t && t.tagName;
+                if (event.key === 'Escape') { event.stopPropagation(); closeSpbProjectsModal(); return; }
+                if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (t && t.isContentEditable)) return;
+                var mod = event.ctrlKey || event.metaKey;
+                var swallow = (!mod && !event.altKey && (event.key.length === 1 && event.key !== ' ' || event.key === 'Delete' || event.key === 'Backspace')) ||
+                    (mod && /^[zya]$/i.test(event.key));
+                if (swallow) event.stopPropagation();
+            };
+            document.addEventListener('keydown', trap, true);
+        }
     }
 
     async function deleteSpbProject(file) {
-        if (!window.confirm('Delete project "' + file + '"? This cannot be undone.')) return false;
+        // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+        if (!(await SpbDialog.ask('Delete Project?', { message: '"' + file + '" will be deleted. This cannot be undone.', okLabel: 'Delete Project', danger: true, nativeText: 'Delete project "' + file + '"? This cannot be undone.' }))) return false;
         try {
             var result = await _fetchJson(API + '/delete', {
                 method: 'POST', headers: _jsonHeaders(),

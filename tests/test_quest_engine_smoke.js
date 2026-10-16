@@ -80,10 +80,11 @@ console.log('== boot ==');
 check('spbQuests exposed', !!Q);
 check('quest list exposed for debugging', Array.isArray(Q._quests) && Q._quests.length === 11);
 check('wheels off until explicit choice', Q.isOn() === false);
-check('first run asks without opening guide', !!els.spbTrainingChoice && !Q._state().panelOpen);
+check('first run stays quiet: no guide, no pop-up (owner 2026-10-09 / 10-12)', !Q._state().panelOpen && (!els.spbTrainingChoice || els.spbTrainingChoice.style.display === 'none'));
 Q.on();
 check('opt-in opens compact guide and remembers choice', Q.isOn() && Q._state().panelOpen && !Q._state().panelExpanded && Q._state().choiceMade);
-check('invitation hidden after choice', els.spbTrainingChoice.style.display === 'none');
+// [TW-GONE 2026-10-12] owner: Training Wheels never pop up on their own, so first run may create no invitation at all.
+check('invitation hidden after choice', !els.spbTrainingChoice || els.spbTrainingChoice.style.display === 'none');
 check('level 1', Q.level() === 1);
 check('chip a11y: role=status', els.spbQuestChip && els.spbQuestChip._role !== undefined || true);
 
@@ -117,7 +118,7 @@ check('level 2 after core loop', Q.level() === 2);
 Q.closePanel(); tick();
 check('X turns guidance off without a replacement chip', !Q.isOn() && els.spbQuestChip.style.display === 'none');
 Q.on(); Q._state().panelOpen = false; tick(); // exercise graduation while hints are enabled
-check('graduation offer in chip', els.spbQuestChip.innerHTML.indexOf('Core Loop complete') !== -1);
+check('graduation offer in chip', els.spbQuestChip.innerHTML.indexOf('Core loop complete') !== -1);
 
 console.log('== graduation ==');
 Q.graduate(false);
@@ -201,10 +202,11 @@ global.window.confirmSaveShokk().then(() => {
         return global.window.spbQuests._state();
     }
     let migrated = reloadPreference({wheelsOn: true, panelOpen: true, questsDone: {'q-load': true}});
-    check('old automatic opt-in asks once without losing progress', !migrated.choiceMade && !migrated.wheelsOn && !migrated.panelOpen && migrated.questsDone['q-load']);
+    // [TW-GONE 2026-10-12] owner: saved states older than prefV 3 reset to OFF once, quietly (no invitation), progress kept.
+    check('old automatic opt-in resets to off quietly without losing progress', migrated.choiceMade && !migrated.wheelsOn && !migrated.panelOpen && migrated.questsDone['q-load']);
     migrated = reloadPreference({wheelsOn: false, questsDone: {'q-load': true}});
-    check('old explicit opt-out remains off without invitation', migrated.choiceMade && !migrated.wheelsOn && els.spbTrainingChoice.style.display === 'none');
-    migrated = reloadPreference({wheelsOn: true, choiceMade: true, panelOpen: true, panelExpanded: true});
+    check('old explicit opt-out remains off without invitation', migrated.choiceMade && !migrated.wheelsOn && (!els.spbTrainingChoice || els.spbTrainingChoice.style.display === 'none'));
+    migrated = reloadPreference({wheelsOn: true, choiceMade: true, panelOpen: true, panelExpanded: true, prefV: 3});
     check('explicit opt-in survives reload in compact form', migrated.choiceMade && migrated.wheelsOn && migrated.panelOpen && !migrated.panelExpanded);
     console.log('\n' + pass + ' passed, ' + fail + ' failed');
     process.exit(fail ? 1 : 0);

@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const check=require('./session-delivery.cjs'),E=path.resolve(__dirname,'../../_codex_mcp_work/chatgpt-dev/59910');
+const read=n=>JSON.parse(fs.readFileSync(path.join(E,n),'utf8'));
+const missing=read('context-session-probe-2026-10-10T07-13-45-455Z.json');
+assert.equal(missing.exitCode,0);
+assert.deepEqual(check(missing.calls,3),{pass:false,expected:3,received:3,delivered:2,missing_reply_to:[13]});
+const complete=read('context-session-probe-2026-10-10T06-48-55-391Z.json');
+assert.equal(check(complete.calls,1).pass,true);
+const wrong=structuredClone(complete.calls);wrong.find(c=>c.tool==='spb_reply').arguments.reply_to=-1;
+assert.equal(check(wrong,1).pass,false);
+const rejected=structuredClone(complete.calls);rejected.find(c=>c.tool==='spb_reply').result.isError=true;
+assert.equal(check(rejected,1).pass,false);
+console.log('PASS actual zero-exit missing-reply failure rejected; complete reply accepted; wrong/rejected reply cannot pass');

@@ -1,0 +1,34 @@
+[
+  {
+    "name": "06-after-picking-chrome",
+    "size": "1920x1080",
+    "ls": { "spb_view_mode": "easy" },
+    "boot": 17000,
+    "after": 9000,
+    "js": "(() => { const cards=[...document.querySelectorAll('#spbEasyRail .spb-easy-finish')]; if(!cards.length) return 'NO CARDS'; const name=(cards[0].querySelector('.spb-easy-finish-name')||{}).textContent; cards[0].click(); return 'clicked:'+name; })()"
+  },
+  {
+    "name": "07-one-color-at-a-time",
+    "size": "1920x1080",
+    "ls": { "spb_view_mode": "easy" },
+    "boot": 17000,
+    "after": 7000,
+    "js": "(() => { const b=document.getElementById('spbEasySideByColor'); if(!b) return 'NO SIDE DOOR'; b.click(); return 'entered by-color'; })()"
+  },
+  {
+    "name": "08-full-catalog-families",
+    "size": "1920x1080",
+    "ls": { "spb_view_mode": "easy" },
+    "boot": 17000,
+    "after": 6000,
+    "js": "(() => { const b=[...document.querySelectorAll('#spbEasyRail button')].find(x=>/FULL CATALOG/.test(x.innerText)); if(!b) return 'NO TOGGLE'; b.click(); return 'opened full catalog'; })()"
+  },
+  {
+    "name": "09-spec-map-revealed",
+    "size": "1920x1080",
+    "ls": { "spb_view_mode": "easy" },
+    "boot": 17000,
+    "after": 4000,
+    "js": "(() => { const b=document.getElementById('spbEasySpecPeek'); if(!b) return 'NO PEEK'; b.click(); return 'spec map on'; })()"
+  }
+]

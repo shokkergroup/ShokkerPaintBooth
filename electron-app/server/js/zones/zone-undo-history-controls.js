@@ -23,7 +23,7 @@
       if (count) count.textContent = unified.length + (unified.length === 1 ? ' action' : ' actions');
       var unifiedHtml = '<div class="undo-history-item active" style="cursor:default;"><span class="undo-history-label" style="color:var(--accent-green);">Current State</span><span class="undo-history-time">now</span></div>';
       unified.forEach(function(entry) {
-        var kindLabel = entry.kind === 'layer' ? 'Layer' : entry.kind === 'pixel' ? 'Pixels' : entry.kind === 'zone-mask' ? 'Zone mask' : entry.kind === 'zone-config' ? 'Zone' : 'Decal';
+        var kindLabel = entry.kind === 'layer' ? 'Layer' : entry.kind === 'pixel' ? 'Pixels' : entry.kind === 'zone-mask' ? 'Zone mask' : entry.kind === 'zone-config' ? 'Zone' : (entry.kind === 'restored-session' && !window.SPB_POLISH_I_OFF && !window.SPB_POLISH_I_2_OFF) ? 'Session' : 'Decal';   // [POLISH-I 2026-10-10 item 2] the crash-restore step reads 'Session . Restored session' (before: any unknown kind, this one included, was labelled 'Decal')
         var time = entry.timestamp ? formatTimeAgo(entry.timestamp) : '';
         unifiedHtml += '<div class="undo-history-item" style="cursor:default;" title="Use Undo to step back through actions in exact order">'
           + '<span class="undo-history-label">' + escapeHtml(kindLabel) + ' &middot; ' + escapeHtml(entry.label) + '</span>'
@@ -208,7 +208,7 @@
     }
 
     function clearUndoHistory() {
-      if (!confirmUser('Clear ALL undo history (zone, region, pixel, and layer stacks)? This cannot be undone.')) return;
+      if (!confirmUser('Clear all undo history (zone, region, pixel, and layer stacks)? This cannot be undone.')) return;
       zoneUndoStack.length = 0;
       zoneRedoStack.length = 0;
       var drawUndoStack = getDrawUndoStack();
@@ -222,7 +222,7 @@
       if (typeof global._clearUnifiedUndoActionTrails === 'function') global._clearUnifiedUndoActionTrails();
       setUndoHistoryPointer(-1);
       renderUndoHistoryPanel();
-      showToast('Cleared all undo history (zone + region + pixel + layer stacks)');
+      showToast('Cleared all undo history.');
     }
 
     function isTextEntryTargetForGlobalUndo(target) {

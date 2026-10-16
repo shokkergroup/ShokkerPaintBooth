@@ -803,9 +803,31 @@ def _simple_bbox_base_paint_name(base_id, base):
     return None
 
 
+def _zone_texture_anchor_canvas(zone):
+    """[ENGINE_TEXTURE_ANCHOR 2026-10-06] Opt-in per-zone flag zone["texture_anchor"] == "canvas".
+
+    The visible-crop fast paths below call base_spec_fn / compose_finish on each bbox CROP, so the
+    seeded noise is generated at crop size: a part-limited copy of a whole-car zone (the AI helper's
+    "pearl everywhere but the roof" keeps the roof by copying its old look onto the roof) rendered a
+    finer grain than the original (S5: ~58-71% of the roof spec pixels changed). With the flag the
+    zone always takes the full-canvas texture path, so its texture lives in canvas coordinates and
+    a copy (same render_seed_index) reproduces the original pixels inside its part. Zones without
+    the flag are untouched (bit-exact, scripts/spb_texture_anchor_check.py --check).
+    Kill switch: SPB_TEXTURE_ANCHOR=0 ignores the flag (old crop behaviour for every zone).
+    """
+    if not isinstance(zone, dict):
+        return False
+    _v = zone.get("texture_anchor")
+    if not (isinstance(_v, str) and _v.strip().lower() == "canvas"):
+        return False
+    return str(os.environ.get("SPB_TEXTURE_ANCHOR", "1")).strip().lower() not in ("0", "false", "off", "no")
+
+
 def _bbox_noise_fast_path_reject_reason(base_id, pattern_id, zone, zone_mask, v6kw, v6paint, has_zone_spec_source):
     """Return None when a base-only zone can safely render only active bboxes."""
     zone = zone or {}
+    if _zone_texture_anchor_canvas(zone):
+        return "texture anchored to canvas (texture_anchor=canvas)"
     v6kw = v6kw or {}
     v6paint = v6paint or {}
     try:
@@ -913,6 +935,43 @@ def _bbox_noise_fast_path_paint_reject_reason(base_id, pattern_id, zone, zone_ma
         if abs(float(v6paint.get(key, 0) or 0)) > 0.001:
             return f"{key} is adjusted"
     return None
+
+
+def _noop_paint_spec_only_enabled():
+    """[ENGINE_TEXTURE_ANCHOR 2026-10-06] Kill switch for the paint-noop spec-only path (SPB_NOOP_PAINT_SKIP=0 = old path)."""
+    return str(os.environ.get("SPB_NOOP_PAINT_SKIP", "1")).strip().lower() not in ("0", "false", "off", "no")
+
+
+def _zone_bbox_enabled():
+    """[ENGINE_ZONE_COST 2026-10-05] Kill switch for the area-proportional zone paths.
+
+    SPB_ZONE_BBOX=0 (or false/off/no) restores the previous full-canvas paths exactly.
+    Read per call so a test can A/B in one process.
+    """
+    return str(os.environ.get("SPB_ZONE_BBOX", "1")).strip().lower() not in ("0", "false", "off", "no")
+
+
+def _zone_gathered_paint_mod(name, base_id, pattern_id, paint, shape, zone_mask, seed, pm, bb, scale, rotation, v6paint):
+    """[ENGINE_ZONE_COST 2026-10-05 — OPTIMIZE, same pixels] Per-pixel zones (paint_none base +
+    solid/gradient/source colour, no pattern/overlay/placement) render their paint only on the
+    pixels they can change instead of the whole 2048 canvas. Flames lane measured ~0.6 s per
+    zone whatever its size; old-vs-new is bit-exact on the bench payloads
+    (scripts/spb_zone_cost_bench.py --check). Returns the new paint, or None -> full path."""
+    if not _zone_bbox_enabled():
+        return None
+    try:
+        from engine.compose import compose_paint_mod_gathered
+        out, _reason = compose_paint_mod_gathered(
+            base_id, pattern_id, paint, shape, np.asarray(zone_mask), seed, pm, bb,
+            scale=scale, rotation=rotation, **(v6paint or {})
+        )
+    except Exception as _gather_err:
+        print(f"    [{name}] zone-cost gather paint failed ({_gather_err}); full path")
+        return None
+    if out is None:
+        return None
+    print(f"    [{name}] zone-cost gather paint path (pixels the zone can change only)")
+    return out
 
 
 def _log_bbox_fast_path_skip(name, base_id, zone_mask, reason):
@@ -1912,6 +1971,179 @@ def _build_remainder_zone_mask(zone, zone_idx, zones, zone_masks, claimed_hard, 
     # output binary even if this helper is called directly with a non-zero
     # sigma or pre-hardening masks.
     return (remainder_mask >= 0.5).astype(np.float32)
+
+
+# [PERF-3 2026-10-10] Zone-mask stage memo. Kill switch: env SPB_PERF3_OFF=1.
+# PERF-2 profile (t3 replay, owner car, 5 zones, 1024 preview): "Zone masks built" took
+# 0.98-1.41 s on EVERY preview, even when only a finish changed (masks did not). The stage is a
+# pure function of the paint content signature, the canvas size and the zone fields listed in
+# _PERF3_MASK_FIELDS (audited: build_multi_zone mask loop, _zone_uses_hard_ownership,
+# _zone_apply_area_intersects_color, _resolve_layer_local_color_match, _cached_source_layer_mask,
+# _cached_layer_rgb_color_mask, _build_remainder_zone_mask, release_source_footprints). Every
+# array is keyed by a FULL blake2b of its bytes (never id/revision). A hit hands out fresh copies
+# of the exact arrays (aliasing preserved), restores the per-zone flags the stage writes, and
+# skips the stage. Identity: preview PNG + render TGA bytes equal ON vs OFF (PERF3_PROGRESS.md).
+# Measured (owner ARCA body, finish edit, median of 6): "Zone masks built" 1.48 s -> 0.04 s,
+# whole request 2.78 s -> 1.35 s; real page TTFB per edit (with the payload refs) 5014 -> 1095 ms.
+_PERF3_MASK_FIELDS = (
+    "color", "region_mask", "apply_area_shape_only", "spatial_mask",
+    "source_layer_mask", "source_layer_rgb", "hard_edge", "priority_override",
+    "material_instances",
+)
+import hashlib as _p3_hashlib
+_PERF3_MASK_MEMO = OrderedDict()
+_PERF3_MASK_MEMO_BYTES = [0]
+_PERF3_MASK_MEMO_BUDGET = 384 * 1024 * 1024
+try:
+    import threading as _p3_threading
+    _PERF3_MASK_LOCK = _p3_threading.Lock()
+except Exception:  # pragma: no cover
+    _PERF3_MASK_LOCK = None
+
+
+def _perf3_off():
+    return str(os.environ.get("SPB_PERF3_OFF", "")).strip().lower() in ("1", "true", "yes", "on")
+
+
+class _Perf3Unkeyable(Exception):
+    pass
+
+
+def _perf3_json_default(value):
+    if isinstance(value, np.ndarray):
+        raise _Perf3Unkeyable("nested ndarray")
+    if isinstance(value, np.generic):
+        return repr(value)
+    if isinstance(value, (set, frozenset)):
+        return sorted(repr(v) for v in value)
+    raise _Perf3Unkeyable(type(value).__name__)
+
+
+# id(array) -> (weakref, digest). The server hands the engine the SAME decoded ndarray objects
+# from its payload decode LRUs on every request, so a full digest is computed once per object
+# (weakref-verified: a recycled id never matches). Without it the key cost 0.3-0.4 s per preview
+# (~100 MB of layer RGB + masks hashed every time).
+_PERF3_DIGEST_MEMO = {}
+
+
+def _perf3_array_digest(value):
+    ent = _PERF3_DIGEST_MEMO.get(id(value))
+    if ent is not None and ent[0]() is value:
+        return ent[1]
+    if value.dtype == object:
+        raise _Perf3Unkeyable("object ndarray")
+    arr = np.ascontiguousarray(value)
+    dig = ("nd", tuple(arr.shape), arr.dtype.str,
+           _p3_hashlib.blake2b(arr.data if arr.size else b"", digest_size=20).hexdigest())
+    try:
+        import weakref as _p3_weakref
+        if len(_PERF3_DIGEST_MEMO) > 256:
+            for _k in [k for k, v in _PERF3_DIGEST_MEMO.items() if v[0]() is None]:
+                _PERF3_DIGEST_MEMO.pop(_k, None)
+            if len(_PERF3_DIGEST_MEMO) > 256:
+                _PERF3_DIGEST_MEMO.clear()
+        _PERF3_DIGEST_MEMO[id(value)] = (_p3_weakref.ref(value), dig)
+    except TypeError:
+        pass
+    return dig
+
+
+def _perf3_digest(value):
+    if isinstance(value, np.ndarray):
+        return _perf3_array_digest(value)
+    if value is None or isinstance(value, (bool, int, float, str)):
+        return ("py", type(value).__name__, repr(value))
+    text = json.dumps(value, sort_keys=True, separators=(",", ":"), default=_perf3_json_default)
+    return ("js", type(value).__name__, _p3_hashlib.blake2b(text.encode("utf-8"), digest_size=20).hexdigest())
+
+
+def _perf3_mask_stage_key(zones, h, w, paint_sig):
+    """Content key of the whole zone-mask stage, or None (memo not used)."""
+    if _perf3_off():
+        return None
+    if not isinstance(paint_sig, str) or not paint_sig.startswith("rgb:"):
+        return None
+    try:
+        parts = []
+        for zone in zones:
+            if not isinstance(zone, dict):
+                return None
+            parts.append(tuple(
+                (f, _perf3_digest(zone[f]) if f in zone else "<absent>") for f in _PERF3_MASK_FIELDS
+            ))
+        return ("perf3-masks-v1", int(h), int(w), paint_sig, len(zones), tuple(parts))
+    except Exception:
+        return None
+
+
+def _perf3_copy_groups(groups):
+    seen = {}
+    def _cp(a):
+        if a is None:
+            return None
+        c = seen.get(id(a))
+        if c is None:
+            c = a.copy()
+            seen[id(a)] = c
+        return c
+    return [[_cp(a) for a in g] for g in groups], sum(int(c.nbytes) for c in seen.values())
+
+
+def _perf3_mask_memo_get(key):
+    if key is None or _PERF3_MASK_LOCK is None:
+        return None
+    with _PERF3_MASK_LOCK:
+        entry = _PERF3_MASK_MEMO.get(key)
+        if entry is not None:
+            _PERF3_MASK_MEMO.move_to_end(key)
+        return entry
+
+
+def _perf3_mask_memo_store(key, zones, zone_masks, priority_override_masks,
+                           claim_masks_for_remainder, source_local_remainders):
+    if key is None or _PERF3_MASK_LOCK is None:
+        return
+    try:
+        norms = []
+        gated = []
+        for zone in zones:
+            src = zone.get("source_layer_mask")
+            norm = zone.get("_spb_source_layer_mask_norm")
+            if (src is not None and isinstance(norm, np.ndarray)
+                    and zone.get("_spb_source_layer_mask_source_id") == id(src)):
+                norms.append(norm)
+            else:
+                norms.append(None)
+            gated.append(bool(zone.get("_spb_zone_mask_source_layer_gated")))
+        groups, nbytes = _perf3_copy_groups(
+            [zone_masks, priority_override_masks, claim_masks_for_remainder, norms]
+        )
+        if nbytes > _PERF3_MASK_MEMO_BUDGET:
+            return
+        entry = (groups, list(source_local_remainders), gated, nbytes)
+        with _PERF3_MASK_LOCK:
+            old = _PERF3_MASK_MEMO.pop(key, None)
+            if old is not None:
+                _PERF3_MASK_MEMO_BYTES[0] -= old[3]
+            _PERF3_MASK_MEMO[key] = entry
+            _PERF3_MASK_MEMO_BYTES[0] += nbytes
+            while _PERF3_MASK_MEMO and _PERF3_MASK_MEMO_BYTES[0] > _PERF3_MASK_MEMO_BUDGET:
+                _k, _old = _PERF3_MASK_MEMO.popitem(last=False)
+                _PERF3_MASK_MEMO_BYTES[0] -= _old[3]
+    except Exception as _p3_err:
+        logger.debug(f"[PERF-3] mask memo store skipped: {_p3_err}")
+
+
+def _perf3_mask_memo_restore(entry, zones):
+    groups, source_local_remainders, gated, _nbytes = entry
+    (zone_masks, priority_override_masks, claim_masks_for_remainder, norms), _ = _perf3_copy_groups(groups)
+    for zone, flag, norm in zip(zones, gated, norms):
+        zone["_spb_zone_mask_source_layer_gated"] = flag
+        src = zone.get("source_layer_mask")
+        if norm is not None and src is not None:
+            zone["_spb_source_layer_mask_norm"] = norm
+            zone["_spb_source_layer_mask_source_id"] = id(src)
+    return zone_masks, priority_override_masks, claim_masks_for_remainder, list(source_local_remainders)
 
 
 def get_cache_stats():
@@ -18175,6 +18407,11 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     # Build per-zone masks
     t_masks = time.time()
     print(f"\n  Building zone masks...")
+    # [PERF-3 2026-10-10] zone-mask stage memo (env SPB_PERF3_OFF=1 disables): on a hit the
+    # three loops below iterate nothing and the outputs are restored before "Zone masks built".
+    _p3_key = _perf3_mask_stage_key(zones, h, w, _paint_source_cache_sig)
+    _p3_hit = _perf3_mask_memo_get(_p3_key)
+    _p3_zones = () if _p3_hit is not None else zones
     zone_masks = []
     zone_masks_preclaim = []
     claimed = np.zeros((h, w), dtype=np.float32)  # Track what's been claimed
@@ -18185,7 +18422,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     # First pass: build masks for non-remainder zones
     # SPB-93: release moved material sources before other Zones claim ownership.
     from engine.zone_material_ownership import release_source_footprints as _release_material_source
-    for i, zone in enumerate(zones):
+    for i, zone in enumerate(_p3_zones):
         if isinstance(zone, dict):
             zone["_spb_zone_mask_source_layer_gated"] = False
         color_desc = zone.get("color", "everything")
@@ -18400,7 +18637,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         zone_masks_preclaim[i] = _harden_zone_ownership_mask(zone_masks_preclaim[i], hard_edge)
 
     priority_override_masks = [None] * len(zone_masks)
-    for i, zone in enumerate(zones):
+    for i, zone in enumerate(_p3_zones):
         if zone_masks_preclaim[i] is None or not zone.get("priority_override"):
             continue
         spatial = zone.get("spatial_mask")
@@ -18432,7 +18669,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     # already subtracted earlier claims in its OWN restricted scope; remember
     # that fact so the final global-priority pass cannot erase it again.
     source_local_remainders = [False] * len(zone_masks)
-    for i, zone in enumerate(zones):
+    for i, zone in enumerate(_p3_zones):
         if zone_masks[i] is not None:
             continue
         # [ULTRACODE 2026-08-22, render-proof fleet] hard_edge remainder zones
@@ -18467,6 +18704,13 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         np.add(claimed_hard, remainder_mask, out=claimed_hard)
         np.clip(claimed_hard, 0, 1, out=claimed_hard)
 
+    if _p3_hit is not None:
+        (zone_masks, priority_override_masks, claim_masks_for_remainder,
+         source_local_remainders) = _perf3_mask_memo_restore(_p3_hit, zones)
+        print(f"  [PERF-3] zone-mask memo hit ({len(zones)} zones)")
+    elif _p3_key is not None:
+        _perf3_mask_memo_store(_p3_key, zones, zone_masks, priority_override_masks,
+                               claim_masks_for_remainder, source_local_remainders)
     print(f"  Zone masks built: {time.time()-t_masks:.2f}s")
 
     # Per-zone global prior claim (clip to 1). Normal zones remain first-wins.
@@ -19055,7 +19299,9 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
 
             # SMART AUTO-SCALE: adapt pattern density to zone coverage area
             # Small zones (car numbers, sponsors) get denser patterns automatically
-            auto_scale = _compute_zone_auto_scale(zone_mask, shape)
+            # [ENGINE_TEXTURE_ANCHOR 2026-10-06] canvas-anchored zones keep the canvas pattern scale
+            # (a whole-car zone's auto-scale is 1.0), so a part-limited copy is not re-densified.
+            auto_scale = 1.0 if _zone_texture_anchor_canvas(zone) else _compute_zone_auto_scale(zone_mask, shape)
             if auto_scale < 1.0 and pattern_id != "none":
                 print(f"      [{name}] Auto-scale: {auto_scale:.3f} (zone covers {(auto_scale**2)*100:.1f}% of canvas)")
             _pattern_fit_zone = bool(zone.get("pattern_fit_zone", False) or zone.get("pattern_placement") == "fit")
@@ -19445,6 +19691,12 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
                 _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
                 _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
+                # W13-NUDGE 2026-10-09: the single-pattern path (opacity 100, no stack) never passed the primary pattern's
+                # Position X/Y or flips to compose_paint_mod, so the sliders did nothing at 100% (owner tester Ryan: move a picture in a zone).
+                _v6paint["pattern_offset_x"] = _v6kw.get("pattern_offset_x", 0.5)
+                _v6paint["pattern_offset_y"] = _v6kw.get("pattern_offset_y", 0.5)
+                _v6paint["pattern_flip_h"] = _v6kw.get("pattern_flip_h", False)
+                _v6paint["pattern_flip_v"] = _v6kw.get("pattern_flip_v", False)
                 zone_spec = None
                 _bbox_skip_reason = _bbox_noise_fast_path_reject_reason(
                     base_id, pattern_id, zone, zone_mask, _v6kw, _v6paint, has_zone_spec_source
@@ -19454,6 +19706,15 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                 )
                 if _can_fast_path_flat_noop_base(base_id, pattern_id, zone, _v6kw, _v6paint, has_zone_spec_source):
                     zone_spec = _compose_flat_noop_base_spec(base_id, shape, zone_mask)
+                    if zone_spec is None and _noop_paint_spec_only_enabled():
+                        # [ENGINE_TEXTURE_ANCHOR 2026-10-06 — OPTIMIZE, same pixels] paint-noop base (e.g. every
+                        # Foundation f_* with colour 'source': its PURE constant spec fn is not the legacy
+                        # _spec_foundation_flat, so the flat plate above declines). The paint pass below would
+                        # leave the paint unchanged, so render ONLY the spec, with the exact full-path call.
+                        # S5's whole-car F zone: the thread-overlapped spec+paint pair cost ~0.8 s.
+                        # Kill switch SPB_NOOP_PAINT_SKIP=0; proof scripts/spb_texture_anchor_check.py --check.
+                        zone_spec = compose_finish(base_id, pattern_id, shape, zone_mask, zone_seed, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=_compose_finish_base_scale_for_zone(zone, zone_base_scale), **_v6kw)
+                        print(f"    [{name}] paint-noop base: spec-only full path (paint unchanged)")
                 elif _bbox_skip_reason is None or _is_spec_pattern_stack_only_reason(_bbox_skip_reason):
                     _bbox_stack_spec_path = _is_spec_pattern_stack_only_reason(_bbox_skip_reason)
                     if _bbox_stack_spec_path:
@@ -19495,7 +19756,12 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                             _fast_regions = _mask_active_regions(zone_mask) or []
                             _fast_spec_label = "stacked-spec" if _bbox_stack_spec_path else "spec"
                             print(f"    [{name}] visible-crop {_fast_spec_label} fast path: {_mask_region_summary(zone_mask, _fast_regions)}; paint full path: {_bbox_paint_skip_reason}")
-                            paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, zone_seed, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                            # [ENGINE_ZONE_COST 2026-10-05] bit-exact area-proportional paint (kill switch SPB_ZONE_BBOX=0)
+                            _gathered_paint = _zone_gathered_paint_mod(name, base_id, pattern_id, paint, shape, zone_mask, zone_seed, pm, bb, zone_scale, zone_rotation, _v6paint)
+                            if _gathered_paint is not None:
+                                paint = _gathered_paint
+                            else:
+                                paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, zone_seed, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
                             if _paint_was_gpu:
                                 paint = to_gpu(paint)
                 else:
@@ -19507,7 +19773,12 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                         _spec_fut = _spec_ex.submit(compose_finish, base_id, pattern_id, shape, zone_mask, zone_seed, sm, scale=zone_scale, spec_mult=spec_mult, rotation=zone_rotation, base_scale=_compose_finish_base_scale_for_zone(zone, zone_base_scale), **_v6kw)
                         _paint_was_gpu = is_gpu() and hasattr(paint, '__cuda_array_interface__')
                         if _paint_was_gpu: paint = to_cpu(paint)
-                        paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, zone_seed, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
+                        # [ENGINE_ZONE_COST 2026-10-05] bit-exact area-proportional paint (kill switch SPB_ZONE_BBOX=0)
+                        _gathered_paint = _zone_gathered_paint_mod(name, base_id, pattern_id, paint, shape, zone_mask, zone_seed, pm, bb, zone_scale, zone_rotation, _v6paint)
+                        if _gathered_paint is not None:
+                            paint = _gathered_paint
+                        else:
+                            paint = compose_paint_mod(base_id, pattern_id, paint, shape, zone_mask, zone_seed, pm, bb, scale=zone_scale, rotation=zone_rotation, **_v6paint)
                         if _paint_was_gpu: paint = to_gpu(paint)
                         zone_spec = _spec_fut.result()
 
@@ -19544,7 +19815,8 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             mono_pat_scale = float(zone.get("scale", 1.0))
             mono_pat_opacity = float(zone.get("pattern_opacity", 1.0))
             # SMART AUTO-SCALE for monolithic pattern overlay
-            mono_auto_scale = _compute_zone_auto_scale(zone_mask, shape)
+            _mono_texture_anchor = _zone_texture_anchor_canvas(zone)  # [ENGINE_TEXTURE_ANCHOR 2026-10-06]
+            mono_auto_scale = 1.0 if _mono_texture_anchor else _compute_zone_auto_scale(zone_mask, shape)
             mono_pat_scale *= mono_auto_scale
             mono_pat_rotation = float(zone.get("rotation", 0))
             _base_ctrl = _zone_base_transform_values(zone)
@@ -19674,7 +19946,7 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
                         # skip-dead-spec mode, so entries written by the two modes must
                         # never be read for each other.
                         bool(_mono_spec_pure_first),
-                    )
+                    ) + ((("texture_anchor", "canvas"),) if _mono_texture_anchor else ())
                     _zl_hit = _spb_zone_layer_get(_zl_key)
                 except Exception:
                     _zl_key = None
@@ -19699,7 +19971,12 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
             # plate the FINER-SCALE block tiles down. See _SPB_MONO_SKIP_DEAD_SPEC — the pure
             # render is byte-identical to the one that block would do for itself, it just
             # happens early enough to overlap the paint instead of running after it.
-            def _mono_spec_masked(_sc=_spec_ctrl, _msk=_mono_render_mask,
+            # [ENGINE_TEXTURE_ANCHOR 2026-10-06] a canvas-anchored zone renders its monolithic SPEC
+            # with a full-canvas mask (mask-dependent spec fns, e.g. FRACTURED fracture_spec, react to
+            # the zone edge); the zone mask is applied by the combine step below exactly as before.
+            def _mono_spec_masked(_sc=_spec_ctrl,
+                                  _msk=(np.ones(np.asarray(_mono_render_mask).shape[:2], dtype=np.float32)
+                                        if _mono_texture_anchor else _mono_render_mask),
                                   _sd=_mono_seed, _smv=_sm_effective):
                 set_zone_placement(
                     scale=_sc["scale"], offset_x=_sc["offset_x"],
@@ -20287,6 +20564,17 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         zone_spec = _apply_zone_spec_material_override(zone_spec, zone)
         zone_spec = _apply_zone_spec_lighting_mask(zone_spec, zone)
 
+        # [SPB-REV-FLAKE 2026-10-10] Flake Studio (engine/rev_flake.py): an optional `spb_flake` zone field replaces this zone's M/R/CC with
+        # flake spec and adds per-flake brightness / flake colour / pearl tone to the zone's OWN paint. One hook for zones, Brush Studio coats and
+        # layer-material coats (all server zone dicts); before the cache store so a cache hit replays the flaked zone. No field = no-op (golden
+        # net unchanged); env SPB_FLAKE_OFF=1 = no-op.
+        if zone.get("spb_flake"):
+            try:
+                from engine.rev_flake import apply_zone_flake as _rev_flake_apply
+                zone_spec, paint = _rev_flake_apply(zone_spec, paint, zone_mask, zone.get("spb_flake"), name=name)
+            except Exception as _rev_flake_err:
+                print(f"    [{name}] Flake Studio skipped: {_rev_flake_err}")
+
         # ---- Store zone result in cache ----
         if _zone_cache_key:
             try:
@@ -20778,7 +21066,10 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
     # thresholds; re-flooring after the mix broke 50% interpolation. Both input
     # plates are already rendered materials. Ordinary zone floors remain intact.
     # Numerical safety in case any earlier step left NaN/Inf.
-    combined_spec = np.nan_to_num(combined_spec, nan=0.0, posinf=255.0, neginf=0.0)
+    # [SPB-PERF2 2026-10-10] nan_to_num copies the whole spec (3 temporaries: isposinf/isneginf/isnan, 0.3-0.45 s at 2048^2, once per build_multi_zone call and
+    # once more per REV material coat pass). When every value is finite it returns an equal array, so skip it then (byte-identical). Kill switch env SPB_PERF2_OFF=1.
+    if os.environ.get('SPB_PERF2_OFF', '').strip() not in ('', '0') or not np.isfinite(combined_spec).all():
+        combined_spec = np.nan_to_num(combined_spec, nan=0.0, posinf=255.0, neginf=0.0)
     combined_spec_u8 = np.clip(combined_spec, 0, 255).astype(np.uint8)
 
     # SPB-93: copy actual completed paint/spec material through one shared
@@ -20788,6 +21079,35 @@ def build_multi_zone(paint_file, output_dir, zones, iracing_id="23371", seed=51,
         paint_rgb, combined_spec_u8 = _apply_material_instances(
             paint_rgb, combined_spec_u8, zones, zone_masks, _export_zone_layers,
             source_paint=(np.clip(scheme, 0, 1) * 255).astype(np.uint8))
+
+    # [SPB-REV-MATERIAL 2026-10-10] Material / Spec / Wear brush layer (js/rev/material). Optional
+    # zone field `_spb_rev_material`; absent (or env SPB_REV_MAT_OFF=1) = output untouched. Brushed
+    # finish coats render through this same engine (nested preview-mode call) and blend by soft alpha.
+    if any(isinstance(_rz, dict) and _rz.get("_spb_rev_material") for _rz in zones):
+        from engine.rev_material_layer import apply_rev_material_layers as _apply_rev_material
+        def _p3_render_coats(_cz):
+            return build_multi_zone(paint_file, output_dir, _cz, iracing_id=iracing_id, seed=seed,
+                                    preview_mode=True, abort_event=abort_event)
+        # [PERF-3 2026-10-10] Tag the nested render with the source paint CONTENT identity so
+        # rev_material_layer can memo it (coats + fade stops re-rendered on every preview even when
+        # unchanged; QA ARCA 2-coat preview: nested call 2.1-2.7 s -> memo hit, see PERF3_PROGRESS.md).
+        # No tag (path-only sig, or env SPB_PERF3_OFF=1) = no memo.
+        if isinstance(_paint_source_cache_sig, str) and _paint_source_cache_sig.startswith("rgb:") and not _perf3_off():
+            _p3_render_coats._perf3_ctx = ("coats-v1", _paint_source_cache_sig, str(iracing_id), repr(seed))
+            _p3_render_coats._perf3_abort = abort_event
+        paint_rgb, combined_spec_u8 = _apply_rev_material(
+            paint_rgb, combined_spec_u8, zones,
+            render_coats=_p3_render_coats,
+            source_paint=lambda: (np.clip(scheme, 0, 1) * 255).astype(np.uint8))  # Keep Colour reads it (REV-MATERIAL-2)
+
+    # [SPB-REV-WEAR 2026-10-10] Race Wear Studio (js/rev/wear): optional `wear` key inside the same payload, applied LAST
+    # (on top of decals, coats and fades). No key, or env SPB_REV_WEAR_OFF=1 = output untouched. See engine/rev_wear_layer.py.
+    if any(isinstance(_rz, dict) and isinstance(_rz.get("_spb_rev_material"), dict) and _rz["_spb_rev_material"].get("wear") for _rz in zones):
+        try:
+            from engine.rev_wear_layer import apply_wear as _apply_rev_wear
+            paint_rgb, combined_spec_u8 = _apply_rev_wear(paint_rgb, combined_spec_u8, zones)
+        except Exception as _wear_err:  # never break a render over an optional layer
+            print(f"  [REV-WEAR] skipped: {_wear_err}")
 
     # ---- PREVIEW MODE: return arrays directly, skip all file I/O ----
     if preview_mode:
@@ -21724,6 +22044,12 @@ def build_helmet_spec(helmet_paint_file, output_dir, zones, iracing_id="23371", 
                 _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
                 _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
                 _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
+                # W13-NUDGE 2026-10-09: the single-pattern path (opacity 100, no stack) never passed the primary pattern's
+                # Position X/Y or flips to compose_paint_mod, so the sliders did nothing at 100% (owner tester Ryan: move a picture in a zone).
+                _v6paint["pattern_offset_x"] = _v6kw.get("pattern_offset_x", 0.5)
+                _v6paint["pattern_offset_y"] = _v6kw.get("pattern_offset_y", 0.5)
+                _v6paint["pattern_flip_h"] = _v6kw.get("pattern_flip_h", False)
+                _v6paint["pattern_flip_v"] = _v6kw.get("pattern_flip_v", False)
                 zone_spec = None
                 _bbox_skip_reason = _bbox_noise_fast_path_reject_reason(
                     base_id, pattern_id, zone, zone_mask, _v6kw, _v6paint, has_zone_spec_source
@@ -22508,6 +22834,12 @@ def build_suit_spec(suit_paint_file, output_dir, zones, iracing_id="23371", seed
                 _v6paint["base_rotation"] = _v6kw.get("base_rotation", 0)
                 _v6paint["base_flip_h"] = _v6kw.get("base_flip_h", False)
                 _v6paint["base_flip_v"] = _v6kw.get("base_flip_v", False)
+                # W13-NUDGE 2026-10-09: the single-pattern path (opacity 100, no stack) never passed the primary pattern's
+                # Position X/Y or flips to compose_paint_mod, so the sliders did nothing at 100% (owner tester Ryan: move a picture in a zone).
+                _v6paint["pattern_offset_x"] = _v6kw.get("pattern_offset_x", 0.5)
+                _v6paint["pattern_offset_y"] = _v6kw.get("pattern_offset_y", 0.5)
+                _v6paint["pattern_flip_h"] = _v6kw.get("pattern_flip_h", False)
+                _v6paint["pattern_flip_v"] = _v6kw.get("pattern_flip_v", False)
                 zone_spec = None
                 _bbox_skip_reason = _bbox_noise_fast_path_reject_reason(
                     base_id, pattern_id, zone, zone_mask, _v6kw, _v6paint, has_zone_spec_source
@@ -23298,7 +23630,7 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
                          dual_spec=False, night_boost=0.7, import_spec_map=None,
                          car_prefix="car_num", stamp_image=None, stamp_spec_finish="gloss",
                          decal_spec_finishes=None, decal_paint_path=None, decal_mask_base64=None,
-                         progress_callback=None):
+                         progress_callback=None, edge_bleed=None):
     """The one-call render pipeline: car + helmet + suit + wear + export.
 
     PUBLIC, stable. Orchestrates the four big stages and writes all files
@@ -23441,6 +23773,13 @@ def full_render_pipeline(car_paint_file, output_dir, zones, iracing_id="23371",
             results["suit_spec_night"] = night_suit
 
         print(f"  Night variants generated: car{' + helmet' if 'helmet_spec' in results else ''}{' + suit' if 'suit_spec' in results else ''}")
+
+    # [SPB-REV-SEAM 2026-10-10] Edge Bleed (engine/rev_seam_bleed.py): after wear + night variants, before the ZIP, copy every UV-island's
+    # nearest edge pixel (paint + spec) a few px into the gutter so the sim's mip/texture filtering does not pull gutter paint/spec into panel
+    # edges. Optional (`edge_bleed` is the validated render field; None = nothing runs, output byte-identical); env SPB_REV_SEAM_OFF=1 drops it.
+    if edge_bleed:
+        from engine.rev_seam_bleed import apply_to_pipeline_results as _seam_apply
+        edge_bleed["stats"] = _seam_apply(results, output_dir, iracing_id, car_prefix, edge_bleed, write_tga_24bit, write_tga_32bit)   # stats ride back in the request dict (results keys stay as they were)
 
     # Step 3: Export package
     if export_zip:

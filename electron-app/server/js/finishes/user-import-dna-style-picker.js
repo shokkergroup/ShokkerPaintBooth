@@ -113,7 +113,7 @@
                 '<div class="dna-style-tile' + sel + '" data-style-id="' + esc(s.id) + '" title="' + esc(desc || label) + '">' +
                 '<img src="' + esc(thumbUrl(s)) + '" alt="" loading="lazy" />' +
                 '<span class="dna-style-tile-label">' + esc(label) + '</span>' +
-                '<button type="button" class="dna-style-tile-pal" data-edit="' + esc(s.id) + '" title="Edit spec palette">🎨</button>' +
+                '<button type="button" class="dna-style-tile-pal" data-edit="' + esc(s.id) + '" title="Edit spec palette"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><circle cx="5" cy="6.5" r="1.4" fill="currentColor"/><circle cx="9.5" cy="5" r="1.4" fill="currentColor"/><circle cx="11.5" cy="9" r="1.4" fill="currentColor"/><path d="M8 14.2a6.2 6.2 0 110-12.4 5.2 5.2 0 015.2 5.2c0 1.9-1.6 2-2.6 2-.9 0-1.4.7-1.1 1.4.3.8-.2 3.8-1.5 3.8z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>' +
                 tuned + '</div>';
         });
         _grid.innerHTML = html || '<p class="hint" style="padding:12px;">No styles match filter.</p>';
@@ -149,7 +149,7 @@
             '<strong id="dnaPalTitle">Spec palette</strong>' +
             '<button type="button" class="btn" id="dnaPalClose" aria-label="Close">×</button>' +
             '</header>' +
-            '<p class="hint" style="margin:8px 12px 0;">Pick which colors appear in this style\u2019s SPEC MAP. These are spec-channel inks (M/R/CC), so each is a real material shade.</p>' +
+            '<p class="hint" style="margin:8px 12px 0;">Pick which colors appear in this style\u2019s spec map. These are spec-channel inks (M/R/CC), so each is a real material shade.</p>' +
             '<div class="dna-pal-chips" id="dnaPalChips"></div>' +
             '<footer class="dna-pal-foot">' +
             '<button type="button" class="btn" id="dnaPalReset">Reset to default</button>' +

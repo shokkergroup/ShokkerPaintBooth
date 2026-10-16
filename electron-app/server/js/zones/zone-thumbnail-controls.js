@@ -6,7 +6,7 @@
     var doc = deps.document || global.document;
     var storage = deps.localStorage || global.localStorage;
     var fetchFn = deps.fetch || global.fetch;
-    var getApiBase = deps.getApiBase || function () { return 'http://localhost:' + ((global && global._SHOKKER_PORT) || 59876); };
+    var getApiBase = deps.getApiBase || function () { return 'http://localhost:' + (global && global.spbServerPort ? global.spbServerPort() : (global && global._SHOKKER_PORT)); };
     var getZones = deps.getZones || function () { return []; };
     var getSelectedZoneIndex = deps.getSelectedZoneIndex || function () { return -1; };
     var renderZones = deps.renderZones || function () {};

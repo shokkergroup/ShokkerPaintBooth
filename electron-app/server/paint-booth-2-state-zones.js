@@ -39,7 +39,7 @@ function _spbSyncColorLockBtn() {
     const b = document.getElementById('swatchColorLockBtn');
     if (!b) return;
     const on = _spbColorLocked();
-    b.innerHTML = on ? '\u{1F512} Color: LOCKED' : '\u{1F513} Color: AUTO';
+    b.innerHTML = on ? 'Color: locked' : 'Color: auto';
     b.style.borderColor = on ? '#e8c050' : 'var(--border)';
     b.style.color = on ? '#e8c050' : 'var(--text)';
 }
@@ -49,8 +49,8 @@ function toggleColorLock() {
     _spbSyncColorLockBtn();
     if (typeof showToast === 'function') {
         showToast(window._SPB_COLOR_LOCK
-            ? 'Color LOCKED — base changes keep your current color'
-            : 'Color AUTO — base changes apply the finish default color');
+            ? 'Color locked — base changes keep your current color'
+            : 'Color auto — base changes apply the finish default color');
     }
 }
 if (typeof document !== 'undefined') {
@@ -82,7 +82,7 @@ if (typeof window !== 'undefined') {
         try {
             const base = (typeof ShokkerAPI !== 'undefined' && ShokkerAPI.baseUrl)
                 ? ShokkerAPI.baseUrl
-                : `http://localhost:${window._SHOKKER_PORT || 59876}`;
+                : `http://localhost:${(window.spbServerPort ? window.spbServerPort() : window._SHOKKER_PORT)}`;
             // Prefer the per-finish fingerprint map (smart cache). It also carries
             // the global token in .v, so one request covers both layers. If the
             // endpoint is missing (older server), fall back to /api/swatch-version.
@@ -289,7 +289,7 @@ function toggleOverlaySpecialPicker(zoneIndex, layer) {
 }
 
 /** Clear the imported spec canvas. Next render will use default spec (no background layer). */
-function clearImportedSpec() {
+async function clearImportedSpec() {
     // 2026-04-19 Hennig polish P3: don't run a destructive-looking action
     // and show "Spec cleared" toast when there was nothing to clear.
     if (!_getActiveImportedSpecMapPath()) {
@@ -298,8 +298,8 @@ function clearImportedSpec() {
     }
     // 2026-04-19 FIVE-HOUR DEEP SHIFT (Pillman recon W10a): destructive without confirm.
     // A SHOKK-loaded spec is expensive to re-import — guard with a confirm.
-    if (typeof confirm === 'function' &&
-        !confirm('Clear the imported spec map? You will need to re-import or re-load from SHOKK to restore it.')) {
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF). Function is async now; every caller is a button / key handler that does not use the result.
+    if (!(await SpbDialog.ask('Clear Spec Map?', { message: 'You will need to re-import it, or re-load it from Shokk, to get it back.', okLabel: 'Clear Spec Map', danger: true, nativeText: 'Clear the imported spec map? You will need to re-import or re-load from Shokk to restore it.' }))) {
         return;
     }
     importedSpecMapPath = null;
@@ -571,6 +571,12 @@ if (typeof window !== 'undefined') {
 }
 
 let undoActiveDragTimer = null;
+// [IQ3-1 2026-10-10 INTEGRATION-QA-3] Undo that REMOVES a zone (Use on car / helper part zones) dropped its region mask (masks are not in the zone snapshots and were
+// restored only from zones that still existed); Redo then re-made the zone with regionMask=null while useRegion stayed true -> the zone covered the WHOLE car at render.
+// Measured: ARCA + truck, 17 Ctrl+Z / 17 Ctrl+Y: all 6 region zones lost their mask (hash -> none). Every mask is now kept by zone id. Kill switch: window.SPB_ZMASK_KEEP_OFF.
+const _zoneMaskKeep = new Map();
+function _zoneMasksRemember() { if (window.SPB_ZMASK_KEEP_OFF) return; for (const z of zones) { if (z && z.id != null && z.regionMask) { _zoneMaskKeep.delete(z.id); _zoneMaskKeep.set(z.id, z.regionMask); } } while (_zoneMaskKeep.size > 24) _zoneMaskKeep.delete(_zoneMaskKeep.keys().next().value); }
+function _zoneMaskRestore(masksById, id) { if (id == null) return null; if (masksById.has(id)) return _cloneUint8ArrayLike(masksById.get(id)); return window.SPB_ZMASK_KEEP_OFF ? null : _cloneUint8ArrayLike(_zoneMaskKeep.get(id)); }
 
 // SPB-93 T52 (2026-08-09), owner verdict: every tool must work correctly and
 // SOURCE-side changes must appear in real time. This script loads before the
@@ -590,6 +596,7 @@ function _requestZoneLivePreview() {
 }
 
 function pushZoneUndo(label, isDrag = false) {
+    try { _ensureAllZonesHaveIds(zones); } catch (_) {}   // [SPB-REV-FLAKE 2026-10-10] zone ids before undo snapshots/restores: masks are kept BY ID, a null id lost its region mask
     if (isDrag && undoActiveDragTimer) {
         // Extend the timer and skip pushing a new state
         clearTimeout(undoActiveDragTimer);
@@ -640,6 +647,7 @@ function pushZoneUndo(label, isDrag = false) {
 
 function undoZoneChange() {
     if (zoneUndoStack.length === 0) { showToast('Nothing to undo — no zone changes recorded yet'); return false; }
+    try { _ensureAllZonesHaveIds(zones); } catch (_) {}   // [SPB-REV-FLAKE 2026-10-10] zone ids before undo snapshots/restores: masks are kept BY ID, a null id lost its region mask
     const currentSnapshot = zones.map(function (z) {
         return _cloneZoneState(z, {
             preserveId: true,
@@ -657,13 +665,11 @@ function undoZoneChange() {
     // BUG #62: Restore masks by zone id (NOT positional index). Positional index
     // corrupts masks whenever zones were added/deleted/reordered between snapshots.
     const masksById = new Map();
-    for (const z of zones) { if (z && z.id != null) masksById.set(z.id, z.regionMask); }
+    for (const z of zones) { if (z && z.id != null) masksById.set(z.id, z.regionMask); }  _zoneMasksRemember();
     zones.length = 0;
     entry.snapshot.forEach((z) => {
         const restored = _ensureZoneShape(z, { includeRegionMask: false, includeSpatialMask: true });
-        restored.regionMask = (restored && restored.id != null && masksById.has(restored.id))
-            ? _cloneUint8ArrayLike(masksById.get(restored.id))
-            : null;
+        restored.regionMask = _zoneMaskRestore(masksById, restored && restored.id);
         zones.push(restored);
     });
     selectedZoneIndex = Math.min(selectedZoneIndex, zones.length - 1);
@@ -681,6 +687,7 @@ function undoZoneChange() {
 
 function redoZoneChange() {
     if (zoneRedoStack.length === 0) { showToast('Nothing to redo — make a change and undo it first'); return false; }
+    try { _ensureAllZonesHaveIds(zones); } catch (_) {}   // [SPB-REV-FLAKE 2026-10-10] zone ids before undo snapshots/restores: masks are kept BY ID, a null id lost its region mask
     const currentSnapshot = zones.map(function (z) {
         return _cloneZoneState(z, {
             preserveId: true,
@@ -697,13 +704,11 @@ function redoZoneChange() {
     });
     // BUG #62: restore masks by id (see undoZoneChange for full rationale).
     const masksById = new Map();
-    for (const z of zones) { if (z && z.id != null) masksById.set(z.id, z.regionMask); }
+    for (const z of zones) { if (z && z.id != null) masksById.set(z.id, z.regionMask); }  _zoneMasksRemember();
     zones.length = 0;
     entry.snapshot.forEach((z) => {
         const restored = _ensureZoneShape(z, { includeRegionMask: false, includeSpatialMask: true });
-        restored.regionMask = (restored && restored.id != null && masksById.has(restored.id))
-            ? _cloneUint8ArrayLike(masksById.get(restored.id))
-            : null;
+        restored.regionMask = _zoneMaskRestore(masksById, restored && restored.id);
         zones.push(restored);
     });
     selectedZoneIndex = Math.min(selectedZoneIndex, zones.length - 1);
@@ -732,13 +737,11 @@ function jumpToUndoState(index) {
     zoneRedoStack.push({ label: 'Jump', timestamp: Date.now(), snapshot: currentSnapshot });
     // Restore — BUG #62: lookup masks by id, not positional index.
     const masksById = new Map();
-    for (const z of zones) { if (z && z.id != null) masksById.set(z.id, z.regionMask); }
+    for (const z of zones) { if (z && z.id != null) masksById.set(z.id, z.regionMask); }  _zoneMasksRemember();
     zones.length = 0;
     entry.snapshot.forEach((z) => {
         const restored = _ensureZoneShape(z, { includeRegionMask: false, includeSpatialMask: true });
-        restored.regionMask = (restored && restored.id != null && masksById.has(restored.id))
-            ? _cloneUint8ArrayLike(masksById.get(restored.id))
-            : null;
+        restored.regionMask = _zoneMaskRestore(masksById, restored && restored.id);
         zones.push(restored);
     });
     selectedZoneIndex = Math.min(selectedZoneIndex, zones.length - 1);
@@ -785,8 +788,9 @@ function toggleUndoHistoryPanel() {
     }
 }
 
-function clearUndoHistory() {
-    if (!confirm('Clear ALL undo history (zone, region, pixel, and layer stacks)? This cannot be undone.')) return;
+async function clearUndoHistory() {
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF). Function is async now; every caller is a button / key handler that does not use the result.
+    if (!(await SpbDialog.ask('Clear All Undo History?', { message: 'This clears the zone, region, pixel and layer undo stacks. It cannot be undone.', okLabel: 'Clear History', danger: true, nativeText: 'Clear all undo history (zone, region, pixel, and layer stacks)? This cannot be undone.' }))) return;
     // WIN #7 (TWENTY WINS shift): pre-fix, this only cleared the zone stacks
     // but left _pixelUndoStack / _pixelRedoStack / _layerUndoStack / _layerRedoStack
     // / undoStack / redoStack populated. Painter expected "all undo history"
@@ -937,13 +941,20 @@ document.addEventListener('keydown', function (e) {
         if (typeof deselectRegion === 'function') deselectRegion();
     } else if ((e.ctrlKey || e.metaKey) && e.key === 'a' && !e.shiftKey) {
         // Ctrl+A = Select all pixels in current zone
+        // [SPB-TICKETS-2 2026-10-10 T-11] this is the live Ctrl+A owner (canvas.js sees it already prevented). It fired with a dialog, menu or panel open or focus off
+        // the workspace and turned the whole canvas into a red draft region. Now gated (native select-all is left alone when blocked) and the toast offers Undo.
+        // Kill switches: SPB_TICKETS2_OFF / SPB_T2_T11_OFF. Gate: js/zones/zone-keyboard-controls.js (SPBStrayKeyGate).
+        if (window.SPBStrayKeyGate && window.SPBStrayKeyGate.swallow(e, 'T11')) return;
+        const _t2zi = selectedZoneIndex;
         e.preventDefault();
         if (typeof isLayerToolbarMode === 'function' && isLayerToolbarMode()) {
+            // [SPB-TFX1 2026-10-09 TA-033] Layer mode: select the whole canvas (the Layer-mode selection is the zone region mask) instead of asking for Zone mode
+            if (!window.SPB_TFX1_OFF && typeof _ctxSelectAll === 'function') { const _t2ok = _ctxSelectAll(); if (typeof _t2SelAllDone === 'function') _t2SelAllDone(_t2ok, _t2zi); return; }
             if (typeof requireZoneToolbarMode === 'function') requireZoneToolbarMode('Select All');
             else if (typeof showToast === 'function') showToast('Select All is a Zone selection tool — switch to Zone mode', 'warn');
             return;
         }
-        if (typeof _ctxSelectAll === 'function') _ctxSelectAll();
+        if (typeof _ctxSelectAll === 'function') { const _t2ok = _ctxSelectAll(); if (typeof _t2SelAllDone === 'function') _t2SelAllDone(_t2ok, _t2zi); }
     } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'I') {
         // Ctrl+Shift+I = Invert selection
         e.preventDefault();
@@ -1086,7 +1097,7 @@ function init() {
         window.SPBZoneThumbnailControls.install({
             getApiBase: () => ((typeof ShokkerAPI !== 'undefined' && ShokkerAPI.baseUrl)
                 ? ShokkerAPI.baseUrl
-                : `http://localhost:${window._SHOKKER_PORT || 59876}`),
+                : `http://localhost:${(window.spbServerPort ? window.spbServerPort() : window._SHOKKER_PORT)}`),
             getZones: () => zones,
             getSelectedZoneIndex: () => selectedZoneIndex,
             renderZones: () => renderZones(),
@@ -1152,7 +1163,7 @@ function init() {
         var _spbDropped = _spbCriticalBridges.filter(function (b) { return !window[b.flag]; });
         if (_spbDropped.length) {
             console.warn(
-                '[SPB][S8] ' + _spbDropped.length + ' critical zone control bridge(s) did NOT install — ' +
+                '[SPB][S8] ' + _spbDropped.length + ' critical zone control bridge(s) did not install — ' +
                 'a UI section may have silently vanished:\n' +
                 _spbDropped.map(function (b) {
                     return '  - ' + b.controls + ' -> ' + b.what +
@@ -1168,11 +1179,11 @@ function init() {
     zones = [
         {
             name: "Zone 1", color: null, base: null, pattern: "none", finish: null, intensity: "100", colorMode: "none", pickerColor: "#3366ff", pickerTolerance: 40, colors: [], regionMask: null,
-            hint: "Use Pick Color mode - click your PRIMARY body color on the paint"
+            hint: "Use Pick Color mode - click your primary body color on the paint"
         },
         {
             name: "Zone 2", color: null, base: null, pattern: "none", finish: null, intensity: "100", colorMode: "none", pickerColor: "#ffcc00", pickerTolerance: 40, colors: [], regionMask: null,
-            hint: "Click your SECOND body color (delete this zone if single-color car)"
+            hint: "Click your second body color (delete this zone if single-color car)"
         },
         {
             name: "Zone 3", color: null, base: null, pattern: "none", finish: null, intensity: "100", colorMode: "none", pickerColor: "#ffaa00", pickerTolerance: 35, colors: [], regionMask: null,
@@ -1373,7 +1384,7 @@ function renderZones() {
                 <button class="zone-move-btn" onclick="event.stopPropagation(); promptLinkZone(${i})" title="${zone.linkGroup ? 'Linked (click to unlink)' : 'Link this zone to another'}" style="font-size:11px; padding:1px 4px;${zone.linkGroup ? ' color:var(--accent-gold); border-color:var(--accent-gold);' : ''}">${zone.linkGroup ? '&#128279;' : '&#9741;'}</button>
                 <button class="zone-delete-btn" onclick="event.stopPropagation(); deleteZone(${i})" title="Delete zone">&times;</button>
             </div>
-            ${zone.linkGroup ? `<div style="font-size:8px; color:var(--accent-gold); padding:0 8px 2px; letter-spacing:0.5px;">&#128279; LINKED: ${zones.filter(z => z.linkGroup === zone.linkGroup).map(z => z.name).join(' + ')}</div>` : ''}
+            ${zone.linkGroup ? `<div style="font-size:8px; color:var(--accent-gold); padding:0 8px 2px; letter-spacing:0.5px;">Linked: ${zones.filter(z => z.linkGroup === zone.linkGroup).map(z => z.name).join(' + ')}</div>` : ''}
         </div>`;
         });
     } catch (err) {
@@ -1450,10 +1461,10 @@ function getColorStatusText(zone) {
     if (hasRegion && (zone.colorMode === 'none' || zone.color === null)) {
         return `<span style="color: var(--accent-blue);">&#9998; Drawn region: <strong>${regionPixels.toLocaleString()} pixels</strong> - zone applies only here (no color match). Assign base/finish and Render.</span>`;
     }
-    if (zone.colorMode === 'none' || zone.color === null) return '<span style="color: #ff6644;">&#9888; No color or region set yet.</span>';
+    if (zone.colorMode === 'none' || zone.color === null) return '<span style="color: #ff6644;">No color or region set yet.</span>';
     if (zone.colorMode === 'quick') return `&#10004; Matching all <strong>${zone.color}</strong> pixels`;
     if (zone.colorMode === 'special') {
-        if (zone.color === 'everything') return '&#10004; Covers <strong>ALL</strong> pixels on the car';
+        if (zone.color === 'everything') return '&#10004; Covers <strong>all</strong> pixels on the car';
         if (zone.color === 'remaining') return '&#10004; Catches anything <strong>not claimed</strong> by zones above';
         return `&#10004; Special: <strong>${zone.color}</strong>`;
     }
@@ -1480,7 +1491,7 @@ function renderMultiColorChips(zone, zoneIndex) {
                 <span style="font-family: 'Consolas', monospace; color: var(--accent-green);">${hex.toUpperCase()}</span>
                 <button onclick="event.stopPropagation(); removeColorFromZone(${zoneIndex}, ${ci})" style="background:none; border:none; color:#ff4444; cursor:pointer; font-size:12px; padding:0 2px; line-height:1; margin-left:auto;" title="Remove this color">&times;</button>
             </div>
-            <div style="display: flex; align-items: center; gap: 4px;" title="Color Match — how many nearby shades of this color the zone grabs. Slide left = ONLY this exact color; slide right = also grab lighter/darker/similar shades of it.">
+            <div style="display: flex; align-items: center; gap: 4px;" title="Color Match — how many nearby shades of this color the zone grabs. Slide left = only this exact color; slide right = also grab lighter/darker/similar shades of it.">
                 <span style="font-size:8px; color:var(--text-dim); flex-shrink:0;">Exact</span>
                 <input type="range" min="0" max="100" value="${c.tolerance ?? 40}" style="flex:1; min-width:90px; height:12px;"
                     oninput="updateColorTolerance(${zoneIndex}, ${ci}, parseInt(this.value)); this.nextElementSibling.nextElementSibling.textContent='&plusmn;'+this.value">
@@ -1698,7 +1709,7 @@ function renderZoneDetail(index) {
     // ::before is already a decorative gradient bar) — float panel only, not the
     // left-panel fallback drawer. Styled by .spb-zone-popout-title.
     if (floatPanel) {
-        html += '<div class="spb-zone-popout-title">ZONE POPOUT PANEL</div>';
+        html += '<div class="spb-zone-popout-title">Zone editor</div>';
     }
 
     // Header bar
@@ -1742,23 +1753,26 @@ function renderZoneDetail(index) {
     <div class="color-selector">
         ${(typeof _psdLayers !== 'undefined' && _psdLayers.length > 0) ? _restrictToLayersBoxHtml(i, zone) : ''}
         <div class="color-selector-label" style="font-size:10px; margin-bottom:2px;">What pixels does this zone cover?</div>
+        ${window.SPBZoneCoverage ? `<label style="display:flex;align-items:center;gap:5px;font-size:9px;color:var(--text-dim);cursor:pointer;margin-bottom:3px;" title="Hover Source to see this zone's coverage (restricted layers + picked colors). Uncheck to turn the highlight off. Display only; never included in paint or exports."><input type="checkbox" class="spb-zonecov-toggle" ${window.SPBZoneCoverage.isOn() ? 'checked' : ''} onchange="event.stopPropagation(); window.SPBZoneCoverage.setOn(this.checked)" style="margin:0;width:11px;height:11px;accent-color:var(--accent-cyan,#00e5ff);"><span>Highlight coverage while hovering Source</span></label>` : ''}
         <div class="color-selector-help" style="font-size:9px; margin-bottom:3px;">Click the target, then click colors ON the car &mdash; <b>multiple colors can be selected</b>. Or use the color wheel / hex below.</div>
         <!-- SPB-2026-07-04 (owner simplify pass): the 12 quick-color pill tabs are GONE —
              replaced by the 🎯 PICK COLOR FROM CAR primary action (arms the eyedropper;
              every canvas click applies to this zone: first click sets, further clicks add)
              + the color-wheel input and hex field below. Remaining/Everything specials stay.
              setQuickColor and QUICK_COLORS are untouched for compat (recipes/presets). -->
+        <!-- [S12 2026-10-12 owner: "lose this vibecoded look"] label was an emoji + ALL CAPS; now plain sentence case -->
         <button onclick="event.stopPropagation(); spbPickColorFromCar(${i})"
             style="display:flex; align-items:center; justify-content:center; gap:7px; width:100%; margin-bottom:5px; padding:7px 10px; border:1px solid rgba(0,229,255,0.55); border-radius:6px; background:linear-gradient(90deg, rgba(0,229,255,0.16), rgba(255,122,24,0.12)); color:#fff; font-size:11px; font-weight:800; letter-spacing:0.03em; cursor:pointer;"
-            title="Arm the eyedropper: every click on the car applies that color to this zone. First click sets the color, each further click ADDS another (multi-color zone).">
-            &#127919; PICK COLOR FROM CAR</button>
+            title="Arm the eyedropper: every click on the car applies that color to this zone. First click sets the color, each further click adds another (multi-color zone).">
+            Pick color from car</button>
         <div class="quick-colors" style="gap:3px; margin-bottom:4px;">
             ${SPECIAL_COLORS.map(c => {
                 const isActive = zone.colorMode === 'special' && zone.color === c.value;
+                /* SPB-POLISH-D 2026-10-10: the inline 9px/!important style was removed so the chip
+                   follows the shared type scale (styled by .quick-color-btn.special in the clean CSS). */
                 return `<button class="quick-color-btn special${isActive ? ' active' : ''}"
-                    style="padding:1px 6px !important; font-size:9px !important; font-weight:700; border-radius:3px; line-height:1.45;"
                     onclick="setSpecialColor(${i}, '${c.value}')"
-                    title="${c.value === 'everything' ? 'Selects ALL pixels on the car' : 'Catches any pixels not claimed by higher-priority zones'}">${c.label}</button>`;
+                    title="${c.value === 'everything' ? 'Selects ALL pixels on the car' : 'Covers every pixel that no zone above this one has claimed. A safety net for any unpainted area.'}">${c.value === 'remaining' ? 'All remaining pixels' : c.label}</button>`;
             }).join('')}
         </div>
         <!-- SPB-2026-05-22 (owner compact pass): "Type a color" text input removed
@@ -1768,7 +1782,7 @@ function renderZoneDetail(index) {
              as the hex input even when the zone panel is narrow. -->
         <div class="color-hex-row" style="display:flex !important; flex-wrap:nowrap !important; align-items:center; gap:4px; margin-bottom:4px;">
             <span class="hex-label" style="font-size:9px; flex-shrink:0;">HEX:</span>
-            <input class="hex-code-input" type="text" placeholder="#FF3366" aria-label="Replacement color hex code"
+            <input class="hex-code-input" type="text" placeholder="#RRGGBB" aria-label="Replacement color hex code"
                 value="${zone.colorMode === 'picker' && !zone.colors?.length ? (zone.pickerColor || '') : ''}"
                 onchange="setHexColor(${i}, this.value)"
                 onfocus="this.select()"
@@ -1777,7 +1791,7 @@ function renderZoneDetail(index) {
             <input class="color-picker-input" id="colorPickerInput${i}" type="color" value="${zone.pickerColor || '#3366ff'}"
                 oninput="setPickerColorLive(${i}, this.value)"
                 onchange="setPickerColorCommit(${i}, this.value)"
-                title="Color wheel — applies LIVE as you slide; release / close to finish"
+                title="Color wheel — applies live as you slide; release / close to finish"
                 style="flex-shrink:0; width:34px; height:22px; padding:0; border:none; cursor:pointer;">
             <button onclick="(function(){var inp=document.getElementById('colorPickerInput${i}');if(inp)setPickerColor(${i},inp.value);})()"
                     style="background:#E87A20; color:#fff; border:none; padding:2px 8px; border-radius:3px; cursor:pointer; font-weight:bold; font-size:10px; white-space:nowrap; flex-shrink:0;"
@@ -1848,8 +1862,8 @@ function renderZoneDetail(index) {
     html += `<div style="display:flex; flex-direction:column; gap:6px;">
         <div class="zone-finish-row" style="flex-wrap:wrap; gap:6px;">
             <label style="color:var(--accent-gold, #FFB300); font-weight:700; min-width:40px;"
-                   title="BASE MATERIAL - what this zone&#39;s surface is made of.&#10;&#10;It ALWAYS supplies the spec map (how light behaves - metal, roughness, clearcoat). What you choose separately is where the COLOUR comes from:&#10;  BOTH (default) - the material&#39;s own paint AND its spec map&#10;  SPEC ONLY - keep your own livery, change only how it behaves (Base Color -&gt; Use source paint)&#10;  MIX - this material&#39;s spec map + colour from anywhere: another look in the library, a solid colour, or a gradient&#10;&#10;Set that in BASE COLOR directly below.">Base Material</label>
-            <div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'base', ${i})" title="BASE MATERIAL - what this zone&#39;s surface is made of.&#10;&#10;It ALWAYS supplies the spec map (how light behaves - metal, roughness, clearcoat). What you choose separately is where the COLOUR comes from:&#10;  BOTH (default) - the material&#39;s own paint AND its spec map&#10;  SPEC ONLY - keep your own livery, change only how it behaves (Base Color -&gt; Use source paint)&#10;  MIX - this material&#39;s spec map + colour from anywhere: another look in the library, a solid colour, or a gradient&#10;&#10;Set that in BASE COLOR directly below." style="flex:1; min-width:0;">
+                   title="BASE MATERIAL - what this zone&#39;s surface is made of.&#10;&#10;It always supplies the spec map (how light behaves - metal, roughness, clearcoat). What you choose separately is where the colour comes from:&#10;  both (default) - the material&#39;s own paint and its spec map&#10;  SPEC only - keep your own livery, change only how it behaves (Base Color -&gt; Use source paint)&#10;  mix - this material&#39;s spec map + colour from anywhere: another look in the library, a solid colour, or a gradient&#10;&#10;Set that in base color directly below.">Base Material</label>
+            <div class="swatch-trigger" onclick="event.stopPropagation(); openSwatchPicker(this, 'base', ${i})" title="BASE MATERIAL - what this zone&#39;s surface is made of.&#10;&#10;It always supplies the spec map (how light behaves - metal, roughness, clearcoat). What you choose separately is where the colour comes from:&#10;  both (default) - the material&#39;s own paint and its spec map&#10;  SPEC only - keep your own livery, change only how it behaves (Base Color -&gt; Use source paint)&#10;  mix - this material&#39;s spec map + colour from anywhere: another look in the library, a solid colour, or a gradient&#10;&#10;Set that in base color directly below." style="flex:1; min-width:0;">
                 ${zone.finish ? renderSwatchDot(zone.finish, getSwatchColor(zone), getZoneColorHex(zone)) : zone.base ? renderSwatchDot(zone.base, getSwatchColor(zone), getZoneColorHex(zone)) : _zMixDot}
                 <span class="swatch-name" style="overflow:hidden; ${_zBaseCat ? 'display:flex; flex-direction:column; line-height:1.15; justify-content:center;' : 'text-overflow:ellipsis;'}">
                     <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(_zBaseLabel)}</span>
@@ -1857,7 +1871,7 @@ function renderZoneDetail(index) {
                 </span>
                 <span class="swatch-arrow">&#9662;</span>
             </div>
-            <span class="lock-toggle${zone.lockBase ? ' locked' : ''}" onclick="event.stopPropagation(); toggleLock(${i},'lockBase')" title="Lock base during randomize">${zone.lockBase ? '&#128274;' : '&#128275;'}</span>
+            <span class="lock-toggle${zone.lockBase ? ' locked' : ''}" onclick="event.stopPropagation(); toggleLock(${i},'lockBase')" title="Lock base during randomize">${zone.lockBase ? '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-2px"><rect x="3" y="7" width="10" height="7" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>' : '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-2px"><rect x="3" y="7" width="10" height="7" rx="1.6"/><path d="M5 7V5a3 3 0 0 1 5.6-1.5"/></svg>'}</span>
         </div>
     </div>`;
 
@@ -1900,7 +1914,7 @@ function renderZoneDetail(index) {
                          the real checkbox stays for state/onchange/keyboard but is 1x1 and transparent.
                          Guarded by tests/guard_beta_polish_20260905.js. -->
                     <label class="spb-lock-toggle" style="display:inline-flex; align-items:center; gap:5px; font-size:8.5px; color:var(--text-dim,#8a96b3); cursor:pointer; white-space:nowrap;"
-                           title="Lock Base Color — when locked, changing the BASE finish/material keeps this zone's current color (and hue/sat/bright). Use it to swap a base purely for its SPEC without losing your color.">
+                           title="Lock Base Color — when locked, changing the base finish/material keeps this zone's current color (and hue/sat/bright). Use it to swap a base purely for its SPEC without losing your color.">
                         <input type="checkbox" class="spb-lock-input" ${zone.lockBaseColor ? 'checked' : ''} onchange="setZoneLockBaseColor(${i}, this.checked)" aria-label="Lock Base Color">
                         <span class="spb-lock-box" aria-hidden="true"></span>
                         <span class="spb-lock-text">&#128274; Lock</span>
@@ -1921,7 +1935,7 @@ function renderZoneDetail(index) {
                  full-width second row — the exact pattern "From special" mode already used. -->
             <div style="display:flex; align-items:center; gap:6px; width:100%; margin-top:2px;">
                 <span class="stack-label-mini" style="min-width:70px; flex-shrink:0;">Color</span>
-                <input type="color" id="baseColorPicker${i}" value="${_baseColorHex}" oninput="setZoneBaseColorLive(${i}, this.value, this)" onchange="setZoneBaseColorCommit(${i}, this.value)" style="flex:0 0 34px; width:34px; height:24px; padding:0; border:1px solid var(--border,#444); border-radius:4px; background:none; cursor:pointer;" title="Base tint — click to open the color picker; applies LIVE as you slide the wheel">
+                <input type="color" id="baseColorPicker${i}" value="${_baseColorHex}" oninput="setZoneBaseColorLive(${i}, this.value, this)" onchange="setZoneBaseColorCommit(${i}, this.value)" style="flex:0 0 34px; width:34px; height:24px; padding:0; border:1px solid var(--border,#444); border-radius:4px; background:none; cursor:pointer;" title="Base tint — click to open the color picker; applies live as you slide the wheel">
                 <input type="text" value="${_baseColorHex}" onchange="setZoneBaseColorCommit(${i}, this.value)" style="flex:0 1 74px; min-width:0; width:74px; font-size:10px;" title="Hex color — type a value like #ff3366">
                 <button onclick="event.stopPropagation(); spbPickBaseColorFromScreen(${i})" style="flex:0 0 auto; background:rgba(0,229,255,0.14);color:#7fe9ff;border:1px solid rgba(0,229,255,0.5);padding:3px 8px;border-radius:3px;cursor:pointer;font-weight:bold;font-size:9px;" title="Screen eyedropper — click this, then click any color on the car; it applies instantly">💉 Pick</button>` : ''}
                 ${_baseColorMode === 'gradient' ? _buildGradientEditorHTML(i, zone) : ''}
@@ -1965,7 +1979,7 @@ function renderZoneDetail(index) {
         const _colorLabLocked = ['source', 'finish'].includes(zone.baseColorMode || 'finish');
         const _colorLabDis = _colorLabLocked ? ' disabled' : '';
         const _colorLabDim = _colorLabLocked ? ' style="opacity:0.45;"' : '';
-        const _colorLabTip = _colorLabLocked ? ' title="Pick a color first — set BASE COLOR above to Use solid color, Custom gradient, or From special to unlock Depth · Flip · Underglow"' : '';
+        const _colorLabTip = _colorLabLocked ? ' title="Pick a color first — set base color above to Use solid color, Custom gradient, or From special to unlock Depth · Flip · Underglow"' : '';
         const _baseFineTuningHtml = `
                 <div class="stack-control-group zone-full-width-control">
                     <span class="stack-label-mini">Base Scale</span>
@@ -2010,7 +2024,7 @@ function renderZoneDetail(index) {
                 </div>` : ''}
                 
                 <div class="stack-control-group zone-full-width-control"${_colorLabDim}${_colorLabTip}>
-                    <span class="stack-label-mini" title="Candy-coat depth. Your color multiplies over the zone's own structure (metal grain / art stays alive INSIDE the color). Low = thin translucent glaze, high = deep wet candy. Replaces the old Color Strength.">🍬 Color Depth</span>
+                    <span class="stack-label-mini" title="Candy-coat depth. Your color multiplies over the zone's own structure (metal grain / art stays alive inside the color). Low = thin translucent glaze, high = deep wet candy. Replaces the old Color Strength.">🍬 Color Depth</span>
                     <button class="btn btn-sm stack-step-btn"${_colorLabDis} onclick="event.stopPropagation(); stepZoneBaseColorDepth(${i}, -1)" title="-5%" style="padding:0 4px;font-size:10px;">−</button>
                     <input type="range" min="0" max="100" step="5" value="${Math.round((zone.baseColorDepth ?? 0.65) * 100)}"
                         oninput="setZoneBaseColorDepth(${i}, this.value)" class="stack-slider"${_colorLabDis} title="0% = no color · 15% = glaze · 65% = rich · 100% = deepest candy">
@@ -2019,7 +2033,7 @@ function renderZoneDetail(index) {
                     <button class="btn btn-sm"${_colorLabDis} onclick="event.stopPropagation(); resetZoneBaseColorDepth(${i})" title="Reset to 65%" style="padding:0px 4px; font-size:9px; line-height:1.2;">↺</button>
                 </div>
                 <div class="stack-control-group zone-full-width-control"${_colorLabDim}${_colorLabTip}>
-                    <span class="stack-label-mini" title="Two-tone flip: the paint's DARK structure rotates to a second hue, like an angle-shift/chameleon paint. Pick how far around the wheel the flip color sits. 0° = off. Replaces the old Color Rotation.">🦎 Color Flip</span>
+                    <span class="stack-label-mini" title="Two-tone flip: the paint's dark structure rotates to a second hue, like an angle-shift/chameleon paint. Pick how far around the wheel the flip color sits. 0° = off. Replaces the old Color Rotation.">🦎 Color Flip</span>
                     <button class="btn btn-sm stack-step-btn"${_colorLabDis} onclick="event.stopPropagation(); stepZoneBaseColorFlip(${i}, -1)" title="-5°" style="padding:0 4px;font-size:10px;">−</button>
                     <input type="range" min="0" max="355" step="5" value="${Math.round(zone.baseColorFlip || 0)}"
                         oninput="setZoneBaseColorFlip(${i}, this.value)" class="stack-slider"${_colorLabDis} title="Hue distance of the flip tone — 90° neighbor · 180° opposite · 0° off">
@@ -2028,7 +2042,7 @@ function renderZoneDetail(index) {
                     <button class="btn btn-sm"${_colorLabDis} onclick="event.stopPropagation(); resetZoneBaseColorFlip(${i})" title="Reset to 0° (off)" style="padding:0px 4px; font-size:9px; line-height:1.2;">↺</button>
                 </div>
                 <div class="stack-control-group zone-full-width-control"${_colorLabDim}${_colorLabTip}>
-                    <span class="stack-label-mini" title="Metal GROUND COAT shining through your color — GOLD under warm colors, SILVER under cool — like real candy sprayed over a gold base. Turn it up: the whole zone warms with metal shimmer and the highlights go molten.">☀ Underglow</span>
+                    <span class="stack-label-mini" title="Metal ground coat shining through your color — gold under warm colors, silver under cool — like real candy sprayed over a gold base. Turn it up: the whole zone warms with metal shimmer and the highlights go molten.">☀ Underglow</span>
                     <button class="btn btn-sm stack-step-btn"${_colorLabDis} onclick="event.stopPropagation(); stepZoneBaseColorUnderglow(${i}, -1)" title="-5%" style="padding:0 4px;font-size:10px;">−</button>
                     <input type="range" min="0" max="100" step="5" value="${Math.round((zone.baseColorUnderglow || 0) * 100)}"
                         oninput="setZoneBaseColorUnderglow(${i}, this.value)" class="stack-slider"${_colorLabDis} title="How much of the ground coat burns through the brights — 0% = none">
@@ -2106,7 +2120,7 @@ function renderZoneDetail(index) {
                 </div>
 
                 <div class="stack-control-group zone-full-width-control">
-                    <span class="stack-label-mini" title="Weakens this base's MATERIAL itself (metallic/roughness/clearcoat shift toward neutral).">Spec Strength</span>
+                    <span class="stack-label-mini" title="Weakens this base's material itself (metallic/roughness/clearcoat shift toward neutral).">Spec Strength</span>
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneBaseSpecStrength(${i}, -1)" title="-5%" style="padding:0 4px;font-size:10px;">−</button>
                     <input type="range" min="0" max="100" step="5" value="${Math.round((zone.baseSpecStrength ?? 1) * 100)}"
                         oninput="setZoneBaseSpecStrength(${i}, this.value)"
@@ -2120,7 +2134,7 @@ function renderZoneDetail(index) {
                     <span class="stack-label-mini" style="display:flex;align-items:center;gap:2px;">Spec Blend
                         <span class="whats-this" onclick="event.stopPropagation(); var p=document.getElementById('specBlendHelp${i}'); p.style.display=p.style.display===\'none\'?\'block\':\'none\';" title="Click for explanation">?</span>
                     </span>
-                    <select class="mini-select" style="min-width:100px;font-size:10px;" onchange="setZoneBaseSpecBlendMode(${i}, this.value)" title="How the pattern reshapes this base's OPTICS — physical modes change metal/gloss/clearcoat behavior, not just brightness.">
+                    <select class="mini-select" style="min-width:100px;font-size:10px;" onchange="setZoneBaseSpecBlendMode(${i}, this.value)" title="How the pattern reshapes this base's optics — physical modes change metal/gloss/clearcoat behavior, not just brightness.">
                         <option value="normal" ${(zone.baseSpecBlendMode || 'normal') === 'normal' ? 'selected' : ''}>Normal</option>
                         <option value="ghost_carve" ${zone.baseSpecBlendMode === 'ghost_carve' ? 'selected' : ''}>👻 Ghost Carve</option>
                         <option value="chrome_inlay" ${zone.baseSpecBlendMode === 'chrome_inlay' ? 'selected' : ''}>🪞 Chrome Inlay</option>
@@ -2157,7 +2171,7 @@ function renderZoneDetail(index) {
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneSpecChannelShift(${i}, 'r', -1, event)" style="padding:0 3px;font-size:9px;">−</button>
                     <input type="range" min="-127" max="127" step="5" value="${zone.specShiftR || 0}"
                         oninput="setZoneSpecChannelShift(${i}, 'r', this.value, event)" onchange="commitZoneSpecChannelShift(${i}, event)"
-                        class="stack-slider" title="Shift the METAL channel everywhere in this zone (-127..+127). More metal = body color jumps through harder.">
+                        class="stack-slider" title="Shift the metal channel everywhere in this zone (-127..+127). More metal = body color jumps through harder.">
                     <span class="stack-val" style="min-width:35px;">${zone.specShiftR || 0}</span>
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneSpecChannelShift(${i}, 'r', 1, event)" style="padding:0 3px;font-size:9px;">+</button>
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); setZoneSpecChannelShift(${i}, 'r', 0, event); commitZoneSpecChannelShift(${i}, event);" title="Reset" style="padding:0 4px;font-size:9px;">↺</button>
@@ -2167,7 +2181,7 @@ function renderZoneDetail(index) {
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneSpecChannelShift(${i}, 'g', -1, event)" style="padding:0 3px;font-size:9px;">−</button>
                     <input type="range" min="-127" max="127" step="5" value="${zone.specShiftG || 0}"
                         oninput="setZoneSpecChannelShift(${i}, 'g', this.value, event)" onchange="commitZoneSpecChannelShift(${i}, event)"
-                        class="stack-slider" title="Shift the ROUGHNESS channel (-127..+127). Lower = sharp mirror flashes; higher = soft satin glow (the pastel look).">
+                        class="stack-slider" title="Shift the roughness channel (-127..+127). Lower = sharp mirror flashes; higher = soft satin glow (the pastel look).">
                     <span class="stack-val" style="min-width:35px;">${zone.specShiftG || 0}</span>
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneSpecChannelShift(${i}, 'g', 1, event)" style="padding:0 3px;font-size:9px;">+</button>
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); setZoneSpecChannelShift(${i}, 'g', 0, event); commitZoneSpecChannelShift(${i}, event);" title="Reset" style="padding:0 4px;font-size:9px;">↺</button>
@@ -2177,7 +2191,7 @@ function renderZoneDetail(index) {
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneSpecChannelShift(${i}, 'b', -1, event)" style="padding:0 3px;font-size:9px;">−</button>
                     <input type="range" min="-127" max="127" step="5" value="${zone.specShiftB || 0}"
                         oninput="setZoneSpecChannelShift(${i}, 'b', this.value, event)" onchange="commitZoneSpecChannelShift(${i}, event)"
-                        class="stack-slider" title="Shift the CLEARCOAT byte (-127..+127). 16 is max gloss: MINUS = glossier, wetter clearcoat (stops at 16); PLUS = duller, flatter clearcoat (up to 255).">
+                        class="stack-slider" title="Shift the clearcoat byte (-127..+127). 16 is max gloss: minus = glossier, wetter clearcoat (stops at 16); plus = duller, flatter clearcoat (up to 255).">
                     <span class="stack-val" style="min-width:35px;">${zone.specShiftB || 0}</span>
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); stepZoneSpecChannelShift(${i}, 'b', 1, event)" style="padding:0 3px;font-size:9px;">+</button>
                     <button class="btn btn-sm stack-step-btn" onclick="event.stopPropagation(); setZoneSpecChannelShift(${i}, 'b', 0, event); commitZoneSpecChannelShift(${i}, event);" title="Reset" style="padding:0 4px;font-size:9px;">↺</button>
@@ -2330,7 +2344,7 @@ function renderZoneDetail(index) {
                         </div>
                         <div class="stack-control-group strength-map-toggle-row" style="margin-top:4px;">
                             <button class="btn btn-sm ${zone.patternStrengthMapEnabled ? 'strength-map-btn-active' : 'strength-map-btn'}" onclick="event.stopPropagation(); toggleStrengthMap(${i})" title="Paint where the pattern is strong vs weak — like a heat map brush">
-                                Strength Map ${zone.patternStrengthMapEnabled ? 'ON' : 'OFF'}
+                                Strength Map ${zone.patternStrengthMapEnabled ? 'On' : 'Off'}
                             </button>
                         </div>
                         ${zone.patternStrengthMapEnabled ? `
@@ -3134,7 +3148,7 @@ function updateZoneName(index, name) {
     zones[index].name = (typeof name === 'string' ? name : '').substring(0, 100); // Cap name length
 }
 
-function deleteZone(index) {
+async function deleteZone(index) {
     if (typeof index !== 'number' || index < 0 || index >= zones.length) return;
     if (zones.length <= 1) { showToast('Cannot delete the last zone — at least one zone is required', true); return; }
     const z = zones[index];
@@ -3147,7 +3161,9 @@ function deleteZone(index) {
         if (hasFinish) details.push('finish assigned');
         if (hasColor) details.push('color set');
         if (hasRegion) details.push('region drawn');
-        if (!confirm(`Delete "${z.name}"? This zone has ${details.join(', ')}.`)) return;
+        // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF). Function is async now; every caller is a button / key handler that does not use the result.
+        if (!(await SpbDialog.ask('Delete Zone?', { message: `"${z.name}" has ${details.join(', ')}. Ctrl+Z brings it back.`, okLabel: 'Delete Zone', danger: true, nativeText: `Delete "${z.name}"? This zone has ${details.join(', ')}.` }))) return;
+        if (zones[index] !== z) return;   // the zone list changed while the box was open
     }
     pushZoneUndo('Delete zone "' + z.name + '"');
     zones.splice(index, 1);
@@ -3349,9 +3365,9 @@ function setSpecChannel(ch) {
         b.classList.toggle('active', b.dataset.ch === ch);
     });
     // Update label
-    const labels = { all: 'SPEC MAP', r: 'METALLIC (R)', g: 'ROUGHNESS (G)', b: 'CLEARCOAT (B)', a: 'SPEC MASK (A)' };
+    const labels = { all: 'Spec map', r: 'Metallic (R)', g: 'Roughness (G)', b: 'Clearcoat (B)', a: 'Spec mask (A)' };
     const label = document.querySelector('#previewSpecPane .preview-dual-label');
-    if (label) label.textContent = labels[ch] || 'SPEC MAP';
+    if (label) label.textContent = labels[ch] || 'Spec map';
     // Render channel
     renderSpecChannel();
 }
@@ -3554,7 +3570,7 @@ function renderFlashMapOverlay() {
     const meta = document.getElementById('flashCoverageReadout');
     if (meta) {
         const pops = Math.round(res.coveragePct), dead = Math.round(res.deadPct), hot = Math.round(res.hotPct);
-        meta.textContent = `🔥 ${pops}% pops · ${hot}% hot · ${dead}% dead`;
+        meta.textContent = `${pops}% pops · ${hot}% hot · ${dead}% dead`;
         // green-ish when it pops, amber when it's mostly flat/lazy
         meta.style.color = pops >= 50 ? '#7CFFB0' : (pops >= 25 ? '#FFD24A' : '#FF7A6A');
         meta.style.display = '';
@@ -3670,7 +3686,7 @@ function renderMaterialMapOverlay() {
 
     const meta = document.getElementById('flashCoverageReadout');
     if (meta) {
-        meta.textContent = '🤖 ' + res.legend.slice(0, 4).map(function (l) { return l.label + '×' + l.count; }).join(' · ');
+        meta.textContent = res.legend.slice(0, 4).map(function (l) { return l.label + '×' + l.count; }).join(' · ');
         meta.style.color = '#9DC4FF';
         meta.style.display = '';
     }
@@ -3780,13 +3796,13 @@ function renderSpecStatsPanel() {
     const p = _ensureSpecStatsPanel();
     if (!p) return;
     if (!res) {
-        p.innerHTML = '<div style="color:#9DC4FF;">🔬 Spec Stats</div><div style="opacity:.8;">No spec pixels in this zone yet.</div>';
+        p.innerHTML = '<div style="color:#9DC4FF;">Spec stats</div><div style="opacity:.8;">No spec pixels in this zone yet.</div>';
         p.style.display = '';
         return;
     }
     const scope = opts.mask ? ('zone: ' + zoneName) : 'whole livery';
     p.innerHTML =
-        '<div style="font-weight:800;color:#9DC4FF;margin-bottom:3px;">🔬 SPEC — ' + scope + '</div>' +
+        '<div style="font-weight:800;color:#9DC4FF;margin-bottom:3px;">Spec — ' + scope + '</div>' +
         _specStatRow('Metallic', res.metallic, '') +
         _specStatRow('Roughness', res.roughness, '(hi = rough)') +
         _specStatRow('Clearcoat', res.clearcoat, '') +
@@ -4039,14 +4055,20 @@ function captureBeforeImage(srcOverride) {
 
 function toggleBeforeAfter() {
     // 2026-05-30 owner UI fix: the redundant "BEFORE (Original Paint)" overlay pane was removed
-    // (the left SOURCE box already shows the original paint). This is intentionally a no-op so the
-    // legacy 'b' shortcut and hidden buttons cannot resurrect the second preview box.
+    // (the left SOURCE box already shows the original paint). This was a no-op so the legacy 'b' shortcut and hidden buttons
+    // could not resurrect the second preview box.
+    // [SPB-TFX3 2026-10-09 BA-button] the visible B/A button (source bar, shown once a render exists) did NOTHING when clicked.
+    // It now drives the existing Compare slider (source paint vs the render, divider you drag) - no third compare is built.
+    // The B key belongs to the Brush (Photoshop key map), so the keyboard hooks below no longer call this. SPB_TFX3_OFF = old no-op.
+    if (window.SPB_TFX3_OFF) return;
+    if (typeof window.toggleCompareMode === 'function') window.toggleCompareMode();
 }
 
 // Keyboard shortcut: hold B to show before, release to show after
 // SESSION ROUTER: bail on defaultPrevented.
 document.addEventListener('keydown', (e) => {
     if (e.defaultPrevented) return;
+    if (!window.SPB_TFX3_OFF) return;   // [SPB-TFX3 2026-10-09 BA-button] B is the Brush key now; toggleBeforeAfter drives Compare and must not fire on a key press
     if (e.key === 'b' && !e.ctrlKey && !e.altKey && !e.metaKey && !e.repeat) {
         const tag = e.target.tagName;
         if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
@@ -4056,6 +4078,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 document.addEventListener('keyup', (e) => {
+    if (!window.SPB_TFX3_OFF) return;   // [SPB-TFX3 2026-10-09 BA-button] see keydown above
     if (e.key === 'b') {
         if (beforeAfterActive) toggleBeforeAfter();
     }
@@ -4095,9 +4118,13 @@ if (typeof window !== 'undefined' && window.SPBZoneDefaultRestoreControls) {
 // Zones" — a confirmed reset back to the defaults. It replaced both "Restore All" (removed)
 // and "Clear All" (renamed; old clearAllZones, which started fresh with ONE empty zone,
 // remains in code but has no button). 2026-07-19: default count cut 10 -> 5 (owner).
-function resetAllZonesToDefaults() {
-    if (!confirm('Reset ALL zones back to the default 5 (Zone 1-4 + Everything Else)? Your current zone setup will be replaced. Undo (Ctrl+Z) can bring it back.')) return;
+async function resetAllZonesToDefaults() {
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF). Function is async now; every caller is a button / key handler that does not use the result.
+    if (!(await SpbDialog.ask('Reset All Zones?', { message: (typeof window.spbFullResetOff === 'function' && !window.spbFullResetOff()) ? 'The whole car goes back to how it loaded: the default 5 zones (Everything Else = gloss), and any brushed material / spec, wear, fade, colourway and layer materials are cleared. Layers show as they loaded.' : 'Zones go back to the default 5 (Zone 1-4 and Everything Else). Your current zone setup will be replaced. Ctrl+Z brings it back.', okLabel: 'Reset All Zones', danger: true, nativeText: 'Reset all zones back to the default 5 (Zone 1-4 + Everything Else)? Your current zone setup will be replaced. Undo (Ctrl+Z) can bring it back.' }))) return;
     restoreAllZones();
+    try { if (window.SPBSpecialZone) window.SPBSpecialZone.reset(); } catch (_) {}   // [SPECIAL-ZONE 2026-10-11 owner] Reset All Zones clears the Special-as-Base undo trail too
+    // [SPB-FULL-RESET 2026-10-11] owner: Reset All Zones = the WHOLE canvas back to normal (brushed spec/material, wear, fade, colourway, layer materials, layer visibility). js/zones/spb-full-reset-20261011.js; kill switch SPB_FULL_RESET_OFF.
+    try { if (typeof window.spbResetCanvasExtras === 'function') { const r = window.spbResetCanvasExtras(); if (r && r.cleared && r.cleared.length && typeof showToast === 'function') showToast('Reset: default 5 zones + cleared ' + r.cleared.join(', ') + '.'); } } catch (e) { console.warn('[SPB-FULL-RESET]', e); }
 }
 if (typeof window !== 'undefined') { window.resetAllZonesToDefaults = resetAllZonesToDefaults; }
 
@@ -4297,10 +4324,12 @@ function duplicateZone(index) {
     showToast(`Duplicated "${src.name}" \u2014 Ctrl+Z to undo`);
 }
 
-function applyFinishToAllZones() {
+async function applyFinishToAllZones() {
     const src = zones[selectedZoneIndex];
     if (!src.base && !src.finish) { showToast('Selected zone has no finish to apply', true); return; }
-    if (!confirm(`Apply "${src.base || src.finish}" to ALL ${zones.length} zones?`)) return;
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF). Function is async now; every caller is a button / key handler that does not use the result.
+    if (!(await SpbDialog.ask('Apply Finish To All Zones?', { message: `"${src.base || src.finish}" goes onto all ${zones.length} zones. Ctrl+Z undoes it.`, okLabel: 'Apply To All', nativeText: `Apply "${src.base || src.finish}" to all ${zones.length} zones?` }))) return;
+    if (!zones.includes(src)) return;   // the zone list changed while the box was open
     pushZoneUndo('Apply finish to all zones');
     zones.forEach((z, i) => {
         if (i === selectedZoneIndex) return;
@@ -4337,7 +4366,8 @@ function _restrictToLayersBoxHtml(i, zone) {
             ' onchange="toggleZoneSourceLayer(' + i + ', \'' + sid + '\', this.checked)"' +
             ' style="margin:0;width:12px;height:12px;flex:0 0 auto;accent-color:var(--accent-cyan,#00e5ff);">' +
             '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + l.name +
-            ' <span style="color:var(--text-dim);">(' + l.groupName + ')</span></span></label>';
+            // [TICKETS-4 2026-10-10 item 8] a layer made in the app ("+ Layer", Duplicate, Paste) has no groupName: the label read "Layer 1 (undefined)". Show the group only when there is one. Kill switch: window.SPB_T4_OFF / SPB_T4_8_OFF.
+            ((l.groupName || window.SPB_T4_OFF || window.SPB_T4_8_OFF) ? ' <span style="color:var(--text-dim);">(' + l.groupName + ')</span>' : '') + '</span></label>';
     }).join('');
     let status;
     if (!ids.length) {
@@ -4351,10 +4381,10 @@ function _restrictToLayersBoxHtml(i, zone) {
         const names = ids.map(id => (_psdLayers.find(l => l.id === id) || {}).name || zone.sourceLayerBindings?.[id]?.label || id).join(', ');
         status = '<div style="font-size:9px;color:' + (missing ? '#ff8c1a' : 'var(--accent-green)') + ';margin-top:3px;">' +
             (missing ? 'Missing source layer(s): ' : 'Restricted to ' + ids.length + ' layer' + (ids.length > 1 ? 's' : '') + ': ') + escapeHtml(names) + '</div>' +
-            (hiddenNames.length ? '<div style="font-size:9px;color:#ff8c1a;margin-top:2px;">\u26a0 Hidden (not painting): ' + hiddenNames.join(', ') + '</div>' : '');
+            (hiddenNames.length ? '<div style="font-size:9px;color:#ff8c1a;margin-top:2px;">Hidden (not painting): ' + hiddenNames.join(', ') + '</div>' : '');
     }
     return '<div style="margin-bottom:8px;padding:6px 8px;background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);border-radius:6px;">' +
-        '<div style="font-size:10px;color:var(--accent-cyan);font-weight:bold;margin-bottom:4px;display:flex;align-items:center;gap:6px;">RESTRICT TO LAYERS' +
+        '<div style="font-size:10px;color:var(--accent-cyan);font-weight:bold;margin-bottom:4px;display:flex;align-items:center;gap:6px;">Restrict to layers' +
         (ids.length ? '<button class="btn btn-sm" onclick="event.stopPropagation(); setZoneSourceLayer(' + i + ', null)" title="Clear all layer restrictions" style="margin-left:auto;padding:0px 5px;font-size:9px;line-height:1.3;">Clear</button>' : '') +
         '</div>' +
         '<div style="max-height:120px;overflow-y:auto;display:flex;flex-direction:column;gap:1px;">' + rows + '</div>' +
@@ -4370,7 +4400,7 @@ function toggleZoneSourceLayer(index, layerId, on) {
     zones[index].sourceLayers = ids;
     zones[index].sourceLayer = ids[0] || null;   // legacy mirror
     renderZones();
-    renderZoneDetail(index);
+    if (window.SPB_RESTRICT_PERF_OFF || index !== selectedZoneIndex) renderZoneDetail(index);   // [RESTRICT-PERF 2026-10-12] renderZones() already rebuilt the selected zone's detail (measured 10-11 ms twice per tick)
     triggerPreviewRender();
     if (ids.length) {
         const names = ids.map(id => ((typeof _psdLayers !== 'undefined' && _psdLayers.find(l => l.id === id)) || {}).name || id);
@@ -4386,7 +4416,7 @@ function setZoneSourceLayer(index, layerId) {
     zones[index].sourceLayer = layerId || null;
     zones[index].sourceLayers = layerId ? [layerId] : [];   // [SPB-MULTILAYER] keep canonical array in sync
     renderZones();
-    renderZoneDetail(index);
+    if (window.SPB_RESTRICT_PERF_OFF || index !== selectedZoneIndex) renderZoneDetail(index);   // [RESTRICT-PERF 2026-10-12] renderZones() already rebuilt the selected zone's detail
     triggerPreviewRender();
     if (layerId) {
         const layer = (typeof _psdLayers !== 'undefined') ? _psdLayers.find(l => l.id === layerId) : null;
@@ -4594,13 +4624,13 @@ function _showSwatchBigPreview(itemEl) {
         ` display:flex; flex-direction:column; gap:10px;">` +
         `<div style="display:flex; align-items:center; gap:10px;">` +
         `<div style="font-size:17px; font-weight:800; color:#e8e8f2; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${(label || '').replace(/</g, '&lt;')}</div>` +
-        `<span style="font-size:10px; letter-spacing:1px; color:#8a90a8;">PAINT&nbsp;|&nbsp;SPEC &middot; click image to close</span>` +
+        `<span style="font-size:10px; letter-spacing:1px; color:#8a90a8;">Paint&nbsp;|&nbsp;Spec &middot; click image to close</span>` +
         `</div>` +
         `<div id="swatchViewerImgWrap" style="position:relative; width:100%; aspect-ratio:2/1; border-radius:10px; overflow:hidden; background:#0b0b12; cursor:zoom-out;">` +
-        `<div id="swatchViewerLoading" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#8a90a8; font-size:13px; letter-spacing:1px;">RENDERING FULL DETAIL&hellip;</div>` +
+        `<div id="swatchViewerLoading" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#8a90a8; font-size:13px; letter-spacing:1px;">Rendering full detail&hellip;</div>` +
         `<img src="${bigUrl}" alt="" decoding="async" style="position:relative; width:100%; height:100%; object-fit:fill; display:block; opacity:0; transition:opacity 0.15s;"` +
         ` onload="this.style.opacity='1'; var l=document.getElementById('swatchViewerLoading'); if(l) l.remove();"` +
-        ` onerror="var l=document.getElementById('swatchViewerLoading'); if(l) l.textContent='PREVIEW UNAVAILABLE';">` +
+        ` onerror="var l=document.getElementById('swatchViewerLoading'); if(l) l.textContent='Preview unavailable';">` +
         `</div>` +
         (desc ? `<div style="font-size:12px; line-height:1.5; color:#b9b7c3; max-height:72px; overflow-y:auto;">${desc}</div>` : '') +
         `<div style="display:flex; gap:10px; justify-content:flex-end;">` +
@@ -4725,7 +4755,7 @@ function getSwatchUrl(finishId, colorHex, forceSplit, size) {
     col = (col.length >= 6 ? col.slice(0, 6) : '888888');
     const base = (typeof ShokkerAPI !== 'undefined' && ShokkerAPI.baseUrl)
         ? ShokkerAPI.baseUrl
-        : `http://localhost:${window._SHOKKER_PORT || 59876}`;
+        : `http://localhost:${(window.spbServerPort ? window.spbServerPort() : window._SHOKKER_PORT)}`;
     const sz = (size != null && size > 0) ? size : (forceSplit === false ? 48 : 256);
     // Split view for patterns, monolithics (FUSIONS, Ghost Geometry, etc.), and bases.
     // Server returns left=paint/material preview, right=spec-map behavior preview.
@@ -4763,7 +4793,7 @@ function getOverlaySpecialPickerHtml(zone, i, layer) {
     const bases = (typeof BASES !== 'undefined' ? BASES : []);
     const monoId = isMono ? current.slice(5) : null;
     const selectedMono = monoId ? (monolithics.find(m => m.id === monoId) || bases.find(b => b.id === monoId) || null) : null;
-    const base = (typeof ShokkerAPI !== 'undefined' && ShokkerAPI.baseUrl) ? ShokkerAPI.baseUrl : `http://localhost:${window._SHOKKER_PORT || 59876}`;
+    const base = (typeof ShokkerAPI !== 'undefined' && ShokkerAPI.baseUrl) ? ShokkerAPI.baseUrl : `http://localhost:${(window.spbServerPort ? window.spbServerPort() : window._SHOKKER_PORT)}`;
     // [2026-06-17 smart-cache] per-finish content token (see _swatchCacheToken)
     const swatchUrl = (id, sz) => id ? `${base}/api/swatch/monolithic/${id}?color=888888&size=${sz || 48}&prefer=live&v=${_swatchCacheToken('monolithic', id)}` : null;
     const popupType = { second: 'secondBaseColorSource', third: 'thirdBaseColorSource', fourth: 'fourthBaseColorSource', fifth: 'fifthBaseColorSource' }[layer];
@@ -4836,12 +4866,15 @@ function _spbFinishObj(id, type) {
     } catch (e) {}
     return null;
 }
-function _spbFeaturedThumb(finishId, swatch, name) {
+function _spbFeaturedThumb(finishId, swatch, name, itemUrl) {
     var sw = swatch || '#444';
     var t = String(name || '').replace(/"/g, '&quot;');
     try {
         var spec = window.SPBSpecOverlayPicker && SPBSpecOverlayPicker.find(finishId);
-        var url = spec ? '/api/spec-pattern-combined/' + encodeURIComponent(finishId) + '' : ((typeof getSwatchUrl === 'function') ? getSwatchUrl(finishId, sw) : '');
+        // [S17 2026-10-12 owner: stable category covers + better descriptions] reuse the card's OWN thumbnail url when we have it:
+        // getSwatchUrl(id, obj.swatch) can differ in its colour= key from the grid thumbnail (obj.swatch missing/different), and
+        // only the grid's variant is baked, so the cover 503'd into a flat chip (Fable, Iridescent Insects).
+        var url = spec ? '/api/spec-pattern-combined/' + encodeURIComponent(finishId) + '' : (itemUrl || ((typeof getSwatchUrl === 'function') ? getSwatchUrl(finishId, sw) : ''));
         if (url) {
             return '<img class="spb-grp-feat-img deferred-swatch" data-swatch-url="' + url + '" loading="lazy" decoding="async" title="' + t + '" alt="" '
                 + 'style="width:56px;height:28px;border-radius:3px;border:1px solid rgba(255,255,255,0.18);object-fit:cover;vertical-align:middle;flex:0 0 auto;" '
@@ -4850,14 +4883,39 @@ function _spbFeaturedThumb(finishId, swatch, name) {
     } catch (e) {}
     return '<span style="display:inline-block;width:28px;height:18px;border-radius:3px;background:' + sw + ';"></span>';
 }
-function _spbRotateOneGroup(group) {
+// [S17 2026-10-12 owner: stable category covers + better descriptions]
+// Owner: "ONE placeholder image for each category so it's not constantly refreshing". The cover of every
+// category card is now a FIXED finish: the curated id in SPB_ATLAS.COVERS (js/spb-finish-atlas.js, keyed by
+// the lowercased group name with emoji/punctuation stripped, same key as _SPB_GROUP_BLURBS), else the first
+// real finish in the card. Random rotation is OFF unless window.SPB_COVER_ROTATE === true (legacy kill switch).
+function _spbCoverKey(group) {
+    return String(group.getAttribute('data-picker-category') || '').toLowerCase().replace(/[^a-z0-9 &]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function _spbStableCoverIndex(group, items) {
+    try {
+        var map = window.SPB_CATEGORY_COVERS || (window.SPB_ATLAS && window.SPB_ATLAS.COVERS) || null;
+        var want = map ? map[_spbCoverKey(group)] : '';
+        if (want) { for (var i = 0; i < items.length; i++) { if (items[i].getAttribute('data-finish-id') === want) return i; } }
+        for (var j = 0; j < items.length; j++) { var fid = items[j].getAttribute('data-finish-id'); if (fid && fid !== 'none') return j; }
+    } catch (e) {}
+    return 0;
+}
+function _spbRotateOneGroup(group, stable) {
     try {
         if (!group) return;
         var items = group.querySelectorAll('.swatch-item[data-finish-id]');
         if (!items || !items.length) return;
         var prev = parseInt(group.getAttribute('data-feat-idx') || '-1', 10);
-        var next = Math.floor(Math.random() * items.length);
-        if (items.length > 1) { var guard = 0; while (next === prev && guard++ < 5) next = Math.floor(Math.random() * items.length); }
+        var next;
+        if (stable) {
+            next = _spbStableCoverIndex(group, items);
+            // already showing this cover (re-opened / restored picker wall): leave it, just make sure it has loaded
+            var _cur = group.querySelector('.spb-grp-featured img.spb-grp-feat-img');
+            if (prev === next && _cur) { if (!_cur.getAttribute('src')) _hydrateDeferredSwatchImage(_cur); return; }
+        } else {
+            next = Math.floor(Math.random() * items.length);
+            if (items.length > 1) { var guard = 0; while (next === prev && guard++ < 5) next = Math.floor(Math.random() * items.length); }
+        }
         group.setAttribute('data-feat-idx', String(next));
         var it = items[next];
         var id = it.getAttribute('data-finish-id');
@@ -4874,11 +4932,17 @@ function _spbRotateOneGroup(group) {
             slot.style.cssText = 'margin-left:10px;display:inline-flex;align-items:center;gap:6px;vertical-align:middle;opacity:0;transition:opacity 0.35s;';
             label.appendChild(slot);
         }
-        slot.innerHTML = _spbFeaturedThumb(id, sw, name)
+        var _itImg = it.querySelector('img.deferred-swatch[data-swatch-url], img.swatch-split-img[data-swatch-url], img.swatch-square[data-swatch-url]');   // [S17]
+        var _itUrl = _itImg ? (_itImg.getAttribute('data-swatch-url') || '') : '';
+        slot.innerHTML = _spbFeaturedThumb(id, sw, name, _itUrl)
             + '<span style="font-size:9px;color:var(--text-dim,#9aa);font-weight:400;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + String(name).replace(/</g, '&lt;') + '</span>';
         slot.setAttribute('title', name);
         const featuredImage = slot.querySelector('img.deferred-swatch');
-        if (featuredImage && _swatchPopupObserver) _swatchPopupObserver.observe(featuredImage);
+        // [S17 2026-10-12 owner: stable category covers + better descriptions] ROOT CAUSE of the blank covers:
+        // _installSwatchPopupLazyLoader (2026-10-02) only hydrates imgs inside OPEN categories and the old
+        // IntersectionObserver is gone (_swatchPopupObserver is always null), so these covers, which live in
+        // COLLAPSED cards, never got a src. A cover is one tiny baked thumbnail: load it right here.
+        if (featuredImage) _hydrateDeferredSwatchImage(featuredImage);
         requestAnimationFrame(function () { try { slot.style.opacity = '1'; } catch (e) {} });
     } catch (e) {}
 }
@@ -4887,9 +4951,10 @@ function _spbStartGroupFeatured() {
     _spbStopGroupFeatured();
     var popup = document.getElementById('swatchPopup');
     if (!popup) return;
-    try { popup.querySelectorAll('.swatch-group').forEach(function (g) { _spbRotateOneGroup(g); }); } catch (e) {}
+    try { popup.querySelectorAll('.swatch-group').forEach(function (g) { _spbRotateOneGroup(g, true); }); } catch (e) {}   // [S17] stable covers
     _installSwatchPopupLazyLoader();
     _spbGrpFeatTick = 0;
+    if (window.SPB_COVER_ROTATE !== true) return;   // [S17 2026-10-12 owner: stable category covers + better descriptions] no rotation on the overview
     _spbGrpFeatTimer = setInterval(function () {
         var p = document.getElementById('swatchPopup');
         if (!p || !p.classList.contains('active')) { _spbStopGroupFeatured(); return; }
@@ -5240,12 +5305,15 @@ function _teardownGarageShell() {
     const grid = document.getElementById('swatchPopupGrid');
     const stage = document.getElementById('swatchStage');
     const body = popup.querySelector('.garage-body');
+    // [SPB-PERF2 2026-10-10] classic mode, repeat open: grid and stage already are the last two child NODES in that order, so re-appending them is an identity operation - except that
+    // it detaches/re-attaches the whole category wall (~0.09 s). Skip exactly that case (the first-ever teardown still runs). Kill switch SPB_PERF2_OFF.
+    const _p2InPlace = (window.SPB_PERF2_OFF !== true) && grid && stage && grid.parentNode === popup && stage.parentNode === popup && grid.nextSibling === stage && stage.nextSibling === null;
     if (grid) {
         grid.classList.remove('garage-source');
         // Original DOM order: grid then stage as the last two popup children.
-        popup.appendChild(grid);
+        if (!_p2InPlace) popup.appendChild(grid);
     }
-    if (stage) popup.appendChild(stage);
+    if (stage && !_p2InPlace) popup.appendChild(stage);
     if (body && body.parentNode) body.parentNode.removeChild(body);
     // Remove the header vibe-chips strip so CLASSIC mode is byte-for-behavior
     // identical (the strip only ever exists inside the Garage shell).
@@ -5350,7 +5418,7 @@ function _garageBuildShelf(opts) {
     const head = document.createElement('header');
     head.className = 'garage-shelf-head';
     const h4 = document.createElement('h4');
-    h4.textContent = (opts.icon ? opts.icon + ' ' : '') + opts.title;
+    h4.textContent = opts.title;
     head.appendChild(h4);
     const hint = document.createElement('span');
     hint.className = 'garage-shelf-hint';
@@ -5865,9 +5933,13 @@ function openSwatchPicker(triggerEl, type, zoneIndex, layerIndex) {
     } else if (type === 'thirdBasePattern') {
         currentId = zone.thirdBasePattern || 'none';
     } else if (type === 'layerSpecialPaint') {
-        currentId = (typeof getLayerPaintSpecialId === 'function' && getLayerPaintSpecialId())
-            ? ('mono:' + getLayerPaintSpecialId())
-            : '';
+        // [SPECIAL-ALL 2026-10-12] owner: "When I click CHOOSE SPECIAL brush ... it should show ALL bases/spec options. Every single category."
+        // The wall now lists the BASES (select value = raw base id, same as the zone Base picker) AND the Specials ('mono:<id>'). A base-registered id is
+        // current as its raw id so the base card lights up; anything else keeps the old 'mono:' form.
+        const _lspId = (typeof getLayerPaintSpecialId === 'function') ? getLayerPaintSpecialId() : '';
+        const _lspIsBase = !!_lspId && typeof BASES !== 'undefined' && BASES.some(function (b) { return b.id === _lspId; })
+            && !(typeof MONOLITHICS !== 'undefined' && MONOLITHICS.some(function (m) { return m.id === _lspId; }));
+        currentId = _lspId ? (_lspIsBase ? _lspId : ('mono:' + _lspId)) : '';
     }
 
     // Build grid HTML with canvas-rendered previews
@@ -5880,13 +5952,20 @@ function openSwatchPicker(triggerEl, type, zoneIndex, layerIndex) {
         return (a.name || '').localeCompare((b.name || ''), undefined, { sensitivity: 'base' });
     };
     let html = '';
+    // [SPB-PERF2 2026-10-10 PERF-2 target 2] cached re-open: when the wall parked by the last close of this picker type still matches (js/spb-perf2-picker.js checks the
+    // catalog / ratings / favourites / data-table signature), put it straight back and skip the html build, the 7.7 MB parse and the card decoration. Kill switch SPB_PERF2_OFF.
+    const _p2Pk = (window.SPB_PERF2_OFF !== true) ? window.__spbPerf2Picker : null;
+    let _p2Restored = false;
+    if (_p2Pk) { try { _p2Restored = _p2Pk.restore(grid, type, currentId) === true; } catch (_p2e) { _p2Restored = false; } }
+    if (!_p2Restored) {
     const isOverlaySpecialSourcePicker = (type === 'secondBaseColorSource' || type === 'thirdBaseColorSource' || type === 'fourthBaseColorSource' || type === 'fifthBaseColorSource');
     const isOverlayBaseColorPicker = (type === 'overlayBaseColor');
     const isLayerSpecialPaintPicker = (type === 'layerSpecialPaint');
     if (type === 'base' || type === 'secondBase' || type === 'thirdBase' || type === 'fourthBase' || type === 'fifthBase' || type === 'baseColorSource' || isOverlaySpecialSourcePicker || isOverlayBaseColorPicker || isLayerSpecialPaintPicker) {
         // Bases section - grouped by BASE_GROUPS with collapsible sections
-        if (!isOverlaySpecialSourcePicker && !isLayerSpecialPaintPicker) {
-            html += `<div class="swatch-item${currentId === '' ? ' selected' : ''}" data-name="not set none clear" onclick="selectSwatchItem('')" style="margin-bottom:4px;">
+        // [SPECIAL-ALL 2026-10-12] the layer-brush "Choose Special" picker now ALSO lists every BASE group (no "(not set)" card: a brush needs a source). Kill switch window.SPB_SPECIAL_ALL_OFF = true.
+        if (!isOverlaySpecialSourcePicker && (!isLayerSpecialPaintPicker || window.SPB_SPECIAL_ALL_OFF !== true)) {
+            if (!isLayerSpecialPaintPicker) html += `<div class="swatch-item${currentId === '' ? ' selected' : ''}" data-name="not set none clear" onclick="selectSwatchItem('')" style="margin-bottom:4px;">
             <div class="swatch-square" style="background:#333;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:10px;">&#8709;</div>
             <div class="swatch-label">(not set)</div></div>`;
             const baseGroupedIds = new Set();
@@ -5949,7 +6028,7 @@ function openSwatchPicker(triggerEl, type, zoneIndex, layerIndex) {
             function renderGroupSection(groups, sectionLabel, sectionIcon) {
                 if (!groups || groups.length === 0) return '';
                 let s = `<div class="swatch-section-divider" style="margin:10px 0 6px; padding:6px 8px; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; display:flex; align-items:center; gap:6px;">
-                <span style="font-size:12px;">${sectionIcon || '•'}</span>
+                
                 <span style="font-size:11px; font-weight:700; color:var(--accent-green); text-transform:uppercase; letter-spacing:1px;">${sectionLabel}</span>
                 <span style="font-size:9px; color:var(--text-dim); margin-left:auto;">${groups.reduce((n, g) => n + (SPECIAL_GROUPS[g] || []).length, 0)} finishes</span>
             </div>`;
@@ -6032,15 +6111,20 @@ function openSwatchPicker(triggerEl, type, zoneIndex, layerIndex) {
         currentId = SPBSpecOverlayPicker.current();
         html = SPBSpecOverlayPicker.buildGrid(currentId);
     }
+    } // [SPB-PERF2] end if (!_p2Restored)
     const previewCaption = document.querySelector('.swatch-preview-on-paint-row > span');
     if (previewCaption) previewCaption.textContent = type === 'specOverlay'
         ? 'Left: illustrative material study. Right: applied M / Roughness / Cc. Native 512 px detail.'
         : 'Split swatch: left paint; right compiled spec (RGB = M / Roughness / Cc)';
-    grid.innerHTML = html;
-    _enhanceSwatchPopupCards(currentId, type);
+    if (!_p2Restored) {
+        grid.innerHTML = html;
+        _enhanceSwatchPopupCards(currentId, type);
+    }
     _renderSwatchPopupFilterControls(type);
     _renderSwatchCurationLanes(type);
-    _renderSwatchLowScorePanel(18);
+    // [SPB-PERF2 2026-10-10] the review-queue panel is hidden on every open and toggleSwatchLowScorePanel() re-renders it whenever it is shown (the only way to show it),
+    // so building it here cost ~0.25 s per open for nothing. Kill switch SPB_PERF2_OFF restores the eager render.
+    { const _p2Ls = document.getElementById('swatchLowScorePanel'); if (window.SPB_PERF2_OFF === true || !_p2Ls || !_p2Ls.hidden) _renderSwatchLowScorePanel(18); }
     _installSwatchPopupLazyLoader();
 
     // [SPB 2026-06-04 owner] In LIVE picker mode, the finish-grid pickers (base /
@@ -6119,7 +6203,10 @@ function openSwatchPicker(triggerEl, type, zoneIndex, layerIndex) {
 function _spbAutoOpenPickerCategory(type, currentId) {
     const grid = document.getElementById('swatchPopupGrid');
     if (!grid) return;
-    const sel = grid.querySelector('.swatch-item.selected');
+    let sel = grid.querySelector('.swatch-item.selected');
+    // [SPB-PERF2 2026-10-10] a re-used (already Atlas-organised) wall must pick the same "first selected card" a fresh build does - document order BEFORE the Atlas reshuffle
+    // (favourites group first) - or the picker lands in a different lane / scroll position. js/spb-perf2-picker.js keeps that order; undefined = no opinion.
+    { const _p2 = (window.SPB_PERF2_OFF !== true) ? window.__spbPerf2Picker : null; if (_p2 && _p2.firstSelected) { const _s = _p2.firstSelected(grid); if (_s !== undefined) sel = _s; } }
     let target = (sel && sel.closest) ? sel.closest('.swatch-group') : null;
     // The current finish may have no card at all (pruned id, or a mixed zone) —
     // fall back to naming its lane straight from the catalogs.
@@ -6185,7 +6272,9 @@ function closeSwatchPicker() {
         // all day, every fast profiler window had DOM ~4.3k nodes and every
         // slow one had ~36k. Document-wide queries, style recalc and GC all
         // scale with it. Reopen cost is unchanged (it was always a rebuild).
-        _closeGrid.innerHTML = '';
+        // [SPB-PERF2 2026-10-10] PARK the finished wall in a detached fragment (no style/query/GC cost while parked - what the note above was after) so the next open of the same
+        // picker restores it instead of rebuilding; park() refuses (-> the old clear) whenever it cannot vouch for the wall. Kill switch SPB_PERF2_OFF.
+        if (!(window.SPB_PERF2_OFF !== true && window.__spbPerf2Picker && window.__spbPerf2Picker.park(_closeGrid))) _closeGrid.innerHTML = '';
     }
     swatchPopupState = { open: false, type: null, zoneIndex: -1, layerIndex: -1, triggerEl: null, filter: 'all', sort: 'default' };
 }
@@ -6222,7 +6311,7 @@ function openSwatchPreviewModal(finishType, finishId, label) {
     const wrap = document.getElementById('swatchPreviewOnPaintWrap');
     if (!modal || !imgEl) return;
     titleEl.textContent = label || finishId;
-    const base = (typeof ShokkerAPI !== 'undefined' && ShokkerAPI.baseUrl) ? ShokkerAPI.baseUrl : `http://localhost:${window._SHOKKER_PORT || 59876}`;
+    const base = (typeof ShokkerAPI !== 'undefined' && ShokkerAPI.baseUrl) ? ShokkerAPI.baseUrl : `http://localhost:${(window.spbServerPort ? window.spbServerPort() : window._SHOKKER_PORT)}`;
     // [2026-06-12 thumbnail-cache fix] stable version token (was Date.now() —
     // a literal cache-buster that forced a fresh render on every open)
     // [2026-06-17 smart-cache] prefer the per-finish content token so this large
@@ -6251,7 +6340,7 @@ async function runSwatchPreviewOnPaint() {
         if (typeof showToast === 'function') showToast('Load a paint file first (Car Info / Source Paint).', true);
         return;
     }
-    const base = (typeof ShokkerAPI !== 'undefined' && ShokkerAPI.baseUrl) ? ShokkerAPI.baseUrl : `http://localhost:${window._SHOKKER_PORT || 59876}`;
+    const base = (typeof ShokkerAPI !== 'undefined' && ShokkerAPI.baseUrl) ? ShokkerAPI.baseUrl : `http://localhost:${(window.spbServerPort ? window.spbServerPort() : window._SHOKKER_PORT)}`;
     const zone = { name: 'Preview', color: 'remaining', intensity: '100' };
     if (finishType === 'base') {
         zone.base = finishId;
@@ -6365,7 +6454,7 @@ function _stageZoneHash(zone) {
 function _stageApiBase() {
     return (typeof ShokkerAPI !== 'undefined' && ShokkerAPI.baseUrl)
         ? ShokkerAPI.baseUrl
-        : `http://localhost:${window._SHOKKER_PORT || 59876}`;
+        : `http://localhost:${(window.spbServerPort ? window.spbServerPort() : window._SHOKKER_PORT)}`;
 }
 
 /** Read the current paint file path (same validation as the modal preview). */
@@ -6941,6 +7030,17 @@ function filterSwatchPopup(query) {
     const activeContext = activeFilter === 'all' ? null : pickerActiveLaneContext.main;
     let visibleCount = 0;
     let totalRanked = 0;
+    // [SPB-PERF2 2026-10-10] the plain open (no query, filter 'all', so no lane context) shows EVERY card: textMatch has no tokens, filterMatch is 'all', categoryMatch has no
+    // context. The per-card haystack normalisation below (~0.15 s over ~2,800 cards) only feeds those three tests, so skip it and do the three consequences directly
+    // (display '', visibleCount, totalRanked). Same DOM, same counts. Kill switch SPB_PERF2_OFF.
+    const _p2fast = (window.SPB_PERF2_OFF !== true) && q === '' && !qTokens.length && activeFilter === 'all';
+    if (_p2fast) {
+        items.forEach(item => {
+            if (Number(item.getAttribute('data-rank-overall') || 0) > 0) totalRanked += 1;
+            if (item.style.display !== '') item.style.display = '';
+        });
+        visibleCount = items.length;
+    } else
     items.forEach(item => {
         const name = ((item.getAttribute('data-name') || '') + ' ' + (item.getAttribute('data-search') || '')).toLowerCase();
         const desc = (item.getAttribute('data-desc') || '').toLowerCase();
@@ -6978,7 +7078,7 @@ function filterSwatchPopup(query) {
     // Show/hide groups based on visible items; expand all when searching
     const groups = grid.querySelectorAll('.swatch-group');
     groups.forEach(grp => {
-        const visibleItems = grp.querySelectorAll('.swatch-item:not([style*="display: none"])');
+        const visibleItems = _p2fast ? { length: grp.querySelector('.swatch-item') ? 1 : 0 } : grp.querySelectorAll('.swatch-item:not([style*="display: none"])');   // [SPB-PERF2] fast path: every card is shown
         grp.style.display = ((q || activeFilter !== 'all') && visibleItems.length === 0) ? 'none' : '';
         // SPB-UIUX-2026-08-30 (owner): the lane holding the CURRENT finish is
         // opened, not merely left alone. It is built collapsed (everything but
@@ -6989,7 +7089,8 @@ function filterSwatchPopup(query) {
         else if (grp.querySelector('.swatch-item.selected')) grp.classList.remove('collapsed');
         else if (visibleItems.length > 0) grp.classList.add('collapsed');
     });
-    _applySwatchPopupSort(grid);
+    // [SPB-PERF2 2026-10-10] the open of a re-used (already Atlas-ordered) wall must not re-sort it by rating - a fresh open's final order is the Atlas A-Z one (js/spb-perf2-picker.js skipSort)
+    { const _p2 = (window.SPB_PERF2_OFF !== true) ? window.__spbPerf2Picker : null; if (!(_p2 && _p2.skipSort && _p2.skipSort())) _applySwatchPopupSort(grid); }
     if (countEl) {
         const filterLabel = activeFilter === 'all' ? '' : ' • ' + activeFilter.replace(/_/g, ' ');
         const sortLabel = swatchPopupState.sort && swatchPopupState.sort !== 'default' ? ' • sort ' + swatchPopupState.sort.replace(/_/g, ' ') : '';
@@ -7738,11 +7839,19 @@ function promptLinkZone(index) {
         return;
     }
     // Show a simple picker: which zone to link with?
+    // [SPB-PROMPT-FIX 2026-10-10] window.prompt() throws in Electron (this button did nothing in the shipped app) -> in-app pick list
+    // (SpbDialog.choose). The rest of the body is unchanged and runs after the choice; Esc = nothing changes. Kill switch
+    // window.SPB_PROMPT_FIX_OFF -> the old numbered window.prompt (SpbDialog.choose falls back to it, nativeResolve = the old number parse).
     const options = zones.map((z, i) => i === index ? null : `${i + 1}. ${z.name}`).filter(Boolean);
-    const choice = prompt(`Link "${zones[index].name}" with which zone?\n\n${options.join('\n')}\n\nEnter zone number:`);
-    if (!choice) return;
-    const targetIdx = parseInt(choice) - 1;
-    if (isNaN(targetIdx) || targetIdx < 0 || targetIdx >= zones.length || targetIdx === index) {
+    const _linkItems = zones.map((z, i) => i === index ? null : { value: i, label: `${i + 1}. ${z.name}` }).filter(Boolean);
+    return SpbDialog.choose('Link Zone', _linkItems, {
+        message: `Link "${zones[index].name}" with which zone?`,
+        okLabel: 'Link',
+        nativeText: `Link "${zones[index].name}" with which zone?\n\n${options.join('\n')}\n\nEnter zone number:`,
+        nativeResolve: (txt) => parseInt(txt) - 1
+    }).then(function (targetIdx) {
+    if (targetIdx == null) return;
+    if (isNaN(targetIdx) || targetIdx < 0 || targetIdx >= zones.length || targetIdx === index || !zones[index]) {
         showToast('Invalid zone number');
         return;
     }
@@ -7759,6 +7868,7 @@ function promptLinkZone(index) {
     renderZones();
     triggerPreviewRender();
     showToast(`Linked: ${zones[index].name} + ${zones[targetIdx].name}`);
+    });
 }
 
 function setZoneBase(index, value) {
@@ -7821,7 +7931,7 @@ function setZoneBase(index, value) {
 const SPB_FRACTURE_SHORTCUT_ID = 'fs_core_emerald';
 function fractureThisPaint() {
     if (typeof zones === 'undefined' || !Array.isArray(zones) || !zones.length) {
-        if (typeof showToast === 'function') showToast('Add a zone first, then hit FRACTURE THIS PAINT.', true);
+        if (typeof showToast === 'function') showToast('Add a zone first, then hit fracture this paint.', true);
         return false;
     }
     const idx = (typeof selectedZoneIndex === 'number'
@@ -7831,8 +7941,8 @@ function fractureThisPaint() {
         const zoneName = (zones[idx] && zones[idx].name) || ('Zone ' + (idx + 1));
         const locked = (typeof _spbColorLocked === 'function' && _spbColorLocked())
             || !!(zones[idx] && zones[idx].lockBaseColor);
-        showToast('\u{1F480} Fractured "' + zoneName + '" — Soul Core Emerald / Pink Flash'
-            + (locked ? ' (color kept — lock is ON)' : ''));
+        showToast('Fractured "' + zoneName + '": Soul Core Emerald and Pink Flash'
+            + (locked ? ' (color kept: Color Lock is on)' : ''));
     }
     return true;
 }
@@ -7897,11 +8007,14 @@ function _normalizeBaseGradientStopColorForPayload(color) {
 
 function normalizeBaseGradientStopsForPayload(stops) {
     if (!Array.isArray(stops)) return [];
+    // FLAMES 2026-10-05: decide percent-vs-fraction for the WHOLE list. Per stop, a percent stop at 1 (a gradient fitted to a part that
+    // starts 1% into the sheet: stops 1 / 23 / 46) was read as the fraction 1.0 and sorted LAST, so the zone came out flat in its middle colour.
+    const _pct = stops.some(function(stop) { const v = Number(stop && stop.pos); return Number.isFinite(v) && v > 1; });
     return stops.map(function(stop) {
         const rawPos = Number(stop && stop.pos);
         const rawColor = _normalizeBaseGradientStopColorForPayload(stop && stop.color);
         if (!Number.isFinite(rawPos) || !rawColor) return null;
-        const pos = rawPos > 1 ? rawPos / 100 : rawPos;
+        const pos = _pct ? rawPos / 100 : rawPos;
         return {
             pos: Math.max(0, Math.min(1, pos)),
             color: rawColor,
@@ -8086,7 +8199,7 @@ function setPickerColorCommit(index, hexValue) {
 // car (or the whole screen) — the color applies immediately, no extra step.
 async function spbPickBaseColorFromScreen(index) {
     if (typeof EyeDropper === 'undefined') {
-        showToast('Screen eyedropper not supported in this build — use the color wheel (it applies live now)', true);
+        showToast('The screen eyedropper isn\'t available yet. Use the color wheel, which applies changes live.', true);
         return;
     }
     try {
@@ -8171,8 +8284,8 @@ function setZoneBaseColorFitZone(index, enabled) {
     if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
     if (typeof showToast === 'function') {
         showToast(enabled
-            ? '🎯 Fit-to-Selection ON — base color & spec will compress into your selected area'
-            : 'Fit-to-Selection OFF — base will sample from full canvas (original behavior)');
+            ? 'Fit-to-Selection on — base color & spec will compress into your selected area'
+            : 'Fit-to-Selection off — base will sample from full canvas (original behavior)');
     }
 }
 if (typeof window !== 'undefined') window.setZoneBaseColorFitZone = setZoneBaseColorFitZone;
@@ -8188,8 +8301,8 @@ function setZoneLockBaseColor(index, enabled) {
     if (typeof renderZones === 'function') renderZones();
     if (typeof showToast === 'function') {
         showToast(enabled
-            ? '🔒 Base color locked — changing the base keeps your current color/tint'
-            : '🔓 Base color unlocked — changing the base may reset to its defaults');
+            ? 'Base color locked — changing the base keeps your current color/tint'
+            : 'Base color unlocked — changing the base may reset to its defaults');
     }
 }
 if (typeof window !== 'undefined') window.setZoneLockBaseColor = setZoneLockBaseColor;
@@ -8232,6 +8345,8 @@ function _isPlacementLayerTarget(layer) {
 function _getSwatchItemById(id, typeHint) {
     const cleanId = String(id || '').replace(/^mono:/, '');
     if (!cleanId) return null;
+    // [SPB-PERF2 2026-10-10] O(1) lookup (was a linear .find over three ~1000-item catalogs, once per card per picker build); undefined = cannot answer -> original code below.
+    { const _p2 = (window.SPB_PERF2_OFF !== true) ? window.__spbPerf2Picker : null; if (_p2) { const _r = _p2.itemById(cleanId, typeHint); if (_r !== undefined) return _r; } }
     if (typeHint === 'pattern' && typeof PATTERNS !== 'undefined') {
         const pattern = PATTERNS.find(function(p) { return p.id === cleanId; });
         if (pattern) return { item: pattern, type: 'pattern', selectValue: pattern.id };
@@ -8846,7 +8961,7 @@ function _swatchReviewAllowedTypes() {
     if (type === 'pattern' || type === 'stackPattern' || type === 'secondBasePattern' || type === 'thirdBasePattern') {
         return ['pattern'];
     }
-    if (type === 'layerSpecialPaint') return ['monolithic'];
+    if (type === 'layerSpecialPaint') return (window.SPB_SPECIAL_ALL_OFF === true) ? ['monolithic'] : ['base', 'monolithic'];   // [SPECIAL-ALL 2026-10-12] bases + specials
     return ['base', 'monolithic'];
 }
 
@@ -9446,7 +9561,7 @@ function renderOverlayBlendModeGrid(index, radioName, currentMode, setHandlerNam
             : 'border:1px solid rgba(132,162,205,0.16);background:rgba(0,0,0,0.25);';
         return `<label class="blend-mode-grid-cell${isSel ? ' selected' : ''}" style="display:flex;align-items:flex-start;gap:4px;cursor:pointer;font-size:9px;padding:5px;border-radius:6px;min-height:34px;${cellStyle}">
             <input type="radio" name="${radioName}" value="${m.value}" ${isSel ? 'checked' : ''} onchange="${setHandlerName}(${index}, '${m.value}')" style="margin-top:2px;accent-color:#00e5ff;width:13px;height:13px;flex:0 0 auto;">
-            <span>${m.icon} ${m.label}</span></label>`;
+            <span>${m.label}</span></label>`;
     }).join('');
     return `<div class="blend-mode-section" style="margin-top:4px;">
         <span class="stack-label-mini" style="display:block;margin-bottom:6px;">Blend Mode</span>
@@ -9923,7 +10038,7 @@ function autoPopZone(index) {
     if (typeof index !== 'number') index = (typeof selectedZoneIndex === 'number' ? selectedZoneIndex : -1);
     if (typeof zones === 'undefined' || !zones[index]) { showToast('Select a zone first', true); return; }
     if (typeof SPB_SpecStats === 'undefined' || !SPB_SpecStats || !SPB_SpecStats.computeZoneSpecStats) {
-        showToast('Spec analyzer not loaded — refresh the booth', true); return;
+        showToast('The spec analyzer isn\'t ready yet. Reload Shokker Paint Booth and try again.', true); return;
     }
     const img = document.getElementById('livePreviewSpecImg');
     if (!img || !img.src || !img.naturalWidth) { showToast('Render a preview first, then Auto-Pop', false); return; }
@@ -9957,7 +10072,7 @@ function autoPopZone(index) {
     if (typeof renderZones === 'function') renderZones();
     if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
     const sgn = v => (v >= 0 ? '+' + v : '' + v);
-    showToast('⚡ Auto-Pop "' + (z.name || 'zone') + '": Metal ' + sgn(dR) + ' · Rough ' + sgn(dG) + ' · Clearcoat ' + sgn(dB) + ' (glossier) — Undo to revert', false);
+    showToast('Auto-Pop "' + (z.name || 'zone') + '": Metal ' + sgn(dR) + ' · Rough ' + sgn(dG) + ' · Clearcoat ' + sgn(dB) + ' (glossier) — Undo to revert', false);
 }
 if (typeof window !== 'undefined') window.autoPopZone = autoPopZone;
 
@@ -10014,14 +10129,23 @@ if (typeof window !== 'undefined') window._specPresetOptionsHtml = _specPresetOp
 function saveSpecPreset(index) {
     if (typeof index !== 'number') index = (typeof selectedZoneIndex === 'number' ? selectedZoneIndex : -1);
     const z = zones[index]; if (!z) { showToast('Select a zone first', true); return; }
-    let name = prompt('Name this spec feel (e.g. "Wet Candy", "Satin Matte"):', '');
+    // [SPB-PROMPT-FIX 2026-10-10] window.prompt() throws in Electron (the 💾 button did nothing) -> in-app text box (SpbDialog.prompt);
+    // the save is unchanged and runs after OK; Esc / Cancel saves nothing. The zone is re-read AFTER the box (shifts may have moved).
+    // Kill switch window.SPB_PROMPT_FIX_OFF -> the old native prompt.
+    return SpbDialog.prompt('Name This Spec Feel', '', {
+        message: 'Saves this zone\'s R / G / B spec shifts as a reusable feel.',
+        placeholder: 'Wet Candy, Satin Matte', okLabel: 'Save',
+        nativeText: 'Name this spec feel (e.g. "Wet Candy", "Satin Matte"):'
+    }).then(function (name) {
     if (name == null) return;
     name = String(name).trim(); if (!name) return;
+    const z = zones[index]; if (!z) { showToast('Select a zone first', true); return; }
     const store = _loadSpecPresets();
     store[name] = { r: z.specShiftR || 0, g: z.specShiftG || 0, b: z.specShiftB || 0 };
     _saveSpecPresetsStore();
     if (typeof renderZones === 'function') renderZones();
     showToast('Saved spec preset "' + name + '"  (R' + (store[name].r >= 0 ? '+' : '') + store[name].r + ' G' + store[name].g + ' B' + store[name].b + ')');
+    });
 }
 function applySpecPreset(index, name) {
     if (typeof index !== 'number') index = (typeof selectedZoneIndex === 'number' ? selectedZoneIndex : -1);
@@ -10036,11 +10160,12 @@ function applySpecPreset(index, name) {
     if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
     showToast('Applied spec preset "' + name + '" to "' + (z.name || 'zone') + '" — Undo to revert');
 }
-function deleteSpecPreset(name) {
+async function deleteSpecPreset(name) {
     if (!name) return;
     const store = _loadSpecPresets();
     if (!store[name]) { showToast('Preset "' + name + '" not found', true); return; }
-    if (typeof confirm === 'function' && !confirm('Delete spec preset "' + name + '"?')) return;
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF). Function is async now; every caller is a button / key handler that does not use the result.
+    if (!(await SpbDialog.ask('Delete Spec Preset?', { message: '"' + name + '" will be removed.', okLabel: 'Delete Preset', danger: true, nativeText: 'Delete spec preset "' + name + '"?' }))) return;
     delete store[name]; _saveSpecPresetsStore();
     if (typeof renderZones === 'function') renderZones();
     showToast('Deleted spec preset "' + name + '"');
@@ -11977,7 +12102,7 @@ function importSpecMapFromDrop(file) {
     reader.readAsDataURL(file);
 }
 
-function clearImportedSpecMap() {
+async function clearImportedSpecMap() {
     // 2026-04-19 Hennig polish P3: parity early-return.
     const activeSpecPath = _getActiveImportedSpecMapPath();
     if (!activeSpecPath) {
@@ -11985,8 +12110,8 @@ function clearImportedSpecMap() {
         return;
     }
     // 2026-04-19 FIVE-HOUR DEEP SHIFT (Pillman recon W10c): destructive without confirm.
-    if (typeof confirm === 'function' &&
-        !confirm('Clear the imported spec map? You will need to re-import or re-load from SHOKK to restore it.')) {
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF). Function is async now; every caller is a button / key handler that does not use the result.
+    if (!(await SpbDialog.ask('Clear Spec Map?', { message: 'You will need to re-import it, or re-load it from Shokk, to get it back.', okLabel: 'Clear Spec Map', danger: true, nativeText: 'Clear the imported spec map? You will need to re-import or re-load from Shokk to restore it.' }))) {
         return;
     }
     importedSpecMapPath = null;
@@ -14295,7 +14420,20 @@ var _SPB_GROUP_BLURBS = {
     'materials & physics': 'Physically-derived materials: real roughness, real metalness, real film',
     'glass & surface': 'Glass and glazed surface treatments',
     'wave & flow': 'Fluid motion — poured, marbled and flow-formed colour',
-    'signal': 'Broadcast and signal artefacts: scanline, static, chroma bleed and dropout'
+    'signal': 'Broadcast and signal artefacts: scanline, static, chroma bleed and dropout',
+
+    // ── PATTERN picker groups ([S17b 2026-10-12 owner: pickers show real descriptions]) ───────────────────────────
+    // These groups had only the dev fallback ("Curated finish family", "Age, damage, and grime"), and
+    // "Abstract, Fractal & Paradigm" picked up the PARADIGM monolithic shelf's blurb by substring. Written
+    // from what is actually in each group; no counts (the card header shows them). Each <= 160 chars.
+    'abstract fractal & paradigm': 'Mathematical patterns: fractals, attractors, reaction-diffusion, Voronoi shatter, interference, topographic lines and Art Deco geometry.',
+    'tech carbon & industrial': 'Technical patterns: carbon and kevlar weaves, chain link, diamond plate, perforated metal, circuit traces and SHOKK glitch and data screens.',
+    'geometry deco & op art': 'Geometric patterns: Art Deco, Celtic knots, plaid and houndstooth, herringbone, moire and op-art illusions, Greek key and tile mosaics.',
+    'nature animals & weather': 'Patterns from the natural world: camo, leopard, zebra and snake skin, feathers, lightning and tornado, marble, wood burl and coral.',
+    'cultural world & dark': 'Patterns from world ornament and dark imagery: Aztec, Japanese wave, mandala, Day of the Dead, runes, gothic arches, skulls and razor wire.',
+    'decades 50s 80s': 'Patterns from the 1950s to the 1980s: diner checkerboard, atomic age, tie-dye, pop-art halftone, disco glitter and arcade pixels.',
+    '90s skate & surf': 'Patterns from the 1990s: grunge splatter, floppy disks and Windows 95, Y2K, rave zigzag, skate decks and surf-shop graphics.',
+    'reactive & surface accents': 'Surface accents to layer over a finish: shimmer effects, iridescent fog, frost, pearlescent flip coat, race wear, polish and a UV night accent.'
 };
 function _spbGroupBlurb(groupName) {
     try {
@@ -14303,13 +14441,47 @@ function _spbGroupBlurb(groupName) {
         if (!k) return '';
         if (_SPB_GROUP_BLURBS[k]) return _SPB_GROUP_BLURBS[k];
         for (var key in _SPB_GROUP_BLURBS) { if (k.indexOf(key) >= 0 || key.indexOf(k) >= 0) return _SPB_GROUP_BLURBS[key]; }
-        if (typeof _getLibraryGroupPurpose === 'function') {
-            var p = _getLibraryGroupPurpose(groupName, '', 9);
-            if (p && p.purpose) return p.purpose;
-        }
+        // [S17b 2026-10-12 owner: pickers show real descriptions] the old fallback returned _getLibraryGroupPurpose().purpose, a dev note ("Curated finish
+        // family", "Premium discovery lane", "Merge or feature carefully"). Describe the group from what it holds instead, or nothing.
+        var fb = _spbGroupFallbackBlurb(groupName);
+        if (fb) return fb;
     } catch (e) {}
     return '';
 }
+// [S17b 2026-10-12 owner: pickers show real descriptions] honest fallback line for a group that has no authored blurb: its size and first few finishes.
+function _spbGroupFallbackBlurb(groupName) {
+    try {
+        var noun = 'finishes', ids = null;
+        if (typeof BASE_GROUPS !== 'undefined' && BASE_GROUPS[groupName]) ids = BASE_GROUPS[groupName];
+        else if (typeof SPECIAL_GROUPS !== 'undefined' && SPECIAL_GROUPS[groupName]) ids = SPECIAL_GROUPS[groupName];
+        else if (typeof PATTERN_GROUPS !== 'undefined' && PATTERN_GROUPS[groupName]) { ids = PATTERN_GROUPS[groupName]; noun = 'patterns'; }
+        if (!ids || !ids.length) return '';
+        var pools = [typeof BASES !== 'undefined' ? BASES : [], typeof MONOLITHICS !== 'undefined' ? MONOLITHICS : [], typeof PATTERNS !== 'undefined' ? PATTERNS : []];
+        var names = [];
+        for (var i = 0; i < ids.length && names.length < 3; i++) {
+            var nm = '';
+            for (var pi = 0; pi < pools.length && !nm; pi++) {
+                var hit = pools[pi].find(function (x) { return x && x.id === ids[i]; });
+                if (hit && hit.name) nm = String(hit.name).replace(/^[^A-Za-z0-9]+/, '');
+            }
+            if (nm && !/\((alt|variant)|rejected|\bdev\b/i.test(nm)) names.push(nm);
+        }
+        if (!names.length) return '';
+        var list = names.length === 1 ? names[0] : names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+        return ids.length + ' ' + noun + ', including ' + list + '.';
+    } catch (e) { return ''; }
+}
+// [S17b 2026-10-12 owner: pickers show real descriptions] finish-library rail / heading text. _getLibraryGroupPurpose() stays as it was (dev notes for tools);
+// the buyer sees the group's real description, and the guessed tags 'Thin' / 'Review' / 'Category' are dropped.
+function _spbBuyerGroupInfo(groupName, tabId, count, devInfo) {
+    var info = devInfo || { strength: '', purpose: '' };
+    var s = info.strength;
+    var d = '';
+    try { if (window.SPB_ATLAS && typeof window.SPB_ATLAS.cardDesc === 'function') d = window.SPB_ATLAS.cardDesc(groupName) || ''; } catch (e) {}
+    if (!d) { try { d = _spbGroupBlurb(groupName) || ''; } catch (e) {} }
+    return { strength: (s === 'Thin' || s === 'Review' || s === 'Category') ? '' : (s || ''), purpose: d };
+}
+if (typeof window !== 'undefined') window._spbBuyerGroupInfo = _spbBuyerGroupInfo;
 
 // -- Categories where ordinary BASE picks keep "Use source paint" by default.
 // Shipping Specials / Monolithics bypass this list: they default Base Color to
@@ -14494,7 +14666,7 @@ function _spbMakeCarTemplateZone(monoId, label) {
         color: 'everything', base: null, pattern: 'none', finish: null,
         intensity: '100', colorMode: 'special',
         pickerColor: '#888888', pickerTolerance: 40, colors: [], regionMask: null,
-        hint: 'Whole-car template — covers ALL pixels and overrides the zones below. Delete or mute this zone to bring your previous zones back.'
+        hint: 'Whole-car template — covers all pixels and overrides the zones below. Delete or mute this zone to bring your previous zones back.'
     };
     // Reuse the canonical mono apply so finish id, spec strengths and base-color
     // defaulting match a normal finish pick. It does NOT touch color/colorMode,
@@ -14899,7 +15071,7 @@ function _renderFinishItem(item, type) {
              data-search="${escapeHtml(_getLibrarySearchText(item, type)).toLowerCase()}">
             ${swatchHtml}
             <div class="finish-item-info">
-                <div class="finish-item-name">${item.name}${!isRegistered ? ' <span style="font-size:7px;color:#ff8800;border:1px solid #ff8800;border-radius:2px;padding:0 2px;vertical-align:middle;" title="Preview — this finish uses a generic render path">PREVIEW</span>' : ''}</div>
+                <div class="finish-item-name">${item.name}${!isRegistered ? ' <span style="font-size:7px;color:#ff8800;border:1px solid #ff8800;border-radius:2px;padding:0 2px;vertical-align:middle;" title="Preview — this finish uses a generic render path">Preview</span>' : ''}</div>
                 <div class="finish-item-desc">${item.desc}</div>
                 ${inlineChips.length > 0 ? `<div class="finish-item-chips" style="display:flex; flex-wrap:wrap; gap:3px; margin-top:3px;">${inlineChips.join('')}</div>` : ''}
             </div>
@@ -15115,9 +15287,12 @@ if (typeof window !== 'undefined') window._setLibraryActiveGroup = _setLibraryAc
 function _renderLibraryRailButton(entry, activeGroup) {
     const active = activeGroup === entry.id;
     const count = typeof entry.count === 'number' ? entry.count : 0;
-    return `<button type="button" class="finish-rail-button${active ? ' active' : ''}" data-group="${escapeHtml(entry.id)}" onclick="_setLibraryActiveGroup(this.dataset.group)" title="${escapeHtml(entry.label)}">
+    // [S17b 2026-10-12 owner: pickers show real descriptions] empty strength/purpose are left out (a group tag the buyer should not see is '' not 'Catalog'); full description on hover.
+    const _railStrength = entry.strength == null ? 'Catalog' : entry.strength;
+    const _railTitle = entry.label + (entry.purpose ? ': ' + entry.purpose : '');
+    return `<button type="button" class="finish-rail-button${active ? ' active' : ''}" data-group="${escapeHtml(entry.id)}" onclick="_setLibraryActiveGroup(this.dataset.group)" title="${escapeHtml(_railTitle)}">
         <span class="finish-rail-main"><span class="finish-rail-label">${escapeHtml(entry.label)}</span><span class="finish-rail-count">${count}</span></span>
-        <span class="finish-rail-meta"><span>${escapeHtml(entry.strength || 'Catalog')}</span><span>${escapeHtml(entry.purpose || '')}</span></span>
+        ${(_railStrength || entry.purpose) ? `<span class="finish-rail-meta">${_railStrength ? `<span>${escapeHtml(_railStrength)}</span>` : ''}${entry.purpose ? `<span>${escapeHtml(entry.purpose)}</span>` : ''}</span>` : ''}
     </button>`;
 }
 
@@ -15132,7 +15307,8 @@ function _renderGuidedFinishCatalog(activeTab, groupMap, groupNames, activeTabId
     const groupEntries = groupNames.map(function(groupName) {
         const ids = new Set(groupMap[groupName] || []);
         const count = activeTab.items.filter(function(item) { return ids.has(item.id); }).length;
-        const info = _getLibraryGroupPurpose(groupName, activeTabId, count);
+        let info = _getLibraryGroupPurpose(groupName, activeTabId, count);
+        if (typeof _spbBuyerGroupInfo === 'function') info = _spbBuyerGroupInfo(groupName, activeTabId, count, info);   // [S17b 2026-10-12 owner: pickers show real descriptions]
         return {
             id: groupName,
             label: _cleanLibraryGroupLabel(groupName),
@@ -15177,7 +15353,7 @@ function _renderGuidedFinishCatalog(activeTab, groupMap, groupNames, activeTabId
             <div class="finish-catalog-heading">
                 <div>
                     <div class="finish-catalog-title">${escapeHtml(activeEntry.label)}</div>
-                    <div class="finish-catalog-purpose">${escapeHtml(activeEntry.strength || 'Catalog')} - ${escapeHtml(activeEntry.purpose || '')}</div>
+                    <div class="finish-catalog-purpose">${escapeHtml([activeEntry.strength == null ? 'Catalog' : activeEntry.strength, activeEntry.purpose || ''].filter(Boolean).join(' - '))}</div>
                 </div>
                 <div class="finish-catalog-stats">${visibleItems.length} shown${queryNote}</div>
             </div>`;
@@ -15839,7 +16015,7 @@ function _applyPresetById(presetId) {
     if (typeof _sanitizeZonesInPlace === 'function') _sanitizeZonesInPlace(zones, 'built-in preset: ' + presetId);
     selectedZoneIndex = 0;
     renderZones();
-    showToast(`Loaded preset: ${preset.name} — set colors using the eyedropper!`);
+    showToast(`Loaded preset: ${preset.name} — set colors using the eyedropper`);
 }
 
 // ===== TOAST =====
@@ -15895,7 +16071,11 @@ function showToast(msg, isError, details) {
     // Build content with close button
     toast.innerHTML = '';
     const msgSpan = document.createElement('span');
-    msgSpan.textContent = msg;
+    // S3 2026-10-12: calm toast copy. Styling above already read any leading status emoji; show the text without it and without a trailing "!".
+    const _toastShown = (typeof msg === 'string')
+        ? (msg.replace(/^(?:[\u2705\u274C\u274E\u26A0\u2B50\u26A1\u2728\u2757]|[\uD83C-\uD83E][\uDC00-\uDFFF])\uFE0F?\s*/, '').replace(/([^!\s])!+$/, '$1') || msg)
+        : msg;
+    msgSpan.textContent = _toastShown;
     // Optional detail line for error context
     if (details) {
         const detSpan = document.createElement('div');
@@ -15991,10 +16171,10 @@ const RenderNotify = {
         this.playSound(success);
         if (!document.hasFocus()) {
             if (success) {
-                this.flashTitle(`✅ Render done! (${elapsed}s)`);
+                this.flashTitle(`Render done (${elapsed}s)`);
                 this.browserNotify('Shokker Render Complete', `${zoneCount} zones rendered in ${elapsed}s`);
             } else {
-                this.flashTitle('❌ Render failed!');
+                this.flashTitle('Render failed');
                 this.browserNotify('Shokker Render Failed', 'Check the Paint Booth for details');
             }
         }
@@ -16071,6 +16251,7 @@ function getConfig() {
         zones: zones.map(z => ({
             name: z.name,
             renderSeedIndex: (window.SPBStableZoneSeeds && window.SPBStableZoneSeeds.validIndex(z.renderSeedIndex)) ? z.renderSeedIndex : undefined,
+            textureAnchor: (z.textureAnchor === 'canvas') ? 'canvas' : undefined, // [ENGINE_TEXTURE_ANCHOR 2026-10-06] save/load keeps canvas-anchored copies
             color: z.color,
             base: z.base,
             pattern: z.pattern,
@@ -16139,6 +16320,9 @@ function getConfig() {
             zoneSpecMapStrength: z.zoneSpecMapStrength ?? 100,
             // SPB-93 09-08: native Spec edits rendered correctly but vanished on reopen.
             specLightingMask: z.specLightingMask ?? null,
+            // [SPB-REV-FLAKE 2026-10-10] Flake Studio recipe (js/rev/flake/flake-studio.js) + the finish it replaced: rides save / open / autosave / presets
+            spbFlake: (z.spbFlake && typeof z.spbFlake === 'object') ? JSON.parse(JSON.stringify(z.spbFlake)) : null,
+            spbFlakePrev: (z.spbFlakePrev && typeof z.spbFlakePrev === 'object') ? JSON.parse(JSON.stringify(z.spbFlakePrev)) : null,
             specMaterialOverride: z.specMaterialOverride ?? null,
             specMaterialRemap: z.specMaterialRemap ?? null,
             gradientStops: z.gradientStops || null,
@@ -16292,6 +16476,7 @@ function getConfig() {
             // the codec block above for the 8.2MB / silent-total-save-failure it
             // replaces. Drawn selections now survive a reload.
             regionMask: _encodeSavedMask(z.regionMask, _savedCfgSize.w, _savedCfgSize.h),
+            spzOwned: !!z._spzOwned,   // [SPECIAL-ZONE 2026-10-11] regionMask is a Special-brush footprint (editable by the Special brush / eraser)
             spatialMask: _encodeSavedMask(z.spatialMask, _savedCfgSize.w, _savedCfgSize.h),
             // useRegion is the flag that decides whether the region is APPLIED —
             // _encodeZoneApplyMasks only ships a mask to the renderer when it is
@@ -16358,6 +16543,7 @@ function loadConfigFromObj(cfg) {
             id: z.id || _newZoneId(),
             name: z.name || 'Zone',
             renderSeedIndex: (window.SPBStableZoneSeeds && window.SPBStableZoneSeeds.validIndex(z.renderSeedIndex)) ? z.renderSeedIndex : undefined,
+            textureAnchor: (z.textureAnchor === 'canvas') ? 'canvas' : undefined, // [ENGINE_TEXTURE_ANCHOR 2026-10-06] save/load keeps canvas-anchored copies
             color: z.color,
             base: z.base ?? null,
             pattern: z.pattern ?? 'none',
@@ -16424,6 +16610,9 @@ function loadConfigFromObj(cfg) {
             zoneSpecMapStrength: z.zoneSpecMapStrength ?? 100,
             // SPB-93 09-08: native Spec edits rendered correctly but vanished on reopen.
             specLightingMask: z.specLightingMask ?? null,
+            // [SPB-REV-FLAKE 2026-10-10] Flake Studio recipe (js/rev/flake/flake-studio.js) + the finish it replaced: rides save / open / autosave / presets
+            spbFlake: (z.spbFlake && typeof z.spbFlake === 'object') ? JSON.parse(JSON.stringify(z.spbFlake)) : null,
+            spbFlakePrev: (z.spbFlakePrev && typeof z.spbFlakePrev === 'object') ? JSON.parse(JSON.stringify(z.spbFlakePrev)) : null,
             specMaterialOverride: z.specMaterialOverride ?? null,
             specMaterialRemap: z.specMaterialRemap ?? null,
             gradientStops: z.gradientStops || null,
@@ -16588,6 +16777,7 @@ function loadConfigFromObj(cfg) {
             // form too, so an existing autosave upgrades cleanly.
             regionMask: _decodeSavedMask(z.regionMask, _loadCfgSize.w, _loadCfgSize.h),
             spatialMask: _decodeSavedMask(z.spatialMask, _loadCfgSize.w, _loadCfgSize.h),
+            _spzOwned: !!z.spzOwned,   // [SPECIAL-ZONE 2026-10-11]
             useRegion: !!z.useRegion,
             fitIntoApplyArea: !!z.fitIntoApplyArea,
         }));
@@ -16670,14 +16860,16 @@ function saveConfig() {
     a.download = `shokker_paintbooth_config_${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
-    showToast('Config saved!');
+    showToast('Config saved');
 }
 
 // ===== SHAREABLE PAINT PRESETS (.shokker files) =====
-function exportPreset() {
+// [SPB-PROMPT-FIX 2026-10-10] was a sync window.prompt (throws in Electron). Now async: the name comes from the in-app box
+// (SpbDialog.prompt, Esc = nothing exported); everything after it is unchanged. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+async function exportPreset() {
     const driverName = (document.getElementById('driverName')?.value || '').trim() || 'Unknown';
     const carName = (document.getElementById('carName')?.value || '').trim() || 'Unknown Car';
-    const presetName = prompt('Preset name:', `${driverName} - ${carName}`);
+    const presetName = await SpbDialog.prompt('Name This Preset', `${driverName} - ${carName}`, { okLabel: 'Export', nativeText: 'Preset name:' });
     if (!presetName) return;
 
     const preset = {
@@ -16713,6 +16905,9 @@ function exportPreset() {
             zoneSpecMapStrength: z.zoneSpecMapStrength ?? 100,
             // SPB-93 09-08: native Spec edits rendered correctly but vanished on reopen.
             specLightingMask: z.specLightingMask ?? null,
+            // [SPB-REV-FLAKE 2026-10-10] Flake Studio recipe (js/rev/flake/flake-studio.js) + the finish it replaced: rides save / open / autosave / presets
+            spbFlake: (z.spbFlake && typeof z.spbFlake === 'object') ? JSON.parse(JSON.stringify(z.spbFlake)) : null,
+            spbFlakePrev: (z.spbFlakePrev && typeof z.spbFlakePrev === 'object') ? JSON.parse(JSON.stringify(z.spbFlakePrev)) : null,
             specMaterialOverride: z.specMaterialOverride ?? null,
             specMaterialRemap: z.specMaterialRemap ?? null,
             // 2026-04-21 HEENAN OVERNIGHT iter 8: `||` → `??` on numeric/
@@ -16785,7 +16980,8 @@ function importPreset() {
             try {
                 const data = JSON.parse(ev.target.result);
                 if (data._shokker_preset) {
-                    applyPreset(data);
+                    // [SPB-CONFIRM-POLISH 2026-10-10] applyPreset is async now (in-app confirm); keep the old 'Invalid preset file' toast for a throw inside it
+                    Promise.resolve(applyPreset(data)).catch(function (err2) { showToast('Invalid preset file: ' + err2.message, true); });
                 } else if (data.zones) {
                     // Fallback: it's a regular config file
                     loadConfigFromObj(data);
@@ -16808,10 +17004,11 @@ function importPreset() {
 // router below. Also: switched `||` → `??` on numeric/boolean persistence
 // fields so a preset author who saved `pickerTolerance: 0`, `scale: 0`, etc.
 // round-trips faithfully on recipient load.
-function _applyPresetFromObject(preset) {
+async function _applyPresetFromObject(preset) {
     // Show preset info before applying
     const info = `"${preset.name}"${preset.author ? ' by ' + preset.author : ''}\n${preset.zones.length} zones | ${preset.finishCount || '?'} finishes\n\nApply this preset? (Your current zones will be replaced)`;
-    if (!confirm(info)) return;
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF). Function is async now; every caller is a button / key handler that does not use the result.
+    if (!(await SpbDialog.ask('Apply Preset?', { message: `"${preset.name}"${preset.author ? ' by ' + preset.author : ''}\n${preset.zones.length} zones | ${preset.finishCount || '?'} finishes\n\nYour current zones will be replaced.`, okLabel: 'Apply Preset', nativeText: info }))) return;
 
     // Apply zones
     zones = preset.zones.map(z => ({
@@ -16840,6 +17037,9 @@ function _applyPresetFromObject(preset) {
         zoneSpecMapStrength: z.zoneSpecMapStrength ?? 100,
         // SPB-93 09-08: native Spec edits rendered correctly but vanished on reopen.
         specLightingMask: z.specLightingMask ?? null,
+        // [SPB-REV-FLAKE 2026-10-10] Flake Studio recipe (js/rev/flake/flake-studio.js) + the finish it replaced: rides save / open / autosave / presets
+        spbFlake: (z.spbFlake && typeof z.spbFlake === 'object') ? JSON.parse(JSON.stringify(z.spbFlake)) : null,
+        spbFlakePrev: (z.spbFlakePrev && typeof z.spbFlakePrev === 'object') ? JSON.parse(JSON.stringify(z.spbFlakePrev)) : null,
         specMaterialOverride: z.specMaterialOverride ?? null,
         specMaterialRemap: z.specMaterialRemap ?? null,
         regionMask: null, // Regions are car-specific, not imported
@@ -16910,7 +17110,7 @@ function loadConfig() {
                     var _src = ((cfg && (cfg.sourcePaintFile || cfg.paintFile)) || '').trim();
                     if (_src) _spbRestorePaintFile(_src);
                 }
-                showToast('Config loaded!');
+                showToast('Config loaded');
             } catch (err) {
                 showToast('Invalid config file', true);
             }
@@ -17053,7 +17253,7 @@ function _spbReportAutosaveFailure(message) {
             document.body.appendChild(bar);
         }
         const t = document.getElementById('spbAutosaveFailText');
-        if (t) t.textContent = '⚠ ' + message;
+        if (t) t.textContent = message;
         bar.style.display = 'block';
     } catch (e) { /* the warning must never itself break the app */ }
     try { if (typeof showToast === 'function') showToast(message, true); } catch (e) {}
@@ -17090,7 +17290,7 @@ function autoSave() {
                 // checkpoint or leave yesterday's green status visible.
                 const layerResult = _spbWriteLayerAutosaveComponent();
                 _spbPublishAutosaveStatus(zoneResult, layerResult);
-                _spbReportAutosaveFailure('Auto-save is OFF — this design is too large to save automatically ('
+                _spbReportAutosaveFailure('Auto-save is off — this design is too large to save automatically ('
                     + Math.round(json.length / 1024) + 'KB). Save an SPB Project now to protect layer pixels.');
                 const badge = document.getElementById('autosaveBadge');
                 if (badge) {
@@ -17115,7 +17315,7 @@ function autoSave() {
                 badge.textContent = layerResult.ok
                     ? ('Auto-saved settings (' + _autosavePendingChanges + ' changes)'
                         + (layerResult.skipped ? '' : ' · Project saves layer pixels'))
-                    : 'Zone settings saved · layer recovery FAILED';
+                    : 'Zone settings saved · layer recovery failed';
                 badge.style.opacity = '1';
                 setTimeout(() => { badge.style.opacity = '0.4'; }, 1500);
             }
@@ -17586,10 +17786,12 @@ function bulkUnmute() {
     _bulkSelectedZones.forEach(function(i) { if (zones[i]) zones[i].muted = false; });
     renderZones(); triggerPreviewRender();
 }
-function bulkDelete() {
+async function bulkDelete() {
     if (_bulkSelectedZones.size === 0) { showToast('No zones selected', true); return; }
     if (_bulkSelectedZones.size >= zones.length) { showToast('Cannot delete all zones — keep at least one', true); return; }
-    if (!confirm('Delete ' + _bulkSelectedZones.size + ' selected zones?')) return;
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF). Function is async now; every caller is a button / key handler that does not use the result.
+    if (!(await SpbDialog.ask('Delete Selected Zones?', { message: _bulkSelectedZones.size + ' selected zones will be deleted. Ctrl+Z brings them back.', okLabel: 'Delete ' + _bulkSelectedZones.size + ' Zones', danger: true, nativeText: 'Delete ' + _bulkSelectedZones.size + ' selected zones?' }))) return;
+    if (_bulkSelectedZones.size === 0 || _bulkSelectedZones.size >= zones.length) return;   // selection changed while the box was open
     pushZoneUndo('Bulk delete ' + _bulkSelectedZones.size + ' zones');
     const indices = Array.from(_bulkSelectedZones).sort(function(a,b){ return b-a; });
     // 2026-04-18 MARATHON bug #35 (MED): pre-fix, bulkDelete only clamped
@@ -17622,23 +17824,27 @@ if (typeof window !== 'undefined') {
 const ZONE_PRESETS_KEY = 'shokker_zone_presets';
 function _loadZonePresets() { try { return JSON.parse(localStorage.getItem(ZONE_PRESETS_KEY) || '[]'); } catch (e) { return []; } }
 function _saveZonePresetsList(arr) { try { localStorage.setItem(ZONE_PRESETS_KEY, JSON.stringify(arr)); } catch (e) {} }
-function saveZonePreset(presetName) {
-    if (!presetName) presetName = prompt('Name this preset (e.g. "Kyle\'s Setup"):');
+// [SPB-PROMPT-FIX 2026-10-10] now async: window.prompt() throws in Electron -> in-app box (SpbDialog.prompt). With a name given no await
+// runs, so a programmatic call still finishes synchronously. Esc = nothing saved. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+async function saveZonePreset(presetName) {
+    if (!presetName) presetName = await SpbDialog.prompt('Name This Preset', '', { message: 'Saves all of your zones as a named preset you can load later.', placeholder: 'Kyle\'s Setup', okLabel: 'Save', nativeText: 'Name this preset (e.g. "Kyle\'s Setup"):' });
     if (!presetName || !presetName.trim()) return;
     const presets = _loadZonePresets();
     const snapshot = JSON.parse(JSON.stringify(zones.map(z => ({ ...z, regionMask: null, spatialMask: null }))));
     const entry = { name: presetName.trim(), savedAt: Date.now(), zoneCount: zones.length, snapshot: snapshot };
     const existingIdx = presets.findIndex(p => p.name === entry.name);
-    if (existingIdx >= 0) { if (!confirm('Overwrite existing preset "' + entry.name + '"?')) return; presets[existingIdx] = entry; }
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF). Function is async now; every caller is a button / key handler that does not use the result.
+    if (existingIdx >= 0) { if (!(await SpbDialog.ask('Overwrite Preset?', { message: 'A preset named "' + entry.name + '" already exists. Saving replaces it.', okLabel: 'Overwrite', danger: true, nativeText: 'Overwrite existing preset "' + entry.name + '"?' }))) return; presets[existingIdx] = entry; }
     else presets.push(entry);
     _saveZonePresetsList(presets);
     showToast('Saved preset: ' + entry.name);
 }
-function loadZonePreset(presetName) {
+async function loadZonePreset(presetName) {
     const presets = _loadZonePresets();
     const p = presets.find(p => p.name === presetName);
     if (!p) { showToast('Preset not found: ' + presetName, true); return; }
-    if (!confirm('Replace current ' + zones.length + ' zones with preset "' + p.name + '" (' + p.zoneCount + ' zones)?')) return;
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF). Function is async now; every caller is a button / key handler that does not use the result.
+    if (!(await SpbDialog.ask('Load Preset?', { message: 'Your current ' + zones.length + ' zones are replaced with preset "' + p.name + '" (' + p.zoneCount + ' zones). Ctrl+Z brings them back.', okLabel: 'Load Preset', nativeText: 'Replace current ' + zones.length + ' zones with preset "' + p.name + '" (' + p.zoneCount + ' zones)?' }))) return;
     pushZoneUndo('Load preset: ' + p.name);
     zones.length = 0;
     p.snapshot.forEach(function(z) {
@@ -17651,8 +17857,9 @@ function loadZonePreset(presetName) {
     renderZones(); triggerPreviewRender();
     showToast('Loaded preset: ' + p.name + ' (' + p.zoneCount + ' zones)');
 }
-function deleteZonePreset(presetName) {
-    if (!confirm('Delete preset "' + presetName + '"?')) return;
+async function deleteZonePreset(presetName) {
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF). Function is async now; every caller is a button / key handler that does not use the result.
+    if (!(await SpbDialog.ask('Delete Preset?', { message: '"' + presetName + '" will be removed.', okLabel: 'Delete Preset', danger: true, nativeText: 'Delete preset "' + presetName + '"?' }))) return;
     const presets = _loadZonePresets().filter(p => p.name !== presetName);
     _saveZonePresetsList(presets);
     showToast('Deleted preset: ' + presetName);
@@ -17664,10 +17871,16 @@ if (typeof window !== 'undefined') {
 }
 
 // ---------- IMPROVEMENT 08: duplicate-with-hue-offset — clone with shifted hue ----------
-function duplicateZoneWithHueOffset(index, hueShiftDeg) {
+// [SPB-PROMPT-FIX 2026-10-10] now async: window.prompt() throws in Electron -> in-app box (SpbDialog.prompt). With a number given no await
+// runs, so a programmatic call still finishes synchronously. Same undo push after OK; Esc = nothing happens. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+async function duplicateZoneWithHueOffset(index, hueShiftDeg) {
     if (typeof index !== 'number' || index < 0 || index >= zones.length) return;
     if (typeof hueShiftDeg !== 'number') {
-        const v = prompt('Hue shift in degrees (-180 to 180):', '60');
+        const v = await SpbDialog.prompt('Duplicate With Hue Shift', '60', {
+            message: 'Hue shift in degrees (-180 to 180).', okLabel: 'Duplicate', inputMode: 'decimal',
+            validate: function (t) { return isNaN(parseFloat(t)) ? 'Enter a number of degrees, like 60 or -30.' : ''; },
+            nativeText: 'Hue shift in degrees (-180 to 180):'
+        });
         if (v === null) return;
         hueShiftDeg = parseFloat(v);
         if (isNaN(hueShiftDeg)) { showToast('Invalid hue value', true); return; }
@@ -17737,8 +17950,9 @@ function propagateIntensityToLinked(sourceIndex) {
         LINK_INTENSITY_PROPS.forEach(function(p) { if (z[p] !== undefined) other[p] = z[p]; });
     });
 }
-function unlinkAllZones() {
-    if (!confirm('Unlink ALL zones from their groups?')) return;
+async function unlinkAllZones() {
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF). Function is async now; every caller is a button / key handler that does not use the result.
+    if (!(await SpbDialog.ask('Unlink All Zones?', { message: 'Every zone leaves its link group. Ctrl+Z brings the links back.', okLabel: 'Unlink All', nativeText: 'Unlink all zones from their groups?' }))) return;
     pushZoneUndo('Unlink all zones');
     zones.forEach(function(z) { delete z.linkGroup; });
     renderZones();
@@ -18000,13 +18214,14 @@ function setTolerancePreset(index, preset) {
 function spbPickColorFromCar(index) {
     if (typeof index !== 'number') index = selectedZoneIndex;
     if (!zones[index]) return;
-    if (typeof selectZone === 'function') selectZone(index);
+    // [RESTRICT-PERF 2026-10-12] owner: "feels like its lagging" - the button re-ran selectZone() (renderZones + renderZoneDetail, ~55 ms) even when this zone was already selected
+    if (typeof selectZone === 'function' && (window.SPB_RESTRICT_PERF_OFF || index !== selectedZoneIndex)) selectZone(index);
     window._spbPickFromCarZone = { zone: index, picked: 0 };
     const sel = document.getElementById('eyedropperZoneSelect');
     if (sel) sel.value = String(index);
     if (typeof setCanvasMode === 'function') setCanvasMode('eyedropper');
     if (typeof showToast === 'function') {
-        showToast('\uD83C\uDFAF Click colors on the car \u2014 first click sets, each extra click ADDS a color. Pick another tool when done.');
+        showToast('Click colors on the car. The first click sets one color; each extra click adds another. Pick another tool when done.');
     }
 }
 if (typeof window !== 'undefined') window.spbPickColorFromCar = spbPickColorFromCar;
@@ -18113,8 +18328,8 @@ if (typeof window !== 'undefined') { window.bringZoneToFront = bringZoneToFront;
 
 // ---------- IMPROVEMENT 43: tooltip text for "Remaining" vs "Everything" ----------
 function getSpecialColorExplanation(value) {
-    if (value === 'remaining') return 'Catches every pixel NOT already claimed by a zone above this one. Use as a safety net for unclaimed body paint.';
-    if (value === 'everything') return 'Targets ALL pixels on the car (overrides other zones). Use sparingly — typically for a base monolithic finish covering the whole car.';
+    if (value === 'remaining') return 'Catches every pixel not already claimed by a zone above this one. Use as a safety net for unclaimed body paint.';
+    if (value === 'everything') return 'Targets all pixels on the car (overrides other zones). Use sparingly — typically for a base monolithic finish covering the whole car.';
     return value;
 }
 if (typeof window !== 'undefined') { window.getSpecialColorExplanation = getSpecialColorExplanation; }
@@ -18359,9 +18574,12 @@ function suggestSmartTolerance(hex) {
 if (typeof window !== 'undefined') { window.suggestSmartTolerance = suggestSmartTolerance; }
 
 // ---------- IMPROVEMENT 50: zone duplicate-with-new-color (offers a hex prompt) ----------
-function duplicateZoneWithColor(index) {
+// [SPB-PROMPT-FIX 2026-10-10] was a sync window.prompt (throws in Electron). Now async: the hex comes from the in-app box
+// (SpbDialog.prompt, validated as #RRGGBB; Esc = nothing duplicated); the body after it is unchanged. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+async function duplicateZoneWithColor(index) {
     if (typeof index !== 'number') index = selectedZoneIndex;
-    const newHex = prompt('New hex color for the duplicate (e.g. #FF3366):', '#FFFFFF');
+    const _hexIn = await SpbDialog.prompt('Duplicate With New Colour', '#FFFFFF', { message: 'New hex colour for the duplicate (like #FF3366).', okLabel: 'Duplicate', validate: SpbDialog.rules.hex(), nativeText: 'New hex color for the duplicate (e.g. #FF3366):' });
+    const newHex = _hexIn == null ? _hexIn : String(_hexIn).trim();
     if (!newHex) return;
     if (!/^#?[0-9A-Fa-f]{6}$/.test(newHex)) { showToast('Invalid hex', true); return; }
     pushZoneUndo('Duplicate with new color');
@@ -18531,9 +18749,14 @@ function _spbShouldAutoFillByName(finishId) {
 if (typeof window !== 'undefined') { window._spbShouldAutoFillByName = _spbShouldAutoFillByName; }
 
 // ---------- IMPROVEMENT 60: zone batch tolerance update across ALL zones ----------
-function setAllZonesTolerance(tolerance) {
+// [SPB-PROMPT-FIX 2026-10-10] now async: window.prompt() throws in Electron -> in-app box (whole number 1-200, SpbDialog.prompt). With a valid
+// number no await runs, so a programmatic call still finishes synchronously. Esc = nothing changes. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+async function setAllZonesTolerance(tolerance) {
     if (typeof tolerance !== 'number' || tolerance < 1 || tolerance > 200) {
-        const v = prompt('Tolerance for ALL zones (1-200):', '40');
+        const v = await SpbDialog.prompt('Tolerance For All Zones', '40', {
+            message: 'How far a pixel colour may drift and still match, applied to every zone (1 to 200).', okLabel: 'Apply', inputMode: 'numeric',
+            validate: SpbDialog.rules.number({ min: 1, max: 200, int: true }), nativeText: 'Tolerance for all zones (1-200):'
+        });
         tolerance = parseInt(v); if (isNaN(tolerance)) return;
     }
     pushZoneUndo('Set all tolerances to ' + tolerance);
@@ -18633,7 +18856,7 @@ function exportJSON() {
     a.download = `shokker_zones_${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
-    showToast('Zone JSON exported!');
+    showToast('Zone JSON exported');
 }
 
 // ===== MODAL =====
@@ -18757,7 +18980,7 @@ pause\r\n`;
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast(`Saved ${batName} - double-click to run!`);
+    showToast(`Saved ${batName} - double-click to run`);
 }
 
 function getAutoScriptName() {
@@ -19175,7 +19398,7 @@ function openFineTuning(zoneIndex) {
 
     // Update title
     const titleEl = document.getElementById('fineTuningTitle');
-    if (titleEl) titleEl.textContent = 'FINE TUNING \u2014 Zone ' + (zoneIndex + 1);
+    if (titleEl) titleEl.textContent = 'Fine tuning \u2014 Zone ' + (zoneIndex + 1);
 
     // Build content
     _buildFineTuningContent(zoneIndex);
@@ -19324,7 +19547,7 @@ function _refreshFineTuningIfOpen() {
     if (zi >= 0 && zi < zones.length) {
         window._fineTuningZone = zi;
         var titleEl = document.getElementById('fineTuningTitle');
-        if (titleEl) titleEl.textContent = 'FINE TUNING \u2014 Zone ' + (zi + 1);
+        if (titleEl) titleEl.textContent = 'Fine tuning \u2014 Zone ' + (zi + 1);
         _buildFineTuningContent(zi);
     }
 }
@@ -19558,7 +19781,7 @@ function copyZoneDNA(zoneIndex) {
         var b64 = btoa(unescape(encodeURIComponent(json)));
         var dnaStr = 'SHOKK:v1:' + b64;
         navigator.clipboard.writeText(dnaStr).then(function () {
-            if (typeof showToast === 'function') showToast('Finish DNA copied to clipboard!');
+            if (typeof showToast === 'function') showToast('Finish DNA copied to clipboard');
         }).catch(function () {
             // Fallback: select a temp textarea
             var ta = document.createElement('textarea');
@@ -19980,7 +20203,7 @@ function _mixerApplyDirect() {
             if (typeof updateZonePanel === 'function') updateZonePanel(zi);
         }
         _loadCustomFinishes();
-        if (statusEl) statusEl.textContent = 'Applied!';
+        if (statusEl) statusEl.textContent = 'Applied';
         if (typeof showToast === 'function') showToast('Mix applied: ' + tempName);
         setTimeout(function() { closeMixerPanel(); }, 600);
     })
@@ -20026,8 +20249,9 @@ function _mixerSave() {
     });
 }
 
-function _mixerDeleteCustom(customId) {
-    if (!confirm('Delete custom finish "' + customId + '"?')) return;
+async function _mixerDeleteCustom(customId) {
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF). Function is async now; every caller is a button / key handler that does not use the result.
+    if (!(await SpbDialog.ask('Delete Custom Finish?', { message: '"' + customId + '" will be removed from your library.', okLabel: 'Delete Finish', danger: true, nativeText: 'Delete custom finish "' + customId + '"?' }))) return;
     fetch('/api/delete-custom-finish', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -20129,7 +20353,7 @@ function _renderMixerPanel() {
     // === BUILD PREVIEW AREA ===
     var previewImgHtml = _mixerState.previewImg
         ? '<img id="mixerPreviewImg" src="' + _mixerState.previewImg + '" style="width:100%;max-width:400px;height:auto;border:1px solid #444;border-radius:4px;image-rendering:auto;">'
-          + '<div style="display:flex;justify-content:space-around;font-size:9px;color:#666;margin-top:2px;"><span>PAINT</span><span>SPEC MAP</span></div>'
+          + '<div style="display:flex;justify-content:space-around;font-size:9px;color:#666;margin-top:2px;"><span>Paint</span><span>Spec map</span></div>'
         : '<img id="mixerPreviewImg" style="display:none;width:100%;max-width:400px;height:auto;border:1px solid #444;border-radius:4px;image-rendering:auto;">';
 
     // === BUILD SAVED MIXES LIST ===
@@ -20149,7 +20373,7 @@ function _renderMixerPanel() {
     // === ASSEMBLE FULL PANEL ===
     var html = '<div style="background:#12122a;border:1px solid #e844e8;border-radius:10px;padding:18px 20px;width:520px;max-height:92vh;overflow-y:auto;box-shadow:0 8px 32px rgba(232,68,232,0.3);" onclick="event.stopPropagation();">'
         + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
-        + '<h3 style="margin:0;color:#e844e8;font-size:15px;letter-spacing:1px;">&#129514; FINISH MIXER</h3>'
+        + '<h3 style="margin:0;color:#e844e8;font-size:15px;letter-spacing:1px;">Finish mixer</h3>'
         + '<button onclick="closeMixerPanel()" style="background:none;border:none;color:#888;font-size:18px;cursor:pointer;">&times;</button>'
         + '</div>'
         // Slot cards
@@ -20159,8 +20383,8 @@ function _renderMixerPanel() {
         + pickerHtml
         // Action buttons
         + '<div style="display:flex;gap:6px;margin-bottom:10px;">'
-        + '<button onclick="_mixerPreview()" style="background:linear-gradient(135deg,#7c3aed,#e844e8);color:#fff;border:none;padding:7px 14px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:bold;flex:1;">&#128065; Preview</button>'
-        + '<button onclick="_mixerApplyDirect()" style="background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;border:none;padding:7px 14px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:bold;flex:1;">&#9889; Apply to Zone</button>'
+        + '<button onclick="_mixerPreview()" style="background:linear-gradient(135deg,#7c3aed,#e844e8);color:#fff;border:none;padding:7px 14px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:bold;flex:1;">Preview</button>'
+        + '<button onclick="_mixerApplyDirect()" style="background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;border:none;padding:7px 14px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:bold;flex:1;">Apply to zone</button>'
         + '</div>'
         // Mix mode selector
         + '<div style="display:flex;gap:4px;margin-bottom:10px;justify-content:center;">'
@@ -20178,7 +20402,7 @@ function _renderMixerPanel() {
         + '<hr style="border-color:#333;margin:10px 0;">'
         + '<div style="display:flex;gap:6px;align-items:center;">'
         + '<input id="mixerSaveName" type="text" placeholder="My Chrome Candy Carbon" style="flex:1;background:#1a1a2e;color:#eee;border:1px solid #444;padding:6px 8px;border-radius:4px;font-size:11px;">'
-        + '<button onclick="_mixerSave()" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:bold;white-space:nowrap;">&#128190; Save</button>'
+        + '<button onclick="_mixerSave()" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:bold;white-space:nowrap;">Save</button>'
         + '</div>'
         // Saved custom mixes with delete
         + savedHtml

@@ -23,7 +23,7 @@ Recipes live in two places:
 - **Bundled library** — ships with SPB, in the `recipes/` folder inside the app install
 - **User library** — your own recipes, stored in `Documents\Shokker Paint Booth\recipes\`
 
-Open the Recipe Browser via `File → Recipes → Browse Library` (or `Ctrl+R`).
+Open the Recipe Browser via `File → Recipes → Browse Library`.
 
 ![Step 1 — Recipe browser](docs/img/tutorial-08-step1.png)
 

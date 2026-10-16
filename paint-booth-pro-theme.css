@@ -2007,9 +2007,9 @@ canvas[data-tool="paint"] {
 }
 
 /* 100. Final overlay — focus trap dimming for active modal context */
-body:has(.modal-overlay.active) .left-panel,
-body:has(.modal-overlay.active) .right-panel,
-body:has(.modal-overlay.active) .vertical-toolbar {
+body.spb-pf-modal.spb-pf-modal .left-panel,
+body.spb-pf-modal.spb-pf-modal .right-panel,
+body.spb-pf-modal.spb-pf-modal .vertical-toolbar {
     filter: brightness(0.8);
     transition: filter 200ms var(--pro-ease-out);
 }

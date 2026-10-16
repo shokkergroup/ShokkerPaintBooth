@@ -1,0 +1,188 @@
+{
+  "checks": [
+    "Every canonical ID resolves; a shared paint folder preserves the variant choice",
+    "Unknown IDs never fall through to a guessed car",
+    "Gen4 standard and superspeedway metadata stay attached to their exact variants",
+    "Multiple explicit models and partial model families require a choice",
+    "An ambiguous question does not silently select the current car",
+    "Explicit model questions resolve; current recognition is a separate evidence source",
+    "Every fact cites existing source data; metadata never grants geometry or edit permission",
+    "One-car packets remain bounded and contain source links",
+    "Bad arguments rejected, including oversized or nontext values"
+  ],
+  "offline": [
+    {
+      "query": "What changed in the Dallara IR18 template?",
+      "top": "cars.reference.dallarair18",
+      "score": 35.89304060592935,
+      "cov": 1,
+      "answer": {
+        "id": "cars.reference.dallarair18",
+        "title": "Dallara IR18 — template reference",
+        "level": "beginner",
+        "text": "Paint patterns were revised around ducts and the helmet air-hose pickup. (2026 Season 4) The IR18 paint template received new textures in 2026 S1. (2026 Season 1) The 2025 S3 notes document Road, Short Track and Speedway aero configurations sharing one updated IR18 template. (2025 Season 3) The 2022 S3 IR18 template added suspension-wrap and wheel-rim color blocks; its spec map also gained suspension-wrap blocks. (2022 Season 3)",
+        "faq": null,
+        "summary": "Paint patterns were revised around ducts and the helmet air-hose pickup. (2026 Season 4) The IR18 paint template received new textures in 2026 S1. (2026 Season 1) The 2025 S3 notes document Road, Short Track and Speedway aero configurations sharing one updated IR18 template. (2025 Season 3) The 2022 S3 IR18 template added suspension-wrap and wheel-rim color blocks; its spec map also gained suspension-wrap blocks. (2022 Season 3)",
+        "chat_summary": "Paint patterns were revised around ducts and the helmet air-hose pickup. (2026 Season 4) The IR18 paint template received new textures in 2026 S1. (2026 Season 1) The 2025 S3 notes document Road, Short Track and Speedway aero configurations sharing one updated IR18 template. (2025 Season 3) The 2022 S3 IR18 template added suspension-wrap and wheel-rim color blocks; its spec map also gained suspension-wrap blocks. (2022 Season 3)",
+        "reference_context": true,
+        "how": [],
+        "shot": null,
+        "actions": [],
+        "related": [
+          "cars.teach_parts",
+          "cars.reading_sheet"
+        ],
+        "sources": [
+          {
+            "url": "https://support.iracing.com/support/solutions/articles/31000179517-2026-season-4-initial-release-notes-2026-09-09-01-",
+            "label": "2026 Season 4"
+          },
+          {
+            "url": "https://support.iracing.com/support/solutions/articles/31000177717-2026-season-1-initial-release-notes-2025-12-08-03-",
+            "label": "2026 Season 1 Initial Release Notes"
+          },
+          {
+            "url": "https://support.iracing.com/support/solutions/articles/31000176558-2025-season-3-release-notes-2024-06-10-01-",
+            "label": "2025 Season 3 Release Notes"
+          },
+          {
+            "url": "https://support.iracing.com/support/solutions/articles/31000167405-2022-season-3-release-notes-2022-06-06-04-",
+            "label": "2022 Season 3 Release Notes"
+          }
+        ]
+      }
+    },
+    {
+      "query": "What template does the Aston Martin Valkyrie AMR-LMH use?",
+      "top": "cars.reference.amvalkyriegtp",
+      "score": 62.5864239259718,
+      "cov": 1,
+      "answer": {
+        "id": "cars.reference.amvalkyriegtp",
+        "title": "Aston Martin Valkyrie AMR-LMH — template reference",
+        "level": "beginner",
+        "text": "The inspected official template contains Aston Martin Valkyrie GTP.psd (2048 × 2048). This file evidence does not verify UV panel positions on your open paint.",
+        "faq": null,
+        "summary": "The inspected official template contains Aston Martin Valkyrie GTP.psd (2048 × 2048). This file evidence does not verify UV panel positions on your open paint.",
+        "chat_summary": "The inspected official template contains Aston Martin Valkyrie GTP.psd (2048 × 2048). This file evidence does not verify UV panel positions on your open paint.",
+        "reference_context": true,
+        "how": [],
+        "shot": null,
+        "actions": [],
+        "related": [
+          "cars.teach_parts",
+          "cars.reading_sheet"
+        ],
+        "sources": [
+          {
+            "url": "https://ir-core-sites.iracing.com/members/member_images/cars/car_templates/212_template_AMGTPV.zip",
+            "label": "Aston Martin Valkyrie GTP.psd — inspected template source"
+          }
+        ]
+      }
+    },
+    {
+      "query": "Can I add sponsors to the Mercedes-AMG W12 E Performance?",
+      "top": "cars.reference.mercedesw12",
+      "score": 45.49730882190347,
+      "cov": 1,
+      "answer": {
+        "id": "cars.reference.mercedesw12",
+        "title": "Mercedes-AMG W12 E Performance — template reference",
+        "level": "beginner",
+        "text": "The policy names W12 and Williams-Toyota FW31 as examples of locked paint skins without templates; bypassing restrictions is prohibited. W12 and W13 Paint Shop options are limited to color selections, without sponsor or number customization.",
+        "faq": null,
+        "summary": "The policy names W12 and Williams-Toyota FW31 as examples of locked paint skins without templates; bypassing restrictions is prohibited. W12 and W13 Paint Shop options are limited to color selections, without sponsor or number customization.",
+        "chat_summary": "The policy names W12 and Williams-Toyota FW31 as examples of locked paint skins without templates; bypassing restrictions is prohibited. W12 and W13 Paint Shop options are limited to color selections, without sponsor or number customization.",
+        "reference_context": true,
+        "how": [],
+        "shot": null,
+        "actions": [],
+        "related": [
+          "cars.teach_parts",
+          "cars.reading_sheet"
+        ],
+        "sources": [
+          {
+            "url": "https://ir-core-sites.iracing.com/members/pdfs/20240926-iRacing_Custom_Paint_Policy_dated_Sept_09_2024.pdf",
+            "label": "paint policy"
+          },
+          {
+            "url": "https://www.iracing.com/iracing-101-the-iracing-paint-shop/",
+            "label": "paint shop"
+          }
+        ]
+      }
+    },
+    {
+      "query": "What changed in the Legends Ford '34 Coupe - Rookie template recently?",
+      "id": "cars.reference.legends-ford34c-rookie",
+      "answer": {
+        "id": "cars.reference.legends-ford34c-rookie",
+        "title": "Retired car - historical reference",
+        "level": "beginner",
+        "text": "I found the [Retired] Legends Ford '34 Coupe - Rookie historical reference, but I do not have a verified answer to that detail. This exact car is retired from painting in iRacing. Preserve the old file; independently confirm the supported car and its template for a current series. A replacement car does not establish matching paint files or UVs.",
+        "faq": null,
+        "summary": "I found the [Retired] Legends Ford '34 Coupe - Rookie historical reference, but I do not have a verified answer to that detail. This exact car is retired from painting in iRacing. Preserve the old file; independently confirm the supported car and its template for a current series. A replacement car does not establish matching paint files or UVs.",
+        "chat_summary": "I found the [Retired] Legends Ford '34 Coupe - Rookie historical reference, but I do not have a verified answer to that detail. This exact car is retired from painting in iRacing. Preserve the old file; independently confirm the supported car and its template for a current series. A replacement car does not establish matching paint files or UVs.",
+        "reference_context": true,
+        "how": [],
+        "shot": null,
+        "actions": [],
+        "related": [
+          "cars.teach_parts",
+          "cars.reading_sheet"
+        ],
+        "sources": [
+          {
+            "url": "https://support.iracing.com/support/solutions/articles/31000175822-2025-season-2-release-notes-2024-03-10-03-",
+            "label": "2025 Season 2 Release Notes: retired Rookie Legends"
+          }
+        ]
+      }
+    },
+    {
+      "query": "What dimensions is the Legends Ford '34 Coupe - Rookie template?",
+      "id": "cars.reference.legends-ford34c-rookie",
+      "answer": {
+        "id": "cars.reference.legends-ford34c-rookie",
+        "title": "Retired car - historical reference",
+        "level": "beginner",
+        "text": "I found the [Retired] Legends Ford '34 Coupe - Rookie historical reference, but I do not have a verified answer to that detail. This exact car is retired from painting in iRacing. Preserve the old file; independently confirm the supported car and its template for a current series. A replacement car does not establish matching paint files or UVs.",
+        "faq": null,
+        "summary": "I found the [Retired] Legends Ford '34 Coupe - Rookie historical reference, but I do not have a verified answer to that detail. This exact car is retired from painting in iRacing. Preserve the old file; independently confirm the supported car and its template for a current series. A replacement car does not establish matching paint files or UVs.",
+        "chat_summary": "I found the [Retired] Legends Ford '34 Coupe - Rookie historical reference, but I do not have a verified answer to that detail. This exact car is retired from painting in iRacing. Preserve the old file; independently confirm the supported car and its template for a current series. A replacement car does not establish matching paint files or UVs.",
+        "reference_context": true,
+        "how": [],
+        "shot": null,
+        "actions": [],
+        "related": [
+          "cars.teach_parts",
+          "cars.reading_sheet"
+        ],
+        "sources": [
+          {
+            "url": "https://support.iracing.com/support/solutions/articles/31000175822-2025-season-2-release-notes-2024-03-10-03-",
+            "label": "2025 Season 2 Release Notes: retired Rookie Legends"
+          }
+        ]
+      }
+    }
+  ],
+  "coverage": {
+    "roster_records": 192,
+    "roster_reconciliation": {
+      "cars": 192,
+      "catalog_cards": 187,
+      "unmatched_catalog_cards": 0,
+      "official_filepath_rows": 177,
+      "template_directory_rows": 188
+    },
+    "with_template_url": 188,
+    "with_inspected_template_metadata": 188,
+    "with_documented_car_facts": 192,
+    "with_local_hand_labelled_reference": 8,
+    "with_local_draft_only": 12,
+    "uv_maps_verified_by_this_research": 0
+  }
+}

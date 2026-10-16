@@ -23,11 +23,9 @@
     window.spbGuide = {
         toggle: function () { var e = engine(); if (e) e.togglePanel(); },
         on: function () {
-            try { localStorage.setItem(LS_KEY, 'on'); } catch (e) {}
             var q = engine(); if (q) { q.on(); q.openPanel(); }
         },
         off: function () {
-            try { localStorage.setItem(LS_KEY, 'off'); } catch (e) {}
             var q = engine(); if (q) q.closePanel();
         },
         // Old variants (tga/psd) both map onto the Core Loop start quest.
@@ -47,28 +45,19 @@
             toggle.id = 'spbGuideToggle';
             toggle.type = 'button';
             toggle.className = 'spb-guide-fallback-pill';
-            toggle.innerHTML = '&#127891; TUTORIAL';
+            toggle.innerHTML = 'Tutorial';
             toggle.title = 'Training Wheels — step-by-step quests that teach the app while you use it. Toggle any time.';
             toggle.onclick = function () { window.spbGuide.toggle(); };
             document.body.appendChild(toggle);
         }
 
-        // Legacy resume: coach left on → open the quest panel once the engine
-        // is up (it boots on its own timer; wait for it, 10s max).
-        var saved = null;
-        try { saved = localStorage.getItem(LS_KEY); } catch (e) {}
-        if (saved === 'on') {
-            var tries = 0;
-            var waiter = setInterval(function () {
-                tries++;
-                if (engine()) {
-                    clearInterval(waiter);
-                    engine().openPanel();
-                } else if (tries > 20) {
-                    clearInterval(waiter);
-                }
-            }, 500);
-        }
+        // [TW-GONE 2026-10-12 owner: "The TRAINING WHEELS STILL keeps popping up ... Always showing 11/11 complete
+        // ... I ALWAYS just have to X out. That is supposed to be gone"] Root cause: this legacy resume read the
+        // 2026-07 coach key "spb_guided_mode" === 'on' and called openPanel() on EVERY boot, which switches the
+        // wheels back on. The panel's X (spbQuests.closePanel -> off) never cleared that key, so it came back on
+        // every launch. Legacy resume removed; the stale key is wiped. Training Wheels now open ONLY from the
+        // Tutorial button / Settings checkbox.
+        try { localStorage.removeItem(LS_KEY); } catch (e) {}
     }
 
     if (document.readyState === 'loading') {

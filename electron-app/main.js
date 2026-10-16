@@ -2263,6 +2263,10 @@ function startServer(port) {
       });
     }
 
+    // Only this packaged app may identify its Electron runtime to Python.
+    // Override inherited values; development uses a verified PATH Node.
+    spawnEnv.SPB_MCP_ELECTRON_EXE = app.isPackaged ? process.execPath : '';
+
     debugLog(`[Server] Server dir: ${serverDir}`);
 
     const child = spawn(spawnExe, spawnArgs, {
@@ -3187,7 +3191,7 @@ function showSplash(statusText) {
   }
   splashWindow = new BrowserWindow({
     width: 420, height: 260, frame: false, resizable: false,
-    transparent: false, backgroundColor: '#0a0a0a',
+    transparent: false, backgroundColor: '#14161a',
     alwaysOnTop: false, skipTaskbar: false,
     icon: loadAppIcon(),
     webPreferences: { nodeIntegration: false, contextIsolation: true,
@@ -3195,13 +3199,15 @@ function showSplash(statusText) {
   });
   const splashHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Segoe UI',sans-serif;background:#0a0a0a;color:#e0e0e0;
+    /* [UI 2026-10-12 owner: "lose this vibecoded look"] calm splash in the Pro skin palette: quiet wordmark, thin spinner, muted status. */
+    body{font-family:'Segoe UI Variable','Segoe UI',system-ui,sans-serif;background:#14161a;color:#e6e8eb;
       display:flex;flex-direction:column;align-items:center;justify-content:center;
-      height:100vh;padding:30px;-webkit-app-region:drag}
-    h1{font-size:22px;font-weight:700;color:#E87A20;margin-bottom:10px;letter-spacing:1px}
-    .status{font-size:14px;color:#999;margin-top:8px;text-align:center}
-    .spinner{width:32px;height:32px;border:3px solid #333;border-top:3px solid #E87A20;
-      border-radius:50%;animation:spin 1s linear infinite;margin:16px auto 8px}
+      height:100vh;padding:30px;-webkit-app-region:drag;border:1px solid #2a2e35}
+    h1{font-size:15px;font-weight:600;color:#e6e8eb;margin-bottom:6px;letter-spacing:.14em;
+      padding-bottom:10px;border-bottom:2px solid #E87A20}
+    .status{font-size:12px;color:#8b9099;margin-top:6px;text-align:center}
+    .spinner{width:20px;height:20px;border:2px solid #2a2e35;border-top:2px solid #E87A20;
+      border-radius:50%;animation:spin .8s linear infinite;margin:18px auto 6px}
     @keyframes spin{to{transform:rotate(360deg)}}
     </style></head><body>
     <h1>SHOKKER PAINT BOOTH</h1>

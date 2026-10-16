@@ -13,6 +13,8 @@ Surface-aware weighting (per owner brief 2026-05-14):
   - "spec_driven"    : skip M1 (paint clones are CORRECT here), weight M6 + M5.
   - "pattern_design" : skip M5 (paint/spec coherence less meaningful when paint
                        is pure design), weight M6 + M1 heavily.
+  - "fine_structural_color": skip macro-biased M1 and stationary-name M2;
+                       use live paint/spec coherence + explicit M6 contract.
 
 After weighting, applies a clone-group penalty: a finish inside a clone group
 of size N has its composite multiplied by (1 - min(0.5, (N-1) * 0.04)). The
@@ -31,11 +33,12 @@ from pathlib import Path
 # Defend against Windows cp1252 stdout when category names contain Unicode
 # like ★ ✨ 🌿 — the print statements at the end of main() would crash and
 # the JSON output would be SKIPPED because the writes happen after.
-try:
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
-except Exception:
-    pass
+if __name__ == "__main__":
+    try:
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = PROJECT_ROOT / "_workbook_metrics"
@@ -52,6 +55,10 @@ WEIGHTS = {
     "full":           {"m1": 0.20, "m2": 0.20, "m5": 0.25, "m6": 0.35},
     "spec_driven":    {"m2": 0.20, "m5": 0.30, "m6": 0.50},
     "pattern_design": {"m1": 0.30, "m5": 0.20, "m6": 0.50},
+    # SPB-WILDS tick 7: this does NOT inherit spec_driven's clone exemption or
+    # spec-thumbnail behavior. It only selects the metrics that are valid for
+    # owner-mandated fine, angle-reactive structural color.
+    "fine_structural_color": {"m5": 0.375, "m6": 0.625},
 }
 
 
@@ -174,6 +181,19 @@ def main() -> int:
         }
         if cat:
             cat_running.setdefault(cat, []).append(final)
+
+    # SPB-105 v2 tick 9: spec-only overlays have no painted-color/coherence
+    # input. Their native branch reuses the established overlay formula and
+    # enforces identity + fresh standard/picker evidence before any score.
+    if (PROJECT_ROOT / 'engine/spec_overlay_v2/catalog.json').exists():
+        if str(PROJECT_ROOT) not in sys.path: sys.path.insert(0, str(PROJECT_ROOT))
+        from scripts.spb_spec_overlay_v2_quality import compute as compute_spec_overlays
+        for fid, result in compute_spec_overlays().items():
+            out_scores[fid] = result
+            category = result.get('category', 'Spec Overlays')
+            scorecard.setdefault(fid, {'category': category})
+            if result.get('composite') is not None:
+                cat_running.setdefault(category, []).append(result['composite'])
 
     cat_summary = {}
     for cat, vals in cat_running.items():

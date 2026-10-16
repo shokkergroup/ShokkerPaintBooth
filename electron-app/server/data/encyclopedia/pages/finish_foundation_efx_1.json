@@ -1,0 +1,1984 @@
+{
+  "domain": "finish_foundation_efx_1",
+  "version": 1,
+  "articles": [
+    {
+      "id": "finish_foundation_efx_1.base.chalky_base",
+      "title": "Chalked Paint",
+      "domain": "finish_foundation_efx_1",
+      "summary": "Powdery chalky colour, blotchy oxidised patches and pinholes, dead matte with faint dusty sparkle. Reads as a faded, dusty, blotchy version of whatever colour you give it, like old barn paint gone chalky; matte with no shine.",
+      "what": "Declared field carrier: erosion. In finish-colour mode, its recipe declares value modulation, first coloured stain. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car.",
+      "when": [
+        "Best on: body, sides, roof.",
+        "Mood: retro, rugged, natural.",
+        "Era: 50s-60s, 70s.",
+        "Fits: dirt late model, truck / off-road, stock car."
+      ],
+      "how": [
+        "Confirm this exact finish ID and the intended target.",
+        "Use source paint for primary material-only work, or finish’s own color when the recipe’s paint operations belong in the design.",
+        "Check which scale controls the material detail rather than overlay distribution or artwork size.",
+        "Inspect the actual paint/spec and in-sim result before endorsing this finish for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ],
+      "pitfalls": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "related": [
+        "finish_foundation_efx_3.base.efx_sun_faded",
+        "finish_foundation_efx_2.base.efx_peeling_clear",
+        "finish_foundation_efx_3.base.efx_salt_bloom",
+        "finish_foundation_efx_2.base.efx_kintsugi_bloom"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::chalky_base"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/foundation_efx_2026.py:64-82",
+        "engine/paint_v2/foundation_efx_2026.py:474-537",
+        "engine/paint_v2/foundation_efx_2026.py:547-637",
+        "engine/registry.py:1152",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::chalky_base",
+      "type": "base",
+      "shelves": [
+        "Foundation EFX"
+      ],
+      "metal": 1,
+      "rough": 141,
+      "coat": 119,
+      "palette": [
+        "#dba19b",
+        "#9a3636",
+        "#bc6d6a"
+      ],
+      "own_colours": false,
+      "quality": 100,
+      "loud": 1,
+      "busy": 3,
+      "ratings": {
+        "visible": 1,
+        "appeal": 2,
+        "body": 2,
+        "accent": 2,
+        "hero": 2,
+        "risk": 4
+      },
+      "mood": [
+        "retro",
+        "rugged",
+        "natural"
+      ],
+      "era": [
+        "50s-60s",
+        "70s"
+      ],
+      "use": [
+        "body",
+        "sides",
+        "roof"
+      ],
+      "tags": [
+        "matte"
+      ],
+      "level": "pro",
+      "spec_character": "Average spec: metal 1 (non-metal paint), roughness 141 (semi-matte), clearcoat 119 (moderate clearcoat, satin range). The spec is textured, not flat: roughness and clearcoat vary by 20 or more across the surface.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Colour operations run when its paint function is permitted; primary source mode skips that pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/chalky_base.png",
+      "swatch": "/api/swatch/base/chalky_base",
+      "deep": {
+        "title": "Declared construction and limits",
+        "body": "Declared field carrier: erosion. In finish-colour mode, its recipe declares value modulation, first coloured stain. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car."
+      },
+      "faq": [
+        {
+          "q": "Does Chalked Paint always preserve my livery colours?",
+          "a": "Use source paint skips the reviewed ordinary primary base paint function; finish-colour mode permits the declared recipe. Shelf membership alone is not a preservation guarantee, and other paint contributors remain separate."
+        },
+        {
+          "q": "Are Chalked Paint registry material values constant everywhere?",
+          "a": "No. The rebuilt EFX spec uses spatial field/deck processing. Registry M/R/CC numbers are deck anchors, not constant per-pixel output or calibrated slider recommendations."
+        },
+        {
+          "q": "Is Chalked Paint verified suitable for every car?",
+          "a": "No. This audit verifies the registration and declared source construction, not native car appearance, UV mapping or suitability under every lighting condition."
+        }
+      ],
+      "mistakes": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "protips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ]
+    },
+    {
+      "id": "finish_foundation_efx_1.base.efx_aurora_skin",
+      "title": "Aurora Skin",
+      "domain": "finish_foundation_efx_1",
+      "summary": "Warm gold-grey base with drifting rainbow thin-film curtains and fine fibre sparkle; iridescent, oil-slick effect. A blotchy oil-slick map of tan with orange, teal and violet edges; reads colourful and iridescent, like a soap-bubble film breaking up.",
+      "what": "Declared field carrier: fk:curl. In finish-colour mode, its recipe declares value modulation, interference-palette colour blend. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car.",
+      "when": [
+        "Best on: body, hero panel, roof.",
+        "Mood: cosmic, dreamy, wild.",
+        "Era: futuristic, modern.",
+        "Fits: show car, gt / sports car, open wheel."
+      ],
+      "how": [
+        "Confirm this exact finish ID and the intended target.",
+        "Use source paint for primary material-only work, or finish’s own color when the recipe’s paint operations belong in the design.",
+        "Check which scale controls the material detail rather than overlay distribution or artwork size.",
+        "Inspect the actual paint/spec and in-sim result before endorsing this finish for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ],
+      "pitfalls": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "related": [
+        "finish_foundation_efx_3.base.efx_tempered_spectrum",
+        "finish_foundation_efx_1.base.efx_holo_flake",
+        "finish_foundation_efx_2.base.efx_holo_prism_cells",
+        "finish_foundation_efx_2.base.efx_nacre"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::efx_aurora_skin"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/foundation_efx_2026.py:64-82",
+        "engine/paint_v2/foundation_efx_2026.py:474-537",
+        "engine/paint_v2/foundation_efx_2026.py:547-637",
+        "engine/registry.py:1152",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::efx_aurora_skin",
+      "type": "base",
+      "shelves": [
+        "Foundation EFX"
+      ],
+      "metal": 160,
+      "rough": 35,
+      "coat": 47,
+      "palette": [
+        "#b49939",
+        "#4f1f7f",
+        "#3188b3"
+      ],
+      "own_colours": true,
+      "loud": 4,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 2,
+        "body": 2,
+        "accent": 2,
+        "hero": 3,
+        "risk": 5
+      },
+      "mood": [
+        "cosmic",
+        "dreamy",
+        "wild"
+      ],
+      "era": [
+        "futuristic",
+        "modern"
+      ],
+      "use": [
+        "body",
+        "hero panel",
+        "roof"
+      ],
+      "tags": [
+        "cosmic",
+        "organic",
+        "rainbow",
+        "sparkle"
+      ],
+      "level": "pro",
+      "spec_character": "Average spec: metal 160 (strong pearl or anodized metal), roughness 35 (high gloss), clearcoat 47 (strong-to-medium clearcoat). The spec is textured, not flat: metal and roughness and clearcoat vary by 20 or more across the surface.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Colour operations run when its paint function is permitted; primary source mode skips that pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/efx_aurora_skin.png",
+      "swatch": "/api/swatch/base/efx_aurora_skin",
+      "deep": {
+        "title": "Declared construction and limits",
+        "body": "Declared field carrier: fk:curl. In finish-colour mode, its recipe declares value modulation, interference-palette colour blend. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car."
+      },
+      "faq": [
+        {
+          "q": "Does Aurora Skin always preserve my livery colours?",
+          "a": "Use source paint skips the reviewed ordinary primary base paint function; finish-colour mode permits the declared recipe. Shelf membership alone is not a preservation guarantee, and other paint contributors remain separate."
+        },
+        {
+          "q": "Are Aurora Skin registry material values constant everywhere?",
+          "a": "No. The rebuilt EFX spec uses spatial field/deck processing. Registry M/R/CC numbers are deck anchors, not constant per-pixel output or calibrated slider recommendations."
+        },
+        {
+          "q": "Is Aurora Skin verified suitable for every car?",
+          "a": "No. This audit verifies the registration and declared source construction, not native car appearance, UV mapping or suitability under every lighting condition."
+        }
+      ],
+      "mistakes": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "protips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ]
+    },
+    {
+      "id": "finish_foundation_efx_1.base.efx_cast_iron",
+      "title": "Cast Iron",
+      "domain": "finish_foundation_efx_1",
+      "summary": "Dark pitted sand-cast iron, porous matte grain with a dull metal glint, fine sparkle all over. Reads as a gritty, semi-matte metal with a fine peppered texture; individual pits vanish and only a dull, rough-cast sheen stays.",
+      "what": "Declared field carrier: ek:craters. In finish-colour mode, its recipe declares value modulation, first coloured stain. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car.",
+      "when": [
+        "Best on: body, bumpers, trim.",
+        "Mood: industrial, rugged, stealth.",
+        "Era: timeless, 70s.",
+        "Fits: dirt late model, truck / off-road, stock car."
+      ],
+      "how": [
+        "Confirm this exact finish ID and the intended target.",
+        "Use source paint for primary material-only work, or finish’s own color when the recipe’s paint operations belong in the design.",
+        "Check which scale controls the material detail rather than overlay distribution or artwork size.",
+        "Inspect the actual paint/spec and in-sim result before endorsing this finish for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ],
+      "pitfalls": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "related": [
+        "finish_foundation_efx_3.base.efx_rust_through",
+        "finish_foundation_efx_2.base.efx_mill_scale",
+        "finish_foundation_efx_1.base.efx_frost_fractal",
+        "finish_foundation_efx_3.base.efx_surface_rust"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::efx_cast_iron"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/foundation_efx_2026.py:64-82",
+        "engine/paint_v2/foundation_efx_2026.py:474-537",
+        "engine/paint_v2/foundation_efx_2026.py:547-637",
+        "engine/registry.py:1152",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::efx_cast_iron",
+      "type": "base",
+      "shelves": [
+        "Foundation EFX"
+      ],
+      "metal": 141,
+      "rough": 144,
+      "coat": 130,
+      "palette": [
+        "#752c2c",
+        "#af3838"
+      ],
+      "own_colours": false,
+      "loud": 2,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 4,
+        "accent": 3,
+        "hero": 3,
+        "risk": 2
+      },
+      "mood": [
+        "industrial",
+        "rugged",
+        "stealth"
+      ],
+      "era": [
+        "timeless",
+        "70s"
+      ],
+      "use": [
+        "body",
+        "bumpers",
+        "trim"
+      ],
+      "tags": [
+        "iron",
+        "cast",
+        "dark",
+        "industrial",
+        "rough",
+        "sparkle_fine",
+        "sparkle"
+      ],
+      "level": "intermediate",
+      "spec_character": "Average spec: metal 141 (strong pearl or anodized metal), roughness 144 (semi-matte), clearcoat 130 (weak clearcoat). The spec is textured, not flat: metal and roughness and clearcoat vary by 20 or more across the surface.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Colour operations run when its paint function is permitted; primary source mode skips that pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "swatch": "/api/swatch/base/efx_cast_iron",
+      "deep": {
+        "title": "Declared construction and limits",
+        "body": "Declared field carrier: ek:craters. In finish-colour mode, its recipe declares value modulation, first coloured stain. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car."
+      },
+      "faq": [
+        {
+          "q": "Does Cast Iron always preserve my livery colours?",
+          "a": "Use source paint skips the reviewed ordinary primary base paint function; finish-colour mode permits the declared recipe. Shelf membership alone is not a preservation guarantee, and other paint contributors remain separate."
+        },
+        {
+          "q": "Are Cast Iron registry material values constant everywhere?",
+          "a": "No. The rebuilt EFX spec uses spatial field/deck processing. Registry M/R/CC numbers are deck anchors, not constant per-pixel output or calibrated slider recommendations."
+        },
+        {
+          "q": "Is Cast Iron verified suitable for every car?",
+          "a": "No. This audit verifies the registration and declared source construction, not native car appearance, UV mapping or suitability under every lighting condition."
+        }
+      ],
+      "mistakes": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "protips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ]
+    },
+    {
+      "id": "finish_foundation_efx_1.base.efx_cathedral_veil",
+      "title": "Cathedral Veil",
+      "domain": "finish_foundation_efx_1",
+      "summary": "Glossy crazed panes of colour split by dark chrome lines, like leaded glass laid over the body. Reads as a crackle-glass or stained-window mosaic of small panes with dark lines; at distance the seams merge into a mottled, glassy shimmer in your colour.",
+      "what": "Declared field carrier: basalt. In finish-colour mode, its recipe declares value modulation, first coloured stain. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car.",
+      "when": [
+        "Best on: hero panel, roof, hood.",
+        "Mood: luxury, elegant, spooky.",
+        "Era: timeless, modern.",
+        "Fits: show car, gt / sports car, stock car."
+      ],
+      "how": [
+        "Confirm this exact finish ID and the intended target.",
+        "Use source paint for primary material-only work, or finish’s own color when the recipe’s paint operations belong in the design.",
+        "Check which scale controls the material detail rather than overlay distribution or artwork size.",
+        "Inspect the actual paint/spec and in-sim result before endorsing this finish for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ],
+      "pitfalls": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "related": [
+        "finish_foundation_efx_2.base.efx_rain_beads",
+        "finish_foundation_efx_1.base.efx_glass_flake",
+        "finish_foundation_efx_2.base.efx_orange_peel",
+        "finish_foundation_efx_2.base.efx_leather_grain"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::efx_cathedral_veil"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/foundation_efx_2026.py:64-82",
+        "engine/paint_v2/foundation_efx_2026.py:474-537",
+        "engine/paint_v2/foundation_efx_2026.py:547-637",
+        "engine/registry.py:1152",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::efx_cathedral_veil",
+      "type": "base",
+      "shelves": [
+        "Foundation EFX"
+      ],
+      "metal": 84,
+      "rough": 28,
+      "coat": 32,
+      "palette": [
+        "#8c2d2d",
+        "#6a2323",
+        "#b93c3c"
+      ],
+      "own_colours": false,
+      "loud": 3,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 3,
+        "accent": 4,
+        "hero": 4,
+        "risk": 3
+      },
+      "mood": [
+        "luxury",
+        "elegant",
+        "spooky"
+      ],
+      "era": [
+        "timeless",
+        "modern"
+      ],
+      "use": [
+        "hero panel",
+        "roof",
+        "hood"
+      ],
+      "tags": [
+        "chrome",
+        "glass",
+        "dark",
+        "sparkle"
+      ],
+      "level": "intermediate",
+      "spec_character": "Average spec: metal 84 (pearl-level metal), roughness 28 (wet mirror gloss), clearcoat 32 (strong-to-medium clearcoat). The spec is textured, not flat: metal varies by 20 or more across the surface.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Colour operations run when its paint function is permitted; primary source mode skips that pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/efx_cathedral_veil.png",
+      "swatch": "/api/swatch/base/efx_cathedral_veil",
+      "deep": {
+        "title": "Declared construction and limits",
+        "body": "Declared field carrier: basalt. In finish-colour mode, its recipe declares value modulation, first coloured stain. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car."
+      },
+      "faq": [
+        {
+          "q": "Does Cathedral Veil always preserve my livery colours?",
+          "a": "Use source paint skips the reviewed ordinary primary base paint function; finish-colour mode permits the declared recipe. Shelf membership alone is not a preservation guarantee, and other paint contributors remain separate."
+        },
+        {
+          "q": "Are Cathedral Veil registry material values constant everywhere?",
+          "a": "No. The rebuilt EFX spec uses spatial field/deck processing. Registry M/R/CC numbers are deck anchors, not constant per-pixel output or calibrated slider recommendations."
+        },
+        {
+          "q": "Is Cathedral Veil verified suitable for every car?",
+          "a": "No. This audit verifies the registration and declared source construction, not native car appearance, UV mapping or suitability under every lighting condition."
+        }
+      ],
+      "mistakes": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "protips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ]
+    },
+    {
+      "id": "finish_foundation_efx_1.base.efx_chunky_flake",
+      "title": "Chunky Metalflake",
+      "domain": "finish_foundation_efx_1",
+      "summary": "Mirror gloss packed with big tilted metalflake chips that flash one at a time under candy colour. Reads as your colour with a glittery sparkle all over; from a distance the chips merge into a salt-and-pepper twinkle, like a classic bass-boat flake job.",
+      "what": "Declared field carrier: ek:discs. In finish-colour mode, its recipe declares value modulation, glint colour blend. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car.",
+      "when": [
+        "Best on: body, roof, hood.",
+        "Mood: wild, playful, retro.",
+        "Era: 70s, modern.",
+        "Fits: show car, stock car, gt / sports car."
+      ],
+      "how": [
+        "Confirm this exact finish ID and the intended target.",
+        "Use source paint for primary material-only work, or finish’s own color when the recipe’s paint operations belong in the design.",
+        "Check which scale controls the material detail rather than overlay distribution or artwork size.",
+        "Inspect the actual paint/spec and in-sim result before endorsing this finish for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ],
+      "pitfalls": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "related": [
+        "finish_foundation_efx_2.base.efx_knurled",
+        "finish_foundation_efx_3.base.efx_raku_glaze",
+        "finish_foundation_efx_3.base.efx_spectral_edge",
+        "finish_foundation_efx_1.base.efx_gold_leaf"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::efx_chunky_flake"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/foundation_efx_2026.py:64-82",
+        "engine/paint_v2/foundation_efx_2026.py:474-537",
+        "engine/paint_v2/foundation_efx_2026.py:547-637",
+        "engine/registry.py:1152",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::efx_chunky_flake",
+      "type": "base",
+      "shelves": [
+        "Foundation EFX"
+      ],
+      "metal": 169,
+      "rough": 18,
+      "coat": 16,
+      "palette": [
+        "#642020",
+        "#9b3535",
+        "#dfb3b8"
+      ],
+      "own_colours": false,
+      "loud": 4,
+      "busy": 3,
+      "ratings": {
+        "visible": 1,
+        "appeal": 4,
+        "body": 4,
+        "accent": 3,
+        "hero": 4,
+        "risk": 2
+      },
+      "mood": [
+        "wild",
+        "playful",
+        "retro"
+      ],
+      "era": [
+        "70s",
+        "modern"
+      ],
+      "use": [
+        "body",
+        "roof",
+        "hood"
+      ],
+      "tags": [
+        "flake",
+        "metallic",
+        "candy",
+        "glitter",
+        "sparkle"
+      ],
+      "level": "intermediate",
+      "spec_character": "Average spec: metal 169 (strong pearl or anodized metal), roughness 18 (wet mirror gloss), clearcoat 16 (maximum clearcoat). The spec is textured, not flat: metal varies by 20 or more across the surface.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Colour operations run when its paint function is permitted; primary source mode skips that pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "swatch": "/api/swatch/base/efx_chunky_flake",
+      "deep": {
+        "title": "Declared construction and limits",
+        "body": "Declared field carrier: ek:discs. In finish-colour mode, its recipe declares value modulation, glint colour blend. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car."
+      },
+      "faq": [
+        {
+          "q": "Does Chunky Metalflake always preserve my livery colours?",
+          "a": "Use source paint skips the reviewed ordinary primary base paint function; finish-colour mode permits the declared recipe. Shelf membership alone is not a preservation guarantee, and other paint contributors remain separate."
+        },
+        {
+          "q": "Are Chunky Metalflake registry material values constant everywhere?",
+          "a": "No. The rebuilt EFX spec uses spatial field/deck processing. Registry M/R/CC numbers are deck anchors, not constant per-pixel output or calibrated slider recommendations."
+        },
+        {
+          "q": "Is Chunky Metalflake verified suitable for every car?",
+          "a": "No. This audit verifies the registration and declared source construction, not native car appearance, UV mapping or suitability under every lighting condition."
+        }
+      ],
+      "mistakes": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "protips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ]
+    },
+    {
+      "id": "finish_foundation_efx_1.base.efx_crackle_lacquer",
+      "title": "Crackle Lacquer",
+      "domain": "finish_foundation_efx_1",
+      "summary": "Fine all-over craze network of hairline cracks over a darker undercoat, satin sheen, no metal flake. Reads as a flat satin colour with a faint fine texture; only a slight aged, crazed sheen shows, and the dark specks look like tiny chips.",
+      "what": "Declared field carrier: fk:anneal_crack. In finish-colour mode, its recipe declares value modulation, first coloured stain. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car.",
+      "when": [
+        "Best on: body, roof, sides.",
+        "Mood: retro, rugged, industrial.",
+        "Era: 50s-60s, 70s.",
+        "Fits: dirt late model, truck / off-road, show car."
+      ],
+      "how": [
+        "Confirm this exact finish ID and the intended target.",
+        "Use source paint for primary material-only work, or finish’s own color when the recipe’s paint operations belong in the design.",
+        "Check which scale controls the material detail rather than overlay distribution or artwork size.",
+        "Inspect the actual paint/spec and in-sim result before endorsing this finish for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ],
+      "pitfalls": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "related": [
+        "finish_foundation_efx_3.base.efx_stardust_coat",
+        "finish_foundation_efx_3.base.efx_soot_wash",
+        "finish_foundation_efx_2.base.efx_lace_filament",
+        "finish_foundation_efx_2.base.efx_leather_grain"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::efx_crackle_lacquer"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/foundation_efx_2026.py:64-82",
+        "engine/paint_v2/foundation_efx_2026.py:474-537",
+        "engine/paint_v2/foundation_efx_2026.py:547-637",
+        "engine/registry.py:1152",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::efx_crackle_lacquer",
+      "type": "base",
+      "shelves": [
+        "Foundation EFX"
+      ],
+      "metal": 8,
+      "rough": 95,
+      "coat": 76,
+      "palette": [
+        "#a23434",
+        "#3c1e1a"
+      ],
+      "own_colours": false,
+      "loud": 2,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 3,
+        "accent": 3,
+        "hero": 3,
+        "risk": 3
+      },
+      "mood": [
+        "retro",
+        "rugged",
+        "industrial"
+      ],
+      "era": [
+        "50s-60s",
+        "70s"
+      ],
+      "use": [
+        "body",
+        "roof",
+        "sides"
+      ],
+      "tags": [
+        "crackle",
+        "lacquer",
+        "craze",
+        "vintage",
+        "weathered",
+        "dark"
+      ],
+      "level": "intermediate",
+      "spec_character": "Average spec: metal 8 (non-metal paint), roughness 95 (satin gloss), clearcoat 76 (moderate clearcoat, satin range). The spec is textured, not flat: metal and roughness and clearcoat vary by 20 or more across the surface.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Colour operations run when its paint function is permitted; primary source mode skips that pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "swatch": "/api/swatch/base/efx_crackle_lacquer",
+      "deep": {
+        "title": "Declared construction and limits",
+        "body": "Declared field carrier: fk:anneal_crack. In finish-colour mode, its recipe declares value modulation, first coloured stain. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car."
+      },
+      "faq": [
+        {
+          "q": "Does Crackle Lacquer always preserve my livery colours?",
+          "a": "Use source paint skips the reviewed ordinary primary base paint function; finish-colour mode permits the declared recipe. Shelf membership alone is not a preservation guarantee, and other paint contributors remain separate."
+        },
+        {
+          "q": "Are Crackle Lacquer registry material values constant everywhere?",
+          "a": "No. The rebuilt EFX spec uses spatial field/deck processing. Registry M/R/CC numbers are deck anchors, not constant per-pixel output or calibrated slider recommendations."
+        },
+        {
+          "q": "Is Crackle Lacquer verified suitable for every car?",
+          "a": "No. This audit verifies the registration and declared source construction, not native car appearance, UV mapping or suitability under every lighting condition."
+        }
+      ],
+      "mistakes": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "protips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ]
+    },
+    {
+      "id": "finish_foundation_efx_1.base.efx_damascus_fold",
+      "title": "Damascus Fold",
+      "domain": "finish_foundation_efx_1",
+      "summary": "Folded, etched steel with dark layers biting in and bright layers polished up; high metal, gloss, full sparkle. Reads as a fine watered-steel wave texture; the lines blur into a shimmering grey-metal moire with slow swirls visible.",
+      "what": "Declared field carrier: damascus. In finish-colour mode, its recipe declares value modulation, first coloured stain. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car.",
+      "when": [
+        "Best on: body, hood, hero panel.",
+        "Mood: aggressive, luxury, industrial.",
+        "Era: timeless, modern.",
+        "Fits: gt / sports car, show car, open wheel."
+      ],
+      "how": [
+        "Confirm this exact finish ID and the intended target.",
+        "Use source paint for primary material-only work, or finish’s own color when the recipe’s paint operations belong in the design.",
+        "Check which scale controls the material detail rather than overlay distribution or artwork size.",
+        "Inspect the actual paint/spec and in-sim result before endorsing this finish for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ],
+      "pitfalls": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "related": [
+        "finish_foundation_efx_3.base.efx_wire_brushed",
+        "finish_foundation_efx_1.base.efx_galvanized_spangle",
+        "finish_foundation_efx_2.base.efx_knurled",
+        "finish_foundation_efx_2.base.efx_holographic_drift"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::efx_damascus_fold"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/foundation_efx_2026.py:64-82",
+        "engine/paint_v2/foundation_efx_2026.py:474-537",
+        "engine/paint_v2/foundation_efx_2026.py:547-637",
+        "engine/registry.py:1152",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::efx_damascus_fold",
+      "type": "base",
+      "shelves": [
+        "Foundation EFX"
+      ],
+      "metal": 199,
+      "rough": 59,
+      "coat": 71,
+      "palette": [
+        "#943030",
+        "#b13939",
+        "#722727"
+      ],
+      "own_colours": false,
+      "loud": 4,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 3,
+        "accent": 3,
+        "hero": 3,
+        "risk": 3
+      },
+      "mood": [
+        "aggressive",
+        "luxury",
+        "industrial"
+      ],
+      "era": [
+        "timeless",
+        "modern"
+      ],
+      "use": [
+        "body",
+        "hood",
+        "hero panel"
+      ],
+      "tags": [
+        "dark",
+        "sparkle"
+      ],
+      "level": "pro",
+      "spec_character": "Average spec: metal 199 (true metallic), roughness 59 (high gloss), clearcoat 71 (moderate clearcoat, satin range). The spec is textured, not flat: metal and roughness and clearcoat vary by 20 or more across the surface.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Colour operations run when its paint function is permitted; primary source mode skips that pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/efx_damascus_fold.png",
+      "swatch": "/api/swatch/base/efx_damascus_fold",
+      "deep": {
+        "title": "Declared construction and limits",
+        "body": "Declared field carrier: damascus. In finish-colour mode, its recipe declares value modulation, first coloured stain. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car."
+      },
+      "faq": [
+        {
+          "q": "Does Damascus Fold always preserve my livery colours?",
+          "a": "Use source paint skips the reviewed ordinary primary base paint function; finish-colour mode permits the declared recipe. Shelf membership alone is not a preservation guarantee, and other paint contributors remain separate."
+        },
+        {
+          "q": "Are Damascus Fold registry material values constant everywhere?",
+          "a": "No. The rebuilt EFX spec uses spatial field/deck processing. Registry M/R/CC numbers are deck anchors, not constant per-pixel output or calibrated slider recommendations."
+        },
+        {
+          "q": "Is Damascus Fold verified suitable for every car?",
+          "a": "No. This audit verifies the registration and declared source construction, not native car appearance, UV mapping or suitability under every lighting condition."
+        }
+      ],
+      "mistakes": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "protips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ]
+    },
+    {
+      "id": "finish_foundation_efx_1.base.efx_engine_turned",
+      "title": "Engine Turned",
+      "domain": "finish_foundation_efx_1",
+      "summary": "Jewelled aluminium with overlapping circular swirl discs, each a fine brush mark; full metal, gloss. Reads as your colour with a fine regular dotted sheen, like machined or jewelled aluminium; from distance the dots merge into a soft, even metallic shimmer.",
+      "what": "Declared field carrier: imbricate. In finish-colour mode, its recipe declares value modulation. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car.",
+      "when": [
+        "Best on: body, hood, trim.",
+        "Mood: luxury, elegant, retro.",
+        "Era: 50s-60s, timeless.",
+        "Fits: show car, gt / sports car, open wheel."
+      ],
+      "how": [
+        "Confirm this exact finish ID and the intended target.",
+        "Use source paint for primary material-only work, or finish’s own color when the recipe’s paint operations belong in the design.",
+        "Check which scale controls the material detail rather than overlay distribution or artwork size.",
+        "Inspect the actual paint/spec and in-sim result before endorsing this finish for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ],
+      "pitfalls": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "related": [
+        "finish_foundation_efx_1.base.efx_hammered",
+        "finish_foundation_efx_1.base.efx_galvanized_spangle",
+        "finish_foundation_efx_1.base.efx_damascus_fold",
+        "finish_foundation_efx_2.base.efx_knurled"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::efx_engine_turned"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/foundation_efx_2026.py:64-82",
+        "engine/paint_v2/foundation_efx_2026.py:474-537",
+        "engine/paint_v2/foundation_efx_2026.py:547-637",
+        "engine/registry.py:1152",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::efx_engine_turned",
+      "type": "base",
+      "shelves": [
+        "Foundation EFX"
+      ],
+      "metal": 236,
+      "rough": 43,
+      "coat": 69,
+      "palette": [
+        "#7b2828",
+        "#b63b3b"
+      ],
+      "own_colours": false,
+      "loud": 3,
+      "busy": 3,
+      "ratings": {
+        "visible": 1,
+        "appeal": 4,
+        "body": 4,
+        "accent": 3,
+        "hero": 4,
+        "risk": 2
+      },
+      "mood": [
+        "luxury",
+        "elegant",
+        "retro"
+      ],
+      "era": [
+        "50s-60s",
+        "timeless"
+      ],
+      "use": [
+        "body",
+        "hood",
+        "trim"
+      ],
+      "tags": [
+        "jeweled",
+        "machined",
+        "metal",
+        "swirl",
+        "brushed",
+        "luxury"
+      ],
+      "level": "intermediate",
+      "spec_character": "Average spec: metal 236 (true metallic), roughness 43 (high gloss), clearcoat 69 (moderate clearcoat, satin range). The spec is textured, not flat: metal and roughness and clearcoat vary by 20 or more across the surface.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Colour operations run when its paint function is permitted; primary source mode skips that pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "swatch": "/api/swatch/base/efx_engine_turned",
+      "deep": {
+        "title": "Declared construction and limits",
+        "body": "Declared field carrier: imbricate. In finish-colour mode, its recipe declares value modulation. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car."
+      },
+      "faq": [
+        {
+          "q": "Does Engine Turned always preserve my livery colours?",
+          "a": "Use source paint skips the reviewed ordinary primary base paint function; finish-colour mode permits the declared recipe. Shelf membership alone is not a preservation guarantee, and other paint contributors remain separate."
+        },
+        {
+          "q": "Are Engine Turned registry material values constant everywhere?",
+          "a": "No. The rebuilt EFX spec uses spatial field/deck processing. Registry M/R/CC numbers are deck anchors, not constant per-pixel output or calibrated slider recommendations."
+        },
+        {
+          "q": "Is Engine Turned verified suitable for every car?",
+          "a": "No. This audit verifies the registration and declared source construction, not native car appearance, UV mapping or suitability under every lighting condition."
+        }
+      ],
+      "mistakes": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "protips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ]
+    },
+    {
+      "id": "finish_foundation_efx_1.base.efx_frost_fractal",
+      "title": "Frost Fractal",
+      "domain": "finish_foundation_efx_1",
+      "summary": "Flat semi-matte grey with a faint fine sparkle; frost geometry is spec-driven, not visible in this preview. Reads as your own colour with a cold, slightly uneven semi-matte frost; the blotches and specks only show as a faint patchy sheen.",
+      "what": "This kept EFX entry has a paint_passthrough function and a dedicated spec function spec_exotic_efx_frost_fractal. Its paint function copies the source rather than generating a palette. The current spec function’s visual construction has not been newly sampled or endorsed in this audit. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car.",
+      "when": [
+        "Best on: body, hood, sides.",
+        "Mood: icy, clean, techy.",
+        "Era: modern, futuristic.",
+        "Fits: gt / sports car, open wheel, show car."
+      ],
+      "how": [
+        "Confirm this exact finish ID and the intended target.",
+        "Use source paint for primary material-only work, or finish’s own color when the recipe’s paint operations belong in the design.",
+        "Check which scale controls the material detail rather than overlay distribution or artwork size.",
+        "Inspect the actual paint/spec and in-sim result before endorsing this finish for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ],
+      "pitfalls": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "related": [
+        "finish_foundation_efx_3.base.efx_surface_rust",
+        "finish_foundation_efx_3.base.efx_rust_through",
+        "finish_foundation_efx_2.base.efx_powder_texture",
+        "finish_foundation_efx_1.base.efx_cast_iron"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::efx_frost_fractal"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/foundation_efx_2026.py:64-82",
+        "engine/paint_v2/foundation_efx_2026.py:474-537",
+        "engine/paint_v2/foundation_efx_2026.py:547-637",
+        "engine/registry.py:1152",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244",
+        "engine\\paint_v2\\enhanced_foundation_exotic.py:846"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::efx_frost_fractal",
+      "type": "base",
+      "shelves": [
+        "Foundation EFX"
+      ],
+      "metal": 97,
+      "rough": 145,
+      "coat": 89,
+      "palette": [
+        "#9e3333"
+      ],
+      "own_colours": false,
+      "loud": 2,
+      "busy": 2,
+      "ratings": {
+        "visible": 1,
+        "appeal": 2,
+        "body": 2,
+        "accent": 2,
+        "hero": 2,
+        "risk": 3
+      },
+      "mood": [
+        "icy",
+        "clean",
+        "techy"
+      ],
+      "era": [
+        "modern",
+        "futuristic"
+      ],
+      "use": [
+        "body",
+        "hood",
+        "sides"
+      ],
+      "tags": [
+        "glitter",
+        "water",
+        "glass",
+        "sparkle_fine"
+      ],
+      "level": "intermediate",
+      "spec_character": "Average spec: metal 97 (pearl-level metal), roughness 145 (semi-matte), clearcoat 89 (moderate clearcoat, satin range).",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Paint passthrough at this function; composition can still change paint.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/efx_frost_fractal.png",
+      "swatch": "/api/swatch/base/efx_frost_fractal",
+      "deep": {
+        "title": "Declared construction and limits",
+        "body": "This kept EFX entry has a paint_passthrough function and a dedicated spec function spec_exotic_efx_frost_fractal. Its paint function copies the source rather than generating a palette. The current spec function’s visual construction has not been newly sampled or endorsed in this audit. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car."
+      },
+      "faq": [
+        {
+          "q": "Does Frost Fractal always preserve my livery colours?",
+          "a": "Use source paint skips the reviewed ordinary primary base paint function; finish-colour mode permits the declared recipe. Shelf membership alone is not a preservation guarantee, and other paint contributors remain separate."
+        },
+        {
+          "q": "Are Frost Fractal registry material values constant everywhere?",
+          "a": "No uniform-output claim is established here. This kept entry has a dedicated spec function; inspect its actual output."
+        },
+        {
+          "q": "Is Frost Fractal verified suitable for every car?",
+          "a": "No. This audit verifies the registration and declared source construction, not native car appearance, UV mapping or suitability under every lighting condition."
+        }
+      ],
+      "mistakes": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "protips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ]
+    },
+    {
+      "id": "finish_foundation_efx_1.base.efx_frost_mercury_duo",
+      "title": "Frost Mercury Duo",
+      "domain": "finish_foundation_efx_1",
+      "summary": "Satin frost and liquid-mercury blend, cold crystalline shine with soft liquid metal depth; medium metal. Reads as your colour with a cold, frosty metallic sheen that breaks up unevenly, like frosted glass over liquid metal; at distance the mottle blends into a soft, slightly cloudy chrome tint.",
+      "what": "This kept EFX entry has a paint_passthrough function and a dedicated spec function spec_recipe_efx_frost_mercury_duo. Its paint function copies the source rather than generating a palette. The current spec function’s visual construction has not been newly sampled or endorsed in this audit. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car.",
+      "when": [
+        "Best on: body, hood, hero panel.",
+        "Mood: techy, cosmic, icy.",
+        "Era: futuristic, modern.",
+        "Fits: gt / sports car, show car, open wheel."
+      ],
+      "how": [
+        "Confirm this exact finish ID and the intended target.",
+        "Use source paint for primary material-only work, or finish’s own color when the recipe’s paint operations belong in the design.",
+        "Check which scale controls the material detail rather than overlay distribution or artwork size.",
+        "Inspect the actual paint/spec and in-sim result before endorsing this finish for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ],
+      "pitfalls": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "related": [
+        "finish_foundation_efx_3.base.efx_raku_glaze",
+        "finish_foundation_efx_2.base.efx_holographic_drift",
+        "finish_foundation_efx_3.base.efx_wire_brushed",
+        "finish_foundation_efx_1.base.efx_damascus_fold"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::efx_frost_mercury_duo"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/foundation_efx_2026.py:64-82",
+        "engine/paint_v2/foundation_efx_2026.py:474-537",
+        "engine/paint_v2/foundation_efx_2026.py:547-637",
+        "engine/registry.py:1152",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244",
+        "engine\\paint_v2\\enhanced_foundation_exotic.py:846"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::efx_frost_mercury_duo",
+      "type": "base",
+      "shelves": [
+        "Foundation EFX"
+      ],
+      "metal": 150,
+      "rough": 80,
+      "coat": 59,
+      "palette": [
+        "#9e3333"
+      ],
+      "own_colours": false,
+      "loud": 3,
+      "busy": 2,
+      "ratings": {
+        "visible": 1,
+        "appeal": 2,
+        "body": 2,
+        "accent": 2,
+        "hero": 2,
+        "risk": 3
+      },
+      "mood": [
+        "techy",
+        "cosmic",
+        "icy"
+      ],
+      "era": [
+        "futuristic",
+        "modern"
+      ],
+      "use": [
+        "body",
+        "hood",
+        "hero panel"
+      ],
+      "tags": [
+        "chrome",
+        "water",
+        "glass"
+      ],
+      "level": "intermediate",
+      "spec_character": "Average spec: metal 150 (strong pearl or anodized metal), roughness 80 (satin gloss), clearcoat 59 (strong-to-medium clearcoat). The spec is textured, not flat: metal and roughness vary by 20 or more across the surface.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Paint passthrough at this function; composition can still change paint.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/efx_frost_mercury_duo.png",
+      "swatch": "/api/swatch/base/efx_frost_mercury_duo",
+      "deep": {
+        "title": "Declared construction and limits",
+        "body": "This kept EFX entry has a paint_passthrough function and a dedicated spec function spec_recipe_efx_frost_mercury_duo. Its paint function copies the source rather than generating a palette. The current spec function’s visual construction has not been newly sampled or endorsed in this audit. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car."
+      },
+      "faq": [
+        {
+          "q": "Does Frost Mercury Duo always preserve my livery colours?",
+          "a": "Use source paint skips the reviewed ordinary primary base paint function; finish-colour mode permits the declared recipe. Shelf membership alone is not a preservation guarantee, and other paint contributors remain separate."
+        },
+        {
+          "q": "Are Frost Mercury Duo registry material values constant everywhere?",
+          "a": "No uniform-output claim is established here. This kept entry has a dedicated spec function; inspect its actual output."
+        },
+        {
+          "q": "Is Frost Mercury Duo verified suitable for every car?",
+          "a": "No. This audit verifies the registration and declared source construction, not native car appearance, UV mapping or suitability under every lighting condition."
+        }
+      ],
+      "mistakes": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "protips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ]
+    },
+    {
+      "id": "finish_foundation_efx_1.base.efx_galvanized_spangle",
+      "title": "Galvanized Spangle",
+      "domain": "finish_foundation_efx_1",
+      "summary": "Hot-dip zinc spangle: polygonal crystals in your colour, each a different brightness, feathered inside; satin, high metal. Reads as your colour broken into a shattered mosaic of light and dark facets with a metallic glitter; like hot-dip zinc but tinted.",
+      "what": "Declared field carrier: basalt. In finish-colour mode, its recipe declares value modulation. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car.",
+      "when": [
+        "Best on: body, sides, bumpers.",
+        "Mood: industrial, rugged, techy.",
+        "Era: modern, timeless.",
+        "Fits: truck / off-road, dirt late model, stock car."
+      ],
+      "how": [
+        "Confirm this exact finish ID and the intended target.",
+        "Use source paint for primary material-only work, or finish’s own color when the recipe’s paint operations belong in the design.",
+        "Check which scale controls the material detail rather than overlay distribution or artwork size.",
+        "Inspect the actual paint/spec and in-sim result before endorsing this finish for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ],
+      "pitfalls": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "related": [
+        "finish_foundation_efx_3.base.efx_wire_brushed",
+        "finish_foundation_efx_1.base.efx_damascus_fold",
+        "finish_foundation_efx_2.base.efx_holographic_drift",
+        "finish_foundation_efx_3.base.efx_sandblasted"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::efx_galvanized_spangle"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/foundation_efx_2026.py:64-82",
+        "engine/paint_v2/foundation_efx_2026.py:474-537",
+        "engine/paint_v2/foundation_efx_2026.py:547-637",
+        "engine/registry.py:1152",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::efx_galvanized_spangle",
+      "type": "base",
+      "shelves": [
+        "Foundation EFX"
+      ],
+      "metal": 212,
+      "rough": 70,
+      "coat": 93,
+      "palette": [
+        "#983131",
+        "#6d2323",
+        "#c33f3f"
+      ],
+      "own_colours": false,
+      "loud": 3,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 2,
+        "accent": 2,
+        "hero": 3,
+        "risk": 4
+      },
+      "mood": [
+        "industrial",
+        "rugged",
+        "techy"
+      ],
+      "era": [
+        "modern",
+        "timeless"
+      ],
+      "use": [
+        "body",
+        "sides",
+        "bumpers"
+      ],
+      "tags": [
+        "galvanized",
+        "zinc",
+        "metal",
+        "spangle",
+        "geometric",
+        "glass"
+      ],
+      "level": "pro",
+      "spec_character": "Average spec: metal 212 (true metallic), roughness 70 (satin gloss), clearcoat 93 (moderate clearcoat, satin range). The spec is textured, not flat: metal and roughness and clearcoat vary by 20 or more across the surface.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Colour operations run when its paint function is permitted; primary source mode skips that pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "swatch": "/api/swatch/base/efx_galvanized_spangle",
+      "deep": {
+        "title": "Declared construction and limits",
+        "body": "Declared field carrier: basalt. In finish-colour mode, its recipe declares value modulation. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car."
+      },
+      "faq": [
+        {
+          "q": "Does Galvanized Spangle always preserve my livery colours?",
+          "a": "Use source paint skips the reviewed ordinary primary base paint function; finish-colour mode permits the declared recipe. Shelf membership alone is not a preservation guarantee, and other paint contributors remain separate."
+        },
+        {
+          "q": "Are Galvanized Spangle registry material values constant everywhere?",
+          "a": "No. The rebuilt EFX spec uses spatial field/deck processing. Registry M/R/CC numbers are deck anchors, not constant per-pixel output or calibrated slider recommendations."
+        },
+        {
+          "q": "Is Galvanized Spangle verified suitable for every car?",
+          "a": "No. This audit verifies the registration and declared source construction, not native car appearance, UV mapping or suitability under every lighting condition."
+        }
+      ],
+      "mistakes": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "protips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ]
+    },
+    {
+      "id": "finish_foundation_efx_1.base.efx_glass_flake",
+      "title": "Glass Flake",
+      "domain": "finish_foundation_efx_1",
+      "summary": "Dense fine glass-flake surface, even glittery sheen in whatever colour you give it, faceted shards catching white light. Your colour with a dense, even glitter haze under a deep glossy clear, like show-car micro flake; from a distance it is a sparkly smooth colour with no pattern.",
+      "what": "Declared field carrier: ek:facets. In finish-colour mode, its recipe declares value modulation, glint colour blend. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car.",
+      "when": [
+        "Best on: body, hood, roof.",
+        "Mood: luxury, playful, clean.",
+        "Era: modern, timeless.",
+        "Fits: show car, gt / sports car, stock car."
+      ],
+      "how": [
+        "Confirm this exact finish ID and the intended target.",
+        "Use source paint for primary material-only work, or finish’s own color when the recipe’s paint operations belong in the design.",
+        "Check which scale controls the material detail rather than overlay distribution or artwork size.",
+        "Inspect the actual paint/spec and in-sim result before endorsing this finish for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ],
+      "pitfalls": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "related": [
+        "finish_foundation_efx_2.base.efx_orange_peel",
+        "finish_foundation_efx_1.base.efx_cathedral_veil",
+        "finish_foundation_efx_2.base.efx_rain_beads",
+        "finish_foundation_efx_2.base.efx_leather_grain"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::efx_glass_flake"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/foundation_efx_2026.py:64-82",
+        "engine/paint_v2/foundation_efx_2026.py:474-537",
+        "engine/paint_v2/foundation_efx_2026.py:547-637",
+        "engine/registry.py:1152",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::efx_glass_flake",
+      "type": "base",
+      "shelves": [
+        "Foundation EFX"
+      ],
+      "metal": 65,
+      "rough": 35,
+      "coat": 41,
+      "palette": [
+        "#a63636",
+        "#8c2d2d",
+        "#d97c7c"
+      ],
+      "own_colours": false,
+      "loud": 3,
+      "busy": 3,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 3,
+        "accent": 3,
+        "hero": 3,
+        "risk": 3
+      },
+      "mood": [
+        "luxury",
+        "playful",
+        "clean"
+      ],
+      "era": [
+        "modern",
+        "timeless"
+      ],
+      "use": [
+        "body",
+        "hood",
+        "roof"
+      ],
+      "tags": [
+        "glass",
+        "flake",
+        "clear",
+        "metallic",
+        "glitter",
+        "geometric",
+        "light",
+        "sparkle"
+      ],
+      "level": "intermediate",
+      "spec_character": "Average spec: metal 65 (pearl-level metal), roughness 35 (high gloss), clearcoat 41 (strong-to-medium clearcoat). The spec is textured, not flat: metal and clearcoat vary by 20 or more across the surface.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Colour operations run when its paint function is permitted; primary source mode skips that pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "swatch": "/api/swatch/base/efx_glass_flake",
+      "deep": {
+        "title": "Declared construction and limits",
+        "body": "Declared field carrier: ek:facets. In finish-colour mode, its recipe declares value modulation, glint colour blend. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car."
+      },
+      "faq": [
+        {
+          "q": "Does Glass Flake always preserve my livery colours?",
+          "a": "Use source paint skips the reviewed ordinary primary base paint function; finish-colour mode permits the declared recipe. Shelf membership alone is not a preservation guarantee, and other paint contributors remain separate."
+        },
+        {
+          "q": "Are Glass Flake registry material values constant everywhere?",
+          "a": "No. The rebuilt EFX spec uses spatial field/deck processing. Registry M/R/CC numbers are deck anchors, not constant per-pixel output or calibrated slider recommendations."
+        },
+        {
+          "q": "Is Glass Flake verified suitable for every car?",
+          "a": "No. This audit verifies the registration and declared source construction, not native car appearance, UV mapping or suitability under every lighting condition."
+        }
+      ],
+      "mistakes": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "protips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ]
+    },
+    {
+      "id": "finish_foundation_efx_1.base.efx_gold_leaf",
+      "title": "Gold Leaf",
+      "domain": "finish_foundation_efx_1",
+      "summary": "Crinkled gold leaf sheets laid over your colour, patchy metallic foil with lifted edges and dark seams. Reads as a gilded car with your colour glinting between the foil patches; at distance the patches form a busy gold-and-base-colour mix, mostly gold.",
+      "what": "Declared field carrier: fk:spall. In finish-colour mode, its recipe declares value modulation, first coloured stain. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car.",
+      "when": [
+        "Best on: hero panel, hood, roof.",
+        "Mood: luxury, elegant, retro.",
+        "Era: timeless, modern.",
+        "Fits: show car, gt / sports car."
+      ],
+      "how": [
+        "Confirm this exact finish ID and the intended target.",
+        "Use source paint for primary material-only work, or finish’s own color when the recipe’s paint operations belong in the design.",
+        "Check which scale controls the material detail rather than overlay distribution or artwork size.",
+        "Inspect the actual paint/spec and in-sim result before endorsing this finish for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ],
+      "pitfalls": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "related": [
+        "finish_foundation_efx_3.base.efx_raku_glaze",
+        "finish_foundation_efx_2.base.efx_knurled",
+        "finish_foundation_efx_1.base.efx_frost_mercury_duo",
+        "finish_foundation_efx_2.base.efx_holo_scan"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::efx_gold_leaf"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/foundation_efx_2026.py:64-82",
+        "engine/paint_v2/foundation_efx_2026.py:474-537",
+        "engine/paint_v2/foundation_efx_2026.py:547-637",
+        "engine/registry.py:1152",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::efx_gold_leaf",
+      "type": "base",
+      "shelves": [
+        "Foundation EFX"
+      ],
+      "metal": 158,
+      "rough": 43,
+      "coat": 44,
+      "palette": [
+        "#92302f",
+        "#f3b74c",
+        "#c3733e"
+      ],
+      "own_colours": false,
+      "loud": 3,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 4,
+        "body": 3,
+        "accent": 3,
+        "hero": 4,
+        "risk": 3
+      },
+      "mood": [
+        "luxury",
+        "elegant",
+        "retro"
+      ],
+      "era": [
+        "timeless",
+        "modern"
+      ],
+      "use": [
+        "hero panel",
+        "hood",
+        "roof"
+      ],
+      "tags": [
+        "gold",
+        "leaf",
+        "metallic",
+        "luxury",
+        "floral",
+        "sparkle"
+      ],
+      "level": "intermediate",
+      "spec_character": "Average spec: metal 158 (strong pearl or anodized metal), roughness 43 (high gloss), clearcoat 44 (strong-to-medium clearcoat). The spec is textured, not flat: metal and roughness and clearcoat vary by 20 or more across the surface.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Colour operations run when its paint function is permitted; primary source mode skips that pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "swatch": "/api/swatch/base/efx_gold_leaf",
+      "deep": {
+        "title": "Declared construction and limits",
+        "body": "Declared field carrier: fk:spall. In finish-colour mode, its recipe declares value modulation, first coloured stain. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car."
+      },
+      "faq": [
+        {
+          "q": "Does Gold Leaf always preserve my livery colours?",
+          "a": "Use source paint skips the reviewed ordinary primary base paint function; finish-colour mode permits the declared recipe. Shelf membership alone is not a preservation guarantee, and other paint contributors remain separate."
+        },
+        {
+          "q": "Are Gold Leaf registry material values constant everywhere?",
+          "a": "No. The rebuilt EFX spec uses spatial field/deck processing. Registry M/R/CC numbers are deck anchors, not constant per-pixel output or calibrated slider recommendations."
+        },
+        {
+          "q": "Is Gold Leaf verified suitable for every car?",
+          "a": "No. This audit verifies the registration and declared source construction, not native car appearance, UV mapping or suitability under every lighting condition."
+        }
+      ],
+      "mistakes": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "protips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ]
+    },
+    {
+      "id": "finish_foundation_efx_1.base.efx_hammered",
+      "title": "Hammered",
+      "domain": "finish_foundation_efx_1",
+      "summary": "Ball-peen hammered metal, a lattice of round dents each catching its own highlight, in whatever colour you give it. Reads as a fine dimpled, beaten-metal surface with a busy sparkly shimmer; the individual dents blur into a glittery orange-peel-on-metal texture, and the cloudy patches give a slightly uneven polish.",
+      "what": "Declared field carrier: rosensweig. In finish-colour mode, its recipe declares value modulation. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car.",
+      "when": [
+        "Best on: body, sides, bumpers.",
+        "Mood: industrial, rugged, retro.",
+        "Era: timeless, 70s.",
+        "Fits: truck / off-road, dirt late model, show car."
+      ],
+      "how": [
+        "Confirm this exact finish ID and the intended target.",
+        "Use source paint for primary material-only work, or finish’s own color when the recipe’s paint operations belong in the design.",
+        "Check which scale controls the material detail rather than overlay distribution or artwork size.",
+        "Inspect the actual paint/spec and in-sim result before endorsing this finish for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ],
+      "pitfalls": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "related": [
+        "finish_foundation_efx_1.base.efx_engine_turned",
+        "finish_foundation_efx_1.base.efx_damascus_fold",
+        "finish_foundation_efx_2.base.efx_knurled",
+        "finish_foundation_efx_1.base.efx_galvanized_spangle"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::efx_hammered"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/foundation_efx_2026.py:64-82",
+        "engine/paint_v2/foundation_efx_2026.py:474-537",
+        "engine/paint_v2/foundation_efx_2026.py:547-637",
+        "engine/registry.py:1152",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::efx_hammered",
+      "type": "base",
+      "shelves": [
+        "Foundation EFX"
+      ],
+      "metal": 224,
+      "rough": 39,
+      "coat": 60,
+      "palette": [
+        "#762626"
+      ],
+      "own_colours": false,
+      "loud": 3,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 4,
+        "body": 4,
+        "accent": 3,
+        "hero": 4,
+        "risk": 2
+      },
+      "mood": [
+        "industrial",
+        "rugged",
+        "retro"
+      ],
+      "era": [
+        "timeless",
+        "70s"
+      ],
+      "use": [
+        "body",
+        "sides",
+        "bumpers"
+      ],
+      "tags": [
+        "hammered",
+        "metal",
+        "dents",
+        "industrial",
+        "geometric"
+      ],
+      "level": "intermediate",
+      "spec_character": "Average spec: metal 224 (true metallic), roughness 39 (high gloss), clearcoat 60 (strong-to-medium clearcoat). The spec is textured, not flat: metal and roughness and clearcoat vary by 20 or more across the surface.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Colour operations run when its paint function is permitted; primary source mode skips that pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "swatch": "/api/swatch/base/efx_hammered",
+      "deep": {
+        "title": "Declared construction and limits",
+        "body": "Declared field carrier: rosensweig. In finish-colour mode, its recipe declares value modulation. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car."
+      },
+      "faq": [
+        {
+          "q": "Does Hammered always preserve my livery colours?",
+          "a": "Use source paint skips the reviewed ordinary primary base paint function; finish-colour mode permits the declared recipe. Shelf membership alone is not a preservation guarantee, and other paint contributors remain separate."
+        },
+        {
+          "q": "Are Hammered registry material values constant everywhere?",
+          "a": "No. The rebuilt EFX spec uses spatial field/deck processing. Registry M/R/CC numbers are deck anchors, not constant per-pixel output or calibrated slider recommendations."
+        },
+        {
+          "q": "Is Hammered verified suitable for every car?",
+          "a": "No. This audit verifies the registration and declared source construction, not native car appearance, UV mapping or suitability under every lighting condition."
+        }
+      ],
+      "mistakes": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "protips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ]
+    },
+    {
+      "id": "finish_foundation_efx_1.base.efx_holo_flake",
+      "title": "Holo Flake",
+      "domain": "finish_foundation_efx_1",
+      "summary": "Pale cream-grey holographic flake, thousands of tiny flakes each flashing its own faint rainbow, bright and shimmering. A fine sparkling dust that tints the paint with pink-white twinkle; the muddy field underneath is just the render tint, the real colour is whatever you put under it.",
+      "what": "Declared field carrier: ek:discs. In finish-colour mode, its recipe declares value modulation, interference-palette colour blend, glint colour blend. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car.",
+      "when": [
+        "Best on: body, roof, hero panel.",
+        "Mood: cosmic, dreamy, playful.",
+        "Era: modern, futuristic.",
+        "Fits: show car, gt / sports car, open wheel."
+      ],
+      "how": [
+        "Confirm this exact finish ID and the intended target.",
+        "Use source paint for primary material-only work, or finish’s own color when the recipe’s paint operations belong in the design.",
+        "Check which scale controls the material detail rather than overlay distribution or artwork size.",
+        "Inspect the actual paint/spec and in-sim result before endorsing this finish for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ],
+      "pitfalls": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "related": [
+        "finish_foundation_efx_2.base.efx_holo_prism_cells",
+        "finish_foundation_efx_1.base.efx_aurora_skin",
+        "finish_foundation_efx_3.base.efx_spectral_edge",
+        "finish_foundation_efx_3.base.efx_tempered_spectrum"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::efx_holo_flake"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/foundation_efx_2026.py:64-82",
+        "engine/paint_v2/foundation_efx_2026.py:474-537",
+        "engine/paint_v2/foundation_efx_2026.py:547-637",
+        "engine/registry.py:1152",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "generated": true,
+      "key": "base::efx_holo_flake",
+      "type": "base",
+      "shelves": [
+        "Foundation EFX"
+      ],
+      "metal": 204,
+      "rough": 12,
+      "coat": 26,
+      "palette": [
+        "#8e7f46",
+        "#8a7888",
+        "#2d2f3a"
+      ],
+      "own_colours": true,
+      "loud": 4,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 3,
+        "accent": 2,
+        "hero": 3,
+        "risk": 4
+      },
+      "mood": [
+        "cosmic",
+        "dreamy",
+        "playful"
+      ],
+      "era": [
+        "modern",
+        "futuristic"
+      ],
+      "use": [
+        "body",
+        "roof",
+        "hero panel"
+      ],
+      "tags": [
+        "holographic",
+        "flake",
+        "glitter",
+        "rainbow",
+        "metallic",
+        "sparkle"
+      ],
+      "level": "pro",
+      "spec_character": "Average spec: metal 204 (true metallic), roughness 12 (razor or mirror smooth), clearcoat 26 (very strong clearcoat). The spec is textured, not flat: metal and clearcoat vary by 20 or more across the surface.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Colour operations run when its paint function is permitted; primary source mode skips that pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "swatch": "/api/swatch/base/efx_holo_flake",
+      "deep": {
+        "title": "Declared construction and limits",
+        "body": "Declared field carrier: ek:discs. In finish-colour mode, its recipe declares value modulation, interference-palette colour blend, glint colour blend. The spec generator uses this entry’s field, material deck and recipe settings; registry M/R/CC numbers are deck anchors, not constant values at every pixel. BASE COLOR Use source paint (spec only) skips the reviewed ordinary primary-base paint function even for a colour-generating EFX. Use finish’s own color permits its paint recipe. This is not a whole-document preservation guarantee: additional bases, patterns, HSB and targets still need checking. Fine-detail intentions and card names are not measured native appearance or a verified recommendation for every car."
+      },
+      "faq": [
+        {
+          "q": "Does Holo Flake always preserve my livery colours?",
+          "a": "Use source paint skips the reviewed ordinary primary base paint function; finish-colour mode permits the declared recipe. Shelf membership alone is not a preservation guarantee, and other paint contributors remain separate."
+        },
+        {
+          "q": "Are Holo Flake registry material values constant everywhere?",
+          "a": "No. The rebuilt EFX spec uses spatial field/deck processing. Registry M/R/CC numbers are deck anchors, not constant per-pixel output or calibrated slider recommendations."
+        },
+        {
+          "q": "Is Holo Flake verified suitable for every car?",
+          "a": "No. This audit verifies the registration and declared source construction, not native car appearance, UV mapping or suitability under every lighting condition."
+        }
+      ],
+      "mistakes": [
+        "Do not interpret a catalog average or registry anchor as every output pixel.",
+        "Do not treat generated entries as visually verified recommendations."
+      ],
+      "protips": [
+        "Choose colour mode and affected target deliberately before judging a finish."
+      ]
+    }
+  ]
+}

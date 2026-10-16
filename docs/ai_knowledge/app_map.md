@@ -1,30 +1,30 @@
 # Where everything is: the app map (AI knowledge card, generated from scripts/ai_atlas/ui_map.json)
 
-Use these names exactly. Modes: PRO (full shop), CHAT (talk to Shokker). The Pro zone editor is the ZONE POPOUT PANEL that opens when a zone card is clicked. There is no File menu: saving a project is the "Save / Open" button. Dropping a picture on the canvas replaces the paint; "+ Layer" adds a logo.
+Use these names exactly. Modes: PRO (full shop), CHAT (talk to Shokker). The Pro zone editor is the ZONE POPOUT PANEL that opens when a zone card is clicked. There is no File menu: saving a project is the "Save / Open" button. Dropping a picture on the canvas replaces the paint; Actions > Place image... adds a logo.
 
 ## Pro: Header rows (1 of 3)
-Top of the window: iRacing User ID, Number type, Source Paint (TGA / PSD) and iRacing Car Folder. These decide WHAT is painted and WHERE the files go. Where: Pro > top of the window, first rows (iRacing User ID, Source Paint, iRacing Car Folder).
+Top of the window: iRacing User ID, Number type, Source Paint (TGA / PSD) and iRacing Car Folder. These decide WHAT is painted and WHERE the files go. Where: Pro > top of the window, one row (Source Paint and iRacing Car Folder file chips, Open Paint..., the Car group with iRacing ID and Custom / Sim-Stamped Number).
 - **Download Update** (button): Downloads the new Shokker version. Watch out: Save your project first; installing restarts the app.
 - **Remind Me Later** (button): Hides the update banner for now.
 - **IRACING USER ID box** (text input): Your iRacing customer number (4-7 digits); it is part of the saved file names. Watch out: A wrong ID means iRacing ignores the files.
 - **CUSTOM NUMBER** (toggle): Custom Number: the number is part of your paint and iRacing will not add one. Watch out: Needs Settings > Graphics > Hide Car Numbers ON in iRacing to load car_num_.
 - **SIM-STAMPED NUMBER** (toggle): Sim-Stamped Number: iRacing stamps your number on the car in the series font. Watch out: Do not also paint a number on the template.
-- **SOURCE PAINT box** (text input): The paint file Shokker works on (a flat TGA / PNG / JPEG, or a PSD): type or paste a path, or use the buttons beside it. Watch out: Pasting a folder path here does not load a paint. A flat TGA has no layers; a PSD does.
+- **SOURCE PAINT box** (text input): The paint file Shokker works on (a flat TGA / PNG / JPEG, or a PSD): click the file chip to type or paste a path, or use Open Paint... beside it. Watch out: Pasting a folder path here does not load a paint. A flat TGA has no layers; a PSD does.
 
 ## Pro: Header rows (2 of 3)
-- **TGA/PNG/JPEG** (button): Browse for a flat paint picture (TGA / PNG / JPEG / BMP) and load it as the paint. Watch out: Dropping an image on the canvas also REPLACES the paint; it does not add a logo (use + Layer for that).
-- **PSD/XCF/ORA** (button): Browse for a layered PSD / XCF / ORA template so every layer (body, numbers, sponsors, tape) stays separate. Watch out: Make sure the template layers (Mask, Wire, Car_Mandatory) are OFF before exporting.
-- **IRACING CAR FOLDER box** (text input): The iRacing car folder the finished paint and spec files are written to. Watch out: Point to the car FOLDER, not a TGA file. It sets the file names car_num_ID.tga or car_ID.tga and...
+- **Open Paint... > Flat image** (button): Open Paint... > Flat image: browse for a flat paint picture (TGA / PNG / JPEG / BMP) and load it as the paint. Watch out: Dropping an image on the canvas also REPLACES the paint; it does not add a logo (use Actions > Place...
+- **Open Paint... > Layered template** (button): Open Paint... > Layered template: browse for a layered PSD / XCF / ORA template so every layer (body, numbers, sponsors, tape) stays separate. Watch out: RENDER leaves the template layers (Mask, Wire, Car_Mandatory) out of the car paint for you.
+- **IRACING CAR FOLDER box** (text input): The iRacing car folder the finished paint and spec files are written to. It shows as a folder chip: click it to type or paste a path. Watch out: Point to the car FOLDER, not a TGA file. It sets the file names car_num_ID.tga or car_ID.tga and...
 - **Pick detected iRacing car** (button): Pick your car from the list of iRacing cars Shokker detected (most recently painted first). Watch out: If your car is missing, paint it once in iRacing or browse for the folder.
 - **Browse iRacing car folder in Windows File Explorer** (button): Browse for the iRacing car folder in Windows. Watch out: Pick the car's own folder inside Documents/iRacing/paint, not a TGA file.
-- **FRACTURE THIS PAINT** (button): One click puts a Soul Core Emerald / Pink Flash finish into the selected zone's base (and its colour unless Color Lock is on). Watch out: Changes the zone's colour too unless the Lock is on.
 
 ## Pro: Header rows (3 of 3)
+- **FRACTURE THIS PAINT** (button): One click shows a summary and, once you confirm, puts a Soul Core Emerald / Pink Flash finish into the selected zone's base (and its colour unless Color Lock is on). Watch out: Changes the zone's colour too unless the Lock is on.
 - **Settings** (button): Opens Settings: licence, keyboard shortcuts, ZIP export, spec map import, Live Link, Training Wheels.
 - **Tutorial** (button): Training Wheels: step-by-step quests that teach the app as you use it (load, zone, finish, render, then patterns, spec, overlays), plus a hint chip for your next move. Watch out: Toggle it any time; it is also a checkbox in Settings.
 - **Make UI chrome smaller** (button): shrink toolbar / panel chrome (does NOT zoom the canvas)
 - **UI Larger** (button): grow toolbar / panel chrome (does NOT zoom the canvas)
-- **SPEC SCULPT** (button): Open the complete guided Spec Sculpt look library
+- **SPEC SCULPT** (button): Open the Spec Sculpt panel: five spec looks for the whole car from your paint colours, with the classic lab one click away. Esc closes it.
 - **Shokk Drop** (button): import art, Import DNA spec, share .spbdrop packs
 - **Encyclopedia** (button): SPB Encyclopedia: how everything in Shokker works - spec maps, zones, finishes, every control. Press / inside to search.
 
@@ -33,34 +33,34 @@ Switches between the full shop and the talk-to-Shokker front door. The paint and
 - **PRO** (button): Switch to the full Pro shop.
 - **CHAT** (button): Switch to Chat (talk to Shokker).
 
-## Pro: Top toolbar (1 of 6)
+## Pro: Top toolbar (1 of 7)
 Tool row (Move, Pick, Color, Wand, Lasso, Rect, Brush, Fill, Erase), the HISTORY / SELECT / RETOUCH / MASK / SPEC TOOLS / TRANSFORM / ADJUST menus, the ZONE / LAYER target switch, RENDER HISTORY, Save / Open and Import Recipe. Where: Pro > top toolbar (tool row).
 - **Move** (button): Move tool (V): in Layer mode click a sponsor / number to drag it; Alt forces the whole layer. Watch out: Switch ZONE / LAYER to LAYER first.
 - **Pick** (button): Pick Item (Y): pick one sponsor / number inside a layer for independent move / rotate.
-- **Color** (button): Color (P): click a colour on the paint to select by it. In Pro zone mode it feeds the selected zone's colour list.
+- **Color** (button): Color (I): click a colour on the paint to select by it. In Pro zone mode it feeds the selected zone's colour list.
 - **Wand** (button): Magic Wand (W): click to select similar colour; Shift adds, Alt subtracts; Tolerance sets how similar.
 - **Lasso** (button): Lasso (L): draw a free-hand selection. Watch out: Enter closes the shape.
-- **Rect** (button): Rectangle select (O): drag a box selection.
+- **Rect** (button): Rectangle select (M): drag a box selection; press M again for Elliptical.
 - **Brush** (button): Brush (B): paint the zone's mask, or the selected layer's pixels. Watch out: ZONE mode paints a mask; LAYER mode paints pixels.
 - **Fill** (button): Fill bucket (K): fill a region of the zone mask or the layer.
 - **Erase** (button): Eraser (E): erase zone mask or layer pixels.
 - **History** (menu): HISTORY menu: Undo, Redo, Undo History.
 
-## Pro: Top toolbar (2 of 6)
+## Pro: Top toolbar (2 of 7)
 - **Undo Ctrl+Z** (button): Undo the last stroke, transform or layer action (Ctrl+Z).
 - **Redo Ctrl+Y** (button): Redo (Ctrl+Y or Ctrl+Shift+Z).
 - **Undo History…** (button): Opens the recent-actions list so you can jump back several steps.
 - **Select** (menu): SELECT menu: Select All Color, Grab Object, Smart Region Fill, Move Selection Border, Pick Layer Element, Zone Pick, Elliptical Marquee.
 - **Select All Color** (button): Select All Color (A): select every pixel of the sampled colour across the whole paint.
-- **Grab Object** (button): Grab Object (G): click inside a number or logo and its whole outline is selected. Watch out: Works best on clear solid shapes.
+- **Grab Object** (button): Grab Object (Shift+W cycles to it): click inside a number or logo and its whole outline is selected. Watch out: Works best on clear solid shapes.
 - **Smart Region Fill** (button): Smart Region Fill: click inside an edge-bounded area to select it.
 - **Zone Pick** (button): Zone Pick: click a spec pattern / base piece to move, rotate and resize it independently.
-- **Retouch** (menu): RETOUCH menu: Color Brush, Recolor, Healing Brush, Smudge, Burn - pixel retouching on the selected layer. Watch out: Grey until a blank layer exists: use the Add blank for Color Brush button.
+- **Retouch** (menu): RETOUCH menu: Color Brush, Recolor, Healing Brush, Clone Stamp, Smudge, Blur, Sharpen, Dodge, Burn, Pencil, History Brush, Gradient - pixel retouching on the selected... Watch out: Grey until a blank layer exists: use the Add blank for Color Brush button.
 - **＋ Add blank for Color Brush** (button): Adds a blank layer so the Color Brush has somewhere to paint.
-- **Color Brush** (button): Color Brush (C): paint solid colour or a pattern brush onto the selected layer. Watch out: Needs a blank paintable layer (use + Blank layer).
 
-## Pro: Top toolbar (3 of 6)
-- **Recolor** (button): Recolor (R): paint a new hue over a sampled colour on the selected layer.
+## Pro: Top toolbar (3 of 7)
+- **Color Brush** (button): Color Brush (C): paint solid colour or a pattern brush onto the selected layer. Watch out: Needs a blank paintable layer (use + Blank layer).
+- **Recolor** (button): Recolor (Shift+B cycles Brush, Pencil, Recolor): paint a new hue over a sampled colour on the selected layer.
 - **Mask** (menu): MASK menu: Grow / Shrink / Fill Holes / Feather / Smooth / Invert / Copy / Mirror a zone's area, plus Include / Exclude Region.
 - **Spec Tools** (menu): SPEC TOOLS menu: Decal Rescue Kit, Lighting Mask, Material Sampler, Range Remapper.
 - **Decal Rescue Kit…** (button): Puts a flat / satin / gloss NON-metallic spec under sim-stamped numbers and sponsors so they read cleanly.
@@ -68,9 +68,9 @@ Tool row (Move, Pick, Color, Wand, Lasso, Rect, Brush, Fill, Erase), the HISTORY
 - **Material Sampler…** (button): Click the compiled spec map to read exact Metallic / Roughness / Clearcoat values and copy them to a zone.
 - **Range Remapper…** (button): Retunes Metallic / Roughness / Clearcoat ranges inside the active zone while keeping the texture.
 - **Transform** (menu): TRANSFORM menu: Transform (Ctrl+T) and Fit Layer to Zone Selection.
-- **Adjust** (menu): ADJUST menu: Brightness/Contrast, Hue/Saturation, Color Replace, Invert, Grayscale, Gradient Map, Vibrance, Color Temperature. Watch out: These edit the paint pixels; finishes and zone Hue Shift are render settings.
 
-## Pro: Top toolbar (4 of 6)
+## Pro: Top toolbar (4 of 7)
+- **Adjust** (menu): ADJUST menu: Brightness/Contrast, Hue/Saturation, Color Replace, Invert, Grayscale, Gradient Map, Vibrance, Color Temperature. Watch out: These edit the paint pixels; finishes and zone Hue Shift are render settings.
 - **Hue / Saturation** (button): Shifts hue and saturation of the selected layer or paint. Watch out: Applies to pixels, unlike zone Hue Shift which is a render setting.
 - **Color Replace** (button): Replaces one colour with another everywhere on the layer or paint. Watch out: This edits pixels; for finishes use a zone.
 - **ZONE** (button): ZONE mode: toolbar tools edit zones and masks. Watch out: Tools behave differently in ZONE vs LAYER mode - check this switch if a tool "does nothing".
@@ -79,15 +79,27 @@ Tool row (Move, Pick, Color, Wand, Lasso, Rect, Brush, Fill, Erase), the HISTORY
 - **Save / Open** (button): Save / Open: saves or loads a complete workflow in one file (paint incl. PSD, every zone, all layer settings). Watch out: There is no File menu; this is the save.
 - **Import Recipe** (button): Imports a .shokkerrecipe (yours or shared) and restores the recipe (colours, finishes, effects) on this car.
 - **Xform** (button): Layer mode: selected artwork or selection. Zone mode: current pattern or base.
-- **Excl** (button): paint areas on the car to REMOVE from this zone's color match (red overlay)
-- **Move Selection Border** (button): Arrow moves 1px, Shift+Arrow moves 10px; drag inside to move freely; pixels do not move
 
-## Pro: Top toolbar (5 of 6)
-- **Pick Layer Element** (button): always force isolation of one sponsor/number/shape inside the layer for its own tight transform box
-- **Elliptical Marquee** (button): drag a Zone selection; Shift makes a circle, Alt draws from center, Esc cancels
+## Pro: Top toolbar (5 of 7)
+- **Excl** (button): paint areas on the car to REMOVE from this zone's color match (red overlay)
+- **TText** (button): click the car and type; the text stays live, so click it again with this tool to change it
+- **Color Range…** (button): select by color. Fuzziness widens the match, the Add and Subtract eyedroppers refine it, and Invert flips the selection. Applies as Replace, Add or Subtract.
+- **Move Selection Border** (button): Arrow moves 1px, Shift+Arrow moves 10px; drag inside to move freely; pixels do not move
+- **Pick Layer Element** (button): always isolates one sponsor, number or shape inside the layer, with its own transform box
+- **Elliptical Marquee** (button): drag a Zone selection; Shift adds, Alt subtracts; press Shift mid-drag for a circle, Alt for from center; Esc cancels
 - **Healing Brush** (button): Alt+click clean texture on the selected Layer, then paint to blend its detail into the target
+- **Clone Stamp** (button): Alt+click to set the source on the selected Layer, then paint to copy it
 - **Smudge** (button): smear selected Layer pixels in the drag direction
+- **Blur Brush** (button): soften selected Layer pixels under the brush (strength and size in the options bar)
+- **Sharpen Brush** (button): add edge contrast to selected Layer pixels under the brush (strength and size in the options bar)
+
+## Pro: Top toolbar (6 of 7)
+- **Dodge** (button): lighten selected Layer pixels under the brush
 - **Burn** (button): darken selected Layer pixels under the brush
+- **Pencil** (button): hard, aliased pixel line on the selected Layer (Size 1 = one pixel)
+- **History Brush** (button): paint back the pixels of the saved snapshot (Save History Snapshot first)
+- **Save History Snapshot** (button): remember the current pixels for the History Brush
+- **Gradient** (button): drag to fill the selected Layer or selection with a foreground-to-background gradient
 - **＋ Grow 1 px** (button): expand the active Zone selection by one pixel
 - **＋ Grow 2 px** (button): add edge safety around an active Zone selection
 - **Shrink 1 px** (button): contract the active Zone selection by one pixel
@@ -95,13 +107,14 @@ Tool row (Move, Pick, Color, Wand, Lasso, Rect, Brush, Fill, Erase), the HISTORY
 - **Fill Holes** (button): include empty islands fully enclosed by the active selection
 - **Feather 2 px** (button): soften the active Zone selection edge
 - **Smooth Edges** (button): smooth jagged mask boundaries
+- **Refine Edge…** (button): make the selection follow the real edge of a logo or number, with live preview; apply it to the selection or as a clean cut-out layer
 - **Invert Mask** (button): swap selected and unselected areas
 - **Copy Mask** (button): copy this zone's mask to another zone
 - **Mirror Mask** (button): flip mask horizontally
+
+## Pro: Top toolbar (7 of 7)
 - **Include Region** (button): paint areas to keep in zone color match
 - **Exclude Region** (button): paint areas to remove from zone color match
-
-## Pro: Top toolbar (6 of 6)
 - **Erase Spatial** (button): remove include/exclude paint
 - **Transform** (button): Layer mode: selected artwork or selection. Zone mode: current pattern or base.
 - **Fit Layer to Zone Selection** (button): proportionally fit the selected artwork Layer inside the active Zone mask, then Enter applies or Esc cancels
@@ -109,7 +122,7 @@ Tool row (Move, Pick, Color, Wand, Lasso, Rect, Brush, Fill, Erase), the HISTORY
 - **Invert Colors** (button): negate all pixel colors
 - **Grayscale** (button): convert to black and white
 - **Gradient Map** (button): map a color gradient to luminosity
-- **Vibrance** (button): boost muted colours without over-saturating already-vivid ones
+- **Vibrance** (button): boost muted colors without over-saturating already-vivid ones
 - **Color Temperature** (button): warm or cool the image (Kelvin shift)
 - **RENDER HISTORY** (menu): click a thumbnail to rebuild it fully
 - **Gallery** (button): view all past renders in a grid, search + compare
@@ -133,7 +146,7 @@ The list of zones, top = highest priority. Each card shows what it covers. + Add
 - **Reset All Zones** (button): Resets to the default set of zones (confirmed, undoable).
 - **More** (button): Opens the More menu (presets, randomise, apply to all, library, templates, SHOKK files, channel PNG export).
 - **Collapse arrow (left column)** (button): Collapses or expands the ZONES column.
-- **Zone editor tab (E)** (button): Shows or hides the floating ZONE POPOUT PANEL (press E).
+- **Zone editor tab (Shift+E)** (button): Shows or hides the floating ZONE POPOUT PANEL (press Shift+E).
 
 ## Pro: ZONES > More menu (1 of 2)
 Presets Gallery, randomise, Apply Finish to All, Shokker Library, Undo History, templates, SHOKK files, PNG channel export. Where: Pro > left column > ZONES > More (three-dot) menu.
@@ -249,33 +262,33 @@ The paint (SOURCE) and the LIVE PREVIEW of the finished car, zoom buttons, the R
 - **CAR** (button): CAR view: show the rendered car under the canvas while tools stay active.
 - **SPLIT** (button): SPLIT view (Shift+V): source and live preview side by side.
 - **Load Paint Image** (button): browse for a car paint TGA file
-- **Spatial brush size** (slider): Spatial brush size
+- **Include and exclude brush size** (slider): Include and exclude brush size
 - **Blank Canvas** (button): start with a blank white canvas for color-shift effects
-- **Refresh** (button): aborts any stuck render, clears pipeline, and re-runs. Use this if the preview is hung.
-- **B/A** (button): compare the last preview against the current one
-- **Channels** (button): view spec map channels and numeric values
+- **Refresh** (button): stops a stuck render and starts again. Use this if the preview is frozen.
+- **B/A** (button): drag the divider to see your source paint against the render (same as the Compare button). Click again to close
 
 ## Pro: Centre column (2 of 2)
+- **Channels** (button): view spec map channels and numeric values
 - **Zoom out canvas** (button): decrease canvas zoom
 - **Zoom In (Ctrl+Plus)** (button): increase canvas zoom
 - **FIT** (button): fit canvas in viewport
 - **1:1** (button): 100% zoom (1:1 pixels)
-- **Compare** (button): before/after comparison slider
+- **Compare** (button): before/after slider: your source paint against the render
 
-## Pro: Tool options bar (1 of 5)
+## Pro: Tool options bar (1 of 7)
 Appears under the toolbar; its sliders change with the tool you picked (brush size, wand tolerance, text font ...). Where: Pro > centre > tool options bar (changes with the active tool).
 - **Selection mode dropdown (Add / Replace / Subtract)** (dropdown): How a new selection combines with the existing one: Add (+), Replace, Subtract.
-- **Brush size in pixels** (slider): Brush / eraser size in pixels (1-300); [ and ] keys change it.
+- **Brush diameter in pixels** (slider): Brush / eraser size as a diameter in pixels (1-300); [ and ] change it in proportional steps (bigger steps at bigger sizes).
 - **Brush shape dropdown** (dropdown): Shape of the brush tip: round, square, diamond, slash, noise.
 - **Pattern Brush — paint with a texture instead of solid color** (dropdown): Paint with a texture instead of a solid colour.
 - **Eraser mode — soft brush, hard square block, or clear the current Layer / Zone mask** (dropdown): Eraser style: soft brush, hard block, or clear the whole layer / zone mask.
 - **Gradient shape used by the active Layer or Zone** (dropdown): Shape of the gradient tool: linear, reflected, radial, angular, diamond.
 - **Gradient Reverse** (toggle): Flips the gradient direction.
 - **Gradient Fg To Transparent** (toggle): Fade the foreground colour to transparent instead of to the background colour.
-- **Font** (dropdown): Font for text options. Watch out: There is no Text button in the main tool row; add lettering as a PNG layer.
-- **Text Bold** (toggle): Bold text option.
 
-## Pro: Tool options bar (2 of 5)
+## Pro: Tool options bar (2 of 7)
+- **Font** (dropdown): Font for text options. Watch out: Use the Text tool (T): its text stays editable (double-click it to change it; RASTERIZE turns it into...
+- **Text Bold** (toggle): Bold text option.
 - **Text Italic** (toggle): Italic text option.
 - **Text transform** (dropdown): Text case: as typed, UPPERCASE, lowercase, Capitalize.
 - **Text effect** (dropdown): Text effect: drop shadow, outer glow, emboss and more.
@@ -289,10 +302,10 @@ Appears under the toolbar; its sliders change with the tool you picked (brush si
 - **Layer Brush / Fill paint source** (dropdown): Brush / Fill source on a layer: solid colour or a baked Special finish.
 - **Clone Aligned** (toggle): Aligned clone: the source moves with the brush.
 - **Healing Aligned** (toggle): Aligned healing source.
+
+## Pro: Tool options bar (3 of 7)
 - **Color difference allowed (higher = more colors included)** (slider): How different a colour can be and still get picked (higher = more colours).
 - **Wand Contiguous** (toggle): Contiguous: only select touching pixels of that colour (off = everywhere).
-
-## Pro: Tool options bar (3 of 5)
 - **Sample area — averages color under cursor for more forgiving selection** (dropdown): Sample area for the wand: single point or an average of 3x3 / 5x5 / 11x11 pixels.
 - **Wand Anti Alias** (toggle): Smooths the wand selection edge.
 - **Active paint tool opacity percent** (slider): Active paint tool opacity: 100% (range 1-100%). Press 1-9 keys for quick opacity (1=10%, 5=50%, 0=100%).
@@ -302,10 +315,10 @@ Appears under the toolbar; its sliders change with the tool you picked (brush si
 - **Blur and Sharpen strength percent** (slider): Blur/Sharpen strength: effect built up by each pass (1-100%). Number keys set strength.
 - **Brush hardness percent** (slider): Brush hardness: 100% (range 0-100%, 0=soft feather, 100=hard edge). Use { } keys to adjust.
 - **Brush flow percent** (slider): how fast paint builds up per pass (1-100%)
+
+## Pro: Tool options bar (4 of 7)
 - **Brush spacing percent of brush size** (slider): distance between dabs (% of brush size)
 - **Brush stroke smoothing percent** (slider): averages pointer jitter (0-100%). 10% is the natural default.
-
-## Pro: Tool options bar (4 of 5)
 - **Brush stabilizer distance in pixels** (slider): Lazy-mouse stabilizer rope in source pixels (0-200px). Higher values make the brush tip trail the pointer.
 - **Reference image opacity** (slider): Reference image opacity
 - **Font size (px)** (number input): Font size (px)
@@ -321,23 +334,32 @@ Appears under the toolbar; its sliders change with the tool you picked (brush si
 - **#hex** (text input): Foreground hex color
 - **Swap foreground and background colors** (button): swap foreground and background colors
 - **Reset foreground and background colors** (button): Reset foreground/background colors to default black/white (button only — D is Dodge)
+
+## Pro: Tool options bar (5 of 7)
 - **Save Swatch** (button): save foreground color to swatches
 - **Choose Special...** (button): Choose a baked Special finish for layer fill / brush
-
-## Pro: Tool options bar (5 of 5)
 - **Choose Special...** (button): Current baked Special source
 - **PathSelection** (button): Close any open path and convert it to the active Zone selection
 - **Clear Path** (button): Clear current path without changing selection history
 - **Clone opacity percent** (slider): Clone opacity
 - **Set source** (button): Arm source picking, then click a clean area on the canvas
 - **Clear source** (button): Forget the current Healing source
-- **Save snapshot** (button): Capture the current composite and every Layer for selective restoration
+- **Save snapshot** (button): Save the current image and every layer so you can restore parts of it selectively
 - **Clear** (button): Forget the saved History Brush source
-- **Auto-feather selection edges (px). 0 = off (hard edge). Any value softens the edge of the NEXT selection you commit (marquee / lasso / wand / pen / smart-fill), so the finish fades in at the border. One Undo reverts the whole selection.** (number input): Auto-feather selection edges (px). 0 = off (hard edge). Any value softens the edge of the NEXT selection you commit (marquee / lasso / wand / pen / smart-fill), so...
+- **Quick Select brush size (px on the 2048 sheet). Small brushes are more precise; large ones sample more of the colour range.** (number input): Quick Select brush size (px on the 2048 sheet). Small brushes are more precise; large ones sample more of the colour range.
+
+## Pro: Tool options bar (6 of 7)
+- **Feather selection edges (px). 0 is a hard edge. Applies to the next selection you commit, so the finish fades in at the border. One Undo reverts the whole selection.** (number input): Feather selection edges (px). 0 is a hard edge. Applies to the next selection you commit, so the finish fades in at the border. One Undo reverts the whole selection.
+- **Radius (px) used by Mask > Smooth Edges. Rounds jagged corners and drops specks up to about this size.** (number input): Radius (px) used by Mask > Smooth Edges. Rounds jagged corners and drops specks up to about this size.
+- **Detection width (px): the border follows edges this close to the pointer.** (number input): Detection width (px): the border follows edges this close to the pointer.
+- **Contrast (%): edges weaker than this are ignored.** (number input): Contrast (%): edges weaker than this are ignored.
+- **Frequency (0-100): how often fastening points are set by themselves while you move. Higher = more points.** (number input): Frequency (0-100): how often fastening points are set by themselves while you move. Higher = more points.
 - **Edge Preview** (button): shows detected boundaries in red so you can adjust tolerance before clicking
-- **Spatial brush size** (slider): Spatial brush size
-- **Erase** (button): Erase spatial include/exclude strokes
-- **Erase** (button): Erase brush/wand/region strokes
+- **Include and exclude brush size** (slider): Include and exclude brush size
+- **Erase** (button): Erase include and exclude strokes
+
+## Pro: Tool options bar (7 of 7)
+- **Erase** (button): Erase brush/wand/region strokes (E)
 
 ## Pro: Selection / mask bar
 Under the canvas: Include / Exclude brushes, Undo / Redo, Deselect, Invert, Grow / Shrink / Feather / Smooth, Copy / Mirror mask, Zoom to selection. Where: Pro > centre > selection / mask bar under the canvas.
@@ -347,7 +369,7 @@ Under the canvas: Include / Exclude brushes, Undo / Redo, Deselect, Invert, Grow
 - **Redo** (button): Redo last undone action (Ctrl+Y / Ctrl+Shift+Z)
 - **Deselect** (button): Clear selection for the current zone
 - **Invert** (button): Invert the current zone selection
-- **Spatial** (button): Clear spatial include/exclude for current zone
+- **Spatial** (button): Clear include and exclude strokes for the current zone
 - **Clear All** (button): Clear ALL drawn regions
 - **+ Grow** (button): Expand selection outward by 2px
 - **+1** (button): Expand selection by 1px
@@ -366,7 +388,7 @@ LIVE PREVIEW of the render plus COMBINED / R METAL / G ROUGH / B COAT views of t
 - **G ROUGH** (button): Green channel: Roughness (darker = mirror, lighter = matte).
 - **B COAT** (button): Blue channel: Clearcoat (16 = max gloss, 255 = dull).
 - **Refresh** (button): Refresh preview (F5): aborts a stuck render and re-runs the live preview.
-- **Before After** (button): Before / After (B): compare the last preview with the current one.
+- **Before After** (button): See your source paint against the preview: use Compare (before/after slider) or SPLIT (Shift+V).
 - **Spec Map Inspector** (button): Channels inspector: spec map channels with numeric values.
 - **COMBINED** (button): hover to enlarge, click for full view
 - **ALL** (button): Show all spec channels combined
@@ -379,9 +401,9 @@ LIVE PREVIEW of the render plus COMBINED / R METAL / G ROUGH / B COAT views of t
 - **Close lightbox** (button): Close lightbox (Esc)
 - **ALL** (button): Show all spec channels combined
 - **R Metal** (button): Metallic (0=dielectric, 255=metallic)
-- **G Rough** (button): Roughness (0=mirror, 255=matte)
 
 ## Pro: Preview and spec channels (2 of 2)
+- **G Rough** (button): Roughness (0=mirror, 255=matte)
 - **B Coat** (button): Clearcoat (16=max gloss, 255=dull)
 
 ## Pro: RENDER and recipe card (1 of 2)
@@ -409,14 +431,14 @@ Tabs: FINISHES (library) and LAYERS (PSD layers). Where: Pro > right column.
 ## Pro: LAYERS tab (1 of 3)
 The layer list of a PSD / XCF / ORA: eye, name, opacity, blend, lock, ... plus Open Layered, + Layer, Actions, filter box. Where: Pro > right column > LAYERS tab.
 - **Open Layered** (button): Import a layered PSD / XCF / ORA with its layer tree.
-- **+ Layer** (button): + Layer: adds a PNG / JPG / WebP / GIF as a NEW image layer on top (a logo, a sponsor). Watch out: Dropping a file on the canvas instead REPLACES the paint.
+- **+ Layer** (button): + Layer: adds a blank transparent layer on top. To bring in a picture (PNG / JPG / WebP / GIF, such as a logo or sponsor) use Actions > Place image... Watch out: Dropping a file on the canvas instead REPLACES the paint.
 - **Actions** (button): Actions: + Blank layer, Flatten document, Merge visible, Photoshop round-trip, Thumbnail size. Watch out: Flatten discards layer separation.
 - **e.g. DLM438-base-001** (text input): Name for the exported car file in the Photoshop round trip.
 - **Path to export folder...** (text input): Folder shared with Photoshop for the round trip.
 - **Export** (button): Exports layers to the exchange folder for Photoshop editing; bring the TGA back afterwards.
 - **Clear All** (button): Clears all layer effects (Layer Effects dialog).
 - **Apply** (button): Applies the layer effects.
-- **Layer eye icon** (toggle): Shows / hides the layer. Alt+click isolates that layer. Watch out: Leaving Mask / Wire / Car_Mandatory on paints them into the car.
+- **Layer eye icon** (toggle): Shows / hides the layer. Alt+click isolates that layer. Watch out: RENDER leaves Mask / Wire / Car_Mandatory out of the car paint, so leaving them on in the editor is fine.
 - **Layer opacity** (slider): Fades the layer 0-100% (drag, or type an exact number).
 
 ## Pro: LAYERS tab (2 of 3)
@@ -427,12 +449,14 @@ The layer list of a PSD / XCF / ORA: eye, name, opacity, blend, lock, ... plus O
 - **Rename / duplicate / delete / merge / flip / rotate / effects icons** (button): Standard layer housekeeping: rename, duplicate (Shift = offset copy), delete, merge into the layer below, flip, rotate 90 degrees, Layer Effects (drop shadow, glow,... Watch out: Delete removes the layer art from the document; use the eye to just hide it.
 - **Filter layers box** (text input): Type part of a layer name or group to narrow a long list; Escape clears. Watch out: There is no sort-by-colour: the list is in PSD order. To work BY COLOUR use a zone with PICK COLOR FROM CAR.
 - **Layer name (click) / Ctrl+click / double-click** (button): Click selects the layer; Ctrl+click moves it on the canvas; double-click opens Layer Effects.
-- **+ Blank layer** (button): Add a blank transparent layer to paint on with the Retouch brushes
+- **Place image...** (button): Pick a PNG or JPG from your computer and place it on a new layer
 
 ## Pro: LAYERS tab (3 of 3)
+- **+ Blank layer** (button): Add a blank transparent layer to paint on with the Retouch brushes
 - **Flatten document** (button): hidden Layers and Zone links are disclosed before removal
 - **Merge visible** (button): Ctrl+Shift+E
 - **Photoshop round-trip** (button): Export layers for Photoshop editing and bring the TGA back (round trip)
+- **Edit in PhotoCraft** (button): Open your layers in PhotoCraft (free Photoshop-style editor). Save there and the changed layers come back here.
 - **Thumbnail size** (button): Cycle layer thumbnail size (small / medium / large)
 - **Layers filter box** (search box): Escape clears
 - **Cancel layer effects dialog** (button): Cancel (Esc)
@@ -453,8 +477,8 @@ Popup opened from a zone BASE section: search, #hashtag chips (#carbon, #chrome 
 - **Clear search** (button): Clears the search so the whole list shows again.
 - **USE IT** (button): USE IT: applies the previewed finish to this zone.
 - **Preview on paint** (button): Applies the preview of the selected finish on your paint.
-- **Internal picker review queue** (button): Internal picker review queue
-- **Internal picker category planning** (button): Internal picker category planning
+- **Review queue** (button): Review queue
+- **Category planning** (button): Category planning
 - **‹ ON-CAR STAGE** (button): Show on-car preview
 
 ## Pro: Spec Tools (1 of 3)

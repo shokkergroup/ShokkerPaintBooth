@@ -6,8 +6,13 @@
   <!-- DIAGNOSTICS RECORDER: FIRST <script> in <head> for the one-click "Report a Problem" feature.
        Surfaces the per-variant SHOKK THE WORLD 500s the owner otherwise can't see. -->
   <script src="js/diagnostics/spb-diag-recorder.js?v=spb-diag-recorder-20260604"></script>
-  <title>SHOKK DROP — Shokker Paint Booth</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E" />
+  <script src="js/spb-dialog-20261010.js?v=spb-promptfix-20261010a-cfm1"></script><!-- [SPB-PROMPT-FIX 2026-10-10] in-app prompt (Electron has no window.prompt) -->
+  <!-- [SPB-DROP2 2026-10-10] lane DROP-2: new product shell (css/spb-drop2-20261010.css + js/spb-drop2-20261010.js). The class is set this early so the
+       old layout never flashes; a 2.5 s failsafe always reveals the page. Kill switch: ?drop2=off, localStorage SPB_DROP2_OFF=1 or window.SPB_DROP2_OFF = true. -->
+  <script>(function () { var off = false; try { off = window.SPB_DROP2_OFF === true || /[?&](drop2=off|SPB_DROP2_OFF=1)/i.test(location.search) || localStorage.getItem('SPB_DROP2_OFF') === '1'; } catch (e) {}
+    if (off) return; var r = document.documentElement; r.classList.add('d2', 'd2-boot'); setTimeout(function () { r.classList.remove('d2-boot'); }, 2500); })();</script>
+  <title>Shokk Drop — Shokker Paint Booth</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23181b20'/%3E%3Cpath d='M10 23V9h6.5a5 5 0 010 10H13' fill='none' stroke='%234fbcd2' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
   <style>
     :root { color-scheme: dark; --bg: #07090d; --panel: #10161e; --line: #2b3645; --text: #eaf0f8; --muted: #9ba8b8; --accent: #f0c040; --cyan: #62d7ff; }
     * { box-sizing: border-box; }
@@ -129,13 +134,18 @@
     .shokk-world-pick { font-size: 10px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
     .shokk-world-slot-actions .btn { font-size: 9px; padding: 2px 6px; min-height: 22px; }
   </style>
+  <link rel="stylesheet" href="css/spb-shokk-drop-polish.css?v=spb-drop-polish-20261009a">
+  <link rel="stylesheet" href="css/spb-drop2-20261010.css?v=spb-drop2-20261010d"><!-- [SPB-DROP2 2026-10-10] scoped under html.d2 -->
+  <script>(function () { try { if (localStorage.getItem('SPB_DROPSKIN_OFF') === '1' || /[?&]dropskin=off/i.test(location.search)) document.documentElement.classList.add('spb-dropskin-off'); } catch (e) {} })();</script><!-- [S5 2026-10-12] kill switch for the Shokk Drop skin: localStorage SPB_DROPSKIN_OFF=1 or ?dropskin=off -->
+  <link rel="stylesheet" href="css/spb-drop-skin-20261012.css?v=spb-drop-skin-20261012g"><!-- [S5 2026-10-12] Shokk Drop skin (Pro skin language); keep LAST -->
+
 </head>
 <body>
   <div class="app">
     <header>
       <div>
-        <h1>SHOKK DROP</h1>
-        <div class="tagline">Drop any art · <strong>SHOKK THE WORLD</strong> = 20 specs · DNA Remix · Share <strong>.spbdrop</strong> · <em>SHOKK DROP</em> in Paint Booth</div>
+        <h1>Shokk Drop</h1>
+        <div class="tagline">Drop any art · <strong>Shokk the World</strong> = 20 specs · DNA Remix · Share <strong>.spbdrop</strong> · <em>Shokk Drop</em> in Paint Booth</div>
       </div>
       <div class="header-actions">
         <!-- One-click "Report a Problem": surfaces the per-variant SHOKK THE WORLD
@@ -143,7 +153,7 @@
              js/diagnostics/spb-diag-report.js into this slot. -->
         <span data-spb-report-slot data-spb-report-label="Report a Problem"
               data-spb-report-btn-class="btn"
-              title="Hit a bug (e.g. a SHOKK THE WORLD variant failed)? Copy a diagnostics report to paste to Shokker support."></span>
+              title="Hit a bug (e.g. a Shokk the World variant failed)? Copy a diagnostics report to paste to Shokker support."></span>
         <button type="button" class="btn" id="onboardRestoreBtn" title="Show the getting-started guide again">Guide</button>
         <a class="btn" href="/SHOKK_DROP_BIBLE.html" title="Product bible — architecture &amp; roadmap (SPB-109)">Bible</a>
         <a class="btn" href="/api/user-imports/export-all" download>Export all .spbdrop</a>
@@ -163,7 +173,7 @@
           <option value="car_template">Car template (whole car)</option>
         </select>
         <p class="hint" id="userImportKindHelp" style="margin:-4px 0 8px;color:var(--muted);"></p>
-        <p class="hint" id="userImportCarTemplateHint" style="display:none;margin:-4px 0 8px;">Whole-car paint + spec. SHOKK THE WORLD → <strong>Try in Booth</strong> drops it as a full-body zone that covers the entire car, leaving your existing zones intact underneath.</p>
+        <p class="hint" id="userImportCarTemplateHint" style="display:none;margin:-4px 0 8px;">Whole-car paint + spec. Shokk the World → <strong>Try in Booth</strong> drops it as a full-body zone that covers the entire car, leaving your existing zones intact underneath.</p>
         <!-- IMPORT A SET (Phase 2 ask 2): paint + authored spec = EXACT finish, no DNA bake.
              Wired to backend kind=paint_spec_set via importPaintSpecSet() below. -->
         <div id="userImportSetRow" style="display:none;border:1px solid var(--line);border-radius:8px;padding:9px 10px;margin:0 0 10px;background:#0c121b;">
@@ -179,7 +189,7 @@
           <input type="file" id="userImportSetPaint" accept=".png,.jpg,.jpeg,.webp,.tga,.bmp,image/*" style="margin-bottom:8px;" />
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 6px;">
             <label style="display:inline-flex;align-items:center;gap:5px;margin:0;cursor:pointer;color:var(--text);"><input type="radio" name="userImportSetSpecMode" value="none" checked style="width:auto;margin:0;" />No spec — auto-generate</label>
-            <label style="display:inline-flex;align-items:center;gap:5px;margin:0;cursor:pointer;color:var(--accent);font-weight:700;" title="Ignite your paint with the FRACTURED look — near-chrome metal, maxed clearcoat, roughness woven along your art's own edges. No spec maps needed."><input type="radio" name="userImportSetSpecMode" value="fracture" style="width:auto;margin:0;" />FRACTURE the spec ⚡</label>
+            <label style="display:inline-flex;align-items:center;gap:5px;margin:0;cursor:pointer;color:var(--accent);font-weight:700;" title="Ignite your paint with the Fractured look — near-chrome metal, maxed clearcoat, roughness woven along your art's own edges. No spec maps needed."><input type="radio" name="userImportSetSpecMode" value="fracture" style="width:auto;margin:0;" />Fracture the spec</label>
             <label style="display:inline-flex;align-items:center;gap:5px;margin:0;cursor:pointer;color:var(--text);"><input type="radio" name="userImportSetSpecMode" value="combined" style="width:auto;margin:0;" />Combined spec (one RGB image)</label>
             <label style="display:inline-flex;align-items:center;gap:5px;margin:0;cursor:pointer;color:var(--text);"><input type="radio" name="userImportSetSpecMode" value="channels" style="width:auto;margin:0;" />Separate R / G / B images</label>
           </div>
@@ -187,7 +197,7 @@
                2026-08-09 (the loader had been discarding every fractured
                import), so it now gets copy that says what it actually does. -->
           <p class="hint" id="userImportFractureHelp" style="display:none;margin:-2px 0 8px;padding:6px 8px;border-left:2px solid var(--accent);background:#141007;">
-            <strong style="color:var(--accent);">FRACTURE ⚡</strong> needs <strong>no spec maps at all</strong>. SHOKK traces your art's own edges and ignites them:
+            <strong style="color:var(--accent);">Fracture</strong> needs <strong>no spec maps at all</strong>. SHOKK traces your art's own edges and ignites them:
             near-chrome metal (M≈250), maxed clearcoat, and roughness woven along your motif's lanes — computed fresh at render, so it always matches the art exactly.
             Your paint supplies the dark color; the shine comes from the angle. Best on art with strong graphics or edges.
           </p>
@@ -222,7 +232,7 @@
         <div id="userImportStyleRow">
           <label for="userImportStyleOverride">DNA style <span id="dnaStyleCount" class="hint"></span></label>
           <select id="userImportStyleOverride" title="Override Import DNA personality"><option value="">Auto (analyze image)</option></select>
-          <p class="hint" style="margin:-4px 0 8px;">Hover any style for a description · SHOKK THE WORLD samples 20 per run.</p>
+          <p class="hint" style="margin:-4px 0 8px;">Hover any style for a description · Shokk the World samples 20 per run.</p>
         </div>
         <div id="userImportVibeRow">
           <label for="userImportVibeRef">Match vibe (finish id)</label>
@@ -249,15 +259,15 @@
             <input type="range" id="shokkWildness" min="0" max="100" value="50" style="flex:1;">
             <span id="shokkWildnessVal" style="min-width:62px;text-align:right;color:var(--cyan);">Balanced</span>
           </label>
-          <p class="hint" style="margin:4px 0 0;">Subtle = traces with gentle color · Insane = maximum spec gamut. Set it <strong>before</strong> hitting ⚡ — a running World session keeps the wildness it started with. Click a style&rsquo;s 🎨 in the picker to retune its spec colors.</p>
-          <button type="button" class="btn" id="btnRandomizeDna" style="width:100%;margin-top:8px;font-size:11px;" title="Roll a random Style A + B, mix amount and wildness — then hit ⚡ SHOKK THE WORLD">🎲 Randomize DNA + wildness</button>
+          <p class="hint" style="margin:4px 0 0;">Subtle = traces with gentle color · Insane = maximum spec gamut. Set it <strong>before</strong> running Shokk the World — a running World session keeps the wildness it started with. Click a style&rsquo;s palette button in the picker to retune its spec colors.</p>
+          <button type="button" class="btn" id="btnRandomizeDna" style="width:100%;margin-top:8px;font-size:11px;" title="Roll a random Style A + B, mix amount and wildness — then hit Shokk the World">Randomize DNA + wildness</button>
         </div>
         <input type="file" id="shokkWorldFileInput" accept=".png,.jpg,.jpeg,.webp,.tga,.bmp,image/*" style="display:none;" />
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
-          <button type="button" class="btn shokk-world-btn" id="btnShokkTheWorld" title="20 specs: 8 standard · 7 two-style mix · 5 INSANE 4-way blend">⚡ SHOKK THE WORLD</button>
+          <button type="button" class="btn shokk-world-btn" id="btnShokkTheWorld" title="20 specs: 8 standard · 7 two-style mix · 5 insane 4-way blend">Shokk the World</button>
           <button type="button" class="btn primary" id="btnImportPreview" onclick="openUserImportDialog(true)">Import &amp; preview</button>
-          <button type="button" class="btn" onclick="processUserImportInbox()" title="Batch-import every image sitting in the SHOKK DROP inbox folder on disk (advanced). Folder: %APPDATA%\ShokkerPaintBooth\user_imports\inbox — processed files move to inbox\done.">Inbox</button>
-          <button type="button" class="btn" id="btnResumeWorld" style="display:none;" onclick="reopenLastShokkWorld()" title="Reopen the last SHOKK THE WORLD session — baked specs reload instantly and your picks are kept">↩ Reopen World</button>
+          <button type="button" class="btn" onclick="processUserImportInbox()" title="Batch-import every image sitting in the Shokk Drop inbox folder on disk (advanced). Folder: %APPDATA%\ShokkerPaintBooth\user_imports\inbox — processed files move to inbox\done.">Inbox</button>
+          <button type="button" class="btn" id="btnResumeWorld" style="display:none;" onclick="reopenLastShokkWorld()" title="Reopen the last Shokk the World session — baked specs reload instantly and your picks are kept">Reopen World</button>
         </div>
         <p class="hint" style="margin-top:6px;">Shift+drop for instant World. <strong>Save selected</strong> = library finish. <strong>Save recipe</strong> on a card = reuse DNA mix later.</p>
         <div id="dnaPresetsRow" style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);">
@@ -280,23 +290,23 @@
     <main>
       <!-- ONBOARDING (Phase 2 ask 3): friendly cold-start intro. Collapsible +
            dismissible; remembers state in localStorage (spbDropOnboardingDismissed). -->
-      <section id="shokkDropOnboarding" class="onboard" aria-label="What is SHOKK DROP">
+      <section id="shokkDropOnboarding" class="onboard" aria-label="What is Shokk Drop">
         <div class="onboard-head">
           <div>
-            <h2 class="onboard-title">👋 Welcome to SHOKK DROP</h2>
+            <h2 class="onboard-title">Welcome to Shokk Drop</h2>
             <p class="onboard-lead">Turn <strong>any image</strong> into a race-ready paint finish — with the metallic / roughness / clearcoat “spec” maps that make it shine in iRacing. Drop art, and SHOKK builds the finish for you.</p>
           </div>
           <div class="onboard-head-actions">
             <button type="button" class="btn" id="onboardToggleBtn" title="Show/hide this guide">Hide guide</button>
-            <button type="button" class="btn" id="onboardDismissBtn" title="Don't show this again on this computer">Got it ✕</button>
+            <button type="button" class="btn" id="onboardDismissBtn" title="Don't show this again on this computer">Got it</button>
           </div>
         </div>
         <div class="onboard-body" id="onboardBody">
           <div class="onboard-steps">
             <div class="onboard-step"><span class="onboard-step-num">1</span><div><strong>Pick a Type</strong> on the left (Paint, Pattern, Spec overlay, Paint + spec set, or Car template). Not sure? Leave it on <em>Paint finish</em>.</div></div>
             <div class="onboard-step"><span class="onboard-step-num">2</span><div><strong>Drop or choose an image</strong> in the sidebar (PNG / JPG / WebP). It’s auto-sized to fill the 2048×2048 car canvas.</div></div>
-            <div class="onboard-step"><span class="onboard-step-num">3</span><div><strong>Preview, then Commit</strong> — or hit <span class="onboard-chip">⚡ SHOKK THE WORLD</span> to explode one image into 20 spec variations and keep your favorites.</div></div>
-            <div class="onboard-step"><span class="onboard-step-num">4</span><div><strong>Use it in the Booth</strong> — your drops appear in the <em>SHOKK DROP</em> group inside the Paint Booth, ready to paint your car.</div></div>
+            <div class="onboard-step"><span class="onboard-step-num">3</span><div><strong>Preview, then Commit</strong> — or hit <span class="onboard-chip">Shokk the World</span> to explode one image into 20 spec variations and keep your favorites.</div></div>
+            <div class="onboard-step"><span class="onboard-step-num">4</span><div><strong>Use it in the Booth</strong> — your drops appear in the <em>Shokk Drop</em> group inside the Paint Booth, ready to paint your car.</div></div>
           </div>
           <div class="onboard-types">
             <h3 class="onboard-sub">What each import Type does</h3>
@@ -304,15 +314,15 @@
               <li><strong>Paint finish</strong> — your image becomes the car color; SHOKK auto-generates a matching spec map (the shine). Best starting point. <em>Or attach your own M/R/CC maps below</em> for an exact shine.</li>
               <li><strong>Pattern</strong> — a repeating/overlay design (keeps transparency) you can stamp onto zones. <em>Attach your own M/R/CC maps below</em> to author the shine yourself.</li>
               <li><strong>Spec overlay</strong> — a shine-only layer (no color); your RGB plate maps R→Metallic, G→Roughness, B→Clearcoat. <em>Attach a combined RGB or separate M/R/CC maps below.</em></li>
-              <li><strong>Paint + spec maps (exact)</strong> — you supply BOTH the paint and your own spec maps (combined RGB <em>or</em> separate M/R/CC). Saved <em>verbatim</em> (no auto bake) so it renders exactly as you authored it.</li>
+              <li><strong>Paint + spec maps (exact)</strong> — you supply both the paint and your own spec maps (combined RGB <em>or</em> separate M/R/CC). Saved <em>verbatim</em> (no auto bake) so it renders exactly as you authored it.</li>
               <li><strong>Car template (whole car)</strong> — a full-body paint+spec that drops over the entire car as one zone.</li>
             </ul>
-            <p class="onboard-tip">💡 <strong>DNA Remix</strong> blends two different spec styles. <strong>Spec wildness</strong> controls how loud the shine gets. <strong>Save recipe</strong> reuses a DNA mix later. Share any drop as a <strong>.spbdrop</strong> file.</p>
+            <p class="onboard-tip"><strong>DNA Remix</strong> blends two different spec styles. <strong>Spec wildness</strong> controls how loud the shine gets. <strong>Save recipe</strong> reuses a DNA mix later. Share any drop as a <strong>.spbdrop</strong> file.</p>
             <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);">
               <p class="onboard-tip" style="margin:0 0 6px;"><strong>No art handy?</strong> Generate a sample plate right here and run the real pipeline on it — nothing to download, nothing to install.</p>
               <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                <button type="button" class="btn primary" id="btnSampleImport" title="Generate demo art in your browser and run the normal Import DNA preview on it">🎨 Try a sample</button>
-                <button type="button" class="btn shokk-world-btn" id="btnSampleWorld" title="Generate demo art and explode it into 20 spec variations">⚡ Sample → SHOKK THE WORLD</button>
+                <button type="button" class="btn primary" id="btnSampleImport" title="Generate demo art in your browser and run the normal Import DNA preview on it">Try a sample</button>
+                <button type="button" class="btn shokk-world-btn" id="btnSampleWorld" title="Generate demo art and explode it into 20 spec variations">Sample → Shokk the World</button>
                 <select id="sampleArtKind" title="Which kind of sample art to generate" style="width:auto;margin:0;font-size:11px;padding:4px 6px;">
                   <option value="flow">Flow ribbons</option>
                   <option value="cells">Cell mosaic</option>
@@ -354,7 +364,7 @@
       <!-- Bulk action bar (T11): appears only when cards are check-selected. -->
       <div id="galleryBulkBar" style="display:none;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px;padding:8px 10px;border:1px solid var(--accent);border-radius:8px;background:#151007;">
         <strong id="galleryBulkCount" style="font-size:12px;color:var(--accent);"></strong>
-        <button type="button" class="btn" id="galleryBulkExport" title="Download every selected drop as ONE .spbdrop bundle">⬇ Export bundle</button>
+        <button type="button" class="btn" id="galleryBulkExport" title="Download every selected drop as ONE .spbdrop bundle">Export bundle</button>
         <button type="button" class="btn" id="galleryBulkFav" title="Mark all selected as ★ favorites">★ Favorite</button>
         <button type="button" class="btn" id="galleryBulkDelete" style="border-color:#6b2a2a;color:#f0a8a8;" title="Delete every selected drop (asks first)">Delete selected</button>
         <button type="button" class="btn" id="galleryBulkClear" style="margin-left:auto;" title="Clear the selection">Clear</button>
@@ -365,11 +375,11 @@
   <div id="shokkDropToast" aria-live="polite"></div>
   <script src="js/finishes/guest-designers.js?v=shokk-drop"></script>
   <script src="js/finishes/user-import-gallery.js?v=shokk-drop-uxp-20260808"></script>
-  <script src="js/finishes/user-import-drop-preview.js?v=shokk-drop"></script>
-  <script src="js/finishes/user-imports.js?v=shokk-drop-uxp-20260808d"></script>
-  <script src="js/finishes/user-import-dna-style-picker.js?v=shokk-drop-dnapick3"></script>
-  <script src="js/finishes/user-import-shokk-world.js?v=shokk-drop-uxp-20260809b"></script>
-  <script src="js/finishes/user-import-dna-presets.js?v=shokk-drop-uxp-20260809a"></script>
+  <script src="js/finishes/user-import-drop-preview.js?v=shokk-drop-cp1012"></script>
+  <script src="js/finishes/user-imports.js?v=shokk-drop-uxp-20260808d-cpyfix1-pfix1-cfm1"></script>
+  <script src="js/finishes/user-import-dna-style-picker.js?v=shokk-drop-dnapick4"></script>
+  <script src="js/finishes/user-import-shokk-world.js?v=shokk-drop-uxp-20260809b-cpyfix1-pfix1-cp1012b"></script>
+  <script src="js/finishes/user-import-dna-presets.js?v=shokk-drop-uxp-20260809a-cpyfix1-cfm1-cp1012"></script>
   <!-- One-click "Report a Problem" builder (wires the header slot). -->
   <script src="js/diagnostics/spb-diag-report.js?v=spb-diag-report-20260604"></script>
   <script>
@@ -457,14 +467,15 @@
         }).catch(function (err) {
           showShokkDropToast('Bundle failed: ' + err.message, 'error');
         }).then(function () {
-          if (btn) { btn.disabled = false; btn.textContent = '⬇ Export bundle'; }
+          if (btn) { btn.disabled = false; btn.textContent = 'Export bundle'; }
         });
       }
-      function _bulkDelete() {
+      async function _bulkDelete() {
         var ids = _bulkIds();
         if (!ids.length) return;
-        if (!window.confirm('Delete ' + ids.length + ' drop(s)?\n\n' + ids.join('\n') +
-            '\n\nThis removes them from the library and the booth picker. It can’t be undone.')) return;
+        // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF)
+        if (!(await SpbDialog.ask('Delete ' + ids.length + ' Drop' + (ids.length === 1 ? '' : 's') + '?', { message: ids.slice(0, 12).join('\n') + (ids.length > 12 ? '\n... +' + (ids.length - 12) + ' more' : '') + '\n\nThis removes them from the library and the booth picker. It can’t be undone.', okLabel: 'Delete ' + ids.length + ' Drop' + (ids.length === 1 ? '' : 's'), danger: true,
+            nativeText: 'Delete ' + ids.length + ' drop(s)?\n\n' + ids.join('\n') + '\n\nThis removes them from the library and the booth picker. It can’t be undone.' }))) return;
         var btn = document.getElementById('galleryBulkDelete');
         if (btn) { btn.disabled = true; btn.textContent = 'Deleting…'; }
         // Sequential, not parallel: each delete rewrites the shared manifest.
@@ -564,7 +575,7 @@
         if (!dna || !dna.gauntlet_stats) return '';
         var st = dna.gauntlet_stats;
         var passed = !!dna.gauntlet_passed;
-        var label = passed ? 'PASS' : 'FAIL';
+        var label = passed ? 'Pass' : 'Fail';
         var short = 'M' + Math.round(st.M_std || 0) + ' R' + Math.round(st.R_std || 0) + ' C' + Math.round(st.C_std || 0);
         var tip = 'Import DNA gauntlet: ' + label +
           '\nM σ=' + (st.M_std || 0) + ' range=' + (st.M_range || 0) +
@@ -653,13 +664,13 @@
             _gauntletBadge(e) +
             '<p class="meta">' + esc(e.kind || 'paint') + (dnaLabel ? ' · ' + esc(dnaLabel) : '') + '</p>' +
             '<div onclick="event.stopPropagation()">' +
-            (isPaint ? '<button type="button" style="font-size:10px;background:none;border:none;color:#ffd76a;cursor:pointer;padding:0;font-weight:700;" onclick="useDropInBooth(\'' + esc(e.id) + '\')" title="Open the Paint Booth with this drop staged and ready to render">🎨 Use in Booth</button> · ' : '') +
+            (isPaint ? '<button type="button" style="font-size:10px;background:none;border:none;color:#ffd76a;cursor:pointer;padding:0;font-weight:700;" onclick="useDropInBooth(\'' + esc(e.id) + '\')" title="Open the Paint Booth with this drop staged and ready to render">Use in Booth</button> · ' : '') +
             '<a href="/api/user-imports/export/' + esc(e.id) + '" download style="font-size:10px;color:var(--cyan);">.spbdrop</a>' +
             ' · <button type="button" style="font-size:10px;background:none;border:none;color:var(--cyan);cursor:pointer;padding:0;" onclick="copyShokkDropShareLink(\'' + esc(e.id) + '\',this)">Copy link</button>' +
             (isPaint ? ' · <button type="button" style="font-size:10px;background:none;border:none;color:var(--cyan);cursor:pointer;padding:0;" onclick="loadEnginePreview(\'' + esc(e.id) + '\',this)" title="Replace the thumbnail with a real engine render of this finish">Pipeline render</button>' : '') +
-            (isPaint ? ' · <button type="button" style="font-size:10px;background:none;border:none;color:var(--accent);cursor:pointer;padding:0;" onclick="rebakeUserImportDna(\'' + esc(e.id) + '\')" title="Re-run Import DNA with the current sidebar style/vibe settings — REPLACES this drop&#39;s spec">Re-DNA</button>' : '') +
+            (isPaint ? ' · <button type="button" style="font-size:10px;background:none;border:none;color:var(--accent);cursor:pointer;padding:0;" onclick="rebakeUserImportDna(\'' + esc(e.id) + '\')" title="Re-run Import DNA with the current sidebar style/vibe settings — replaces this drop&#39;s spec">Re-DNA</button>' : '') +
             (isPaint ? ' · <button type="button" style="font-size:10px;background:none;border:none;color:#9ae6b4;cursor:pointer;padding:0;" onclick="forkShokkDrop(\'' + esc(e.id) + '\')" title="Make a NEW drop from this art with a fresh DNA bake — the original is left untouched">⑃ Fork</button>' : '') +
-            (isPaint ? ' · <button type="button" style="font-size:10px;background:none;border:none;color:#ffd76a;cursor:pointer;padding:0;font-weight:700;" onclick="openFinishOnBall(\'' + esc(e.id) + '\')" title="Spin on the Finish Viewer ball">🔮 View on Ball</button>' : '') +
+            (isPaint ? ' · <button type="button" style="font-size:10px;background:none;border:none;color:#ffd76a;cursor:pointer;padding:0;font-weight:700;" onclick="openFinishOnBall(\'' + esc(e.id) + '\')" title="Spin on the Finish Viewer ball">View on ball</button>' : '') +
             ' · <button type="button" style="font-size:10px;background:none;border:none;color:#f0a8a8;cursor:pointer;padding:0;" onclick="deleteShokkDropCard(\'' + esc(e.id) + '\')" title="Delete this drop (asks first)">Delete</button>' +
             '</div></article>';
         }).join('');
@@ -689,7 +700,9 @@
       // Fork = new drop from the same art with a fresh DNA bake. Uses whatever
       // DNA style / vibe / FRACTURE mode the sidebar currently shows, so the
       // controls you can see are the controls that apply.
-      window.forkShokkDrop = function (id) {
+      // [SPB-PROMPT-FIX 2026-10-10] async: window.prompt() throws in Electron (Fork did nothing) -> in-app box (SpbDialog.prompt). The sidebar
+      // options are read BEFORE the box (as before); Esc = no fork. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+      window.forkShokkDrop = async function (id) {
         if (!id) return;
         var styleEl = document.getElementById('userImportStyleOverride');
         var vibeEl = document.getElementById('userImportVibeRef');
@@ -698,10 +711,8 @@
         var styleLabel = (styleEl && styleEl.selectedIndex >= 0)
           ? styleEl.options[styleEl.selectedIndex].textContent : 'Auto';
         var fracture = !!(fracEl && fracEl.value === 'fracture');
-        var name = window.prompt(
-          'Name for the fork:\n\nDNA style: ' + (style ? styleLabel : 'Auto (analyze image)') +
-          (fracture ? '\nSpec: FRACTURE ⚡' : ''),
-          '');
+        var _forkInfo = 'DNA style: ' + (style ? styleLabel : 'Auto (analyze image)') + (fracture ? '\nSpec: Fracture' : '');
+        var name = await SpbDialog.prompt('Name The Fork', '', { message: _forkInfo, okLabel: 'Fork', nativeText: 'Name for the fork:\n\n' + _forkInfo });
         if (name === null) return; // cancelled
         showShokkDropToast('Forking ' + id + '…', 'info');
         fetch('/api/user-imports/fork', {
@@ -755,6 +766,17 @@
           return r.json();
         })
           .then(function (d) {
+            // [SPB-DROP2 2026-10-10] boot fetched 64 thumbnails for 44 cards (23.8 MB): the gallery rendered twice with two stamps. Every window focus
+            // (visibilitychange -> loadUserImports) re-downloaded ~20 more even when nothing changed. Now an UNCHANGED library keeps its stamp and its
+            // cards (no re-render, focus/selection kept); any change (import, delete, Re-DNA stats) still gets a fresh stamp as before.
+            // Kill switch SPB_DROP2_OFF (html.d2 not set) -> old behaviour.
+            var _d2 = document.documentElement.classList.contains('d2');
+            var _sig = _d2 ? JSON.stringify(d.entries || []) : null;
+            if (_d2 && _galleryLoadedOnce && _sig === refreshGallery._sig) {
+              if (imported && imported.length) { var _l = imported[imported.length - 1]; if (_l && _l.id) _selectImportedDrop(_l.id); }
+              return;
+            }
+            refreshGallery._sig = _sig;
             _allEntries = d.entries || [];
             _galleryStamp = Date.now(); // data actually refreshed — new stamp
             _galleryLoadedOnce = true;
@@ -787,7 +809,7 @@
             if (!_ghosts.length) { bar.style.display = 'none'; return; }
             var msg = document.getElementById('galleryHealthMsg');
             if (msg) {
-              msg.textContent = '⚠ ' + _ghosts.length + ' ghost entr' + (_ghosts.length === 1 ? 'y' : 'ies') +
+              msg.textContent = _ghosts.length + ' ghost entr' + (_ghosts.length === 1 ? 'y' : 'ies') +
                 ' in your library — listed in the manifest but missing files, so ' +
                 (_ghosts.length === 1 ? 'it' : 'they') + ' can’t render (and “Export all” would ship ' +
                 (_ghosts.length === 1 ? 'it' : 'them') + ' broken).';
@@ -803,22 +825,23 @@
         var det = document.getElementById('galleryHealthDetails');
         var cln = document.getElementById('galleryHealthClean');
         var dis = document.getElementById('galleryHealthDismiss');
-        if (det) det.addEventListener('click', function () {
+        if (det) det.addEventListener('click', async function () {
           if (!_ghosts.length) return;
           var lines = _ghosts.map(function (g) {
             return '• ' + (g.name || g.id) + '  [' + g.id + ']\n    kind: ' + g.kind +
               ' · spec_mode: ' + g.spec_mode +
               '\n    missing: ' + ((g.missing_files || []).join(', ') || '(files present — entry rejected for another reason)');
           }).join('\n\n');
-          window.alert('Ghost library entries\n\n' + lines +
-            '\n\nClean up removes these manifest rows. No renderable drop is touched.');
+          // [SPB-CONFIRM-POLISH 2026-10-10] native alert() -> in-app SpbDialog.notice (kill switch SPB_CONFIRM_POLISH_OFF)
+          await SpbDialog.notice('Ghost Library Entries', { message: lines + '\n\nClean up removes these manifest rows. No renderable drop is touched.', wide: true,
+            nativeText: 'Ghost library entries\n\n' + lines + '\n\nClean up removes these manifest rows. No renderable drop is touched.' });
         });
-        if (cln) cln.addEventListener('click', function () {
+        if (cln) cln.addEventListener('click', async function () {
           if (!_ghosts.length) return;
           var ids = _ghosts.map(function (g) { return g.id; });
-          if (!window.confirm('Remove ' + ids.length + ' ghost entr' + (ids.length === 1 ? 'y' : 'ies') +
-              ' from the library manifest?\n\n' + ids.join('\n') +
-              '\n\nThese can’t render and are invisible in the gallery. Nothing you can see will change.')) return;
+          // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF)
+          if (!(await SpbDialog.ask('Remove Ghost Entries?', { message: ids.slice(0, 12).join('\n') + (ids.length > 12 ? '\n... +' + (ids.length - 12) + ' more' : '') + '\n\nThese can’t render and are invisible in the gallery. Nothing you can see will change.', okLabel: 'Remove ' + ids.length + (ids.length === 1 ? ' Entry' : ' Entries'), danger: true,
+              nativeText: 'Remove ' + ids.length + ' ghost entr' + (ids.length === 1 ? 'y' : 'ies') + ' from the library manifest?\n\n' + ids.join('\n') + '\n\nThese can’t render and are invisible in the gallery. Nothing you can see will change.' }))) return;
           cln.disabled = true;
           cln.textContent = 'Cleaning…';
           var ok = 0, bad = [];
@@ -930,8 +953,8 @@
           var la = a.options[a.selectedIndex] ? a.options[a.selectedIndex].textContent : a.value;
           var lb = b.options[b.selectedIndex] ? b.options[b.selectedIndex].textContent : b.value;
           var wl = document.getElementById('shokkWildnessVal');
-          showShokkDropToast('🎲 ' + la + ' × ' + lb + ' · mix ' + (t ? t.value : '?') + '%' +
-            (wl ? ' · ' + wl.textContent : '') + ' — hit ⚡ to explode it', 'success');
+          showShokkDropToast('Randomized: ' + la + ' × ' + lb + ' · mix ' + (t ? t.value : '?') + '%' +
+            (wl ? ' · ' + wl.textContent : '') + ' — hit Shokk the World to explode it', 'success');
         });
       })();
 
@@ -1370,7 +1393,7 @@
             if (meta) {
               var specLbl = built.hasSpec
                 ? (built.mode === 'channels' ? 'R/G/B plates' : 'combined RGB')
-                : (built.mode === 'fracture' ? 'FRACTURED ⚡' : 'auto-generated');
+                : (built.mode === 'fracture' ? 'Fractured' : 'auto-generated');
               meta.textContent = (data.name || built.paint && built.paint.name || 'Spec set') +
                 ' · spec ' + specLbl + ' · live preview (not saved)';
             }
@@ -1406,7 +1429,7 @@
         }
         showShokkDropToast(
           built.hasSpec ? 'Importing exact set…'
-            : (built.mode === 'fracture' ? 'Importing (FRACTURE spec)…' : 'Importing (auto spec)…'),
+            : (built.mode === 'fracture' ? 'Importing (Fracture spec)…' : 'Importing (auto spec)…'),
           'info');
         fetch('/api/user-imports/import', { method: 'POST', body: built.fd })
           .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
@@ -1427,5 +1450,6 @@
       checkLibraryHealth();
     })();
   </script>
+  <script src="js/spb-drop2-20261010.js?v=spb-drop2-20261010e"></script><!-- [SPB-DROP2 2026-10-10] product shell; kill switch SPB_DROP2_OFF -->
 </body>
 </html>

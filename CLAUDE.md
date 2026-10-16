@@ -141,7 +141,7 @@ Every renderer edit must leave a comment in the source citing the SPB ticket, ti
 A 9-wide agent fleet once burned 33% of the owner's 5-hour limit (~10% of the weekly limit) in 15-20 minutes and produced NOTHING because the agents held all output in memory and wrote at the end. Owner: "That can NEVER HAPPEN."
 
 1. **Incremental output, always.** Any agent producing multi-part work writes/updates its output file after EVERY completed unit and resumes by skipping units already on disk. Write-at-end-only is forbidden.
-2. **Fleet size = burn rate.** Run agent lanes in waves (≤3 concurrent for authoring jobs). Wall-clock is cheaper than the owner's limits.
+2. **Fleet size = burn rate.** Run agent lanes in waves (≤3 concurrent for authoring jobs on Sonnet/Opus). Wall-clock is cheaper than the owner's limits. Exception (owner OK 2026-10-07): **Haiku 5.5 workers, up to 30 at once**, for mechanical jobs (checks, renames, log/output digests, per-item sweeps). Rule 1 still applies to them, and work that needs judgment falls back to Sonnet. See the global CLAUDE.md rule 5.
 3. **One engine boot per verification round.** Every `import engine.*` costs ~30s + ~100 log lines. Batch ALL checks into one python run per round — never one run per item.
 4. **Filter all command output** (e.g. `2>$null | Select-String "OK|FAIL|RESULT"`). Registry/build spam must never enter any agent's context.
 5. **Read surgically** (grep anchors, offset/limit reads, never re-read or cat your own output back). **Write surgically** (Edit over rewrite; assemble big text on disk via scripts, not through context).

@@ -182,7 +182,7 @@
       if (type === 'pattern' || type === 'stackPattern' || type === 'secondBasePattern' || type === 'thirdBasePattern') {
         return ['pattern'];
       }
-      if (type === 'layerSpecialPaint') return ['monolithic'];
+      if (type === 'layerSpecialPaint') return (global.SPB_SPECIAL_ALL_OFF === true) ? ['monolithic'] : ['base', 'monolithic'];   // [SPECIAL-ALL 2026-10-12] bases + specials
       return ['base', 'monolithic'];
     }
 

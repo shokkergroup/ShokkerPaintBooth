@@ -508,6 +508,10 @@ def r05():
     for it in items:
         for s in it.get("shelves", []):
             shelves.setdefault(s, []).append(it)
+    # ENC-FIX 2026-10-10 (APP-IQ exam): "More Bases" and "More Specials" are catch-all GROUPS, not shelves in the finish picker (finishes.json says so; ungrouped ids are
+    # hidden from the picker: paint-booth-0-finish-data.js:7071). A tile for them sent the AI to a shelf that does not exist, so the sheet shows real shelves only.
+    for catch_all in ("More Bases", "More Specials"):
+        shelves.pop(catch_all, None)
 
     def thumb(it):
         kind, _, i = it["k"].partition("::")

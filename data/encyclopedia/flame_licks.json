@@ -1,0 +1,89 @@
+{
+  "domain": "flame_licks",
+  "version": 1,
+  "articles": [
+    {
+      "id": "flame_licks.flame_job",
+      "title": "Flame licks on a part (hot rod, tribal, ghost, true fire)",
+      "domain": "flame_licks",
+      "summary": "Real flame licks drawn on the hood or down the sides: a solid base at the front of the part and tapered tongues with curled tips reaching back. Four styles, one press each, and one Undo takes it all back.",
+      "what": "The finishes on the Flames shelf are fire textures (glowing rings, clouds, embers) that fill a whole zone. A flame JOB is different: it is a graphic shaped to the part. It starts as a solid band at the front of the hood or side, splits into tongues that taper to curled points, and runs toward the rear. Hot rod flames fade yellow to orange to red along the car with a thin blue pinstripe around them. Tribal flames are sharp hooked blades in one colour (black on a strong colour, white on a dark one). Ghost flames use your body colour, a shade lighter or darker, with a pearl shine, so they only show when the light hits them. True fire stacks three layers of wispy licks: dark red outside, orange, then a pale yellow core. Every flame layer is its own zone with its own shine, so candy flames stay glossy on a satin body, and numbers, sponsors and logos stay on top.",
+      "when": [
+        "You want flames on the hood, down both sides, or on the roof.",
+        "You asked for a hot rod look, tribal flames, ghost flames or realistic fire.",
+        "The Flames shelf finishes look like blobs or rings, not licks."
+      ],
+      "how": [
+        "Make sure the app knows where the hood and sides are on your car (the car map; on a known car this is already done).",
+        "Press one of the Start buttons below: Hot rod, Tribal, Ghost or True fire. The flames go on the hood and both sides.",
+        "Look at the LIVE PREVIEW. The flames show up as new zones at the top of the zone list, one per colour layer.",
+        "Want a different style? Press another Start button: the flames already on those parts are swapped out, not stacked.",
+        "Not happy? Press Undo once: every flame zone from that press comes off together."
+      ],
+      "controls": [],
+      "tips": [
+        "Hot rod flames on a black or dark body is the classic look; the blue pinstripe makes the edge pop.",
+        "Ghost flames read best under a gloss or satin body: the pearl shine is what makes them appear.",
+        "Tribal flames pick black on a strong body colour and white on a dark, dull one.",
+        "Numbers, sponsors and logos are never painted over: the flames go behind them."
+      ],
+      "pitfalls": [
+        "If the app does not know where the hood or sides are on your car yet, nothing is drawn: show it the parts first.",
+        "On a car where a big logo covers the hood, the hood flames sit behind the logo, so you will see less of them.",
+        "True fire and hot rod use three or four zones, so the full-size render takes a little longer than a single zone."
+      ],
+      "related": [
+        "finish_flames_1.base.flame_hotrod",
+        "finish_flames_1.base.flame_ghost",
+        "finish_flames_1.base.flame_inferno"
+      ],
+      "actions": [
+        { "do": "flow", "id": "flames", "style": "hotrod", "part": ["hood", "left side", "right side"], "label": "Hot rod flames on the hood and sides" },
+        { "do": "flow", "id": "flames", "style": "tribal", "part": ["hood", "left side", "right side"], "label": "Tribal flames on the hood and sides" },
+        { "do": "flow", "id": "flames", "style": "ghost", "part": ["hood", "left side", "right side"], "label": "Ghost flames on the hood and sides" },
+        { "do": "flow", "id": "flames", "style": "truefire", "part": ["hood", "left side", "right side"], "label": "True fire on the hood and sides" }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "js/spb-pro-flames.js:48-63",
+        "js/spb-pro-flames.js:398",
+        "js/spb-pro-flames.js:471",
+        "js/spb-encyclopedia.js:598"
+      ],
+      "aliases": [
+        "flame licks",
+        "flames on the hood",
+        "flames down the sides",
+        "hot rod flame job",
+        "real flame licks",
+        "true fire flames"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-05",
+      "level": "beginner",
+      "screens": ["cat_flames"],
+      "deep": [
+        { "heading": "How the licks are built", "body": "Each lick is grown along a centre line from the front of the part toward the rear. Its heading sways in a gentle wave and bends into a hook near the tip, and its width tapers to a point. On a long panel such as a side, the licks are fewer and part sooner so the side reads as licks, not as a painted block, and the hooks all sweep the same way so neighbours nest instead of crossing." },
+        { "heading": "Why each colour is its own zone", "body": "The fill, the pinstripe and the true-fire layers are separate zones. That gives each one its own finish and shine (hot rod flames use a candy finish, the pinstripe a wet look, ghost flames a pearl), and it keeps the hot rod fade running front to rear on every part, whichever way the part lies on the paint sheet." }
+      ],
+      "examples": [
+        { "title": "Classic hot rod", "goal": "Yellow-orange-red flames with a blue pinstripe on a black car", "settings": { "Style": "Hot rod", "Parts": "hood and both sides" }, "result": "Candy flames that fade toward red at the tips, outlined in blue, glossy against the body." },
+        { "title": "Ghost flames on navy", "goal": "Flames you only notice up close", "settings": { "Style": "Ghost", "Parts": "hood and both sides" }, "result": "Flames a shade lighter than the navy body with a pearl shine." }
+      ],
+      "faq": [
+        { "q": "Can I have flames only on the hood?", "a": "Yes. Ask the helper for flames on the hood, or use the hood in the part list; each part gets its own licks." },
+        { "q": "Will the flames cover my number and sponsors?", "a": "No. Numbers, sponsors and logos stay on top of the flames." },
+        { "q": "How do I take them off?", "a": "Press Undo once, or delete the flame zones at the top of the zone list." }
+      ],
+      "mistakes": [
+        { "symptom": "Nothing appears after pressing Start.", "cause": "The app does not know where the hood or sides are on this car yet.", "fix": "Show the app the parts (the car map), then press Start again." },
+        { "symptom": "The hood flames are mostly hidden.", "cause": "A large logo covers the hood and stays on top.", "fix": "Hide that logo layer if you want the flames to show through." }
+      ],
+      "protips": [
+        "Pressing a second style swaps the flames on those parts in one step, so you can flip between hot rod, tribal, ghost and true fire and compare them on the car."
+      ]
+    }
+  ]
+}

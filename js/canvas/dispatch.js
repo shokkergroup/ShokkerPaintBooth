@@ -222,9 +222,32 @@
     }
     window.getToolbarToolActivation = getToolbarToolActivation;
 
+    // [SPB-TFX1 2026-10-09 TA-014] Selection tools route to ZONE (the selection lives in zone.regionMask), which left the painter in ZONE
+    // after "select, then paint": B / E / K / G then edited the zone MASK, not the layer (audit: layer pixels changed False, zone mask True).
+    // Remember a LAYER -> selection-tool hop and hand the painter back to LAYER when a brush/eraser/fill/gradient/pick tool is chosen
+    // while that selection still exists (same toast style as the retouch tools). Manual LAYER/ZONE clicks clear the memory.
+    const _tfx1SelectionTools = { 'wand': 1, 'selectall': 1, 'edge': 1, 'grab-object': 1, 'rect': 1, 'lasso': 1, 'ellipse-marquee': 1, 'selection-move': 1 };
+    const _tfx1BackToLayerTools = { 'brush': 1, 'erase': 1, 'fill': 1, 'gradient': 1, 'pick-item': 1 };
     function alignToolbarModeForToolActivation(toolMode) {
         const activation = getToolbarToolActivation(toolMode);
         if (!activation.allowed) return getToolbarEditMode();
+        if (!window.SPB_TFX1_OFF) {
+            const _m = String(toolMode || ''), _cur = getToolbarEditMode();
+            if (_cur === 'layer' && activation.mode === 'zone' && _tfx1SelectionTools[_m]) {
+                window.__spbTfx1SelFromLayer = true;
+            } else if (_cur === 'zone' && window.__spbTfx1SelFromLayer && _tfx1BackToLayerTools[_m]) {
+                const _hasTarget = typeof getSelectedEditableLayer === 'function' && !!getSelectedEditableLayer();
+                const _hasSel = typeof window.hasActivePixelSelection === 'function' && window.hasActivePixelSelection();
+                window.__spbTfx1SelFromLayer = false;
+                if (_hasTarget && _hasSel) {
+                    setToolbarEditMode('layer', { preserveTool: true, silent: true });
+                    if (getToolbarEditMode() === 'layer' && typeof showToast === 'function') {
+                        showToast('Back to Layer mode - your selection stays and limits the tool', 'info');
+                    }
+                    return getToolbarEditMode();
+                }
+            }
+        }
         if (activation.mode !== getToolbarEditMode()) {
             setToolbarEditMode(activation.mode, {
                 preserveTool: true,
@@ -258,6 +281,8 @@
         const previousTool = String(window.canvasMode || '');
         const changed = window.toolbarEditMode !== nextMode;
         window.toolbarEditMode = nextMode;
+        // [SPB-TFX1 2026-10-09 TA-014] an explicit LAYER/ZONE choice (not a tool-triggered hop) ends the "selection started in LAYER" memory
+        if (!opts.preserveTool || nextMode === 'layer') window.__spbTfx1SelFromLayer = false;
 
         try {
             localStorage.setItem('spb_toolbar_edit_mode', nextMode);
@@ -293,7 +318,8 @@
         }
 
         if (!opts.silent && typeof showToast === 'function') {
-            const label = nextMode === 'layer' ? 'Layer Mode' : 'Zone Mode';
+            // [S14 2026-10-12 owner: "lose this vibecoded look"] sentence-case toast: "Switched to Layer mode" (mode names Zone/Layer stay capitalised)
+            const label = nextMode === 'layer' ? 'Layer mode' : 'Zone mode';
             showToast(`Switched to ${label}`, 'success');
         }
 

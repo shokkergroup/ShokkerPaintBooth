@@ -40,7 +40,7 @@
             return;
         }
         if (kind === 'insane') {
-            toast('INSANE quad saved — run SHOKK THE WORLD to roll new 4-way blends; recipe stored for reference.', 'info');
+            toast('4-way blend saved. Run Shokk the World to roll new ones. Recipe stored for reference.', 'info');
             return;
         }
         if (styleSel && recipe.style) {
@@ -93,13 +93,14 @@
             });
         });
         box.querySelectorAll('[data-preset-del]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
+            btn.addEventListener('click', async function () {
                 var id = btn.getAttribute('data-preset-del');
                 var row = presets.find(function (x) { return x.id === id; });
                 var label = (row && row.label) || id;
                 // Saved recipes are not recoverable — one misclick on × used
                 // to delete permanently with zero warning.
-                if (!window.confirm('Delete DNA recipe "' + label + '"? This can\'t be undone.')) return;
+                // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+                if (!(await SpbDialog.ask('Delete DNA Recipe?', { message: '"' + label + '" will be deleted. This can\'t be undone.', okLabel: 'Delete Recipe', danger: true, nativeText: 'Delete DNA recipe "' + label + '"? This can\'t be undone.' }))) return;
                 fetch('/api/user-imports/dna-presets/' + encodeURIComponent(id), { method: 'DELETE' })
                     .then(function (r) { return r.json(); })
                     .then(function () { refreshDnaPresets(); })

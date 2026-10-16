@@ -22,17 +22,17 @@
    "source": "html | js:<where the control is built>"
   },
   "counts": {
-   "items": 504,
+   "items": 528,
    "curated": 258,
    "panels": 22,
    "by_kind": {
-    "button": 309,
+    "button": 322,
     "text input": 24,
-    "toggle": 31,
+    "toggle": 34,
     "menu": 8,
-    "dropdown": 30,
+    "dropdown": 33,
     "slider": 57,
-    "number input": 14,
+    "number input": 19,
     "picker": 15,
     "tab": 2,
     "search box": 1,
@@ -41,7 +41,7 @@
     "mode": 2
    },
    "by_mode": {
-    "pro": 494,
+    "pro": 518,
     "pro+chat": 9,
     "chat": 1
    },
@@ -49,11 +49,11 @@
     "pro.header": 19,
     "pro.modes": 4,
     "pro.settings": 10,
-    "pro.toolbar": 68,
+    "pro.toolbar": 79,
     "pro.zones": 10,
     "pro.zones_more": 16,
     "pro.center": 19,
-    "pro.tool_options": 66,
+    "pro.tool_options": 77,
     "pro.selection_bar": 18,
     "pro.placement": 6,
     "pro.transform": 4,
@@ -61,7 +61,7 @@
     "pro.render": 11,
     "pro.eyedropper": 5,
     "pro.right": 3,
-    "pro.layers": 48,
+    "pro.layers": 50,
     "pro.finish_library": 4,
     "pro.dialogs": 13,
     "pro.spec_tools": 32,
@@ -136,7 +136,7 @@
    "label": "Header rows",
    "mode": "pro",
    "kind": "panel",
-   "where": "Pro > top of the window, first rows (iRacing User ID, Source Paint, iRacing Car Folder)",
+   "where": "Pro > top of the window, one row (Source Paint and iRacing Car Folder file chips, Open Paint..., the Car group with iRacing ID and Custom / Sim-Stamped Number)",
    "does": "Top of the window: iRacing User ID, Number type, Source Paint (TGA / PSD) and iRacing Car Folder. These decide WHAT is painted and WHERE the files go.",
    "needs": [
     "none"
@@ -202,12 +202,14 @@
     "vtModeBrush",
     "vtModeFill",
     "vtModeErase",
+    "vtModeText",
     "pro.toolbar.history",
     "pro.toolbar.undo_ctrl_z",
     "pro.toolbar.redo_ctrl_y",
     "pro.toolbar.undo_history",
     "pro.toolbar.select",
     "vtModeSelectAll",
+    "vtColorRange",
     "vtModeGrabObject",
     "vtModeEdge",
     "vtModeSelectionMove",
@@ -219,8 +221,16 @@
     "vtModeColorBrush",
     "vtModeRecolor",
     "vtModeHealing",
+    "vtModeClone",
     "vtModeSmudge",
+    "vtModeBlurBrush",
+    "vtModeSharpenBrush",
+    "vtModeDodge",
     "vtModeBurn",
+    "vtModePencil",
+    "vtModeHistoryBrush",
+    "vtModeHistorySnapshot",
+    "vtModeGradient",
     "pro.toolbar.mask",
     "pro.toolbar.grow_1_px",
     "pro.toolbar.grow_2_px",
@@ -229,6 +239,7 @@
     "pro.toolbar.fill_holes",
     "pro.toolbar.feather_2_px",
     "pro.toolbar.smooth_edges",
+    "vtRefineEdge",
     "pro.toolbar.invert_mask",
     "pro.toolbar.copy_mask",
     "pro.toolbar.mirror_mask",
@@ -425,7 +436,7 @@
    "items": [
     "pro.center.load_paint_image",
     "pro.center.blank_canvas",
-    "pro.center.spatial_brush_size",
+    "pro.center.include_and_exclude_brush_size",
     "overlayOpacity",
     "onboardingImportPsdBtn",
     "pro.center.load_tga",
@@ -484,6 +495,7 @@
     "textLetterSpacing",
     "textLineHeight",
     "textTransform",
+    "textAlign",
     "textEffect",
     "shapeType",
     "shapeFillColor",
@@ -515,8 +527,18 @@
     "wandTolerance",
     "wandContiguous",
     "wandSampleSize",
+    "spbEyeSampleSize",
+    "spbEyeSampleSrc",
     "wandAntiAlias",
+    "spbQuickOn",
+    "spbQuickSize",
+    "spbQuickEnhance",
     "selectionFeather",
+    "selectionSmoothRadius",
+    "spbMagneticOn",
+    "spbMagneticWidth",
+    "spbMagneticContrast",
+    "spbMagneticFrequency",
     "edgePreviewBtn",
     "spatialBrushSize",
     "spatialEraseBtn",
@@ -641,10 +663,12 @@
     "pro.layers.open_layered",
     "pro.layers.layer",
     "layerActionsMenuBtn",
+    "pro.layers.place_image",
     "pro.layers.blank_layer",
     "pro.layers.flatten_document",
     "pro.layers.merge_visible",
     "pro.layers.photoshop_round_trip",
+    "pro.layers.edit_in_photocraft",
     "pro.layers.thumbnail_size",
     "layerSearchInput",
     "psExportCarFileName",
@@ -958,7 +982,7 @@
    "related": [
     "outputDir"
    ],
-   "help_text": "Your iRacing Customer ID (4-7 digits): in iRacing click the helmet icon (top right), then Profile. Not your car number. Required for saving car files.",
+   "help_text": "Your iRacing Customer ID (4-7 digits). In iRacing, click the helmet icon (top right), then Profile. This is not your car number. Needed to save car files.",
    "control_id": "",
    "dom_id": "iracingId",
    "source": "html",
@@ -1015,7 +1039,7 @@
    "panel": "pro.header",
    "where": "Pro > top of the window (header rows)",
    "kind": "text input",
-   "does": "The paint file Shokker works on (a flat TGA / PNG / JPEG, or a PSD): type or paste a path, or use the buttons beside it.",
+   "does": "The paint file Shokker works on (a flat TGA / PNG / JPEG, or a PSD): click the file chip to type or paste a path, or use Open Paint... beside it.",
    "when": "Start of every job; \"I loaded my paint and nothing happened\".",
    "needs": [
     "none"
@@ -1026,7 +1050,7 @@
     "pro.header.psd_xcf_ora",
     "onboardingImportPsdBtn"
    ],
-   "help_text": "Source Paint — disk TGA path, imported/derived source path, or live layered canvas source. Use the folder button for TGA files, or the PSD button for Photoshop layers.",
+   "help_text": "Source Paint: the TGA file or layered file your livery starts from. The folder button browses for a TGA. The PSD button imports Photoshop layers.",
    "control_id": "",
    "dom_id": "paintFile",
    "source": "html",
@@ -1034,17 +1058,17 @@
   },
   {
    "id": "pro.header.tga_png_jpeg",
-   "label": "TGA/PNG/JPEG",
+   "label": "Open Paint... > Flat image",
    "mode": "pro",
    "panel": "pro.header",
    "where": "Pro > top of the window (header rows)",
    "kind": "button",
-   "does": "Browse for a flat paint picture (TGA / PNG / JPEG / BMP) and load it as the paint.",
+   "does": "Open Paint... > Flat image: browse for a flat paint picture (TGA / PNG / JPEG / BMP) and load it as the paint.",
    "when": "You have a single flat paint file.",
    "needs": [
     "none"
    ],
-   "mistakes": "Dropping an image on the canvas also REPLACES the paint; it does not add a logo (use + Layer for that).",
+   "mistakes": "Dropping an image on the canvas also REPLACES the paint; it does not add a logo (use Actions > Place image... for that).",
    "related": [
     "paintFile",
     "pro.header.psd_xcf_ora"
@@ -1057,17 +1081,17 @@
   },
   {
    "id": "pro.header.psd_xcf_ora",
-   "label": "PSD/XCF/ORA",
+   "label": "Open Paint... > Layered template",
    "mode": "pro",
    "panel": "pro.header",
    "where": "Pro > top of the window (header rows)",
    "kind": "button",
-   "does": "Browse for a layered PSD / XCF / ORA template so every layer (body, numbers, sponsors, tape) stays separate.",
+   "does": "Open Paint... > Layered template: browse for a layered PSD / XCF / ORA template so every layer (body, numbers, sponsors, tape) stays separate.",
    "when": "You want layer-level control: numbers only, sponsors only.",
    "needs": [
     "none"
    ],
-   "mistakes": "Make sure the template layers (Mask, Wire, Car_Mandatory) are OFF before exporting.",
+   "mistakes": "RENDER leaves the template layers (Mask, Wire, Car_Mandatory) out of the car paint for you.",
    "related": [
     "onboardingImportPsdBtn",
     "pro.layers.open_layered"
@@ -1085,7 +1109,7 @@
    "panel": "pro.header",
    "where": "Pro > top of the window (header rows)",
    "kind": "text input",
-   "does": "The iRacing car folder the finished paint and spec files are written to.",
+   "does": "The iRacing car folder the finished paint and spec files are written to. It shows as a folder chip: click it to type or paste a path.",
    "when": "Paint is not showing in iRacing, or choosing which car.",
    "needs": [
     "none"
@@ -1095,7 +1119,7 @@
     "carPickBtn",
     "iracingId"
    ],
-   "help_text": "iRacing Car Folder — point to the exact car paint folder, not a TGA file. Diffuse naming follows the custom-number setting: car_num_XXXXX.tga or car_XXXXX.tga. Spec is car_spec_XXXXX.tga.",
+   "help_text": "iRacing Car Folder: point to the car's paint folder, not a TGA file. File names follow your car-number setting: car_num_XXXXX.tga or car_XXXXX.tga. Spec: car_spec_XXXXX.tga.",
    "control_id": "",
    "dom_id": "outputDir",
    "source": "html",
@@ -1224,7 +1248,7 @@
    "related": [
     "mode.chat"
    ],
-   "help_text": "CHAT — talk to Shokker: say what you want ('retro red white and blue stripes, flat with chrome trim') and watch your car change. Works without any key; an AI key makes it smarter.",
+   "help_text": "Chat: describe the look you want, such as 'retro red white and blue stripes, flat with chrome trim', and watch your car change. Works without an AI key; adding one makes it smarter.",
    "control_id": "",
    "dom_id": "spbModeChatBtn",
    "source": "html",
@@ -1237,14 +1261,14 @@
    "panel": "pro.header",
    "where": "Pro > top of the window (header rows)",
    "kind": "button",
-   "does": "Open the complete guided Spec Sculpt look library",
+   "does": "Open Spec Sculpt: build the metal, gloss and clearcoat map from your paint. Esc or the back arrow returns here.",
    "when": "",
    "needs": [
     "none"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Open the complete guided Spec Sculpt look library",
+   "help_text": "Open Spec Sculpt: build the metal, gloss and clearcoat map from your paint. Esc or the back arrow returns here.",
    "control_id": "",
    "dom_id": "",
    "source": "html",
@@ -1297,7 +1321,7 @@
    "panel": "pro.header",
    "where": "Pro > top of the window (header rows)",
    "kind": "button",
-   "does": "One click puts a Soul Core Emerald / Pink Flash finish into the selected zone's base (and its colour unless Color Lock is on).",
+   "does": "One click shows a summary and, once you confirm, puts a Soul Core Emerald / Pink Flash finish into the selected zone's base (and its colour unless Color Lock is on).",
    "when": "A quick dramatic look.",
    "needs": [
     "zone"
@@ -1306,7 +1330,7 @@
    "related": [
     "zone.lock_base_color"
    ],
-   "help_text": "FRACTURE THIS PAINT — one click drops Soul Core Emerald / Pink Flash into this zone's base material (and its base color unless Color Lock is on)",
+   "help_text": "Fracture this paint. Adds Soul Core Emerald or Pink Flash to this zone's base material, and changes its base color unless Color Lock is on.",
    "control_id": "",
    "dom_id": "btnFractureThisPaint",
    "source": "html",
@@ -1424,7 +1448,7 @@
    "panel": "pro.settings",
    "where": "Pro > Settings (gear) dropdown",
    "kind": "toggle",
-   "does": "Bundles paint TGA, spec TGA and preview into a ZIP on every render.",
+   "does": "Bundles paint TGA, spec TGA and preview into a ZIP on every render; the ZIP stays in that render's job folder and is never copied to iRacing.",
    "when": "Share or archive.",
    "needs": [
     "none"
@@ -1559,7 +1583,7 @@
    "related": [
     "btnToolbarModeLayer"
    ],
-   "help_text": "Move (V) — In Layer mode: click a sponsor/number/shape to isolate it for independent move/rotate/scale (tight bbox). Hold Alt to force whole-layer move instead. Outside Layer mode: Ctrl+drag moves the layer.",
+   "help_text": "Move (V) — In Layer mode, click a sponsor, number or shape to move, rotate or scale just that piece. Hold Alt to move the whole layer instead. Outside Layer mode, Ctrl+drag moves the layer.",
    "control_id": "",
    "dom_id": "vtModeLayerMove",
    "source": "html",
@@ -1581,7 +1605,7 @@
    "related": [
     "vtModeLayerPick"
    ],
-   "help_text": "Pick Item (Y) — unified per-element picker. Layer: click inside a sponsor layer to get tight bbox + independent move/rotate on just that piece. Zone: hit spec pieces.",
+   "help_text": "Pick Item (Y) — Layer mode: click a sponsor to select just that piece, then move or rotate it. Zone mode: click a spec piece.",
    "control_id": "",
    "dom_id": "vtModePickItem",
    "source": "html",
@@ -1614,7 +1638,7 @@
    "panel": "pro.toolbar",
    "where": "Pro > top toolbar > selection tools",
    "kind": "button",
-   "does": "Color (P): click a colour on the paint to select by it. In Pro zone mode it feeds the selected zone's colour list.",
+   "does": "Color (I): click a colour on the paint to select by it. In Pro zone mode it feeds the selected zone's colour list.",
    "when": "Select a colour area for a zone.",
    "needs": [
     "zone",
@@ -1625,7 +1649,7 @@
     "zone.pick_color_from_car",
     "eyedropperAddColorBtn"
    ],
-   "help_text": "Pick Color (P) — click a color on the paint to grab it",
+   "help_text": "Pick Color (I) — click a color on the paint to grab it",
    "control_id": "",
    "dom_id": "vtModeEyedropper",
    "source": "html",
@@ -1702,7 +1726,7 @@
    "panel": "pro.toolbar",
    "where": "Pro > top toolbar > selection tools",
    "kind": "button",
-   "does": "Rectangle select (O): drag a box selection.",
+   "does": "Rectangle select (M): drag a box selection; press M again for Elliptical.",
    "when": "Select a panel.",
    "needs": [
     "paint"
@@ -1711,7 +1735,7 @@
    "related": [
     "vtModeLasso"
    ],
-   "help_text": "Rectangle Select (O) — drag a Zone selection; Shift makes a square, Alt draws from center, Esc cancels",
+   "help_text": "Rectangle Select (M) — drag a Zone selection; Shift adds, Alt subtracts; press Shift mid-drag for a square, Alt for from center; Esc cancels",
    "control_id": "",
    "dom_id": "vtModeRect",
    "source": "html",
@@ -1756,7 +1780,7 @@
    "related": [
     "vtModeBrush"
    ],
-   "help_text": "Fill Bucket (K) — Layer samples the active layer; Zone samples the composite; Contiguous limits the fill to the clicked area; Layer mode also uses Opacity",
+   "help_text": "Fill Bucket (K) — Layer mode samples the active layer; Zone mode samples the whole image. Contiguous fills only the clicked area. Layer mode also uses Opacity.",
    "control_id": "",
    "dom_id": "vtModeFill",
    "source": "html",
@@ -1783,6 +1807,26 @@
    "dom_id": "vtModeErase",
    "source": "html",
    "curated": true
+  },
+  {
+   "id": "vtModeText",
+   "label": "TText",
+   "mode": "pro",
+   "panel": "pro.toolbar",
+   "where": "Pro > top toolbar (tool row)",
+   "kind": "button",
+   "does": "click the car and type; the text stays live, so click it again with this tool to change it",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Text (T) — click the car and type; the text stays live, so click it again with this tool to change it",
+   "control_id": "",
+   "dom_id": "vtModeText",
+   "source": "html",
+   "curated": false
   },
   {
    "id": "pro.toolbar.history",
@@ -1919,13 +1963,33 @@
    "curated": true
   },
   {
+   "id": "vtColorRange",
+   "label": "Color Range…",
+   "mode": "pro",
+   "panel": "pro.toolbar",
+   "where": "Pro > top toolbar (tool row)",
+   "kind": "button",
+   "does": "select by color. Fuzziness widens the match, the Add and Subtract eyedroppers refine it, and Invert flips the selection. Applies as Replace, Add or Subtract.",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Color Range… — select by color. Fuzziness widens the match, the Add and Subtract eyedroppers refine it, and Invert flips the selection. Applies as Replace, Add or Subtract.",
+   "control_id": "",
+   "dom_id": "vtColorRange",
+   "source": "html",
+   "curated": false
+  },
+  {
    "id": "vtModeGrabObject",
    "label": "Grab Object",
    "mode": "pro",
    "panel": "pro.toolbar",
    "where": "Pro > top toolbar (tool row)",
    "kind": "button",
-   "does": "Grab Object (G): click inside a number or logo and its whole outline is selected.",
+   "does": "Grab Object (Shift+W cycles to it): click inside a number or logo and its whole outline is selected.",
    "when": "Select the numbers on a flat TGA.",
    "needs": [
     "paint"
@@ -1934,7 +1998,7 @@
    "related": [
     "vtModeSelectAll"
    ],
-   "help_text": "Grab Object (G) — click inside a solid part of a number or logo to include its outline and shadow. Samples visible paint: hide wire/template guide layers if they split the artwork. Shift adds, Alt subtracts.",
+   "help_text": "Grab Object (Shift+W) — click a number or logo to select it with its outline and shadow. Hide guide layers if they split the artwork. Shift adds, Alt subtracts.",
    "control_id": "",
    "dom_id": "vtModeGrabObject",
    "source": "html",
@@ -1956,7 +2020,7 @@
    "related": [
     "wandTolerance"
    ],
-   "help_text": "Smart Region Fill — click inside an edge-bounded region; Tolerance changes boundary sensitivity, Shift adds, Alt subtracts",
+   "help_text": "Smart Region Fill (Shift+W ×2) — click inside an edge-bounded region; Tolerance changes boundary sensitivity, Shift adds, Alt subtracts",
    "control_id": "",
    "dom_id": "vtModeEdge",
    "source": "html",
@@ -1989,14 +2053,14 @@
    "panel": "pro.toolbar",
    "where": "Pro > top toolbar (tool row)",
    "kind": "button",
-   "does": "always force isolation of one sponsor/number/shape inside the layer for its own tight transform box",
+   "does": "always isolates one sponsor, number or shape inside the layer, with its own transform box",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Pick Item (explicit) — always force isolation of one sponsor/number/shape inside the layer for its own tight transform box",
+   "help_text": "Pick Layer Element — always isolates one sponsor, number or shape inside the layer, with its own transform box",
    "control_id": "",
    "dom_id": "vtModeLayerPick",
    "source": "html",
@@ -2031,14 +2095,14 @@
    "panel": "pro.toolbar",
    "where": "Pro > top toolbar (tool row)",
    "kind": "button",
-   "does": "drag a Zone selection; Shift makes a circle, Alt draws from center, Esc cancels",
+   "does": "drag a Zone selection; Shift adds, Alt subtracts; press Shift mid-drag for a circle, Alt for from center; Esc cancels",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Elliptical Marquee (M) — drag a Zone selection; Shift makes a circle, Alt draws from center, Esc cancels",
+   "help_text": "Elliptical Marquee (M ×2) — drag a Zone selection; Shift adds, Alt subtracts; press Shift mid-drag for a circle, Alt for from center; Esc cancels",
    "control_id": "",
    "dom_id": "vtModeEllipseMarquee",
    "source": "html",
@@ -2051,7 +2115,7 @@
    "panel": "pro.toolbar",
    "where": "Pro > top toolbar > RETOUCH menu",
    "kind": "menu",
-   "does": "RETOUCH menu: Color Brush, Recolor, Healing Brush, Smudge, Burn - pixel retouching on the selected layer.",
+   "does": "RETOUCH menu: Color Brush, Recolor, Healing Brush, Clone Stamp, Smudge, Blur, Sharpen, Dodge, Burn, Pencil, History Brush, Gradient - pixel retouching on the selected layer.",
    "when": "Fix or paint artwork.",
    "needs": [
     "psd"
@@ -2117,7 +2181,7 @@
    "panel": "pro.toolbar",
    "where": "Pro > top toolbar > RETOUCH menu",
    "kind": "button",
-   "does": "Recolor (R): paint a new hue over a sampled colour on the selected layer.",
+   "does": "Recolor (Shift+B cycles Brush, Pencil, Recolor): paint a new hue over a sampled colour on the selected layer.",
    "when": "Recolour a sponsor.",
    "needs": [
     "psd"
@@ -2126,7 +2190,7 @@
    "related": [
     "pro.toolbar.color_replace"
    ],
-   "help_text": "Recolor Tool (R) — on the selected Layer, first click samples source; paint foreground hue/chroma while preserving light and texture",
+   "help_text": "Recolor Tool (Shift+B ×2) — on the selected Layer, first click samples source; paint foreground hue/chroma while preserving light and texture",
    "control_id": "",
    "dom_id": "vtModeRecolor",
    "source": "html",
@@ -2146,9 +2210,29 @@
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Healing Brush (Shift+J) — Alt+click clean texture on the selected Layer, then paint to blend its detail into the target",
+   "help_text": "Healing Brush (J) — Alt+click clean texture on the selected Layer, then paint to blend its detail into the target",
    "control_id": "",
    "dom_id": "vtModeHealing",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "vtModeClone",
+   "label": "Clone Stamp",
+   "mode": "pro",
+   "panel": "pro.toolbar",
+   "where": "Pro > top toolbar > RETOUCH menu",
+   "kind": "button",
+   "does": "Alt+click to set the source on the selected Layer, then paint to copy it",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Clone Stamp (S) — Alt+click to set the source on the selected Layer, then paint to copy it",
+   "control_id": "",
+   "dom_id": "vtModeClone",
    "source": "html",
    "curated": false
   },
@@ -2173,6 +2257,66 @@
    "curated": false
   },
   {
+   "id": "vtModeBlurBrush",
+   "label": "Blur Brush",
+   "mode": "pro",
+   "panel": "pro.toolbar",
+   "where": "Pro > top toolbar > RETOUCH menu",
+   "kind": "button",
+   "does": "soften selected Layer pixels under the brush (strength and size in the options bar)",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Blur Brush (R) — soften selected Layer pixels under the brush (strength and size in the options bar)",
+   "control_id": "",
+   "dom_id": "vtModeBlurBrush",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "vtModeSharpenBrush",
+   "label": "Sharpen Brush",
+   "mode": "pro",
+   "panel": "pro.toolbar",
+   "where": "Pro > top toolbar > RETOUCH menu",
+   "kind": "button",
+   "does": "add edge contrast to selected Layer pixels under the brush (strength and size in the options bar)",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Sharpen Brush (R ×2) — add edge contrast to selected Layer pixels under the brush (strength and size in the options bar)",
+   "control_id": "",
+   "dom_id": "vtModeSharpenBrush",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "vtModeDodge",
+   "label": "Dodge",
+   "mode": "pro",
+   "panel": "pro.toolbar",
+   "where": "Pro > top toolbar > RETOUCH menu",
+   "kind": "button",
+   "does": "lighten selected Layer pixels under the brush",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Dodge (O) — lighten selected Layer pixels under the brush",
+   "control_id": "",
+   "dom_id": "vtModeDodge",
+   "source": "html",
+   "curated": false
+  },
+  {
    "id": "vtModeBurn",
    "label": "Burn",
    "mode": "pro",
@@ -2186,9 +2330,89 @@
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Burn (J) — darken selected Layer pixels under the brush",
+   "help_text": "Burn (Shift+O) — darken selected Layer pixels under the brush",
    "control_id": "",
    "dom_id": "vtModeBurn",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "vtModePencil",
+   "label": "Pencil",
+   "mode": "pro",
+   "panel": "pro.toolbar",
+   "where": "Pro > top toolbar > RETOUCH menu",
+   "kind": "button",
+   "does": "hard, aliased pixel line on the selected Layer (Size 1 = one pixel)",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Pencil (Shift+B) — hard, aliased pixel line on the selected Layer (Size 1 = one pixel)",
+   "control_id": "",
+   "dom_id": "vtModePencil",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "vtModeHistoryBrush",
+   "label": "History Brush",
+   "mode": "pro",
+   "panel": "pro.toolbar",
+   "where": "Pro > top toolbar > RETOUCH menu",
+   "kind": "button",
+   "does": "paint back the pixels of the saved snapshot (Save History Snapshot first)",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "History Brush (Shift+Y) — paint back the pixels of the saved snapshot (Save History Snapshot first)",
+   "control_id": "",
+   "dom_id": "vtModeHistoryBrush",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "vtModeHistorySnapshot",
+   "label": "Save History Snapshot",
+   "mode": "pro",
+   "panel": "pro.toolbar",
+   "where": "Pro > top toolbar > RETOUCH menu",
+   "kind": "button",
+   "does": "remember the current pixels for the History Brush",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Save History Snapshot — remember the current pixels for the History Brush",
+   "control_id": "",
+   "dom_id": "vtModeHistorySnapshot",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "vtModeGradient",
+   "label": "Gradient",
+   "mode": "pro",
+   "panel": "pro.toolbar",
+   "where": "Pro > top toolbar > RETOUCH menu",
+   "kind": "button",
+   "does": "drag to fill the selected Layer or selection with a foreground-to-background gradient",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Gradient (G) — drag to fill the selected Layer or selection with a foreground-to-background gradient",
+   "control_id": "",
+   "dom_id": "vtModeGradient",
    "source": "html",
    "curated": false
   },
@@ -2351,6 +2575,26 @@
    "help_text": "Smooth Edges — smooth jagged mask boundaries",
    "control_id": "",
    "dom_id": "",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "vtRefineEdge",
+   "label": "Refine Edge…",
+   "mode": "pro",
+   "panel": "pro.toolbar",
+   "where": "Pro > top toolbar (tool row)",
+   "kind": "button",
+   "does": "make the selection follow the real edge of a logo or number, with live preview; apply it to the selection or as a clean cut-out layer",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Refine Edge — make the selection follow the real edge of a logo or number, with live preview; apply it to the selection or as a clean cut-out layer",
+   "control_id": "",
+   "dom_id": "vtRefineEdge",
    "source": "html",
    "curated": false
   },
@@ -2556,7 +2800,7 @@
    "related": [
     "pro.preview"
    ],
-   "help_text": "Material Sampler — click the compiled spec map to read exact M/R/CC/A values and transfer them to an active Zone selection",
+   "help_text": "Material Sampler: click the spec map to read exact metallic, roughness, clearcoat and specular values, then copy them to the active zone",
    "control_id": "",
    "dom_id": "",
    "source": "html",
@@ -2799,14 +3043,14 @@
    "panel": "pro.toolbar",
    "where": "Pro > top toolbar (tool row)",
    "kind": "button",
-   "does": "boost muted colours without over-saturating already-vivid ones",
+   "does": "boost muted colors without over-saturating already-vivid ones",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Vibrance — boost muted colours without over-saturating already-vivid ones",
+   "help_text": "Vibrance — boost muted colors without over-saturating already-vivid ones",
    "control_id": "",
    "dom_id": "",
    "source": "html",
@@ -2954,7 +3198,7 @@
    "related": [
     "pro.toolbar.import_recipe"
    ],
-   "help_text": "SPB Projects — save or load a complete workflow: the open paint (PSD included), every zone, and all layer settings in one file",
+   "help_text": "SPB Projects: save or load the whole job, including the open paint (PSD included), every zone and all layer settings, in one file",
    "control_id": "",
    "dom_id": "spbProjectsButton",
    "source": "html",
@@ -3532,12 +3776,12 @@
   },
   {
    "id": "brushSize",
-   "label": "Brush size in pixels",
+   "label": "Brush diameter in pixels",
    "mode": "pro",
    "panel": "pro.tool_options",
    "where": "Pro > centre > tool options bar",
    "kind": "slider",
-   "does": "Brush / eraser size in pixels (1-300); [ and ] keys change it.",
+   "does": "Brush / eraser size as a diameter in pixels (1-300); [ and ] change it in proportional steps (bigger steps at bigger sizes).",
    "when": "",
    "needs": [
     "paint"
@@ -3546,7 +3790,7 @@
    "related": [
     "brushHardness"
    ],
-   "help_text": "Brush / eraser size: 20px (range 1-300). Use [ and ] keys to decrease/increase.",
+   "help_text": "Brush / eraser diameter: 40px (range 2-600). Use [ and ] keys to decrease/increase.",
    "control_id": "",
    "dom_id": "brushSize",
    "source": "html",
@@ -3916,7 +4160,7 @@
    "needs": [
     "psd"
    ],
-   "mistakes": "There is no Text button in the main tool row; add lettering as a PNG layer.",
+   "mistakes": "Use the Text tool (T): its text stays editable (double-click it to change it; RASTERIZE turns it into pixels). A PNG layer also works for lettering.",
    "related": [
     "pro.layers.layer"
    ],
@@ -4111,6 +4355,26 @@
    "dom_id": "textTransform",
    "source": "html",
    "curated": true
+  },
+  {
+   "id": "textAlign",
+   "label": "Text alignment (stays editable: double-click a text layer with the Text tool)",
+   "mode": "pro",
+   "panel": "pro.tool_options",
+   "where": "Pro > centre > tool options bar (Text tool)",
+   "kind": "dropdown",
+   "does": "Control labelled \"Text alignment (stays editable: double-click a text layer with the Text tool)\".",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "",
+   "control_id": "",
+   "dom_id": "textAlign",
+   "source": "html",
+   "curated": false
   },
   {
    "id": "textEffect",
@@ -4661,14 +4925,14 @@
    "panel": "pro.tool_options",
    "where": "Pro > centre > tool options bar (History Brush)",
    "kind": "button",
-   "does": "Capture the current composite and every Layer for selective restoration",
+   "does": "Save the current image and every layer so you can restore parts of it selectively",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Capture the current composite and every Layer for selective restoration",
+   "help_text": "Save the current image and every layer so you can restore parts of it selectively",
    "control_id": "",
    "dom_id": "",
    "source": "html",
@@ -4761,6 +5025,46 @@
    "curated": true
   },
   {
+   "id": "spbEyeSampleSize",
+   "label": "Eyedropper sample size. Point Sample reads exactly the pixel under the cursor (default); the averages blend neighbours.",
+   "mode": "pro",
+   "panel": "pro.tool_options",
+   "where": "Pro > centre > tool options bar (changes with the active tool)",
+   "kind": "dropdown",
+   "does": "Control labelled \"Eyedropper sample size. Point Sample reads exactly the pixel under the cursor (default); the averages blend neighbours.\".",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "",
+   "control_id": "",
+   "dom_id": "spbEyeSampleSize",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "spbEyeSampleSrc",
+   "label": "Sample all layers (what you see) or only the selected layer. Shift+click always samples the current layer.",
+   "mode": "pro",
+   "panel": "pro.tool_options",
+   "where": "Pro > centre > tool options bar (changes with the active tool)",
+   "kind": "dropdown",
+   "does": "Control labelled \"Sample all layers (what you see) or only the selected layer. Shift+click always samples the current layer.\".",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "",
+   "control_id": "",
+   "dom_id": "spbEyeSampleSrc",
+   "source": "html",
+   "curated": false
+  },
+  {
    "id": "wandAntiAlias",
    "label": "Wand Anti Alias",
    "mode": "pro",
@@ -4783,22 +5087,182 @@
    "curated": true
   },
   {
-   "id": "selectionFeather",
-   "label": "Auto-feather selection edges (px). 0 = off (hard edge). Any value softens the edge of the NEXT selection you commit (marquee / lasso / wand / pen / smart-fill), so the finish fades in at the border. One Undo reverts the whole selection.",
+   "id": "spbQuickOn",
+   "label": "Spb Quick On",
    "mode": "pro",
    "panel": "pro.tool_options",
    "where": "Pro > centre > tool options bar (changes with the active tool)",
-   "kind": "number input",
-   "does": "Auto-feather selection edges (px). 0 = off (hard edge). Any value softens the edge of the NEXT selection you commit (marquee / lasso / wand / pen / smart-fill), so the finish fades in at the border. One Undo reverts the whole selection.",
+   "kind": "toggle",
+   "does": "Control labelled \"Spb Quick On\".",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Auto-feather selection edges (px). 0 = off (hard edge). Any value softens the edge of the NEXT selection you commit (marquee / lasso / wand / pen / smart-fill), so the finish fades in at the border. One Undo reverts the whole selection.",
+   "help_text": "",
+   "control_id": "",
+   "dom_id": "spbQuickOn",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "spbQuickSize",
+   "label": "Quick Select brush size (px on the 2048 sheet). Small brushes are more precise; large ones sample more of the colour range.",
+   "mode": "pro",
+   "panel": "pro.tool_options",
+   "where": "Pro > centre > tool options bar (changes with the active tool)",
+   "kind": "number input",
+   "does": "Quick Select brush size (px on the 2048 sheet). Small brushes are more precise; large ones sample more of the colour range.",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Quick Select brush size (px on the 2048 sheet). Small brushes are more precise; large ones sample more of the colour range.",
+   "control_id": "",
+   "dom_id": "spbQuickSize",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "spbQuickEnhance",
+   "label": "Spb Quick Enhance",
+   "mode": "pro",
+   "panel": "pro.tool_options",
+   "where": "Pro > centre > tool options bar (changes with the active tool)",
+   "kind": "toggle",
+   "does": "Control labelled \"Spb Quick Enhance\".",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "",
+   "control_id": "",
+   "dom_id": "spbQuickEnhance",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "selectionFeather",
+   "label": "Feather selection edges (px). 0 is a hard edge. Applies to the next selection you commit, so the finish fades in at the border. One Undo reverts the whole selection.",
+   "mode": "pro",
+   "panel": "pro.tool_options",
+   "where": "Pro > centre > tool options bar (changes with the active tool)",
+   "kind": "number input",
+   "does": "Feather selection edges (px). 0 is a hard edge. Applies to the next selection you commit, so the finish fades in at the border. One Undo reverts the whole selection.",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Feather selection edges (px). 0 is a hard edge. Applies to the next selection you commit, so the finish fades in at the border. One Undo reverts the whole selection.",
    "control_id": "",
    "dom_id": "selectionFeather",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "selectionSmoothRadius",
+   "label": "Radius (px) used by Mask > Smooth Edges. Rounds jagged corners and drops specks up to about this size.",
+   "mode": "pro",
+   "panel": "pro.tool_options",
+   "where": "Pro > centre > tool options bar (changes with the active tool)",
+   "kind": "number input",
+   "does": "Radius (px) used by Mask > Smooth Edges. Rounds jagged corners and drops specks up to about this size.",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Radius (px) used by Mask > Smooth Edges. Rounds jagged corners and drops specks up to about this size.",
+   "control_id": "",
+   "dom_id": "selectionSmoothRadius",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "spbMagneticOn",
+   "label": "Spb Magnetic On",
+   "mode": "pro",
+   "panel": "pro.tool_options",
+   "where": "Pro > centre > tool options bar (changes with the active tool)",
+   "kind": "toggle",
+   "does": "Control labelled \"Spb Magnetic On\".",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "",
+   "control_id": "",
+   "dom_id": "spbMagneticOn",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "spbMagneticWidth",
+   "label": "Detection width (px): the border follows edges this close to the pointer.",
+   "mode": "pro",
+   "panel": "pro.tool_options",
+   "where": "Pro > centre > tool options bar (changes with the active tool)",
+   "kind": "number input",
+   "does": "Detection width (px): the border follows edges this close to the pointer.",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Detection width (px): the border follows edges this close to the pointer.",
+   "control_id": "",
+   "dom_id": "spbMagneticWidth",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "spbMagneticContrast",
+   "label": "Contrast (%): edges weaker than this are ignored.",
+   "mode": "pro",
+   "panel": "pro.tool_options",
+   "where": "Pro > centre > tool options bar (changes with the active tool)",
+   "kind": "number input",
+   "does": "Contrast (%): edges weaker than this are ignored.",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Contrast (%): edges weaker than this are ignored.",
+   "control_id": "",
+   "dom_id": "spbMagneticContrast",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "spbMagneticFrequency",
+   "label": "Frequency (0-100): how often fastening points are set by themselves while you move. Higher = more points.",
+   "mode": "pro",
+   "panel": "pro.tool_options",
+   "where": "Pro > centre > tool options bar (changes with the active tool)",
+   "kind": "number input",
+   "does": "Frequency (0-100): how often fastening points are set by themselves while you move. Higher = more points.",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Frequency (0-100): how often fastening points are set by themselves while you move. Higher = more points.",
+   "control_id": "",
+   "dom_id": "spbMagneticFrequency",
    "source": "html",
    "curated": false
   },
@@ -4824,19 +5288,19 @@
   },
   {
    "id": "spatialBrushSize",
-   "label": "Spatial brush size",
+   "label": "Include and exclude brush size",
    "mode": "pro",
    "panel": "pro.tool_options",
    "where": "Pro > centre > tool options bar",
    "kind": "slider",
-   "does": "Spatial brush size",
+   "does": "Include and exclude brush size",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Spatial brush size",
+   "help_text": "Include and exclude brush size",
    "control_id": "",
    "dom_id": "spatialBrushSize",
    "source": "html",
@@ -4849,14 +5313,14 @@
    "panel": "pro.tool_options",
    "where": "Pro > centre > tool options bar (changes with the active tool)",
    "kind": "button",
-   "does": "Erase spatial include/exclude strokes",
+   "does": "Erase include and exclude strokes",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Erase spatial include/exclude strokes",
+   "help_text": "Erase include and exclude strokes",
    "control_id": "",
    "dom_id": "spatialEraseBtn",
    "source": "html",
@@ -4869,14 +5333,14 @@
    "panel": "pro.tool_options",
    "where": "Pro > centre > tool options bar (changes with the active tool)",
    "kind": "button",
-   "does": "Erase brush/wand/region strokes",
+   "does": "Erase brush/wand/region strokes (E)",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Erase brush/wand/region strokes",
+   "help_text": "Erase brush/wand/region strokes (E)",
    "control_id": "",
    "dom_id": "drawEraseBtn",
    "source": "html",
@@ -4923,20 +5387,20 @@
    "curated": false
   },
   {
-   "id": "pro.center.spatial_brush_size",
-   "label": "Spatial brush size",
+   "id": "pro.center.include_and_exclude_brush_size",
+   "label": "Include and exclude brush size",
    "mode": "pro",
    "panel": "pro.center",
    "where": "Pro > centre column",
    "kind": "slider",
-   "does": "Spatial brush size",
+   "does": "Include and exclude brush size",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Spatial brush size",
+   "help_text": "Include and exclude brush size",
    "control_id": "",
    "dom_id": "",
    "source": "html",
@@ -5029,14 +5493,14 @@
    "panel": "pro.selection_bar",
    "where": "Pro > centre > selection / mask bar under the canvas",
    "kind": "button",
-   "does": "Clear spatial include/exclude for current zone",
+   "does": "Clear include and exclude strokes for the current zone",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Clear spatial include/exclude for current zone",
+   "help_text": "Clear include and exclude strokes for the current zone",
    "control_id": "",
    "dom_id": "",
    "source": "html",
@@ -5355,14 +5819,14 @@
    "panel": "pro.center",
    "where": "Pro > centre > source canvas corner buttons",
    "kind": "button",
-   "does": "aborts any stuck render, clears pipeline, and re-runs. Use this if the preview is hung.",
+   "does": "stops a stuck render and starts again. Use this if the preview is frozen.",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Refresh Preview (F5) — aborts any stuck render, clears pipeline, and re-runs. Use this if the preview is hung.",
+   "help_text": "Refresh Preview (F5) — stops a stuck render and starts again. Use this if the preview is frozen.",
    "control_id": "",
    "dom_id": "btnPreviewRefreshSource",
    "source": "html",
@@ -5375,14 +5839,14 @@
    "panel": "pro.center",
    "where": "Pro > centre > source canvas corner buttons",
    "kind": "button",
-   "does": "compare the last preview against the current one",
+   "does": "drag the divider to see your source paint against the render (same as the Compare button). Click again to close",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Before/After (B) — compare the last preview against the current one",
+   "help_text": "Compare — drag the divider to see your source paint against the render (same as the Compare button). Click again to close",
    "control_id": "",
    "dom_id": "btnBeforeAfterSource",
    "source": "html",
@@ -5710,7 +6174,7 @@
    "related": [
     "pro.preview"
    ],
-   "help_text": "Refresh Preview (F5) — aborts any stuck render, clears pipeline, and re-runs.",
+   "help_text": "Refresh Preview (F5) — stops a stuck render and starts again.",
    "control_id": "",
    "dom_id": "btnPreviewRefresh",
    "source": "html",
@@ -5723,7 +6187,7 @@
    "panel": "pro.preview",
    "where": "Pro > centre > split preview",
    "kind": "button",
-   "does": "Before / After (B): compare the last preview with the current one.",
+   "does": "See your source paint against the preview: use Compare (before/after slider) or SPLIT (Shift+V).",
    "when": "See what a change did.",
    "needs": [
     "render"
@@ -5992,14 +6456,14 @@
    "panel": "pro.center",
    "where": "Pro > centre > zoom / view buttons",
    "kind": "button",
-   "does": "before/after comparison slider",
+   "does": "before/after slider: your source paint against the render",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Compare (B) — before/after comparison slider",
+   "help_text": "Compare — before/after slider: your source paint against the render",
    "control_id": "",
    "dom_id": "btnCompare",
    "source": "html",
@@ -6442,7 +6906,7 @@
    "panel": "pro.layers",
    "where": "Pro > right column > LAYERS tab",
    "kind": "button",
-   "does": "+ Layer: adds a PNG / JPG / WebP / GIF as a NEW image layer on top (a logo, a sponsor).",
+   "does": "+ Layer: adds a blank transparent layer on top. To bring in a picture (PNG / JPG / WebP / GIF, such as a logo or sponsor) use Actions > Place image...",
    "when": "Add a logo.",
    "needs": [
     "psd"
@@ -6451,7 +6915,7 @@
    "related": [
     "layer.rename"
    ],
-   "help_text": "Add Layer — import PNG/JPG as a new layer on top",
+   "help_text": "Add a new blank layer on top (to place a picture, use Actions > Place image)",
    "control_id": "",
    "dom_id": "",
    "source": "html",
@@ -6478,6 +6942,26 @@
    "dom_id": "layerActionsMenuBtn",
    "source": "html",
    "curated": true
+  },
+  {
+   "id": "pro.layers.place_image",
+   "label": "Place image...",
+   "mode": "pro",
+   "panel": "pro.layers",
+   "where": "Pro > right column > LAYERS tab > Actions menu",
+   "kind": "button",
+   "does": "Pick a PNG or JPG from your computer and place it on a new layer",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Pick a PNG or JPG from your computer and place it on a new layer",
+   "control_id": "",
+   "dom_id": "",
+   "source": "html",
+   "curated": false
   },
   {
    "id": "pro.layers.blank_layer",
@@ -6554,6 +7038,26 @@
    "mistakes": "",
    "related": [],
    "help_text": "Export layers for Photoshop editing and bring the TGA back (round trip)",
+   "control_id": "",
+   "dom_id": "",
+   "source": "html",
+   "curated": false
+  },
+  {
+   "id": "pro.layers.edit_in_photocraft",
+   "label": "Edit in PhotoCraft",
+   "mode": "pro",
+   "panel": "pro.layers",
+   "where": "Pro > right column > LAYERS tab > Actions menu",
+   "kind": "button",
+   "does": "Open your layers in PhotoCraft (free Photoshop-style editor). Save there and the changed layers come back here.",
+   "when": "",
+   "needs": [
+    "paint"
+   ],
+   "mistakes": "",
+   "related": [],
+   "help_text": "Open your layers in PhotoCraft (free Photoshop-style editor). Save there and the changed layers come back here.",
    "control_id": "",
    "dom_id": "",
    "source": "html",
@@ -7823,14 +8327,14 @@
    "panel": "pro.dialogs",
    "where": "Pro > Shokker file browser dialog",
    "kind": "text input",
-   "does": "Type or paste a full path (e.g. C:\\\\Users\\\\you\\\\paint.tga) and press Enter or click Go",
+   "does": "Type or paste a full path (e.g. C:\\Users\\you\\paint.tga) and press Enter or click Go",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Type or paste a full path (e.g. C:\\\\Users\\\\you\\\\paint.tga) and press Enter or click Go",
+   "help_text": "Type or paste a full path (e.g. C:\\Users\\you\\paint.tga) and press Enter or click Go",
    "control_id": "",
    "dom_id": "filePickerPath",
    "source": "html",
@@ -7982,19 +8486,19 @@
   },
   {
    "id": "swatchPopupReviewBtn",
-   "label": "Internal picker review queue",
+   "label": "Review queue",
    "mode": "pro",
    "panel": "pro.finish_picker",
    "where": "Pro > zone editor > Base Material picker (popup)",
    "kind": "button",
-   "does": "Internal picker review queue",
+   "does": "Review queue",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Internal picker review queue",
+   "help_text": "Review queue",
    "control_id": "",
    "dom_id": "swatchPopupReviewBtn",
    "source": "html",
@@ -8002,19 +8506,19 @@
   },
   {
    "id": "swatchCategoryStrategyBtn",
-   "label": "Internal picker category planning",
+   "label": "Category planning",
    "mode": "pro",
    "panel": "pro.finish_picker",
    "where": "Pro > zone editor > Base Material picker (popup)",
    "kind": "button",
-   "does": "Internal picker category planning",
+   "does": "Category planning",
    "when": "",
    "needs": [
     "paint"
    ],
    "mistakes": "",
    "related": [],
-   "help_text": "Internal picker category planning",
+   "help_text": "Category planning",
    "control_id": "",
    "dom_id": "swatchCategoryStrategyBtn",
    "source": "html",
@@ -8036,7 +8540,7 @@
    "related": [
     "swatchStageUseBtn"
    ],
-   "help_text": "Surprise me — roll a weighted high-rank finish onto the On-Car Stage. One more Enter/click confirms. (R works while the finish picker is focused; on the canvas R = Recolor.)",
+   "help_text": "Surprise me: roll a top-ranked finish onto the On-Car Stage. Press Enter or click to confirm. R also rolls while the finish picker is focused.",
    "control_id": "",
    "dom_id": "swatchDiceBtn",
    "source": "html",
@@ -9823,12 +10327,12 @@
   },
   {
    "id": "zone.tolerance",
-   "label": "Colour tolerance (sliders next to the colour chips)",
+   "label": "Color Match (the Exact to Loose slider on each picked colour chip)",
    "mode": "pro",
    "panel": "pro.zone_editor",
    "where": "Pro > ZONE POPOUT PANEL (click a zone card in the left column; E shows / hides the panel) > COLOR",
    "kind": "slider",
-   "does": "How close a pixel must be to the picked colour to belong to the zone (about 30-50 normal; 6 = exact shade, 100 = loose).",
+   "does": "How many nearby shades of the picked colour the zone grabs. Slide toward Exact for only that shade, toward Loose for lighter, darker and similar shades too (about 30-50 is normal). Every picked colour chip has its own slider; there is no zone-wide one.",
    "when": "The edges of the area look chewed (raise it) or neighbours get caught (lower it).",
    "needs": [
     "zone",
@@ -10857,7 +11361,7 @@
     "zone.spec_sliders"
    ],
    "help_text": "",
-   "control_id": "zone_pattern_strength",
+   "control_id": "zone_pattern_spec_amount",
    "dom_id": "",
    "source": "js:renderZoneDetail",
    "curated": true
@@ -11116,11 +11620,11 @@
    "where": "Pro > LAYERS tab > layer row",
    "kind": "toggle",
    "does": "Shows / hides the layer. Alt+click isolates that layer.",
-   "when": "Turn template layers (Mask, Wire, Car_Mandatory) OFF before export; hide a sponsor to see the paint under it.",
+   "when": "RENDER leaves the template layers (Mask, Wire, Car_Mandatory) out for you; hide a sponsor to see the paint under it.",
    "needs": [
     "psd"
    ],
-   "mistakes": "Leaving Mask / Wire / Car_Mandatory on paints them into the car.",
+   "mistakes": "RENDER leaves Mask / Wire / Car_Mandatory out of the car paint, so leaving them on in the editor is fine.",
    "related": [
     "pro.render",
     "layer.search"
@@ -11354,12 +11858,12 @@
   },
   {
    "id": "zoneFloatExpandTab",
-   "label": "Zone editor tab (E)",
+   "label": "Zone editor tab (Shift+E)",
    "mode": "pro",
    "panel": "pro.zones",
    "where": "Pro > left of the canvas",
    "kind": "button",
-   "does": "Shows or hides the floating ZONE POPOUT PANEL (press E).",
+   "does": "Shows or hides the floating ZONE POPOUT PANEL (press Shift+E).",
    "when": "The zone controls vanished or are in the way.",
    "needs": [
     "zone"
@@ -11593,7 +12097,7 @@
     "pro.center.load_tga"
    ],
    "steps": [
-    "Top row, find SOURCE PAINT. Click the \"TGA/PNG/JPEG\" button beside it (or on the empty canvas click \"Load TGA\" / \"Load Paint Image\").",
+    "Top row, click Open Paint... and choose Flat image (or on the empty canvas click \"Load TGA\" / \"Load Paint Image\").",
     "Pick your paint file in the window that opens, then confirm.",
     "Wait for the paint to appear in the SOURCE picture in the middle; the LIVE PREVIEW fills in next.",
     "You can also paste the full file path into the Source Paint box and press Enter."
@@ -11612,10 +12116,10 @@
     "pro.layers.open_layered"
    ],
    "steps": [
-    "Top row, SOURCE PAINT, click the \"PSD/XCF/ORA\" button (or \"Import PSD\" on the empty canvas, or the LAYERS tab > \"Open Layered\").",
+    "Top row, click Open Paint... and choose Layered template (or \"Import PSD\" on the empty canvas, or the LAYERS tab > \"Open Layered\").",
     "Choose your PSD (XCF and ORA also work) and confirm.",
     "Wait while the layers load, then open the LAYERS tab on the right to see them.",
-    "Before rendering, switch the template layers (Mask, Wire, Car_Mandatory) OFF with their eye icons."
+    "RENDER leaves the template layers (Mask, Wire, Car_Mandatory) out of the car paint for you. You can also switch them OFF with their eye icons."
    ]
   },
   {
@@ -12192,7 +12696,7 @@
     "mode.chat"
    ],
    "steps": [
-    "Load your paint: top row, SOURCE PAINT, \"TGA/PNG/JPEG\" (flat) or \"PSD/XCF/ORA\" (layers).",
+    "Load your paint: top row, Open Paint... > Flat image (flat) or Open Paint... > Layered template (layers).",
     "Make zones in PRO, or switch to CHAT to type what you want.",
     "Pick looks, check the LIVE PREVIEW.",
     "Set your iRacing customer ID and car folder at the top, then press RENDER."
@@ -12229,8 +12733,8 @@
    "steps": [
     "A layered PSD keeps parts of the livery on separate sheets: Car Paint (body colours), Numbers, Sponsors, Tape, Decals.",
     "Layers let you change one thing (just the numbers) without touching the rest.",
-    "Template layers (Mask, Wire, Car_Mandatory) only show the car outlines and must be OFF when you render.",
-    "A flat TGA has no layers. Load a PSD (\"PSD/XCF/ORA\") to get them; see the LAYERS tab on the right."
+    "Template layers (Mask, Wire, Car_Mandatory) only show the car outlines; RENDER leaves them out of the car paint for you.",
+    "A flat TGA has no layers. Load a PSD (Open Paint... > Layered template) to get them; see the LAYERS tab on the right."
    ]
   },
   {
@@ -12260,7 +12764,7 @@
    ],
    "steps": [
     "LAYERS tab: click the eye on Car_Mandatory, Mask and Wire (the group \"Turn Off Before Exporting TGA\").",
-    "Then render. If lines still show on the car, one of them was left on."
+    "RENDER leaves them out of the car paint for you. If lines still show on the car, update Shokker, hide them with the eye icons and render again."
    ]
   },
   {
@@ -12275,7 +12779,7 @@
     "layer.rename"
    ],
    "steps": [
-    "Open the LAYERS tab and click \"+ Layer\".",
+    "Open the LAYERS tab, open Actions and choose Place image...",
     "Choose a PNG / JPG / WebP / GIF (transparent PNG is best).",
     "Drag it with Move (V) in LAYER mode, or use Transform (Ctrl+T) to size it."
    ]
@@ -12294,7 +12798,7 @@
    ],
    "steps": [
     "Click LAYER in the ZONE | LAYER switch (top toolbar).",
-    "Pick Move (V), click the number / logo (it isolates it), drag.",
+    "Pick Move (V), click the number / logo (it isolates it), drag. Coloured guide lines snap it to the sheet centre and to other layers (hold Ctrl to turn that off); the arrow keys nudge it 1 pixel, Shift+Arrow 10.",
     "Use Transform (Ctrl+T) for size and rotation; \"Apply\" confirms."
    ]
   },
@@ -12443,7 +12947,7 @@
    ],
    "steps": [
     "Top row: enter your iRacing customer number (IRACING USER ID) and set IRACING CAR FOLDER (use the car list button or browse).",
-    "Turn the template layers (Mask, Wire, Car_Mandatory) OFF.",
+    "Switching the template layers (Mask, Wire, Car_Mandatory) OFF is optional: RENDER leaves them out anyway.",
     "Click RENDER (Ctrl+R). The paint and spec files are written to the car folder.",
     "In iRacing press Alt+Tab, then Ctrl+R to reload paints."
    ]
@@ -12803,7 +13307,7 @@
     "useRegionBtn"
    ],
    "steps": [
-    "Pick Wand (W) in the top toolbar (or Lasso L / Rect O). Click or drag on the paint.",
+    "Pick Wand (W) in the top toolbar (or Lasso L / Rect M). Click or drag on the paint.",
     "Shift adds, Alt subtracts; the Tolerance slider sets how similar colours must be.",
     "Select a zone in the left column and press \"Use Region\" to give it that selection."
    ]
@@ -12820,7 +13324,7 @@
     "useRegionBtn"
    ],
    "steps": [
-    "Top toolbar > SELECT menu > \"Grab Object\" (G).",
+    "Top toolbar > SELECT menu > \"Grab Object\" (Shift+W cycles to it).",
     "Click inside a solid part of the number; its outline is selected.",
     "Use \"Use Region\" on the zone you want."
    ]
@@ -12903,8 +13407,8 @@
     "btnSplitView"
    ],
    "steps": [
-    "Click \"B/A\" (or press B) to flip between the last preview and now.",
-    "\"Compare\" gives a wipe slider; SPLIT shows source and preview side by side."
+    "After a render, click \"Compare\" and drag the divider to see your source paint against the preview.",
+    "\"SPLIT\" (Shift+V) shows source and preview side by side."
    ]
   },
   {
@@ -13189,7 +13693,7 @@
     "rightCollapseBtn"
    ],
    "steps": [
-    "Click the small arrow at the edge of the left or right column to collapse it. Press E to show / hide the zone editor."
+    "Click the small arrow at the edge of the left or right column to collapse it. Press Shift+E to show / hide the zone editor."
    ]
   },
   {
@@ -13256,7 +13760,7 @@
     "pro.layers.open_layered"
    ],
    "steps": [
-    "There is no Text button in the main tool row. The easiest way: make the lettering as a transparent PNG (or in your PSD in Photoshop) and add it with LAYERS tab > \"+ Layer\".",
+    "Use the Text tool (T): its text stays editable (double-click it to change it; RASTERIZE turns it into pixels). Or make the lettering as a transparent PNG (or in your PSD in Photoshop) and add it with LAYERS tab > Actions > Place image...",
     "Then move and size it with Move (V) and Transform (Ctrl+T) in LAYER mode.",
     "For a PSD, edit the text layer in Photoshop and re-open it with \"Open Layered\"."
    ]
@@ -13275,7 +13779,7 @@
     "eyedropperSetBtn"
    ],
    "steps": [
-    "Pick Color (P) in the toolbar, choose the zone in the box that appears, click the colour on the SOURCE picture.",
+    "Pick Color (I) in the toolbar, choose the zone in the box that appears, click the colour on the SOURCE picture.",
     "\"+ Add Color\" adds it to the zone; \"Set\" replaces the zone's colour."
    ]
   },
@@ -13437,7 +13941,7 @@
    ],
    "steps": [
     "Honest answer: that is not available in Shokker today. Not in the app: animated or moving paints, glow-in-the-dark paint (iRacing has no emissive paint), other sims (Shokker writes iRacing paint + spec TGAs only), a 3D car view or painting on a 3D model, a shop or marketplace to sell paints, live sync with Photoshop while you edit, and a Mac version (Windows only).",
-    "Nearest thing you can do: render, then look at the car in iRacing's own 3D paint viewer; for Photoshop, save your PSD and load it again with \"PSD/XCF/ORA\" (top row, SOURCE PAINT).",
+    "Nearest thing you can do: render, then look at the car in iRacing's own 3D paint viewer; for Photoshop, save your PSD and load it again with Open Paint... > Layered template (top row).",
     "Everything else - colours, finishes, patterns, spec - is in Pro; ask \"how do I ...\" for the steps."
    ]
   }

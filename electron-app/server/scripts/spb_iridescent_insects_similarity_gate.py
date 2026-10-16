@@ -5,7 +5,9 @@ palette swaps of the same diagonal-wave carrier.  M7 is an intra-finish gate;
 it cannot catch duplication between two otherwise high-scoring finishes.  This
 script therefore compares paint and combined-spec halves independently after
 removing color information, and also checks every shipped picker against the
-accepted evidence image that promoted it.
+accepted evidence image that promoted it. The copy detector is deliberately
+invariant to palette, M/R/Cc channel order, cyclic phase shifts, flips and 90°
+rotations: none of those operations creates a new design.
 
 It is deliberately diagnostic by default.  Pass ``--fail`` to make excessive
 cross-card similarity a release-gate failure after the current rebuild lane has
@@ -15,6 +17,7 @@ been adjudicated and the threshold has been locked.
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 from pathlib import Path
 import re
 from typing import Iterable
@@ -42,6 +45,25 @@ ACCEPTED_EVIDENCE = {
     "beetle_tiger": "beetle_tiger_i2_p3_perf",
     "moth_tiger": "moth_tiger_i1_p2",
     "cicada_membrane": "cicada_membrane_i1_p5",
+    "firefly_ember": "firefly_ember_i1_p2",
+    "ant_velvet": "ant_velvet_i1_p3",
+    "mantis_orchid": "mantis_orchid_i1_p4",
+    "mantis_leaf": "mantis_leaf_i1_p6",
+    "katydid_leafglass": "katydid_leafglass_i1_p4",
+    "stick_insect_bark": "stick_insect_bark_i1_p2",
+    "cockroach_onyx": "cockroach_onyx_i1_p12",
+    "weevil_opal": "weevil_opal_i1_p4",
+    "weevil_gilded": "weevil_gilded_i1_p4",
+    "scarab_sunplate": "scarab_sunplate_i1_p4",
+    "scarab_night": "scarab_night_i1_p6",
+    "jewel_spider": "jewel_spider_i1_p2",
+    "orb_weaver_silk": "orb_weaver_silk_i1_p3",
+    "praying_mantis_verdigris": "praying_mantis_verdigris_i1_p6",
+    "hornet_titanium": "hornet_titanium_i1_p6",
+    "leafcutter_copper": "leafcutter_copper_i1_p8",
+    "dung_beetle_oil": "dung_beetle_oil_i1_p5",
+    "bluebottle_mercury": "bluebottle_mercury_i1_p2",
+    "caddiscase_river": "caddiscase_river_i1_p3",
 }
 
 
@@ -85,6 +107,23 @@ def _features(image: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     return gray.astype(np.float32), edge
 
 
+def _structure(image: np.ndarray) -> np.ndarray:
+    """Return a palette- and channel-invariant boundary/relief map."""
+    small = cv2.resize(image, (128, 128), interpolation=cv2.INTER_AREA).astype(np.float32)
+    maps = []
+    for channel in cv2.split(small):
+        lo, hi = np.percentile(channel, (2.0, 98.0))
+        normalized = (channel - lo) / max(float(hi - lo), 1.0)
+        normalized = np.clip(normalized, 0.0, 1.0).astype(np.float32)
+        gx = cv2.Sobel(normalized, cv2.CV_32F, 1, 0, ksize=3)
+        gy = cv2.Sobel(normalized, cv2.CV_32F, 0, 1, ksize=3)
+        edge = cv2.magnitude(gx, gy)
+        local = np.abs(normalized - cv2.GaussianBlur(normalized, (0, 0), 1.4))
+        maps.append(edge + local * 2.0)
+    structure = np.maximum.reduce(maps)
+    return cv2.GaussianBlur(structure, (3, 3), 0).astype(np.float32)
+
+
 def _corr(a: np.ndarray, b: np.ndarray) -> float:
     av = a.reshape(-1) - float(a.mean())
     bv = b.reshape(-1) - float(b.mean())
@@ -102,6 +141,47 @@ def _similarity(a: np.ndarray, b: np.ndarray) -> tuple[float, float, float]:
     return max(gray, edge), gray, edge
 
 
+def _d4_variants(image: np.ndarray) -> Iterable[np.ndarray]:
+    """The eight rotations/reflections that do not create a new carrier."""
+    for turns in range(4):
+        rotated = np.rot90(image, turns)
+        yield np.ascontiguousarray(rotated)
+        yield np.ascontiguousarray(np.fliplr(rotated))
+
+
+def _phase_response(a: np.ndarray, b: np.ndarray) -> float:
+    """Cyclic-shift similarity for deterministic copied carriers."""
+    aa = (a - float(a.mean())) / (float(a.std()) + 1e-6)
+    bb = (b - float(b.mean())) / (float(b.std()) + 1e-6)
+    shift, response = cv2.phaseCorrelate(aa.astype(np.float32), bb.astype(np.float32))
+    dx, dy = int(round(shift[0])), int(round(shift[1]))
+    aligned = max(
+        _corr(aa, np.roll(bb, (dy, dx), axis=(0, 1))),
+        _corr(aa, np.roll(bb, (-dy, -dx), axis=(0, 1))),
+    )
+    return float(np.clip(max(response, aligned), -1.0, 1.0))
+
+
+@dataclass(frozen=True)
+class IdentitySimilarity:
+    direct: float
+    gray: float
+    edge: float
+    transformed: float
+    phased: float
+
+
+def _identity_similarity(a: np.ndarray, b: np.ndarray) -> IdentitySimilarity:
+    direct, gray, edge = _similarity(a, b)
+    left, right = _structure(a), _structure(b)
+    transformed = -1.0
+    phased = -1.0
+    for variant in _d4_variants(right):
+        transformed = max(transformed, _corr(left, variant))
+        phased = max(phased, _phase_response(left, variant))
+    return IdentitySimilarity(direct, gray, edge, transformed, phased)
+
+
 def _pairs(items: Iterable[str]) -> Iterable[tuple[str, str]]:
     ordered = list(items)
     for index, left in enumerate(ordered):
@@ -116,6 +196,10 @@ def main() -> int:
         help="Explicit subset; default is every ID on the live insects shelf",
     )
     parser.add_argument("--threshold", type=float, default=0.68)
+    parser.add_argument(
+        "--copy-threshold", type=float, default=0.97,
+        help="Exact-copy tolerance for palette/channel/phase/D4 transforms",
+    )
     parser.add_argument(
         "--replace", action="append", default=[], metavar="ID=PNG",
         help="Audit an isolated candidate in place of its current live picker",
@@ -151,32 +235,47 @@ def main() -> int:
             print(f"  {finish_id:28s} no evidence mapping")
             continue
         evidence = _read(EVIDENCE_ROOT / evidence_name / "picker_split.png")
-        score, gray, edge = _similarity(
+        result = _identity_similarity(
             _half(live[finish_id], "spec"), _half(evidence, "spec")
         )
-        print(f"  {finish_id:28s} score={score:.3f} gray={gray:.3f} edge={edge:.3f}")
+        print(
+            f"  {finish_id:28s} score={result.direct:.3f} gray={result.gray:.3f} "
+            f"edge={result.edge:.3f} xform={result.transformed:.3f} phase={result.phased:.3f}"
+        )
 
-    breaches: list[tuple[float, str, str, str, float, float]] = []
+    breaches: list[tuple[str, float, str, str, str]] = []
     print("\nCROSS-CARD COLOR-INVARIANT SIMILARITY")
     for side in ("paint", "spec"):
         rows = []
         for left, right in _pairs(ids):
-            score, gray, edge = _similarity(
+            result = _identity_similarity(
                 _half(live[left], side), _half(live[right], side)
             )
-            rows.append((score, left, right, gray, edge))
-            if score >= args.threshold:
-                breaches.append((score, side, left, right, gray, edge))
+            rows.append((result.direct, left, right, result))
+            if result.direct >= args.threshold:
+                breaches.append(("direct", result.direct, side, left, right))
+            if result.transformed >= args.copy_threshold:
+                breaches.append(("transform", result.transformed, side, left, right))
+            if result.phased >= args.copy_threshold:
+                breaches.append(("phase", result.phased, side, left, right))
         print(f"  [{side.upper()}]")
-        for score, left, right, gray, edge in sorted(rows, reverse=True)[:15]:
-            marker = " BREACH" if score >= args.threshold else ""
+        for score, left, right, result in sorted(rows, reverse=True)[:15]:
+            copied = max(result.transformed, result.phased) >= args.copy_threshold
+            marker = " BREACH" if score >= args.threshold or copied else ""
             print(
                 f"    {score:.3f} {left:24s} {right:24s} "
-                f"gray={gray:.3f} edge={edge:.3f}{marker}"
+                f"gray={result.gray:.3f} edge={result.edge:.3f} "
+                f"xform={result.transformed:.3f} phase={result.phased:.3f}{marker}"
             )
 
-    print(f"\nthreshold={args.threshold:.3f} breaches={len(breaches)}")
-    if args.fail and breaches:
+    unique_breaches = {(side, left, right) for _kind, _score, side, left, right in breaches}
+    print(
+        f"\nthreshold={args.threshold:.3f} copy_threshold={args.copy_threshold:.3f} "
+        f"breaches={len(unique_breaches)}"
+    )
+    for kind, score, side, left, right in sorted(breaches, key=lambda row: row[1], reverse=True):
+        print(f"  {kind:9s} {score:.3f} [{side}] {left} == {right}")
+    if args.fail and unique_breaches:
         return 1
     return 0
 

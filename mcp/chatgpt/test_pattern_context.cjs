@@ -1,0 +1,8 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),assert=require('node:assert/strict');
+const w={console,zones:[{id:'a',name:'Other',pattern:'houndstooth',scale:2},{id:'b',name:'Current',pattern:'checker',scale:0.775,rotation:35,patternOpacity:70,patternSpecMult:0.8,patternSpecOpacity:20,sourceLayers:['body-id'],patternStack:[{pattern:'hex'}]}],selectedZoneIndex:1};w.window=w;
+const before=JSON.stringify(w.zones);vm.createContext(w);vm.runInContext(fs.readFileSync(path.join(__dirname,'editor-capabilities.js'),'utf8'),w);
+let r=w.SpbEditorCapabilities.read().pattern_controls;assert.equal(JSON.stringify(w.zones),before);assert.equal(r.selected_zone.id,'b');assert.equal(r.records[0].zone_id,'b');assert.equal(r.records[0].scale,0.775);assert.equal(r.records[0].paint_strength_multiplier,0.8);assert.equal(r.records[0].spec_amount_percent,20);assert.equal(r.records[0].source_layer_ids[0],'body-id');assert.equal(r.records[0].secondary_pattern_count,1);assert.equal(r.records[1].rotation_degrees,null);assert.match(r.limits,/not edit approval/);
+w.zones=Array.from({length:50},(_,i)=>({id:String(i),name:'Zone '+i,pattern:'checker',scale:1}));w.selectedZoneIndex=49;r=w.SpbEditorCapabilities.read().pattern_controls;assert.equal(r.records.length,12);assert.equal(r.records[0].zone_id,'49');assert.equal(r.omitted_patterns,38);
+w.zones=[];r=w.SpbEditorCapabilities.read().pattern_controls;assert.equal(r.selected_zone,null);assert.equal(r.records.length,0);
+console.log('PASS bounded live pattern settings, selected-first identity, unknown values, selectors and read-only behavior');

@@ -37,6 +37,10 @@
     const lastShown = Object.create(null);
     let toastCount = 0;
 
+    // [DEADFEAT 2026-10-10] the shortcut named in the toast / badge tooltip; Ctrl+Shift+E belongs to Merge Visible Layers (see the keydown handler below).
+    // Kill switch window.SPB_DEADFEAT_OFF = true puts the old wording and binding back.
+    function reportKeys() { return window.SPB_DEADFEAT_OFF === true ? 'Ctrl+Shift+E' : 'Ctrl+Alt+Shift+E'; }
+
     function shortSource(src, line) {
         if (!src) return '';
         let f = String(src).split('/').pop() || '';
@@ -68,7 +72,7 @@
 
         const where = entry.where ? (' — ' + entry.where) : '';
         const text = 'Something went wrong' + where +
-                     '. That action may not have completed. Details: Ctrl+Shift+E';
+                     '. That action may not have completed. Details: ' + reportKeys();
         try {
             if (typeof window.showToast === 'function') window.showToast(text, 'error');
             else console.warn('[SPB]', text);
@@ -118,7 +122,7 @@
             const label = document.createElement('span');
             label.id = 'spbErrorBadgeLabel';
             label.style.cursor = 'pointer';
-            label.title = 'Click to see what went wrong (Ctrl+Shift+E)';
+            label.title = 'Click to see what went wrong (' + reportKeys() + ')';
             label.onclick = showReport;
             const x = document.createElement('span');
             x.textContent = '×';
@@ -139,7 +143,7 @@
         el.style.display = 'flex';
         const lbl = document.getElementById('spbErrorBadgeLabel');
         if (lbl) {
-            lbl.textContent = '⚠ ' + real.length + (real.length === 1 ? ' error' : ' errors');
+            lbl.textContent = real.length + (real.length === 1 ? ' error' : ' errors');
         }
     }
 
@@ -241,7 +245,12 @@
     });
 
     document.addEventListener('keydown', function (e) {
-        if (e.ctrlKey && e.shiftKey && (e.key === 'E' || e.key === 'e')) {
+        // [DEADFEAT 2026-10-10] Ctrl+Shift+E is Merge Visible Layers (paint-booth-3-canvas.js, the shortcut list, the shortcut tests).
+        // This handler used to take Ctrl+Shift+E first and open the error report, so Merge Visible was dead from the keyboard
+        // (measured: key press -> "What went wrong" panel, no merge, no "requires Layer mode" toast). The report now opens on
+        // Ctrl+Alt+Shift+E. Kill switch window.SPB_DEADFEAT_OFF = true restores the old binding.
+        var legacy = window.SPB_DEADFEAT_OFF === true;
+        if (e.ctrlKey && e.shiftKey && (legacy ? !e.altKey : e.altKey) && (e.key === 'E' || e.key === 'e')) {
             e.preventDefault();
             showReport();
         }

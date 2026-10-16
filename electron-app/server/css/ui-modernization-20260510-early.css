@@ -62,8 +62,7 @@
 .split-source,
 .preview-inner,
 .preview-inner > #previewPaintPane,
-.preview-inner > #previewSpecPane,
-.canvas-inner {
+.preview-inner > #previewSpecPane {
     min-height: 0 !important;
     min-width: 0 !important;
     max-width: 100% !important;
@@ -75,12 +74,27 @@
     max-width: calc(100% - 18px) !important;
 }
 
-.split-pane > .preview-inner,
-.split-pane > .canvas-inner {
+.split-pane > .preview-inner {
     width: auto !important;
     max-width: calc(100% - 28px) !important;
     margin-inline: clamp(10px, 1.2vw, 14px) !important;
 }
+
+/* SPB-93 / Source fidelity, owner 2026-10-14: coverage drifts as Source zooms.
+   applyZoom owns this native-image coordinate plane, including its centering.
+   Clamping it to the pane squeezed percentage overlays while paint kept growing
+   (2048px paint / 227px overlay parent at 100%). Clip the pane, never this plane. */
+#canvasInner {
+    max-width: none !important;
+    max-height: none !important;
+    flex: 0 0 auto;
+}
+
+/* Coverage is a viewing aid. Keep the paint readable when the pointer leaves
+   Source; the existing coverage checkbox can disable it entirely. */
+#zoneCovWrap { visibility: hidden; }
+#splitSource:hover #zoneCovWrap,
+#canvasInner:hover #zoneCovWrap { visibility: visible; }
 
 /* RENDER float uses #renderFloat.render-float + fixed positioning (see ~16998). Do not pin it
    absolute inside .canvas-viewport — overflow:auto scrolls it away after render results scrollIntoView. */

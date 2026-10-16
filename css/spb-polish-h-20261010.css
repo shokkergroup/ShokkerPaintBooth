@@ -1,0 +1,204 @@
+/* [SPB-POLISH-H 2026-10-10] ONE panel shell for tonight's tools (Car Stripe, Car-Space Fade, Number Kit, Sponsor Kit, Spec Doctor,
+   Auto Spec, Material Select, Colourway Studio, Layer Material picker; any later tool opts in with the hook classes
+   .spb-ph-panel / .spb-ph-head / .spb-ph-foot / .spb-ph-x / .spb-ph-primary).
+   Owner: "MAKING the UI/UX look like a REAL PRODUCT"; audit + decisions: _easy_claude_work/ui_polish/polish_h/AUDIT.md.
+   Same header (icon + Title Case name + close, 40 px, drag handle), same width rule (352 / wide 440; 336 / 360 below 1280 px),
+   footer with a hairline, Cancel then the teal primary at the bottom right, sticky so it stays on screen at 800 px tall,
+   Title Case section labels, one z layer (newest on top, set by js/spb-polish-h-20261010.js).
+   Loaded LAST (clean-skin rule). Styling only, no behaviour. Kill switch: body.spb-polish-h-off (also set by window.SPB_POLISH_H_OFF). */
+
+:root {
+    --ph-w: 352px;
+    --ph-w-wide: 440px;
+    --ph-line: rgba(255, 255, 255, .08);
+    --ph-teal: var(--pl-teal, #3fbab5);
+    --ph-btn: rgb(45, 45, 51);
+    --ph-btn-bd: rgba(255, 255, 255, .10);
+    --ph-dim: var(--pl-tx-dim, #9d9da6);
+}
+@media (max-width: 1279px) { :root { --ph-w: 336px; --ph-w-wide: 360px; } }
+
+/* ---------------------------------------------------------------- 1. frame: one width rule, one radius, one shadow, one z layer */
+body:not(.spb-polish-h-off) :is(#spbSymStripe, #spbFadePanel, #spbNumKit, #spbSponsorKit, #spbDoctorPanel, #spbAutoSpecPanel, #spbMatSelDlg, .spb-ph-panel) {
+    width: var(--ph-w) !important;
+    max-width: calc(100vw - 12px) !important;
+    box-sizing: border-box !important;
+    z-index: 9600 !important;
+    border: 1px solid var(--pl-bd, #3a3a42) !important;
+    border-radius: 8px !important;
+    background: var(--pl-panel, #232327) !important;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, .55), 0 0 0 1px rgba(0, 0, 0, .25) !important;
+    max-height: calc(100vh - var(--ph-top, 125px) - 8px) !important;
+}
+body:not(.spb-polish-h-off) #spbAutoSpecPanel { width: var(--ph-w-wide) !important; }
+/* block panels scroll as a whole (header + footer stick); flex panels already scroll their own list */
+body:not(.spb-polish-h-off) :is(#spbSymStripe, #spbFadePanel, #spbNumKit, #spbSponsorKit, #spbMatSelDlg) { overflow-y: auto !important; overflow-x: hidden !important; overscroll-behavior: contain; }
+body:not(.spb-polish-h-off) :is(#spbSymStripe, #spbFadePanel, #spbNumKit, #spbSponsorKit, #spbDoctorPanel, #spbAutoSpecPanel, #spbMatSelDlg, #spbCwStudio, .spb-ph-panel).spb-ph-front { z-index: 9601 !important; }
+body:not(.spb-polish-h-off) #spbCwStudio { z-index: 9590 !important; border-radius: 8px !important; }
+body:not(.spb-polish-h-off) #spbCwStudio.spb-ph-front { z-index: 9601 !important; }
+/* [TICKETS-3 2026-10-10 item 1] the AI helper joins the shell's stacking: the panel the painter touched last is on top (kill switch window.SPB_T3_OFF / SPB_T3_1_OFF leaves it at its own 9401) */
+body:not(.spb-polish-h-off) #spbProAI.spb-ph-front { z-index: 9601 !important; }
+
+/* ---------------------------------------------------------------- 2. header: icon + Title Case name + close, 40 px, hairline, drag handle */
+/* block panels (padding 10 12 12): the header bleeds to the frame edge and sticks while the body scrolls */
+body:not(.spb-polish-h-off) :is(#spbSymStripe .spb-sym-ph, #spbFadePanel .spb-fd-ph, #spbNumKit .spb-nk-ph, #spbSponsorKit .spb-sk-ph) {
+    position: sticky; top: -10px; z-index: 3;
+    display: flex !important; align-items: center !important; justify-content: flex-start !important; gap: 8px;
+    min-height: 40px; box-sizing: border-box;
+    margin: -10px -12px 10px !important; padding: 0 6px 0 12px !important;
+    background: var(--pl-panel, #232327); border-bottom: 1px solid var(--ph-line); border-radius: 8px 8px 0 0;
+    cursor: move; user-select: none;
+}
+body:not(.spb-polish-h-off) #spbMatSelDlg #spbMtTitle {
+    position: sticky; top: 0; z-index: 3;
+    display: flex !important; align-items: center !important; gap: 8px;
+    min-height: 40px; box-sizing: border-box;
+    margin: 0 -12px 10px !important; padding: 0 6px 0 12px !important;
+    background: var(--pl-panel, #232327); border-bottom: 1px solid var(--ph-line); border-radius: 8px 8px 0 0;
+    cursor: move; user-select: none;
+}
+body:not(.spb-polish-h-off) :is(#spbDoctorPanel .spb-doc-head, #spbAutoSpecPanel .spb-as-head, .spb-ph-panel .spb-ph-head) {
+    display: flex !important; align-items: center !important; gap: 8px;
+    min-height: 40px; box-sizing: border-box; padding: 0 6px 0 12px !important;
+    border-bottom: 1px solid var(--ph-line) !important; cursor: move; user-select: none; flex: 0 0 auto;
+}
+body:not(.spb-polish-h-off) #spbCwStudio .spb-cw-head { min-height: 44px; box-sizing: border-box; padding: 0 8px 0 14px !important; border-bottom: 1px solid var(--ph-line) !important; gap: 8px; }
+body:not(.spb-polish-h-off) #spbLmPop .spb-lm-hd {
+    display: flex !important; align-items: center !important; gap: 6px;
+    min-height: 36px; box-sizing: border-box;
+    margin: -10px -10px 8px !important; padding: 0 4px 0 10px !important;
+    border-bottom: 1px solid var(--ph-line);
+}
+/* the name: 13 px semibold, Title Case, icon 16 px, takes the free width so command buttons + close sit right */
+body:not(.spb-polish-h-off) :is(.spb-sym-pt, .spb-fd-pt, .spb-nk-pt, .spb-sk-pt, .spb-doc-ttl, .spb-as-ttl, #spbMtTitle > span:first-child, .spb-cw-ttl, .spb-ph-head .spb-ph-ttl) {
+    display: inline-flex !important; align-items: center; gap: 8px;
+    flex: 1 1 auto; min-width: 0;
+    font-size: 13px !important; font-weight: 600 !important; letter-spacing: 0 !important; text-transform: none !important;
+    color: var(--pl-tx, #e8e8ea) !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+body:not(.spb-polish-h-off) #spbCwStudio .spb-cw-ttl { flex: 0 0 auto; }
+body:not(.spb-polish-h-off) #spbCwStudio .spb-cw-sub { flex: 1 1 auto; min-width: 0; text-align: left !important; margin-left: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body:not(.spb-polish-h-off) :is(.spb-sym-pt, .spb-fd-pt, .spb-nk-pt, .spb-sk-pt, .spb-ph-ttl) svg,
+body:not(.spb-polish-h-off) :is(.spb-doc-ico, .spb-as-ico, .spb-cw-ico) svg { width: 16px !important; height: 16px !important; flex: 0 0 auto; color: var(--ph-dim); }
+body:not(.spb-polish-h-off) :is(.spb-doc-ico, .spb-as-ico, .spb-cw-ico) { display: inline-flex; align-items: center; width: 16px; height: 16px; color: var(--ph-dim); flex: 0 0 auto; }
+/* the two panels that had no icon: Material Select (target) and the Layer Material picker (layers) - CSS mask icons, no DOM change */
+body:not(.spb-polish-h-off) #spbMtTitle > span:first-child::before,
+body:not(.spb-polish-h-off) #spbLmPop .spb-lm-title::before {
+    content: ''; display: inline-block; width: 16px; height: 16px; flex: 0 0 auto; margin-right: 0; vertical-align: -3px;
+    background: var(--ph-dim);
+    -webkit-mask: var(--ph-ico) center / contain no-repeat; mask: var(--ph-ico) center / contain no-repeat;
+}
+body:not(.spb-polish-h-off) #spbMtTitle > span:first-child { --ph-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M12 2v3M12 19v3M2 12h3M19 12h3'/%3E%3C/svg%3E"); }
+body:not(.spb-polish-h-off) #spbLmPop .spb-lm-title { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; text-transform: none; letter-spacing: 0;
+    --ph-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='m12 3 9 5-9 5-9-5 9-5z'/%3E%3Cpath d='m3 13 9 5 9-5'/%3E%3C/svg%3E"); }
+/* header command buttons (Run Check, Rescan, See Live Preview, Shine Lens): one small secondary style */
+body:not(.spb-polish-h-off) :is(#spbDoctorPanel .spb-doc-head .spb-doc-run, #spbAutoSpecPanel .spb-as-head .spb-as-btn, #spbCwStudio .spb-cw-head .spb-cw-btn) {
+    height: 26px !important; padding: 0 10px !important; border-radius: 6px !important; font-size: 12px !important; font-weight: 500 !important;
+    background: var(--ph-btn) !important; border: 1px solid var(--ph-btn-bd) !important; color: var(--pl-tx, #e8e8ea) !important; flex: 0 0 auto;
+}
+/* close: one 28 px square, same glyph size, same hover */
+body:not(.spb-polish-h-off) :is(.spb-sym-x, .spb-fd-x, .spb-nk-x, .spb-sk-x, .spb-doc-x, .spb-as-x, #spbMtX, .spb-cw-x, .spb-lm-x, .spb-ph-x) {
+    display: inline-flex !important; align-items: center !important; justify-content: center !important;
+    width: 28px !important; height: 28px !important; min-width: 28px; padding: 0 !important; margin: 0 0 0 auto !important; flex: 0 0 auto;
+    border: 0 !important; border-radius: 6px !important; background: transparent !important;
+    color: var(--ph-dim) !important; font-size: 18px !important; line-height: 1 !important; cursor: pointer;
+}
+body:not(.spb-polish-h-off) :is(#spbDoctorPanel .spb-doc-x, #spbAutoSpecPanel .spb-as-x, #spbCwStudio .spb-cw-x) { margin-left: 0 !important; }
+body:not(.spb-polish-h-off) :is(.spb-sym-x, .spb-fd-x, .spb-nk-x, .spb-sk-x, .spb-doc-x, .spb-as-x, #spbMtX, .spb-cw-x, .spb-lm-x, .spb-ph-x) svg { width: 14px !important; height: 14px !important; }
+body:not(.spb-polish-h-off) :is(.spb-sym-x, .spb-fd-x, .spb-nk-x, .spb-sk-x, .spb-doc-x, .spb-as-x, #spbMtX, .spb-cw-x, .spb-lm-x, .spb-ph-x):hover { background: rgba(255, 255, 255, .08) !important; color: var(--pl-tx, #e8e8ea) !important; }
+
+/* ---------------------------------------------------------------- 3. footer: hairline, secondary left, Cancel + teal primary bottom right, always on screen */
+body:not(.spb-polish-h-off) :is(#spbSymStripe .spb-sym-pb, #spbFadePanel .spb-fd-pb, #spbNumKit .spb-nk-pb, #spbSponsorKit .spb-sk-pb) {
+    position: sticky; bottom: -12px; z-index: 3;
+    display: flex !important; align-items: center !important; justify-content: flex-end !important; gap: 8px !important; flex-wrap: nowrap;
+    margin: 12px -12px -12px !important; padding: 10px 12px 12px !important;
+    background: var(--pl-panel, #232327); border-top: 1px solid var(--ph-line); border-radius: 0 0 8px 8px;
+}
+body:not(.spb-polish-h-off) #spbMatSelDlg .mt-btns {
+    position: relative;
+    display: flex !important; align-items: center !important; justify-content: flex-end !important; gap: 8px !important;
+    margin: 12px -12px 6px !important; padding: 10px 12px 0 !important;
+    border-top: 1px solid var(--ph-line);
+}
+body:not(.spb-polish-h-off) :is(#spbDoctorPanel .spb-doc-foot, #spbAutoSpecPanel .spb-as-foot, #spbCwStudio .spb-cw-foot, .spb-ph-panel .spb-ph-foot) {
+    display: flex !important; align-items: center !important; gap: 8px !important; flex: 0 0 auto;
+    padding: 10px 12px !important; border-top: 1px solid var(--ph-line) !important;
+}
+/* a tertiary action (Re-Centre, Reset) goes to the far left, so Cancel always sits right beside the primary */
+body:not(.spb-polish-h-off) :is(#spbNumKit .spb-nk-pb, #spbSponsorKit .spb-sk-pb) > [data-act="remove"] { order: 1; }
+body:not(.spb-polish-h-off) :is(#spbNumKit .spb-nk-pb, #spbSponsorKit .spb-sk-pb) > [data-act="recentre"] { order: 2; }
+body:not(.spb-polish-h-off) :is(#spbNumKit .spb-nk-pb, #spbSponsorKit .spb-sk-pb) > :is(.spb-nk-gap, .spb-sk-gap) { order: 3; flex: 1 1 auto; }
+body:not(.spb-polish-h-off) :is(#spbNumKit .spb-nk-pb, #spbSponsorKit .spb-sk-pb) > [data-act="cancel"] { order: 4; }
+body:not(.spb-polish-h-off) :is(#spbNumKit .spb-nk-pb, #spbSponsorKit .spb-sk-pb) > [data-act="commit"] { order: 5; }
+body:not(.spb-polish-h-off) #spbMatSelDlg #spbMtReset { margin-right: auto !important; }
+body:not(.spb-polish-h-off) :is(#spbSymStripe .spb-sym-pb, #spbFadePanel .spb-fd-pb, #spbNumKit .spb-nk-pb, #spbSponsorKit .spb-sk-pb, #spbMatSelDlg .mt-btns, #spbAutoSpecPanel .spb-as-foot, #spbCwStudio .spb-cw-foot, .spb-ph-foot) > button {
+    height: 30px !important; min-height: 30px; padding: 0 14px !important; box-sizing: border-box;
+    border-radius: 6px !important; font-size: 12px !important; font-weight: 500 !important; white-space: nowrap;
+    background: var(--ph-btn) !important; border: 1px solid var(--ph-btn-bd) !important; color: var(--pl-tx, #e8e8ea) !important;
+}
+body:not(.spb-polish-h-off) :is(#spbSymStripe, #spbFadePanel, #spbNumKit, #spbSponsorKit, #spbAutoSpecPanel, #spbMatSelDlg, #spbCwStudio, .spb-ph-panel) :is(.spb-sym-primary, .spb-fd-primary, .spb-nk-primary, .spb-sk-primary, .spb-as-go, #spbMtOk, .spb-cw-primary, .spb-ph-primary) {
+    background: rgba(63, 186, 181, .20) !important; border: 1px solid rgba(63, 186, 181, .75) !important; color: #9be9e4 !important; font-weight: 600 !important;
+}
+body:not(.spb-polish-h-off) :is(#spbSymStripe, #spbFadePanel, #spbNumKit, #spbSponsorKit, #spbAutoSpecPanel, #spbMatSelDlg, #spbCwStudio, .spb-ph-panel) :is(.spb-sym-primary, .spb-fd-primary, .spb-nk-primary, .spb-sk-primary, .spb-as-go, #spbMtOk, .spb-cw-primary, .spb-ph-primary):hover:not(:disabled) { background: rgba(63, 186, 181, .32) !important; }
+body:not(.spb-polish-h-off) :is(#spbSymStripe, #spbFadePanel, #spbNumKit, #spbSponsorKit, #spbAutoSpecPanel, #spbMatSelDlg, #spbCwStudio, .spb-ph-panel) :is(.spb-sym-primary, .spb-fd-primary, .spb-nk-primary, .spb-sk-primary, .spb-as-go, #spbMtOk, .spb-cw-primary, .spb-ph-primary):disabled { opacity: .45 !important; cursor: default; }
+
+/* ---------------------------------------------------------------- 4. section labels in Title Case (was UPPERCASE in Car-Space Fade + Colourway Studio) */
+body:not(.spb-polish-h-off) :is(#spbFadePanel .spb-fd-lab, #spbCwStudio .spb-cw-h) {
+    text-transform: none !important; letter-spacing: 0 !important; font-size: 11px !important; font-weight: 600 !important; color: var(--ph-dim) !important;
+}
+/* ---------------------------------------------------------------- 5. sliders: one teal style inside every panel */
+body:not(.spb-polish-h-off) :is(#spbSymStripe, #spbFadePanel, #spbNumKit, #spbSponsorKit, #spbDoctorPanel, #spbAutoSpecPanel, #spbMatSelDlg, #spbCwStudio, #spbLmPop, .spb-ph-panel) input[type=range] { accent-color: var(--ph-teal) !important; }
+
+/* ---------------------------------------------------------------- 6. menus: group labels + proxy entries added by js/spb-polish-h-20261010.js */
+body:not(.spb-polish-h-off) .spb-tb-pop .spb-ph-grp {
+    display: block; padding: 8px 10px 3px; margin-top: 2px;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--ph-dim);
+    pointer-events: none; user-select: none; white-space: nowrap;
+}
+body:not(.spb-polish-h-off) .spb-tb-pop .spb-ph-grp:first-child { padding-top: 4px; margin-top: 0; }
+body:not(.spb-polish-h-off) .spb-tb-pop .spb-ph-grp:not(:first-child) { border-top: 1px solid var(--ph-line); margin-top: 4px; padding-top: 7px; }
+body.spb-polish-h-off .spb-ph-grp, body.spb-polish-h-off .spb-ph-proxy { display: none !important; }
+body:not(.spb-polish-h-off) .spb-ph-hidden-orig { display: none !important; }
+body:not(.spb-polish-h-off) .spb-ph-dragging, body:not(.spb-polish-h-off) .spb-ph-dragging * { user-select: none !important; cursor: move !important; }
+
+/* ---------------------------------------------------------------- 7. narrow windows: thin scrollbars, footers never clip (1100 x 800 check) */
+body:not(.spb-polish-h-off) :is(#spbSymStripe, #spbFadePanel, #spbNumKit, #spbSponsorKit, #spbMatSelDlg, #spbAutoSpecPanel .spb-as-list, #spbDoctorPanel .spb-doc-list) { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, .22) transparent; }
+body:not(.spb-polish-h-off) :is(#spbNumKit .spb-nk-pb, #spbSponsorKit .spb-sk-pb) > button { padding: 0 11px !important; }
+body:not(.spb-polish-h-off) #spbAutoSpecPanel .spb-as-foot { flex-wrap: wrap !important; row-gap: 6px !important; }
+body:not(.spb-polish-h-off) #spbAutoSpecPanel .spb-as-foot .spb-as-prev { white-space: nowrap; }
+@media (max-width: 1279px) {
+    body:not(.spb-polish-h-off) #spbAutoSpecPanel .spb-as-foot .spb-as-sp { flex: 1 0 100%; height: 0; }
+    body:not(.spb-polish-h-off) #spbAutoSpecPanel .spb-as-foot .spb-as-sp + button { margin-left: auto !important; }   /* wrapped row: Cancel + Apply stay bottom-right */
+}
+
+/* [TICKETS-4 2026-10-10 item 4] League Pack in a narrow dock: the roster table keeps a readable width and scrolls sideways instead of squeezing the Driver column to nothing.
+   Kill switch: window.SPB_T4_OFF / SPB_T4_4_OFF adds body.spb-t4-4-off (js). */
+body:not(.spb-polish-h-off):not(.spb-t4-4-off) #spbLeaguePack.spb-t4-lg-narrow .spb-lg-tablewrap { overflow-x: auto; }
+body:not(.spb-polish-h-off):not(.spb-t4-4-off) #spbLeaguePack.spb-t4-lg-narrow .spb-lg-table { min-width: 440px; }
+body:not(.spb-polish-h-off):not(.spb-t4-4-off) #spbLeaguePack.spb-t4-lg-narrow .spb-lg-table .c-id { width: 64px; }
+body:not(.spb-polish-h-off):not(.spb-t4-4-off) #spbLeaguePack.spb-t4-lg-narrow .spb-lg-table .c-no { width: 38px; }
+body:not(.spb-polish-h-off):not(.spb-t4-4-off) #spbLeaguePack.spb-t4-lg-narrow .spb-lg-table .c-team { width: 96px; }
+body:not(.spb-polish-h-off):not(.spb-t4-4-off) #spbLeaguePack.spb-t4-lg-narrow .spb-lg-table .c-sp, body:not(.spb-polish-h-off):not(.spb-t4-4-off) #spbLeaguePack.spb-t4-lg-narrow .spb-lg-table .c-tx { width: 68px; }
+body:not(.spb-polish-h-off):not(.spb-t4-4-off) #spbLeaguePack.spb-t4-lg-narrow .spb-lg-table .c-st { width: 36px; }
+body:not(.spb-polish-h-off):not(.spb-t4-4-off) #spbLeaguePack.spb-t4-lg-tight .spb-lg-table { min-width: 520px; }
+/* the footer wraps instead of cutting "Apply This Driver To The Project" */
+body:not(.spb-polish-h-off):not(.spb-t4-4-off) #spbLeaguePack.spb-t4-lg-narrow .spb-ph-foot { flex-wrap: wrap; justify-content: flex-end; row-gap: 6px; }
+body:not(.spb-polish-h-off):not(.spb-t4-4-off) #spbLeaguePack.spb-t4-lg-narrow .spb-ph-foot > [data-act="apply"] { flex: 1 1 100%; max-width: none; }
+body:not(.spb-polish-h-off):not(.spb-t4-4-off) #spbLeaguePack.spb-t4-lg-narrow .spb-ph-foot > .spb-lg-gap { display: none; }
+
+
+/* [TICKETS-4 2026-10-10 item 6] The Car submenu in the folded "Menus" panel (narrow windows): the 232 px panel left the nested list 218 px wide, so "Copy To Other Side (Text Reads Right)" was clipped and the list grew a horizontal scrollbar.
+   Long labels now wrap onto a second line (the row grows) and the nested list never scrolls sideways. Applies to every menu folded into that panel. Kill switch: window.SPB_T4_OFF / SPB_T4_6_OFF adds body.spb-t4-6-off (js). */
+body:not(.spb-polish-h-off):not(.spb-t4-6-off) #spbPfMore .spb-pf-more-pop > details.spb-tb-menu > .spb-tb-pop:not(#spb-t4-6) { overflow-x: hidden !important; }
+body:not(.spb-polish-h-off):not(.spb-t4-6-off) #spbPfMore .spb-pf-more-pop > details.spb-tb-menu > .spb-tb-pop:not(#spb-t4-6) > .vtool-btn { height: auto !important; min-height: var(--pl-menu-h, 28px) !important; padding-top: 4px !important; padding-bottom: 4px !important; white-space: normal !important; line-height: 1.25 !important; text-align: left !important; overflow-wrap: anywhere !important; overflow: visible !important; }
+body:not(.spb-polish-h-off):not(.spb-t4-6-off) #spbPfMore .spb-pf-more-pop > details.spb-tb-menu > .spb-tb-pop:not(#spb-t4-6) > .vtool-btn > .spb-mi-ico { flex: none !important; }
+
+/* [TICKETS-4 2026-10-10 item 9] Settings dropdown: (a) the "Format: SHOKKER-XXXX-XXXX-XXXX" hint belongs to the key box; once the box is hidden ("License Active") it was left hanging under the status line.
+   (b) the Looks grid had its own 300 px scroller inside the dropdown's scroller (two wheels, the inner one swallowed the mouse wheel); the grid now grows and the dropdown is the only scroller.
+   Kill switch: window.SPB_T4_OFF / SPB_T4_9_OFF adds body.spb-t4-9-off (js). */
+body:not(.spb-polish-h-off):not(.spb-t4-9-off) #settingsDropdown #licenseInputRow[style*="display: none"] ~ #licenseKeyHint { display: none !important; }
+body:not(.spb-polish-h-off):not(.spb-t4-9-off) #settingsDropdown #looksGrid { max-height: none !important; overflow: visible !important; }
+
+/* [TICKETS-4 2026-10-10 item 10] Spec / Material brush bar at narrow widths: the compact tier (< 980 px of row) hid the word "Grain" and left a bare slider. The label stays while the row still fits (the bar re-measures and
+   only the tight tier, which is decided by measuring, drops it). Kill switch: window.SPB_T4_OFF / SPB_T4_10_OFF adds body.spb-t4-10-off (js). */
+body:not(.spb-polish-h-off):not(.spb-t4-10-off) #spbRevMatBand.spb-rm-compact:not(.spb-rm-tight) .spb-rm-grain > .spb-rm-graintx { display: inline !important; }

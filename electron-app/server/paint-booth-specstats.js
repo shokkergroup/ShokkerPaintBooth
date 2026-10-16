@@ -187,18 +187,18 @@
         '% · no-coat on ' + _pct(clearcoat.pctNone) + '%';
     }
     if (clearcoat.pctForbidden > 0.02) {
-      clearcoat.label += ' ⚠ ' + _pct(clearcoat.pctForbidden) + '% in forbidden 1–15 band';
+      clearcoat.label += ' · ' + _pct(clearcoat.pctForbidden) + '% in forbidden 1–15 band';
     }
 
     // ---- channel interactions (the honest part) ----
     var Mmed = metallic.median, Rmed = roughness.median;
     if (!metallic.mixed && Mmed >= 240) {
       if (Rmed <= 10) metallic.label = 'chrome / mirror metal';
-      else if (Rmed >= 60) metallic.label = 'rough metal (brushed — NOT chrome: roughness ' + Rmed + ')';
+      else if (Rmed >= 60) metallic.label = 'rough metal (brushed — not chrome: roughness ' + Rmed + ')';
       // else keep 'chrome-range metal'
     }
     if (!roughness.mixed && Rmed < 15 && Mmed < 240) {
-      roughness.label += ' ⚠ below non-mirror floor 15 — engine clamps this';
+      roughness.label += ' · below non-mirror floor 15 — engine clamps this';
     }
 
     // ---- material verdict (median-based, engine-calibrated bands) ----
@@ -238,7 +238,7 @@
     else if (fs >= 0.08) flashLabel = 'localized flash accents (' + _pct(fs) + '%)';
     else flashLabel = 'minimal flash (needs M↑, roughness↓, CC→16)';
     if (paint && paintN > 0 && fs >= 0.08 && darkPaint / paintN >= 0.6) {
-      flashLabel += ' — near-black paint crushes the METALLIC lobe (F0 = albedo); surviving flash rides the clearcoat (CC→16)';
+      flashLabel += ' — near-black paint crushes the metallic lobe (F0 = albedo); surviving flash rides the clearcoat (CC→16)';
     }
 
     return {

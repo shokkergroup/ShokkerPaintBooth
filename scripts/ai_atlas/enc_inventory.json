@@ -244,7 +244,7 @@
 "mode": "pro",
 "ui_kind": "text input",
 "where": "Pro > top of the window (header rows)",
-"does": "The paint file Shokker works on (a flat TGA / PNG / JPEG, or a PSD): type or paste a path, or use the buttons beside it.",
+"does": "The paint file Shokker works on (a flat TGA / PNG / JPEG, or a PSD): type or paste a path, or use Open Paint... beside it.",
 "when": "Start of every job; \"I loaded my paint and nothing happened\".",
 "mistakes": "Pasting a folder path here does not load a paint. A flat TGA has no layers; a PSD does.",
 "needs": [
@@ -272,7 +272,7 @@
 "id": "pro.header.tga_png_jpeg",
 "domain": "ui_shell",
 "kind": "button",
-"label": "TGA/PNG/JPEG",
+"label": "Open Paint... > Flat image",
 "source": "paint-booth-v2.html:1816",
 "topic": "pro.header",
 "facts": {
@@ -301,7 +301,7 @@
 "id": "pro.header.psd_xcf_ora",
 "domain": "ui_shell",
 "kind": "button",
-"label": "PSD/XCF/ORA",
+"label": "Open Paint... > Layered template",
 "source": "paint-booth-v2.html:1819",
 "topic": "pro.header",
 "facts": {
@@ -736,7 +736,7 @@
 "mode": "pro",
 "ui_kind": "toggle",
 "where": "Pro > Settings (gear) dropdown",
-"does": "Bundles paint TGA, spec TGA and preview into a ZIP on every render.",
+"does": "Bundles paint TGA, spec TGA and preview into a ZIP on every render; the ZIP stays in that render's job folder and is never copied to iRacing.",
 "when": "Share or archive.",
 "needs": [
 "none"
@@ -979,7 +979,7 @@
 "mode": "pro",
 "ui_kind": "button",
 "where": "Pro > top toolbar > selection tools",
-"does": "Color (P): click a colour on the paint to select by it. In Pro zone mode it feeds the selected zone's colour list.",
+"does": "Color (I): click a colour on the paint to select by it. In Pro zone mode it feeds the selected zone's colour list.",
 "when": "Select a colour area for a zone.",
 "needs": [
 "zone",
@@ -990,7 +990,7 @@
 "eyedropperAddColorBtn"
 ],
 "curated": true,
-"tooltip": "Pick Color (P) — click a color on the paint to grab it",
+"tooltip": "Pick Color (I) — click a color on the paint to grab it",
 "handler": "setCanvasMode('eyedropper')",
 "drives": {
 "fn": "setCanvasMode",
@@ -1094,7 +1094,7 @@
 "mode": "pro",
 "ui_kind": "button",
 "where": "Pro > top toolbar > selection tools",
-"does": "Rectangle select (O): drag a box selection.",
+"does": "Rectangle select (M): drag a box selection.",
 "when": "Select a panel.",
 "needs": [
 "paint"
@@ -1103,7 +1103,7 @@
 "vtModeLasso"
 ],
 "curated": true,
-"tooltip": "Rectangle Select (O) — drag a Zone selection; Shift makes a square, Alt draws from center, Esc cancels",
+"tooltip": "Rectangle Select (M) — drag a Zone selection; Shift adds, Alt subtracts; press Shift mid-drag for a square, Alt for from center; Esc cancels",
 "handler": "setCanvasMode('rect')",
 "drives": {
 "fn": "setCanvasMode",
@@ -1381,7 +1381,7 @@
 "mode": "pro",
 "ui_kind": "button",
 "where": "Pro > top toolbar (tool row)",
-"does": "Grab Object (G): click inside a number or logo and its whole outline is selected.",
+"does": "Grab Object (Shift+W): click inside a number or logo and its whole outline is selected.",
 "when": "Select the numbers on a flat TGA.",
 "mistakes": "Works best on clear solid shapes.",
 "needs": [
@@ -1391,7 +1391,7 @@
 "vtModeSelectAll"
 ],
 "curated": true,
-"tooltip": "Grab Object (G) — click inside a solid part of a number or logo to include its outline and shadow. Samples visible paint: hide wire/template guide layers if they split the artwork. Shift adds, Alt subtracts.",
+"tooltip": "Grab Object (Shift+W) — click a number or logo to select it with its outline and shadow. Hide guide layers if they split the artwork. Shift adds, Alt subtracts.",
 "handler": "setCanvasMode('grab-object')",
 "drives": {
 "fn": "setCanvasMode",
@@ -1625,7 +1625,7 @@
 "mode": "pro",
 "ui_kind": "button",
 "where": "Pro > top toolbar > RETOUCH menu",
-"does": "Recolor (R): paint a new hue over a sampled colour on the selected layer.",
+"does": "Recolor (Shift+B twice): paint a new hue over a sampled colour on the selected layer.",
 "when": "Recolour a sponsor.",
 "needs": [
 "psd"
@@ -1634,7 +1634,7 @@
 "pro.toolbar.color_replace"
 ],
 "curated": true,
-"tooltip": "Recolor Tool (R) — on the selected Layer, first click samples source; paint foreground hue/chroma while preserving light and texture",
+"tooltip": "Recolor Tool (Shift+B ×2) — on the selected Layer, first click samples source; paint foreground hue/chroma while preserving light and texture",
 "handler": "setCanvasMode('recolor')",
 "drives": {
 "fn": "setCanvasMode",
@@ -1659,7 +1659,7 @@
 "paint"
 ],
 "curated": false,
-"tooltip": "Healing Brush (Shift+J) — Alt+click clean texture on the selected Layer, then paint to blend its detail into the target",
+"tooltip": "Healing Brush (J) — Alt+click clean texture on the selected Layer, then paint to blend its detail into the target",
 "handler": "setCanvasMode('heal')",
 "drives": {
 "fn": "setCanvasMode",
@@ -1709,7 +1709,7 @@
 "paint"
 ],
 "curated": false,
-"tooltip": "Burn (J) — darken selected Layer pixels under the brush",
+"tooltip": "Burn (Shift+O) — darken selected Layer pixels under the brush",
 "handler": "setCanvasMode('burn')",
 "drives": {
 "fn": "setCanvasMode",
@@ -3952,7 +3952,7 @@
 "ui_kind": "dropdown",
 "where": "Pro > centre > tool options bar (Text tool)",
 "does": "Font for text options.",
-"mistakes": "There is no Text button in the main tool row; add lettering as a PNG layer.",
+"mistakes": "Use the Text tool (T): its text stays editable (double-click it to change it; RASTERIZE turns it into pixels). A PNG layer also works for lettering.",
 "needs": [
 "psd"
 ],
@@ -11549,7 +11549,7 @@
 "zone_field": "colorMode ('picker'|'multi'), color{color_rgb,tolerance} / colors[{color_rgb,tolerance}], pickerColor, pickerTolerance",
 "spec_key": "region:{colors:[...],tolerance}",
 "payload_field": "color (formatted), tolerance",
-"range": "tolerance 6-100 (kit) / 0-100 (UI per colour); default 40",
+"range": "0-100 on each picked colour chip (0 = exact shade only); default 40",
 "default": "40",
 "unit": "colour distance",
 "applies_to": "Selects the zone's pixels by their colour in the current paint.",
@@ -11632,7 +11632,7 @@
 "zone_field": "colorMode ('picker'|'multi'), color{color_rgb,tolerance} / colors[{color_rgb,tolerance}], pickerColor, pickerTolerance",
 "spec_key": "region:{colors:[...],tolerance}",
 "payload_field": "color (formatted), tolerance",
-"range": "tolerance 6-100 (kit) / 0-100 (UI per colour); default 40",
+"range": "0-100 on each picked colour chip (0 = exact shade only); default 40",
 "default": "40",
 "unit": "colour distance",
 "applies_to": "Selects the zone's pixels by their colour in the current paint.",
@@ -11651,14 +11651,14 @@
 "id": "zone.tolerance",
 "domain": "zones",
 "kind": "slider",
-"label": "Colour tolerance (sliders next to the colour chips)",
+"label": "Color Match (the Exact to Loose slider on each picked colour chip)",
 "source": "paint-booth-2-state-zones.js:1656",
 "topic": "pro.zone_editor",
 "facts": {
 "mode": "pro",
 "ui_kind": "slider",
 "where": "Pro > ZONE POPOUT PANEL (click a zone card in the left column; E shows / hides the panel) > COLOR",
-"does": "How close a pixel must be to the picked colour to belong to the zone (about 30-50 normal; 6 = exact shade, 100 = loose).",
+"does": "How many nearby shades of the picked colour the zone grabs. Slide toward Exact for only that shade, toward Loose for lighter, darker and similar shades too (about 30-50 is normal). Every picked colour chip has its own slider; there is no zone-wide one.",
 "when": "The edges of the area look chewed (raise it) or neighbours get caught (lower it).",
 "mistakes": "Too high grabs neighbouring colours; too low leaves fringes around lettering.",
 "needs": [
@@ -11673,7 +11673,7 @@
 "zone_field": "colorMode ('picker'|'multi'), color{color_rgb,tolerance} / colors[{color_rgb,tolerance}], pickerColor, pickerTolerance",
 "spec_key": "region:{colors:[...],tolerance}",
 "payload_field": "color (formatted), tolerance",
-"range": "tolerance 6-100 (kit) / 0-100 (UI per colour); default 40",
+"range": "0-100 on each picked colour chip (0 = exact shade only); default 40",
 "default": "40",
 "unit": "colour distance",
 "applies_to": "Selects the zone's pixels by their colour in the current paint.",
@@ -13287,7 +13287,7 @@
 "default": "100%",
 "unit": "%",
 "applies_to": "Patterns.",
-"effect": "Pattern effect in paint and spec: 0 removes the effect.",
+"effect": "Pattern paint strength: 0 removes the pattern's paint effect. The shine it adds is set separately by the Spec amount slider.",
 "interactions": "Pairs with Opacity. The UI help text says spec amount is independent.",
 "planner_hint": "Leave at 100; use opacity for 'subtle'."
 },
@@ -13360,22 +13360,21 @@
 ],
 "curated": true,
 "control": {
-"zone_field": "patternSpecMult",
+"zone_field": "patternSpecOpacity",
 "spec_key": "(not in the kit)",
-"payload_field": "pattern_spec_mult",
-"range": "UI 0-100% (setter accepts 0-200)",
-"default": "100%",
+"payload_field": "pattern_spec_opacity",
+"range": "UI 0-100% in steps of 5",
+"default": "0%",
 "unit": "%",
 "applies_to": "Patterns.",
-"effect": "Pattern effect in paint and spec: 0 removes the effect.",
-"interactions": "Pairs with Opacity. The UI help text says spec amount is independent.",
-"planner_hint": "Leave at 100; use opacity for 'subtle'."
+"effect": "How much of the pattern's own metal, roughness and clearcoat is mixed into the spec map: 0 keeps the base finish's shine, 100 replaces it.",
+"interactions": "Independent of the pattern's paint Opacity and Strength, and of Hue / Saturation (engine/pattern_material.py:3-5).",
+"planner_hint": "Leave at 0 unless the pattern should also change the shine."
 },
 "engine_evidence": [
-"zones:2293",
-"zones:10092 setZonePatternSpecMult",
-"api-render:678",
-"engine:18791"
+"js/zones/pattern-transform-controls.js:12",
+"engine/pattern_material.py:3-5",
+"zones:4287"
 ]
 }
 },
@@ -14471,7 +14470,7 @@
 "zone_field": "colorMode ('picker'|'multi'), color{color_rgb,tolerance} / colors[{color_rgb,tolerance}], pickerColor, pickerTolerance",
 "spec_key": "region:{colors:[...],tolerance}",
 "payload_field": "color (formatted), tolerance",
-"range": "tolerance 6-100 (kit) / 0-100 (UI per colour); default 40",
+"range": "0-100 on each picked colour chip (0 = exact shade only); default 40",
 "default": "40",
 "unit": "colour distance",
 "applies_to": "Selects the zone's pixels by their colour in the current paint.",
@@ -16710,7 +16709,7 @@
 "facts": {
 "mode": "pro",
 "steps": [
-"Top row, find SOURCE PAINT. Click the \"TGA/PNG/JPEG\" button beside it (or on the empty canvas click \"Load TGA\" / \"Load Paint Image\").",
+"Top row, click Open Paint... and choose Flat image (or on the empty canvas click \"Load TGA\" / \"Load Paint Image\").",
 "Pick your paint file in the window that opens, then confirm.",
 "Wait for the paint to appear in the SOURCE picture in the middle; the LIVE PREVIEW fills in next.",
 "You can also paste the full file path into the Source Paint box and press Enter."
@@ -16735,7 +16734,7 @@
 "facts": {
 "mode": "pro",
 "steps": [
-"Top row, SOURCE PAINT, click the \"PSD/XCF/ORA\" button (or \"Import PSD\" on the empty canvas, or the LAYERS tab > \"Open Layered\").",
+"Top row, click Open Paint... and choose Layered template (or \"Import PSD\" on the empty canvas, or the LAYERS tab > \"Open Layered\").",
 "Choose your PSD (XCF and ORA also work) and confirm.",
 "Wait while the layers load, then open the LAYERS tab on the right to see them.",
 "Before rendering, switch the template layers (Mask, Wire, Car_Mandatory) OFF with their eye icons."
@@ -17513,7 +17512,7 @@
 "facts": {
 "mode": "any",
 "steps": [
-"Load your paint: top row, SOURCE PAINT, \"TGA/PNG/JPEG\" (flat) or \"PSD/XCF/ORA\" (layers).",
+"Load your paint: top row, Open Paint... > Flat image (flat) or Open Paint... > Layered template (layers).",
 "Pick looks, check the LIVE PREVIEW."
 ],
 "ui": [
@@ -17561,7 +17560,7 @@
 "A layered PSD keeps parts of the livery on separate sheets: Car Paint (body colours), Numbers, Sponsors, Tape, Decals.",
 "Layers let you change one thing (just the numbers) without touching the rest.",
 "Template layers (Mask, Wire, Car_Mandatory) only show the car outlines and must be OFF when you render.",
-"A flat TGA has no layers. Load a PSD (\"PSD/XCF/ORA\") to get them; see the LAYERS tab on the right."
+"A flat TGA has no layers. Load a PSD (Open Paint... > Layered template) to get them; see the LAYERS tab on the right."
 ],
 "ui": [
 "rpTabLayers",
@@ -17648,7 +17647,7 @@
 "mode": "pro",
 "steps": [
 "Click LAYER in the ZONE | LAYER switch (top toolbar).",
-"Pick Move (V), click the number / logo (it isolates it), drag.",
+"Pick Move (V), click the number / logo (it isolates it), drag. Coloured guide lines snap it to the sheet centre and to other layers (hold Ctrl to turn that off); the arrow keys nudge it 1 pixel, Shift+Arrow 10.",
 "Use Transform (Ctrl+T) for size and rotation; \"Apply\" confirms."
 ],
 "ui": [
@@ -18367,7 +18366,7 @@
 "facts": {
 "mode": "pro",
 "steps": [
-"Top toolbar > SELECT menu > \"Grab Object\" (G).",
+"Top toolbar > SELECT menu > \"Grab Object\" (Shift+W).",
 "Click inside a solid part of the number; its outline is selected.",
 "Use \"Use Region\" on the zone you want."
 ],
@@ -19132,7 +19131,7 @@
 "facts": {
 "mode": "pro",
 "steps": [
-"There is no Text button in the main tool row. The easiest way: make the lettering as a transparent PNG (or in your PSD in Photoshop) and add it with LAYERS tab > \"+ Layer\".",
+"Use the Text tool (T): its text stays editable (double-click it to change it; RASTERIZE turns it into pixels). Or make the lettering as a transparent PNG (or in your PSD in Photoshop) and add it with LAYERS tab > Actions > Place image...",
 "Then move and size it with Move (V) and Transform (Ctrl+T) in LAYER mode.",
 "For a PSD, edit the text layer in Photoshop and re-open it with \"Open Layered\"."
 ],
@@ -19155,7 +19154,7 @@
 "facts": {
 "mode": "pro",
 "steps": [
-"Pick Color (P) in the toolbar, choose the zone in the box that appears, click the colour on the SOURCE picture.",
+"Pick Color (I) in the toolbar, choose the zone in the box that appears, click the colour on the SOURCE picture.",
 "\"+ Add Color\" adds it to the zone; \"Set\" replaces the zone's colour."
 ],
 "ui": [

@@ -34,7 +34,7 @@
       const doc = getDocument();
       const label = doc && doc.getElementById ? doc.getElementById('detBaseSpecStrVal' + index) : null;
       if (label) label.textContent = '100%';
-      showToast('Spec Strength was near 0%. Reset to 100% so metallic (R) is visible.');
+      showToast('Spec Strength was near 0%. Reset it to 100% so the metallic effect shows.');
     }
 
     function setZoneBase(index, value) {

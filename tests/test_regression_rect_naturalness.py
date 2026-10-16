@@ -54,10 +54,12 @@ process.stdout.write(JSON.stringify({
     assert data["tiny"] == {"valid": False, "reason": "Rectangle selection is too small"}
     assert data["valid"] == {"valid": True, "reason": ""}
     assert data["dirty"] == {"x": 0, "y": 1, "width": 12, "height": 9}
-    assert data["add"]["enclosed"] == 9
-    assert data["add"]["changed"] == 9
+    # [SPB-TFX2 2026-10-09 TA-018] the gesture end is exclusive (Photoshop): (1,1)-(3,3) is a 2x2 box = 4 px (was inclusive 3x3 = 9;
+    # a 400x300 drag selected 402x301). Kill switch window.SPB_TFX2_OFF restores the 9.
+    assert data["add"]["enclosed"] == 4
+    assert data["add"]["changed"] == 4
     assert data["duplicate"] == 0
-    assert data["subtract"]["changed"] == 9
+    assert data["subtract"]["changed"] == 4
     assert data["replace"]["changed"] == 0
 
 

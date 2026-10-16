@@ -251,7 +251,7 @@
           previewEl.innerHTML = '<img class="preview-swatch" />'
             + '<div class="preview-label"></div>'
             + '<div class="preview-ekg"></div>'
-            + '<button class="apply-btn">USE THIS FINISH</button>'
+            + '<button class="apply-btn">Use this finish</button>'
             + '<button class="more-like-btn">More like this</button>';
           doc.body.appendChild(previewEl);
         }

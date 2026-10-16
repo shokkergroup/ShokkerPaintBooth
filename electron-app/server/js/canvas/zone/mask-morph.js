@@ -25,6 +25,19 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    // PORT-W1 (2026-10-09): grow/shrink now use SPBPcSelection (PhotoCraft
+    // selection.rs expand/contract: true circular Euclidean distance, soft edges
+    // preserved, no 64-step cap). Same off-canvas rule as below (a decal touching
+    // the sheet edge is not eroded from that edge). SPB_PC_W1_OFF = true restores
+    // the legacy 8-connected stepping.
+    const G = typeof window !== 'undefined' ? window : globalThis;
+    function pcCore() {
+        if (G.SPB_PC_W1_OFF) return null;
+        if (G.SPBPcSelection) return G.SPBPcSelection;
+        try { if (typeof require === 'function') return require('../pc-selection-core.js'); } catch (e) { /* legacy path */ }
+        return null;
+    }
+
     function onePassGrow(src, dst, width, height) {
         dst.set(src);
         for (let y = 0; y < height; y++) {
@@ -79,11 +92,19 @@
      *          caller can push it onto the undo stack first.
      */
     function morph(mask, width, height, pixels) {
-        const steps = Math.min(64, Math.abs(Math.round(Number(pixels) || 0)));
+        const steps = Math.min(pcCore() ? 512 : 64, Math.abs(Math.round(Number(pixels) || 0)));
         if (!steps || !(mask instanceof Uint8Array) || mask.length !== width * height) {
             return { mask: mask, changed: 0 };
         }
         const grow = pixels > 0;
+        const pc = pcCore();
+        if (pc) {
+            const radius = Math.min(512, Math.abs(Math.round(Number(pixels) || 0)));
+            const out = grow ? pc.expand(mask, width, height, radius) : pc.contract(mask, width, height, radius);
+            let pcChanged = 0;
+            for (let i = 0; i < mask.length; i++) if (mask[i] !== out[i]) pcChanged++;
+            return { mask: out, changed: pcChanged };
+        }
         let src = mask;
         let dst = new Uint8Array(mask.length);
         for (let s = 0; s < steps; s++) {

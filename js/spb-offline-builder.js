@@ -245,7 +245,7 @@
             if (tg.object) sc.push('on the ' + objName(tg.object));
             return cap(tg.word) + (sc.length ? ' (' + sc.join(' + ') + ')' : '');
         }
-        if (w.k === 'part') return 'The ' + w.part;
+        if (w.k === 'part') { var wp20 = String(w.part).split('@'); return wp20[1] ? 'The ' + wp20[1] + ' of the ' + wp20[0] : 'The ' + w.part; }          // [SPB-W20X 2026-10-09] 'hood@front half' reads "The front half of the hood" (was: "The hood@front half")
         if (w.k === 'layer') return 'The ' + (w.word || (w.layers || [])[0]) + ' layer';
         if (w.k === 'numbers') return 'The numbers';
         if (w.k === 'sponsors') return 'The sponsors / logos';
@@ -263,6 +263,7 @@
         return b;
     }
     function stepText(st, steps, short) {
+        if (st && st.extra && st.extra.s5g) return String(st.extra.s5g).charAt(0).toUpperCase() + String(st.extra.s5g).slice(1);          // V3 S6 2026-10-06 G8a: a planner graphic step shows the plan's own words
         var W0 = whatLabel(st.what, steps, short), lw = lookWords(st);
         if (st.act && st.act !== 'recolour' && !lw.length) return W0 + ' → ? ' + ({ finish: 'finish', pattern: 'pattern', shine: 'shine' }[st.act]);
         if (st.act === 'recolour') return W0 + ' → ' + (st.colour ? cap(st.colour.name) : '?');
@@ -280,7 +281,7 @@
             return ws + '>' + a + ':' + l + (stepOpen(st) ? '!' : '');
         });
     }
-    function stepOpen(st) { return !st.what || !st.act || (st.act === 'recolour' && !st.colour) || (st.act !== 'recolour' && !st.finish && !st.tex && !(st.extra && (st.extra.rel || st.extra.pop || st.extra.shade || st.extra.recipe))) || !!st.ask; }
+    function stepOpen(st) { if (/^(hide|show)$/.test(st.act)) return !st.what || st.what.k !== 'layer' || !(st.what.layers || []).length || !st.extra || st.extra.s5i == null || st.extra.visibility !== (st.act === 'show') || !!st.ask; return !st.what || !st.act || (st.act === 'recolour' && !st.colour) || (st.act !== 'recolour' && !st.finish && !st.tex && !(st.extra && (st.extra.rel || st.extra.pop || st.extra.shade || st.extra.recipe))) || !!st.ask; }
     function actFor(look, tex) {
         if (tex && tex.mode === 'pattern' && !look) return 'pattern';
         if ((look && isShineKey(look.key)) || (tex && tex.mode === 'spec')) return 'shine';
@@ -288,12 +289,13 @@
     }
     function finishOfLook(lk) { return lk ? { kind: 'raw', look: lk, label: lk.label || lk.id, key: lk.found || (lk.zone && lk.zone.finish) || null } : null; }
     function texOfOp(tx) { return tx ? { raw: tx, mode: tx.mode, id: tx.mode === 'pattern' ? tx.pattern : tx.spec, label: tx.label, name: tx.mode === 'pattern' ? tx.patternName : tx.specName } : null; }
-    function extraOf(op) { var x = {}, any = false; ['rel', 'soft', 'strong', 'shade', 'keep', 'pop', 'recipe', 'sub', 'exclude', 'scaleMul', 'shadeDir', 'strengthMul'].forEach(function (k) { if (op[k] && !(Array.isArray(op[k]) && !op[k].length)) { x[k] = clone(op[k]); any = true; } }); return any ? x : null; }
+    function extraOf(op) { var x = {}, any = false; ['_nativeColourRefinement', 'rel', 'soft', 'strong', 'shade', 'keep', 'pop', 'recipe', 'sub', 'exclude', 'scaleMul', 'shadeDir', 'strengthMul'].forEach(function (k) { if (op[k] && !(Array.isArray(op[k]) && !op[k].length)) { x[k] = clone(op[k]); any = true; } }); return any ? x : null; }
 
     // ------------------------------------------------------------------ parser plan -> steps (TYPING PRE-FILLS THE BUILDER)
     function fromPlan(ed, env, text) {
         var steps = [], E = Ed();
         if (!ed) return { steps: steps };
+        if (ed.prohibited_edit || (ed.protected_parts && ed.protected_parts.length)) return {steps:[],blocked:ed.text || "Clarify which area can change first."};
         if (ed.kind === 'ops') {
             (ed.ops || []).forEach(function (op) {
                 if (op.ext && commonLook(op.ext)) { op = Object.assign({}, op, { ext: null }); }          // HELPER_V2 blind 2026-10-04: "keep" / "racing" / "little" is never a look name
@@ -383,10 +385,32 @@
         }
         return { steps: steps };
     }
+    // W3-PBN2 2026-10-09: the planner takes the catalogue's FIRST hit ("wood grain" -> Leather Grain, "rust" -> "Color Clash: Rust vs Ice", "fractured" -> Emerald Streak) so the funnel's PREFER table
+    // (js/spb-pbn.js) was never reached for a typed sentence. Post-pick override at the builder: when the buyer's words map to a curated look and the planner's catalogue pick does not name that word, swap it.
+    // Kill switch: window.SPB_PBN2_NO_PREFER. Probe (typed sentences, builder.fromText): wood/rust/fractured picks 0/3 -> see w3pbn2/REPORT.md
+    var P2 = [[/\b(?:wood|woods|wooden|woodgrain|timber|oak|walnut|teak|burl)\b/, 'monolithic::ff_heartwood', 'Heartwood'],
+        [/\b(?:rust|rusty|rusted|rusting|corroded|corrosion)\b/, 'base::efx_rust_through', 'Rust-Through'],
+        [/\bfractur(?:e|ed|es|ing)?\b/, 'monolithic::ff_truchet_glass', 'Truchet Glass']];
+    function preferOverride(steps, text) {
+        if (W.SPB_PBN2_NO_PREFER || !steps || !steps.length) return;
+        var t = String(text || '').toLowerCase();
+        P2.forEach(function (p) {
+            var m = p[0].exec(t); if (!m) return;
+            steps.forEach(function (s) {
+                var f = s && s.finish; if (!f || f.kind !== 'cat' || f.key === p[1]) return;
+                if (new RegExp(m[0].replace(/[^a-z]/g, '').slice(0, 4), 'i').test(String(f.label || '')) && !/ vs /i.test(String(f.label || ''))) return;          // the pick already names the buyer's word
+                if (/\bleather|hide|suede\b/.test(t) && p[1] === 'monolithic::ff_heartwood') return;
+                pickChoice(s, { kind: 'cat', key: p[1], id: p[1], label: p[2] });
+                s.note = 'For “' + m[0] + '” I picked ' + p[2] + '.'; s.prefilled = true;
+            });
+        });
+    }
     function fromText(text, env) {
         var E = Ed(), ed = null; try { ed = E && env && (env.palette || []).length ? E.plan(text, env) : null; } catch (e) { ed = null; }
         var r = (ed && (ed.kind === 'ops' || ed.kind === 'ask')) ? fromPlan(ed, env, text) : { steps: [] };
+        if (r.blocked) { r.ed = ed; return r; }
         if (!r.steps.length) r = fromFlags(text, env);
+        try { preferOverride(r.steps, text); } catch (eP2) {}
         r.ed = ed; return r;
     }
 
@@ -403,7 +427,7 @@
         return null;
     }
     function lookOfFinish(f) {
-        if (!f) return null;
+        if (!f || f.kind === 'copy') return null;          // HELPER FIX PASS 8 2026-10-05: a copy-look step rides as op.copy (applyStep)
         if (f.kind === 'raw') return clone(f.look);
         if (f.kind === 'look') return clone(lookById(f.id));
         var own = !!f.own; try { var AT = W.SpbAIAtlas, it = AT && AT.lookup ? AT.lookup(f.key) : null; if (it) own = it.o === 1; else if (/^monolithic::/.test(f.key)) own = true; } catch (e) {}
@@ -419,14 +443,18 @@
     function applyStep(op, st) {
         if (st.extra) for (var k in st.extra) op[k] = clone(st.extra[k]);
         if (st.act === 'recolour' && st.colour) { op.colour = clone(st.colour); op.keep = false; }
-        if (st.act !== 'recolour') { var lk = lookOfFinish(st.finish); if (lk) op.look = lk; var tx = texOf(st.tex); if (tx) op.texture = tx; }
+        if (st.act !== 'recolour') { var lk = lookOfFinish(st.finish); if (lk) op.look = lk; var tx = texOf(st.tex); if (tx) op.texture = tx; if (st.finish && st.finish.kind === 'copy' && st.finish.copy) op.copy = clone(st.finish.copy); }          // HELPER FIX PASS 8 2026-10-05
     }
     function readyProblem(st, i, steps) {
         if (!st.what) return 'step ' + num(i) + ': pick WHAT to change';
+        if (st.requireArtworkScope && (st.what.k !== 'layer' && st.what.k !== 'box')) return 'step ' + num(i) + ': choose an inspected artwork layer or a tight area for this example';
+        if (st.requireArtworkScope && st.what.k === 'layer' && !(st.what.layers || []).length) return 'step ' + num(i) + ': choose the artwork layer';
+        if (st.requireArtworkScope && st.what.k === 'box' && (!st.what.rect || !['x0', 'y0', 'x1', 'y1'].every(function (k) { return typeof st.what.rect[k] === 'number' && isFinite(st.what.rect[k]) && st.what.rect[k] >= 0 && st.what.rect[k] <= 1; }) || st.what.rect.x1 <= st.what.rect.x0 || st.what.rect.y1 <= st.what.rect.y0)) return 'step ' + num(i) + ': draw a valid tight area';
         if (st.what.k === 'step' && stepIndex(steps, st.what.ref) < 0) return 'step ' + num(i) + ': the step it builds on was removed';
         if (st.what.k === 'step' && stepIndex(steps, st.what.ref) >= i) return 'step ' + num(i) + ': it can only build on an EARLIER step';
         if (!st.act) return 'step ' + num(i) + ': pick what to DO';
         if (st.act === 'recolour' && !st.colour) return 'step ' + num(i) + ': pick the new colour';
+        if (/^(hide|show)$/.test(st.act)) return stepOpen(st) ? 'step ' + num(i) + ': repeat the exact layer visibility request' : null;
         if (st.act !== 'recolour' && !st.finish && !st.tex && !(st.extra && (st.extra.rel || st.extra.pop || st.extra.shade || st.extra.recipe))) return 'step ' + num(i) + ': pick WHICH LOOK';
         if (st.what.k === 'box' && st.what.rect) { var r = st.what.rect, a = Math.abs(r.x1 - r.x0) * Math.abs(r.y1 - r.y0); if (a > 0.12) return 'step ' + num(i) + ': that box covers ' + Math.round(a * 100) + '% of the sheet; draw it tighter (12% at most)'; }
         return null;
@@ -437,7 +465,7 @@
             var pb = readyProblem(st, i, steps); if (pb) { problems.push(pb); return; }
             if (st.what.k === 'step') { var base = byStep[st.what.ref]; if (!base) { problems.push('step ' + num(i) + ': the step it builds on is not ready'); return; } applyStep(base, st); byStep[st.id] = base; }
             else { var op = blankOp(targetOf(st.what)); if (st.what.k === 'box') { op._box = clone(st.what.rect); boxes = true; } applyStep(op, st); ops.push(op); byStep[st.id] = op; }
-            if (st.act === 'recolour' || st.act === 'pattern' || (st.finish && !/^base::f_/.test(String(st.finish.key || '')))) spec = false;          // HELPER_V2 fix pass 5 2026-10-05 owner: keep improving the Offline Helper: in-app gate b4-155 -- "hood holographic" ran as spec-only and the app's spec-only guard refused efx_holographic_drift (only Foundation f_* finishes pass it)
+            if (st.act === 'recolour' || st.act === 'pattern' || (st.finish && !/^base::f_/.test(String(st.finish.key || ''))) || (st.finish && st.finish.kind === 'copy' && st.finish.copy && st.finish.copy.color) || (st.extra && st.extra.shade)) spec = false;          // V3 S6b 2026-10-07 G13: a copied look / a shade = paint          // HELPER_V2 fix pass 5 2026-10-05 owner: keep improving the Offline Helper: in-app gate b4-155 -- "hood holographic" ran as spec-only and the app's spec-only guard refused efx_holographic_drift (only Foundation f_* finishes pass it)
         });
         if (problems.length) return { ok: false, problems: problems };
         var raw = String(text || readAs(steps)), E = Ed(), norm = raw.toLowerCase().replace(/[^a-z0-9#' ]+/g, ' ').replace(/\s+/g, ' ').trim();
@@ -469,12 +497,19 @@
         var E = Ed(); if (!E || !env || !(env.palette || []).length) return steps;
         steps.forEach(function (st) { st.ask = null; st.chips = null; });
         steps.forEach(function (st, i) {
+            if (st.extra && st.extra.s5g) return;          // V3 S6 2026-10-06 G8a: planner graphic steps are never compiled here
+            if (st.extra && st.extra.w27kit && typeof w27OffB === 'function' && !w27OffB()) return;          // W27 2026-10-10 (in-app K4 'give the whole car realistic materials automatically' = "⚠ needs a pick", Run blocked): a kit step runs the kit, it is never a zone edit to compile
             if (!st.what || st.what.k === 'step' || readyProblem(st, i, steps)) return;
             var grp = steps.filter(function (s2) { return s2 === st || rootOf(steps, s2) === st; }), pl = toPlan(grp);
             if (!pl.ok) return;
             var cm = null; try { cm = E.compile(pl.ed, env); if (pl.post) cm = pl.post(cm, env, E.compile); } catch (e) { cm = null; }
             if (!cm) return;
-            if (cm.objects && cm.objects.length && !cm.zones.length) { st.ask = 'You named the ' + objName(cm.objects[0].object) + ': draw a box around it, or pick the layers it is in (Where).'; st.chips = ['box']; return; }
+            if (cm.objects && cm.objects.length && !cm.zones.length) {
+                // HELPER FIX PASS 8 2026-10-05 (owner spray-can case A): say WHICH layers hold that colour, so one tick in Where finishes it
+                var ob8 = cm.objects[0], cl8 = []; try { cl8 = (window.spbProAI && window.spbProAI.colourLayers) ? window.spbProAI.colourLayers(ob8.word) : []; } catch (eC) { cl8 = []; }
+                cl8 = cl8.filter(function (l) { return l.art; }).slice(0, 4);
+                st.ask = 'You named the ' + objName(ob8.object) + ': ' + (cl8.length ? 'the ' + ob8.word + ' is in ' + cl8.map(function (l) { return l.name; }).join(', ') + '. Tick the layer it is in under Where (or draw a box around it).' : 'draw a box around it, or pick the layers it is in (Where).'); st.chips = ['box']; return;
+            }
             if (!cm.zones.length && cm.hiddenAsk && st.what.k === 'colour') { hiddenAskFor(st, cm.hiddenAsk, env); return; }
             if (!cm.zones.length && cm.ask) { st.ask = String(cm.ask.text || '').replace(/^Nothing was changed[:.]?\s*/i, ''); st.chips = ['what']; }
         });
@@ -501,6 +536,17 @@
     }
 
     // ------------------------------------------------------------------ choices offered in the step editor
+    // Codex private proposal: preserve current-document layer identity in the picker; group/name hints never prove pixel isolation.
+    function pickerLayers(env) {
+        var rows = ((env || {}).layers || []).slice(), live = [];
+        try { live = W.SpbProCar && W.SpbProCar.roles ? W.SpbProCar.roles() : []; } catch (e) {}
+        return rows.map(function (l) {
+            if (!l || l.id != null || !l.group) return l;
+            var hit = live.filter(function (q) { return q.name === l.name && String(q.group || q.groupName || '') === String(l.group); });
+            if (hit.length !== 1 || hit[0].id == null) return l;
+            var x = {}; Object.keys(l).forEach(function (k) { x[k] = l[k]; }); x.id = hit[0].id; return x;
+        });
+    }
     function whatChoices(env, steps, st) {
         var out = [], pal = palOf(env), i = stepIndex(steps, st.id);
         steps.slice(0, i < 0 ? steps.length : i).forEach(function (s0, j) { out.push({ grp: 'Same pixels', label: 'Result of ' + num(j), sub: stepText(s0, steps, true), what: { k: 'step', ref: s0.id } }); });
@@ -509,10 +555,16 @@
         var parts = []; try { parts = (W.SpbProCar && W.SpbProCar.parts) ? W.SpbProCar.parts() : []; } catch (e) { parts = []; }
         if (!parts || !parts.length) parts = ['hood', 'roof', 'left side', 'right side', 'front bumper', 'rear bumper', 'trunk', 'spoiler'];
         parts.slice(0, 14).forEach(function (p) { out.push({ grp: 'Parts', label: cap(p), what: { k: 'part', part: String(p).toLowerCase() } }); });
-        (((env || {}).layers) || []).filter(function (l) { return !l.hidden && !/^\s*(wire|mask|car[ _]*mandatory|template|guides?)\b/i.test(String(l.name || '')); }).slice(0, 16).forEach(function (l) { out.push({ grp: 'Layers', label: l.name, sub: l.role || '', what: { k: 'layer', layers: [l.name], word: l.name } }); });
+        var layerRows = pickerLayers(env);
+        layerRows.filter(function (l) { return l && !l.hidden && !/^\s*(wire|mask|car[ _]*mandatory|template|guides?)\b/i.test(String(l.name || '')); }).slice(0, 16).forEach(function (l) {
+            var t = W.SpbLayerTargets, pick = t && !W.SPB_CX3_OFF ? t.select(l, layerRows) : null;
+            if (!pick) { if (layerRows.filter(function (q) { return q && norm(q.name) === norm(l.name); }).length !== 1) return; pick = { ok: true, selector: l.name, label: l.name }; }
+            if (!pick.ok) return;
+            out.push({ grp: 'Layers', label: pick.label, sub: l.role || '', what: { k: 'layer', layers: [pick.selector], word: pick.label } });
+        });
         out.push({ grp: 'Other', label: 'Numbers', what: { k: 'numbers' } }); out.push({ grp: 'Other', label: 'Sponsors / logos', what: { k: 'sponsors' } }); out.push({ grp: 'Other', label: 'Whole car', what: { k: 'body' } });
         out.push({ grp: 'Other', label: '▭ Box-select an area', sub: 'for art that shares a layer', box: true });
-        return out;
+        return st.requireArtworkScope ? out.filter(function (x) { return x.box || (x.what && x.what.k === 'layer'); }) : out;
     }
     function lookChoices(st) {
         var out = [], hx = effHex(st);
@@ -601,25 +653,39 @@
     function stepById(id) { return S.steps.filter(function (s) { return s.id === id; })[0] || null; }
     function draw() {
         var d = dock(); if (!d) return;
+        var composerPanel = panel(); if (composerPanel && composerPanel.getAttribute('data-spb-compose-hold') === '1') { d.hidden = true; return; }
         var on = offlineMode(); d.hidden = !on; if (!on) return;
         var h = '';
         if (S.browse) h += browseHtml(); else if (S.term) h += termCardHtml(termById(S.term));
+        else if (S.answer && S.answer.in_chat && S.answer.answer && S.answer.answer.id === "assistant.live_editor_capabilities") { /* Factual answer lives in its chat turn; retain the card state only for scoped follow-ups. */ }
         else if (S.answer && W.SpbOfflineAnswer && W.SpbOfflineAnswer.cardHtml) h += W.SpbOfflineAnswer.cardHtml(S.answer);          // HELPER_V2: a question answered offline
         if (S.steps.length) h += builderHtml();
-        else h += '<div class="spb-ob-mini"><button type="button" class="spb-pai-act" data-ob="start" title="Build the change by clicking: what, do what, which look">🧱 Build it step by step</button>' + (S.liveText && S.flags.length ? '<button type="button" class="spb-pai-act" data-ob="fromlive" title="Turn what you typed into builder steps (nothing changes until Run)">Put this in the builder</button>' : '<span class="spb-ob-hint">or type below: words I know light up</span>') + '<button type="button" class="spb-pai-act" data-ob="browse" title="Browse everything about SPB">📖 Encyclopedia</button></div>';
+        else if (!(S.answer && (S.answer.via === 'design-advice' || (S.answer.answer && S.answer.answer.chat_summary) || (S.answer.in_chat && S.answer.answer && S.answer.answer.id === 'assistant.live_editor_capabilities')))) h += '<div class="spb-ob-mini"><button type="button" class="spb-pai-act" data-ob="start" title="Build the change by clicking: what, do what, which look">🧱 Build it step by step</button>' + (S.liveText && S.flags.length ? '<button type="button" class="spb-pai-act" data-ob="fromlive" title="Turn what you typed into builder steps (nothing changes until Run)">Put this in the builder</button>' : '<span class="spb-ob-hint">or type below: words I know light up</span>') + '<button type="button" class="spb-pai-act" data-ob="browse" title="Browse everything about SPB">📖 Encyclopedia</button></div>';
         if (S.liveText) h += '<div class="spb-ob-flags" title="Words I know are highlighted: click one">' + flagHtml(S.liveText, S.flags) + '</div>';
         if (S.box) h = boxHtml() + h;   // box editor on top of the dock so the drag area is always in view
         d.innerHTML = h;
+        if (W.spbProAI && W.spbProAI.syncReferenceDock) W.spbProAI.syncReferenceDock();
         if (S.box) { initBox(d); d.scrollTop = 0; }
         // HELPER_V2 2026-10-04: a NEW sentence's steps / answer / term start at the top of the dock (it kept the old scroll, so the
         // seafoam ask-first chips were drawn above the fold while the buyer looked at the previous look grid)
         else if (S._top0 !== S.steps || S._top1 !== S.answer || S._top2 !== S.term) { d.scrollTop = 0; }
         S._top0 = S.steps; S._top1 = S.answer; S._top2 = S.term;
     }
+    function ranNoChange() {
+        if (W.SPB_NO_PBN_HONEST) return false;
+        try { var P = document.getElementById('spbProAI'); if (!P) return false; var m = P.querySelectorAll('.spb-pai-msg.ai'), l = m[m.length - 1]; if (!l) return false;
+            return /\bnochange\b/.test(l.className) || !!l.querySelector('.spb-pai-pick') || !!P.querySelector('.spb-pai-pick [data-act="propyes"]') || /\b(I could not do that|Nothing was changed|I do not know where that part|will not guess)\b/.test(l.textContent || ''); } catch (e) { return false; }
+    }
     function builderHtml() {
         var h = '<div class="spb-ob-card"><div class="spb-ob-hd"><b>🧱 Step builder</b><i>built-in, no AI · every click is exact</i><button type="button" class="spb-ob-x" data-ob="browse" title="Browse the encyclopedia">📖</button><button type="button" class="spb-ob-x" data-ob="close" title="Close the builder (nothing is changed)">×</button></div>';
         if (S.text) h += '<div class="spb-ob-said"><span>You typed:</span> ' + flagHtml(S.text, S.textFlags) + '</div>';
-        h += '<div class="spb-ob-read"><span>' + (S.ran ? '✓ Done:' : 'I read this as:') + '</span> ' + esc(readAs(S.steps)) + '</div>';
+        var s3r = S.ran && S.ran.undone ? {verdict:"undo-ask",line:"Undone: the preview is back to its state before this Run."} : (S.ran ? s3Ran() : null), s3back = s3r && /^(?:undo-ask|nothing-applied)$/.test(s3r.verdict);          // HELPER V3 S3 2026-10-06: the card after Run reports what the RENDER showed, never the plan (bank A-0094 t3: "✓ Done: The hood → Yellow" after the check took it back)
+        var nodo = S.ran && !s3back && ranNoChange();          // W1-PBNDO 2026-10-09: "✓ Done" was shown while the app said it could not place the part / asked to be shown it (sim: 6 of 20 default-car Do-its); kill switch SPB_NO_PBN_HONEST
+        h += '<div class="spb-ob-read"><span>' + (S.ran ? (s3back ? '↶ Not kept:' : (S.ran.noChange ? 'No change made:' : (nodo ? '⚠ Not done yet:' : '✓ Done:'))) : 'I read this as:') + '</span> ' + esc(readAs(S.steps)) + '</div>';
+        // W3-PBN2 2026-10-09: a finish-only goal (matte / gloss / satin / brushed ...) changes the shine (spec map) and leaves the colour picture looking the same; the card said only "Done" (class: 'spec-only' in the
+        // w1pbndo sims, 3 of 45 per car). Say so and say where to see it. Kill switch: window.SPB_PBN2_NO_SHINENOTE
+        if (S.ran && !s3back && !nodo && !W.SPB_PBN2_NO_SHINENOTE && S.steps.length && S.steps.every(function (st) { return !(st.extra && st.extra.w20x) && !st.colour && !(st.tex && st.tex.mode === 'pattern') && (st.act === 'shine' || (st.act === 'finish' && st.finish && /^base::/.test(String(st.finish.key || '')))); })) h += '<div class="spb-ob-read spb-ob-shinenote"><span>Where to look:</span> this look works mostly through the <b>shine</b> (the spec map), so the colour picture may look the same or only a little different. Check the <b>SPEC MAP</b> preview next to it, or render the car to see the sheen.</div>';
+        if (s3r && s3r.line && (s3back || s3r.verdict === 'trimmed')) h += '<div class="spb-ob-read">' + esc(s3r.line) + '</div>';
         if (!S.ran) {
             h += '<div class="spb-ob-steps">' + S.steps.map(function (st, i) { return stepHtml(st, i); }).join('') + '</div>';
             var pl = toPlan(S.steps), why = pl.ok ? '' : pl.problems[0], blocked = S.steps.filter(function (s) { return s.ask; })[0];
@@ -627,10 +693,10 @@
                 '<button type="button" class="spb-pai-act hot spb-ob-run" data-ob="run"' + (pl.ok && !blocked ? '' : ' disabled') + ' title="' + esc(pl.ok ? (blocked ? blocked.ask : 'Do these steps on the car (one Undo takes them all back)') : why) + '">▶ Run</button></div>';
             if (!pl.ok || blocked || S.msg) h += '<div class="spb-ob-msg">' + esc(S.msg || (pl.ok ? blocked.ask : 'To run: ' + why + '.')) + '</div>';
         } else {
-            h += '<div class="spb-ob-foot"><button type="button" class="spb-pai-act" data-ob="undo" title="Put the car back the way it was before Run">↶ Undo</button><button type="button" class="spb-pai-act" data-ob="reedit">Edit the steps</button><span class="spb-ob-sp"></span><button type="button" class="spb-pai-act" data-ob="new">New</button></div>';
+            h += '<div class="spb-ob-foot"><button type="button" class="spb-pai-act" data-ob="undo"' + (s3back || S.ran.noChange || S.ran.canUndo === false ? ' disabled' : '') + ' title="Put the car back the way it was before Run">↶ Undo</button><button type="button" class="spb-pai-act" data-ob="reedit">Edit the steps</button><span class="spb-ob-sp"></span><button type="button" class="spb-pai-act" data-ob="new">New</button></div>';
             if (S.msg) h += '<div class="spb-ob-msg">' + esc(S.msg) + '</div>';
         }
-        if (S.text && !S.ran) h += '<div class="spb-ob-alt">' + (configured() ? '<button type="button" class="spb-pai-act" data-ob="askai" title="Send what you typed to ' + esc(gearName()) + ' (online, free chat)">✨ Ask ' + esc(gearName()) + ' instead</button>' : '<button type="button" class="spb-pai-act" data-ob="gear" title="Online mode needs an OpenRouter key (⚙)">✨ Ask DeepSeek instead (add a key in ⚙)</button>') + '</div>';
+        if (S.text && !S.ran) h += '<div class="spb-ob-alt">' + (!W.SPB_CX1_OFF && W.SPB_NO_OPENROUTER !== false && W.SpbAiConnect ? '<button type="button" class="spb-pai-act" data-ob="connect-helper">Connect Claude or ChatGPT</button>' /* CX1 2026-10-09 (Codex candidate, kill window.SPB_CX1_OFF): OpenRouter is off, so the alternative is the helper chooser, not an API-key prompt */ : configured() ? '<button type="button" class="spb-pai-act" data-ob="askai" title="Send what you typed to ' + esc(gearName()) + ' (online, free chat)">✨ Ask ' + esc(gearName()) + ' instead</button>' : '<button type="button" class="spb-pai-act" data-ob="gear" title="Online mode needs an OpenRouter key (⚙)">✨ Ask DeepSeek instead (add a key in ⚙)</button>') + '</div>';
         return h + '</div>';
     }
     function gearName() { try { var m = ((W.SpbAI && W.SpbAI.cached && W.SpbAI.cached()) || {}).model; return /deepseek/i.test(String(m || '')) || !m ? 'DeepSeek' : String(m).replace(/^.*\//, ''); } catch (e) { return 'DeepSeek'; } }
@@ -641,6 +707,7 @@
         if (st.note || st.ask) h += '<div class="spb-ob-note' + (st.prefilled && !st.ask ? ' info' : '') + '">' + (st.prefilled && !st.ask ? 'ℹ ' : '⚠ ') + esc(st.ask || st.note) + '</div>';
         if (st.ask && st.chips && st.chips.some(function (c) { return c && c.hid; })) h += '<div class="spb-ob-row spb-ob-hchips">' + st.chips.map(function (c, k) { return c && c.hid ? '<button type="button" class="spb-pai-act' + (k ? '' : ' hot') + '" data-ob="hchip" data-sid="' + st.id + '" data-k="' + k + '">' + (c.hex ? '<i class="spb-ob-sw" style="background:' + esc(c.hex) + '"></i>' : '') + esc(c.label) + '</button>' : ''; }).join('') + '</div>';          // HELPER_V2: ask-first chips
         if (!ed) return h + '</div>';
+        if (/^(hide|show)$/.test(st.act)) return h + '<div class="spb-ob-note">Visibility only. To choose another layer, type its exact name, group path or ID in a new hide/show request.</div></div>';
         // 1 WHAT
         var wc = whatChoices(env, S.steps, st), grp = '';
         // HELPER_V2 2026-10-04 owner: keep improving the Offline Helper. Once WHAT and DO are both chosen, WHAT folds to the chosen chip + "Change":
@@ -835,10 +902,11 @@
         else if (a === 'act' && st) { setAct(st, b.getAttribute('data-act')); }
         else if (a === 'look' && st) { var ch = (st._choices || [])[k]; if (ch) pickChoice(st, ch); recheck(); }
         else if (a === 'run') return run();
-        else if (a === 'undo') { var B = bridge(); var ok = false; try { ok = B && B.undo ? B.undo() : (W.spbProAI && W.spbProAI._undoLast ? W.spbProAI._undoLast() : false); } catch (e) {} S.msg = ok ? 'Undone: the car is back to how it was before Run.' : 'Nothing of mine to undo.'; if (ok) S.ran = null; }
+        else if (a === 'undo') { if (!S.ran || S.ran.noChange || S.ran.canUndo === false || S.ran.undone || S.ran.eid == null) return; var lastReport = s3Ran(); if (S.ran && (S.ran.undone || (lastReport && /^(?:undo-ask|nothing-applied)$/.test(lastReport.verdict)))) return; var B = bridge(); var ok = false; try { ok = B && B.undo ? B.undo(S.ran.eid) : false; } catch (e) {} S.msg = ok ? 'Undone: the car is back to how it was before Run.' : 'Nothing of mine to undo.'; if (ok) S.ran = null; }
         else if (a === 'reedit') { S.ran = null; S.edit = null; }
+        else if (a === 'connect-helper') { if (W.SpbAiConnect) W.SpbAiConnect.setMode(''); return; }          // CX1 2026-10-09 (kill window.SPB_CX1_OFF removes the button)
         else if (a === 'askai') return askAI();
-        else if (a === 'gear') { var p = panel(), g = p && p.querySelector('[data-act="gear"]'); if (g) g.click(); }
+        else if (a === 'gear') { if (!W.SPB_CX1_OFF && W.SPB_NO_OPENROUTER !== false && W.SpbAiConnect) { W.SpbAiConnect.setMode(''); return; } /* CONN 2026-10-09: the online helpers are Claude / ChatGPT through the chooser, not an API key (kill window.SPB_CX1_OFF) */ var p = panel(), g = p && p.querySelector('[data-act="gear"]'); if (g) g.click(); }
         draw();
     }
     function onInput(ev) { var t = ev.target; if (t && t.getAttribute && t.getAttribute('data-ob-bsearch') && S.browse) { S.browse.q = t.value; clearTimeout(S._bt); S._bt = setTimeout(function () { var pos = t.selectionStart; draw(); var n = dock() && dock().querySelector('[data-ob-bsearch]'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} } }, 220); return; } if (t && t.getAttribute && t.getAttribute('data-ob-search')) { var sid = t.getAttribute('data-ob-search'); S.search[sid] = t.value; clearTimeout(S._st); S._st = setTimeout(function () { var pos = t.selectionStart; draw(); var n = dock() && dock().querySelector('[data-ob-search="' + sid + '"]'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} } }, 260); } }
@@ -859,10 +927,11 @@
     // HELPER FIX PASS 7 2026-10-05 (blind5 b5-047 / b5-057: "a thin red line around the roof" and "a gradient on the door" each repainted the WHOLE car). HARD INVARIANT, enforced
     // here in code, measured: when the buyer's sentence names a part (and no whole-car / keep words), every zone the plan would make is probed with those parts cut out
     // (js/spb-pro-zone-kit.js probeRegion + exclude); anything left over above 1% of the car = the plan reaches outside the named part -> NOT run, said plainly.
-    var GUARD_WHOLE_RE = /\b(?:whole|entire|everything|everywhere|all over|the car|the body|my car|rest|other parts?|except|but not|not the|apart from|other than|stays?|keep|leave|dont|don'?t|without|same on|other side|too|as well|also)\b/i;
+    var GUARD_WHOLE_RE = /\b(?:whole|entire|everything|everywhere|all over|the car|the body|body|bodywork|my car|rest|other parts?|except|but not|not the|apart from|other than|stays?|keep|leave|dont|don'?t|without|same on|other side|too|as well|also)\b/i;
     function scopeGuard(text, ed) {
         var OA = W.SpbOfflineAnswer, Z = W.SpbProZone, E = Ed(), t = String(text || ''); if (!OA || !OA._partsOf || !Z || !Z.probeRegion || !E || !E.compile || !ed || ed.kind !== 'ops') return null;
-        if (GUARD_WHOLE_RE.test(t)) return null; var named = OA._partsOf(t); if (!named.length) return null;
+        if (GUARD_WHOLE_RE.test(t)) return null; var tn = t; try { if (!W.SPB_W25_OFF && OA._w25) tn = OA._w25().norm(t) || t; } catch (eW25) { tn = t; }          // W25-ORDERS 2026-10-10 (class 7): the guard reads the text the helper acted on ("left and right side" = both sides)
+        var named = OA._partsOf(tn); if (!named.length) return null;
         if ((ed.ops || []).some(function (o) { return o._box || (o.target && (o.target.kind === 'numbers' || o.target.kind === 'sponsors' || o.target.kind === 'layer' || o.target.kind === 'element' || o.target.kind === 'step')); })) return null;
         var cz = null; try { cz = E.compile(JSON.parse(JSON.stringify(ed)), envNow()); } catch (e) { return null; }
         var worst = 0, wz = null;
@@ -876,21 +945,47 @@
         if (worst <= 1) return null;
         return 'Not run: this would change about ' + Math.round(worst) + '% of the car OUTSIDE the ' + named.join(' and ') + ' (' + ((wz && wz.name) || 'a whole-car zone') + '). Edit the step so it targets the ' + named[0] + ', or say “the whole car” if you meant everything.';
     }
+    // W1-PBNDO 2026-10-09: on a flat paint the first Run is answered with the car-layout card ("Is that right? [Yes, that is right]"); the app's Yes then re-asks the AI, which says "AI did not answer" offline,
+    // so the edit was reported as done but never happened (b2pbn sim: flat TGA 0 of 9 first Do-its landed). Offline, after the buyer says Yes, run the same plan again. Kill switch: window.SPB_NO_PBN_RESUME.
+    function resumeAfterLayout(call) {
+        var documentStamp = W.SpbConversationScope ? W.SpbConversationScope.stamp() : null;
+        function scopeCurrent() { return documentStamp === null || W.SpbConversationScope.current(documentStamp); }
+        if (W.SPB_NO_PBN_RESUME || !offlineMode()) return; var n = 0, hooked = null;
+        (function look() {
+            if (!scopeCurrent() || ++n > 150) return; var yes = null; try { yes = document.querySelector('#spbProAI [data-act="propyes"]'); } catch (e) {}
+            if (yes && yes !== hooked) { hooked = yes; yes.addEventListener('click', function () { var t = 0; (function wait() { var b = bridge(); if (++t < 40 && b && b.busy && b.busy()) { setTimeout(wait, 400); return; } setTimeout(function () { if (!scopeCurrent()) return; try { call(); } catch (e) {} }, 900); })(); }, { once: true }); return; }
+            setTimeout(look, 400);
+        })();
+    }
     function run() {
         var B = bridge(); if (!B || !B.run) { S.msg = 'The copilot is still starting: try again in a moment.'; draw(); return; }
         if (B.busy && B.busy()) { S.msg = 'Still working on the last one.'; draw(); return; }
+        if (!w27OffB() && S.steps.some(function (s) { return s.extra && s.extra.w27kit; })) { w27RunKitSteps(); return; }          // [SPB_W27 2026-10-10] a kit step (Number Kit / Car-Space Fade / Auto Spec) runs the kit itself
+        if (!w20xOffB('') && S.steps.some(function (s) { return s.extra && s.extra.w20x; })) { if (w20xRunSteps() === 'done') return; }          // [SPB-W20X 2026-10-09] numbers / sponsors resize + put-back run here (pixel edit of the element's own layers; one Undo); anchored on the B.busy line ONLY (W19-INAPP rewrote the s5g guard below it, 2026-10-09)
+        /* [SPB-W19I 2026-10-09] cause: W17-DEV steps (theme 'read a fire truck', put-back 'back to how the roof was', scale 'scale on the roof down') carry extra.s5g only as a DISPLAY label, but this guard read ANY s5g step as a planner graphic that runs only as the plan it was read as (S.s5frame): their Run answered 'Lines and flames are drawn from what you typed' and changed nothing (in-app W17-TH1 / TH3 / RB8: changed 0, node-ok). Planner steps always carry s5i (or the S.s5frame is set); the others now compile and run normally. before: dead Run -> after: Run paints. Kill switch window.SPB_W19I_OFF (or localStorage SPB_W19I_OFF = '1'). */
+        var w19iOffB = false; try { w19iOffB = !!window.SPB_W19I_OFF || window.localStorage.getItem('SPB_W19I_OFF') === '1'; } catch (e19) { w19iOffB = !!window.SPB_W19I_OFF; }
+        if (S.steps.some(function (s) { return s.extra && s.extra.s5g && (w19iOffB || s.extra.s5i != null || S.s5frame); })) {          // V3 S6 2026-10-06 G8a: a planner graphic (stripe / outline / pinline / flames) runs ONLY as the plan it was read as
+            var said8 = readAs(S.steps); if (!(S.text && S.s5frame && said8 === S.s5read)) { S.msg = 'Lines and flames are drawn from what you typed: type it again to change it.'; draw(); return; }
+            tlStart('▶ Run: ' + said8, 'run'); var p8 = null, ran8 = {at:Date.now()}; try { p8 = B.run(S.text, null, { logText: '▶ Run: ' + said8, s5frame: S.s5frame, s5only: true, runReceipt:ran8 }); } catch (e8) { S.msg = 'Could not run: ' + (e8 && e8.message); draw(); return; }
+            S.ran = ran8; S.edit = null; draw(); if (p8 && p8.then) p8.then(function () { draw(); s3Wait(S.ran); }, function () { S.ran = null; S.msg = 'Something went wrong; nothing was kept.'; draw(); }); return;
+        }
         recheck(); var pl = toPlan(S.steps, S.text && !S.edited ? S.text : ''); var blocked = S.steps.filter(function (s) { return s.ask; })[0];
         if (!pl.ok || blocked) { S.msg = pl.ok ? blocked.ask : 'To run: ' + pl.problems[0] + '.'; draw(); return; }
-        var said = readAs(S.steps), p = null;
+        var said = readAs(S.steps), p = null, ran = {at:Date.now()};
         var sg = S.text && !S.edited ? scopeGuard(S.text, pl.ed) : null; if (sg) { S.msg = sg; draw(); return; }          // HELPER FIX PASS 7 2026-10-05: the final guard before Run (a turn that names a part changes only that part)
         tlStart('▶ Run: ' + said, 'run');          // fix pass 5a turn log
-        try { p = B.run(S.text && !S.edited ? S.text : said, pl.ed, { post: pl.post, specOnly: pl.specOnly, logText: '▶ Run: ' + said }); } catch (e) { S.msg = 'Could not run: ' + (e && e.message); draw(); return; }
-        S.ran = { at: Date.now() }; S.edit = null; draw();
-        if (p && p.then) p.then(function () { draw(); }, function () { S.ran = null; S.msg = 'Something went wrong; nothing was kept.'; draw(); });
+        try { var IF3 = W.SpbIntentFrame; if (IF3 && IF3.on()) IF3.note(IF3.stepsToFrame(S.steps, S.text && !S.edited ? S.text : said, 'builder')); } catch (eF3) {}          // HELPER V3 S1 2026-10-05: the frame the Run acts on (turn log "frame")
+        try { p = B.run(S.text && !S.edited ? S.text : said, pl.ed, { post: pl.post, specOnly: pl.specOnly, logText: '▶ Run: ' + said, runReceipt:ran, s5frame: S.text && !S.edited && S.s5frame && said === S.s5read ? S.s5frame : null /* V3 S6 2026-10-06 (S5 H2): run the planner's plan */ }); } catch (e) { S.msg = 'Could not run: ' + (e && e.message); draw(); return; }
+        S.ran = ran; S.edit = null; draw();
+        if (p && p.then) p.then(function () { draw(); s3Wait(S.ran); }, function () { S.ran = null; S.msg = 'Something went wrong; nothing was kept.'; draw(); });
+        try { var bs = S.steps.length, tx = S.text && !S.edited ? S.text : said, pe = pl.ed, po = { post: pl.post, specOnly: pl.specOnly, logText: '▶ Run: ' + said, runReceipt:ran, s5frame: null }; resumeAfterLayout(function () { var B2 = bridge(); if (B2 && B2.run && !(B2.busy && B2.busy())) { var pr2 = B2.run(tx, pe, po); if (pr2 && pr2.then) pr2.then(function () { draw(); }, function () { draw(); }); } }); } catch (eR) {}
     }
+    // HELPER V3 S3 2026-10-06: the rendered check (js/spb-intent-report.js) finishes after the Run promise: redraw the card once it has a verdict
+    function s3Ran() { var R = W.SpbIntentReport; if (!R || !R.since || !S.ran) return null; try { var a = R.since(S.ran.at).filter(function (v) { return v && v.verdict && v.verdict !== 'skip' && (S.ran.eid == null || v.eid === S.ran.eid); }); return a.length ? a[a.length - 1] : null; } catch (e) { return null; } }
+    function s3Wait(ran, n) { var R = W.SpbIntentReport; if (!R || !R.pending || !ran || S.ran !== ran) return; n = n || 0; if ((R.pending() > 0 || (!s3Ran() && n < 16)) && n < 240) { setTimeout(function () { s3Wait(ran, n + 1); }, 250); return; } if (s3Ran()) draw(); }
     function askAI() {
         var B = bridge(), t = S.text || S.liveText; if (!t) return;
-        if (!configured()) { S.msg = 'Online mode needs a key: open ⚙ in the panel.'; draw(); return; }
+        if (!configured()) { if (!W.SPB_CX1_OFF && W.SPB_NO_OPENROUTER !== false && W.SpbAiConnect) { S.msg = 'Online mode uses Claude or ChatGPT: pick one in the chooser (no API key needed).'; try { W.SpbAiConnect.setMode(''); } catch (eC) {} } else S.msg = 'Online mode needs a key: open ⚙ in the panel.'; draw(); return; }
         tlStart(t, 'askai'); S.steps = []; S.text = ''; draw();          // fix pass 5a turn log
         if (B && B.askAI) B.askAI(t); else if (W.spbProAI && W.spbProAI.ask) W.spbProAI.ask(t, { forceAI: true }).then(function (r) { return W.spbProAI.finish(r, t, 'ask'); });
     }
@@ -898,11 +993,13 @@
     function typedNow(text) { var ty = S.typed; return !!(ty && ty.text === String(text || '').trim() && Date.now() - ty.t < 20000); }
     function claim(text, ed) {
         if (!HAS_DOM || !ed || (ed.kind !== 'ops' && ed.kind !== 'ask') || ed.builder) return null;
+        if (!W.SPB_CX3_OFF && ed.layer_target_question) return null;          // CX3 2026-10-09 (Codex 'Duplicate-layer conversation delta'): a dedicated layer-target ask keeps its own answer; it must not enter the generic builder
         if (ed.prohibited_edit || (ed.protected_parts && ed.protected_parts.length)) return null;          // protected panels keep their own exact answer
         if (!typedNow(text) || !offlineMode()) return null;
         S.typed = null;
-        var env = envNow(), r = fromPlan(ed, env, text); if (!r.steps.length) r = fromFlags(text, env); if (!r.steps.length) return null;
-        S.steps = r.steps; S.answer = null; S.text = String(text); S.textFlags = flag(S.text); S.ran = null; S.edit = null; S.term = null; S.termPin = false; S.liveText = ''; S.flags = []; S.edited = false; S.msg = '';
+        var env = envNow(), r = fromPlan(ed, env, text); if (!r.steps.length) r = fromFlags(text, env); if (!r.steps.length) return null; try { preferOverride(r.steps, text); } catch (eP3) {}          // W3-PBN2 2026-10-09: typed-sentence path too
+        try { var IF3 = W.SpbIntentFrame; if (IF3 && IF3.on()) IF3.note(IF3.opsToFrame(ed, text, 'pro-edit')); } catch (eF3) {}          // HELPER V3 S1 2026-10-05: the pro-edit plan the builder pre-fills from
+        S.s5frame = null; S.steps = r.steps; S.answer = null; S.text = String(text); S.textFlags = flag(S.text); S.ran = null; S.edit = null; S.term = null; S.termPin = false; S.liveText = ''; S.flags = []; S.edited = false; S.msg = '';
         check(S.steps, env); draw();
         var open = S.steps.filter(stepOpen).length, hq = S.steps.filter(function (s) { return s.ask && s.hiddenInfo; })[0];
         if (hq) return { offline: true, text: hq.ask + '\nPick one in the builder under the chat. Nothing is changed until you press ▶ Run.', queue: [], usage: { cost: 0 }, calls: 0, model: 'built-in', tools: [], asked: { options: [] }, builder: true };          // HELPER_V2: ask first
@@ -945,7 +1042,9 @@
             var tr = null; try { var T = W.SpbOfflineAnswer && W.SpbOfflineAnswer._trail ? W.SpbOfflineAnswer._trail() : null; if (T && T.text === c.text && Math.abs((T.t || 0) - c.t0) < 60000) tr = { cls: T.cls, via: T.via || null, pass: T.pass || null, why: T.why || null }; } catch (e1) {}
             var st = null; try { if (S.text === c.text || S.typed && S.typed.text === c.text) st = { read: S.steps.length ? readAs(S.steps).slice(0, 1500) : '', steps: S.steps.length, open: S.steps.filter(function (x) { return x.ask || stepOpen(x); }).length, asks: S.steps.filter(function (x) { return x.ask; }).map(function (x) { return String(x.ask).slice(0, 200); }).slice(0, 4) }; } catch (e2) {}
             var path = c.src === 'askai' ? 'online (Ask-the-AI button)' : (tr ? 'offline helper' : (st && st.steps ? 'offline builder' : (L.some(function (m) { return m.role === 'ai' && m.model && !m.offline; }) ? 'online model' : 'app')));
-            var rec = { seq: c.seq, src: c.src, mode: c.mode, configured: c.configured, text: c.text, path: path, offline: tr, builder: st, replies: L, zones_changed: tlDiff(c.z0, tlZones()), ms: Date.now() - c.t0, cut_short: !!cut, page: String(W.location && W.location.pathname || '') };
+            var hd6 = null; try { var Hh = W.__spbHandled; if (Hh && Hh.t >= c.t0) hd6 = Hh.by; } catch (eH6) {} if (!hd6) hd6 = c.src === 'askai' || path === 'online model' ? 'online' : 'offline';          // V3 S6 2026-10-06 task 6: offline / frame / plan / online
+            var rec = { seq: c.seq, src: c.src, mode: c.mode, configured: c.configured, text: c.text, path: path, handled: hd6, offline: tr, builder: st, replies: L, zones_changed: tlDiff(c.z0, tlZones()), ms: Date.now() - c.t0, cut_short: !!cut, page: String(W.location && W.location.pathname || '') };
+            try { var IF3 = W.SpbIntentFrame; if (IF3 && IF3.on()) { var fr3 = IF3.since(c.t0); if (fr3.length) { rec.frame = IF3.slim(fr3[fr3.length - 1]); if (fr3.length > 1) rec.frames = fr3.slice(-4).map(function (f) { return { turn: f.turn, producer: f.producer, act: f.act, ops: (f.ops || []).length }; }); var vf3 = fr3.filter(function (f) { return f.verify; }); if (vf3.length) rec.verify = vf3[vf3.length - 1].verify; } } } catch (eF3) {}          // HELPER V3 S1 2026-10-05: the intent frame(s) this turn acted on (+ S2 verifier verdict)
             if (W.fetch) W.fetch('/api/ai/turn-log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(rec), keepalive: true }).catch(function () {});
             W.__spbTurnLog = rec;          // the last record, for the in-app harnesses
         } catch (e) {}
@@ -954,10 +1053,10 @@
         var p = panel(); if (!p || p.__spbOB) { if (p) { var d0 = dock(); if (d0) { var on = offlineMode(); if (d0.hidden === on) draw(); } } return; }
         var inp = p.querySelector('.spb-pai-input'); if (!inp) return;
         p.__spbOB = true;
-        p.addEventListener('keydown', function (ev) { if (ev.target === inp && (ev.key === 'Enter' || ev.keyCode === 13) && !ev.shiftKey) markTyped(inp.value, 'enter'); }, true);
-        p.addEventListener('click', function (ev) { var b = ev.target && ev.target.closest ? ev.target.closest('[data-act="send"]') : null; if (b) markTyped(inp.value, 'send'); }, true);
+        p.addEventListener('keydown', function (ev) { var live = W.SPB_CX3_OFF ? inp : p.querySelector('.spb-pai-input'); if (ev.target === live && (ev.key === 'Enter' || ev.keyCode === 13) && !ev.shiftKey) markTyped(live.value, 'enter'); }, true);          // CX3 2026-10-09 (Codex 'Shared input binding defect'): the chat panel re-renders its textarea; the second typed turn used the stale first one and got no reply. Read the CURRENT textarea.
+        p.addEventListener('click', function (ev) { var b = ev.target && ev.target.closest ? ev.target.closest('[data-act="send"]') : null; if (b) { var live = W.SPB_CX3_OFF ? inp : p.querySelector('.spb-pai-input'); if (live) markTyped(live.value, 'send'); } }, true);
         p.addEventListener('click', function (ev) { var c = ev.target && ev.target.closest ? ev.target.closest('.spb-pai-opt[data-say]') : null; if (c) markTyped(c.getAttribute('data-say'), 'chip'); }, true);          // HELPER_V2 fix pass 4 2026-10-04 owner: keep improving the Offline Helper -- a tapped answer chip is the buyer's own answer: the helper's conversation layer reads it (it fills the question it just asked)
-        inp.addEventListener('input', function () { S.liveText = String(inp.value || '').trim() ? inp.value : ''; S.flags = S.liveText ? flag(S.liveText) : []; if (!S.termPin) S.term = null; clearTimeout(S._lt); S._lt = setTimeout(draw, 120); });
+        p.addEventListener('input', function (ev) { var live = W.SPB_CX3_OFF ? inp : p.querySelector('.spb-pai-input'); if (!live || ev.target !== live) return; S.liveText = String(live.value || '').trim() ? live.value : ''; S.flags = S.liveText ? flag(S.liveText) : []; if (!S.termPin) S.term = null; clearTimeout(S._lt); S._lt = setTimeout(draw, 120); });
         draw();
     }
     function markTyped(v, src) { var t = String(v || '').trim(); if (t) { tlStart(t, src || 'typed'); S.typed = { text: t, t: Date.now() }; S.liveText = ''; S.flags = []; S.edited = false; clearTimeout(S._hv); if (!S.termPin && S.term) { S.term = null; S.article = null; try { draw(); } catch (e) {} } } }          // OWNTURN: Send closes a hover peek
@@ -970,18 +1069,196 @@
         try { if (W.spbProAI && W.spbProAI.open) W.spbProAI.open(); } catch (e0) {}
         if (S.ran) { S.steps = []; S.ran = null; S.text = ''; }
         var ch = actionChoice(x), st;
-        if (ch) { st = stepFromTerm(S.steps, null, ch); if (!S.steps.length) st.what = { k: 'body' }; if (st.what) st.note = ''; st.prefilled = true; st.note = 'From the encyclopedia: ' + (x.label || x.id) + '.'; }
+        if (ch) { st = stepFromTerm(S.steps, null, ch); var cx1 = !!(x.fromAnswer && !W.SPB_CX1_OFF); /* CX1 2026-10-09 (Codex candidate, kill window.SPB_CX1_OFF): a "Do it" from a QUESTION's answer card ("How do I make the hood chrome...") must not assume the WHOLE CAR (or the last step's part): the buyer picks WHAT */ if (cx1) st.what = null; else if (!S.steps.length) st.what = { k: 'body' }; if (st.what) st.note = ''; st.prefilled = true; st.note = cx1 ? 'From your question: ' + (x.question || S.text || '') + ' - choose WHAT to change before running.' : 'From the encyclopedia: ' + (x.label || x.id) + '.'; }
         else if (x.do === 'flow' && /colou?r/.test(String(x.id))) st = newStep({ act: 'recolour' });
         else st = newStep();
+        if (x.artworkScope) { st.what = null; st.requireArtworkScope = true; st.note = "Choose an artwork layer or draw a tight area for this example. Inspect the selected artwork and exclude the numbers and sponsors before Run; a layer name is not proof."; }
         S.steps.push(st); S.edit = st.id; S.term = null; S.browse = null; recheck(); dock(); draw();
         setTimeout(function () { try { var n = document.querySelector('#spbProAI .spb-ob-step[data-sid="' + st.id + '"]'); if (n) { n.scrollIntoView({ block: 'nearest' }); n.classList.add('spb-ob-flash'); setTimeout(function () { n.classList.remove('spb-ob-flash'); }, 1800); } } catch (e1) {} }, 60);
         return true;
     }
     // HELPER_V2 2026-10-04: the offline front door (js/spb-offline-answer.js) shows its outcome in this dock
-    function showAnswer(r, text) { S.answer = r; S.term = null; S.termPin = false; S.browse = null; if (S.ran) { S.steps = []; S.ran = null; } S.text = String(text || ''); S.liveText = ''; S.flags = []; S.msg = ''; draw(); }
+    function showAnswer(r, text) { if (!W.SPB_CX3_OFF && r && (r.via === 'design-advice' || (r.answer && (r.answer.reference_context || r.answer.id === 'assistant.live_editor_capabilities' || (r.answer.id === 'assistant.live_editor_capabilities' || r.answer.id === 'assistant.template_layers' || r.answer.id === 'assistant.layer_pixels') || r.answer.id === 'assistant.layer_pixels')))) { S.steps = []; S.ran = null; } S.s5frame = null; S.answer = r; S.term = null; S.termPin = false; S.browse = null; if (S.ran) { S.steps = []; S.ran = null; } S.text = String(text || ''); S.liveText = ''; S.flags = []; S.msg = ''; draw(); }
     function showOnline(r, text) { showAnswer(r, text); }
-    function showSteps(steps, text) { S.answer = null; S.steps = steps; S.text = String(text || ''); S.textFlags = flag(S.text); S.ran = null; S.edit = null; S.term = null; S.termPin = false; S.liveText = ''; S.flags = []; S.edited = false; S.msg = ''; check(S.steps, envNow()); draw(); }
-    W.SpbOfflineBuilder = {
+    function showSteps(steps, text, s5frame) { S.s5frame = s5frame || null; /* V3 S6 2026-10-06 (S5 H2/H3): the planner frame Run applies (null = the old compile path) */ S.answer = null; S.steps = steps; S.text = String(text || ''); S.textFlags = flag(S.text); S.ran = null; S.edit = null; S.term = null; S.termPin = false; S.liveText = ''; S.flags = []; S.edited = false; S.msg = ''; check(S.steps, envNow()); try { S.s5read = S.s5frame ? readAs(S.steps) : null; } catch (eS5) { S.s5frame = null; } draw(); }
+    // ===== SPB_W20X (builder) ============================================================================================================================================
+    // [SPB-W20X 2026-10-09] ELEMENT RESIZE: "numbers bigger", "shrink the sponsors a bit", "logos 20 percent smaller", "put the numbers back". The answer reader (spb-offline-answer.js) makes a step with
+    // extra.w20x = {op:'scale'|'restore', element:'numbers'|'sponsors', factor}; Run (run() below) edits the element's OWN layers: every separate piece (a number, a logo) is found as a connected group
+    // of opaque pixels (pieces closer than ~28 px count as one, so "23" stays one piece), then scaled about its own centre. The body paint and every other layer are never touched. One layer-undo
+    // step per layer (the app's own _pushLayerUndo) + one helper log entry with the Undo button. Kill switch window.SPB_W20X_OFF = true (also SPB_OF_CFG.noW20X / noW20X_numbers, localStorage SPB_W20X_OFF=1).
+    function w20xOffB(sub) { var ls = false; try { ls = typeof localStorage !== 'undefined' && localStorage.getItem('SPB_W20X_OFF') === '1'; } catch (e) { ls = false; } var c = null; try { c = W.SPB_OF_CFG; } catch (e2) { c = null; } return !!(W.SPB_W20X_OFF || (c && (c.noW20X || (sub && c['noW20X_' + sub]))) || ls); }
+    function w20xDilate(m, cw, ch, r) {          // square dilation by r cells (separable, prefix sums)
+        var tmp = new Uint8Array(cw * ch), out = new Uint8Array(cw * ch), x, y, a, b, ps = new Int32Array(Math.max(cw, ch) + 1);
+        for (y = 0; y < ch; y++) { ps[0] = 0; for (x = 0; x < cw; x++) ps[x + 1] = ps[x] + m[y * cw + x]; for (x = 0; x < cw; x++) { a = x - r < 0 ? 0 : x - r; b = x + r + 1 > cw ? cw : x + r + 1; tmp[y * cw + x] = ps[b] - ps[a] > 0 ? 1 : 0; } }
+        for (x = 0; x < cw; x++) { ps[0] = 0; for (y = 0; y < ch; y++) ps[y + 1] = ps[y] + tmp[y * cw + x]; for (y = 0; y < ch; y++) { a = y - r < 0 ? 0 : y - r; b = y + r + 1 > ch ? ch : y + r + 1; out[y * cw + x] = ps[b] - ps[a] > 0 ? 1 : 0; } }
+        return out;
+    }
+    // data = RGBA (straight alpha), w x h. Every connected piece is scaled by f about its own bbox centre (clamped so it stays on the sheet). Returns { data, pieces, clampedTo, error }.
+    function w20xScaleGroupsPx(data, w, h, f, opt) {
+        opt = opt || {}; var GAP = opt.gap || 28, C = 4, cw = Math.ceil(w / C), ch = Math.ceil(h / C), x, y, i, A0 = 1, cm = new Uint8Array(cw * ch);
+        for (y = 0; y < h; y++) { var cr = ((y / C) | 0) * cw; for (x = 0; x < w; x++) if (data[(y * w + x) * 4 + 3] >= A0) cm[cr + ((x / C) | 0)] = 1; }
+        var dm = w20xDilate(cm, cw, ch, Math.max(1, Math.round(GAP / C))), lab = new Int32Array(cw * ch), n = 0, stack = new Int32Array(cw * ch);
+        for (i = 0; i < cw * ch; i++) {
+            if (!dm[i] || lab[i]) continue; n++; var sp = 0; stack[sp++] = i; lab[i] = n;
+            while (sp) { var c = stack[--sp], cx = c % cw, cy = (c / cw) | 0, q; if (cx > 0 && dm[q = c - 1] && !lab[q]) { lab[q] = n; stack[sp++] = q; } if (cx < cw - 1 && dm[q = c + 1] && !lab[q]) { lab[q] = n; stack[sp++] = q; } if (cy > 0 && dm[q = c - cw] && !lab[q]) { lab[q] = n; stack[sp++] = q; } if (cy < ch - 1 && dm[q = c + cw] && !lab[q]) { lab[q] = n; stack[sp++] = q; } }
+        }
+        if (!n) return { data: data, pieces: 0, clampedTo: null, error: 'empty' };
+        var bx0 = new Int32Array(n + 1).fill(1e9), by0 = new Int32Array(n + 1).fill(1e9), bx1 = new Int32Array(n + 1).fill(-1), by1 = new Int32Array(n + 1).fill(-1), cnt = new Int32Array(n + 1);
+        for (y = 0; y < h; y++) { var cr2 = ((y / C) | 0) * cw; for (x = 0; x < w; x++) { if (data[(y * w + x) * 4 + 3] < A0) continue; var g = lab[cr2 + ((x / C) | 0)]; if (!g) continue; cnt[g]++; if (x < bx0[g]) bx0[g] = x; if (x > bx1[g]) bx1[g] = x; if (y < by0[g]) by0[g] = y; if (y > by1[g]) by1[g] = y; } }
+        var reg = opt.region || [0, 0, w, h], maxArea = (opt.maxFrac || 0.5) * w * h, order = [];
+        for (var g2 = 1; g2 <= n; g2++) { if (cnt[g2] === 0) continue; var bw0 = bx1[g2] - bx0[g2] + 1, bh0 = by1[g2] - by0[g2] + 1; if (bw0 * bh0 > maxArea) return { data: data, pieces: n, clampedTo: null, error: 'one-piece' }; order.push(g2); }
+        order.sort(function (a, b) { return (bx1[b] - bx0[b] + 1) * (by1[b] - by0[b] + 1) - (bx1[a] - bx0[a] + 1) * (by1[a] - by0[a] + 1); });
+        var crops = {}; order.forEach(function (g3) { var bw = bx1[g3] - bx0[g3] + 1, bh = by1[g3] - by0[g3] + 1; crops[g3] = { w: bw, h: bh, d: new Uint8ClampedArray(bw * bh * 4) }; });
+        for (y = 0; y < h; y++) { var cr3 = ((y / C) | 0) * cw; for (x = 0; x < w; x++) { var p0 = (y * w + x) * 4; if (data[p0 + 3] < A0) continue; var g4 = lab[cr3 + ((x / C) | 0)]; if (!g4) continue; var cp = crops[g4], q0 = ((y - by0[g4]) * cp.w + (x - bx0[g4])) * 4; cp.d[q0] = data[p0]; cp.d[q0 + 1] = data[p0 + 1]; cp.d[q0 + 2] = data[p0 + 2]; cp.d[q0 + 3] = data[p0 + 3]; } }
+        var out = new Uint8ClampedArray(w * h * 4), minF = f;
+        order.forEach(function (g5) {
+            var cp = crops[g5], bw = cp.w, bh = cp.h, ccx = bx0[g5] + bw / 2, ccy = by0[g5] + bh / 2;
+            var rx0 = Math.min(reg[0], bx0[g5]), rx1 = Math.max(reg[2], bx1[g5] + 1), ry0 = Math.min(reg[1], by0[g5]), ry1 = Math.max(reg[3], by1[g5] + 1);          // the sheet, or the piece's own reach where it already hangs over the edge
+            var fmax = Math.min(2 * (ccx - rx0) / bw, 2 * (rx1 - ccx) / bw, 2 * (ccy - ry0) / bh, 2 * (ry1 - ccy) / bh), fg = Math.min(f, fmax); if (fg < minF) minF = fg;
+            if (fg <= 0.02) fg = 1;
+            var dw = Math.ceil(bw * fg) + 2, dh = Math.ceil(bh * fg) + 2, dx0 = Math.round(ccx - dw / 2), dy0 = Math.round(ccy - dh / 2), k = fg < 1 ? Math.min(4, Math.ceil(1 / fg)) : 1, X, Y, si, sj;
+            for (Y = dy0; Y < dy0 + dh; Y++) {
+                if (Y < 0 || Y >= h) continue;
+                for (X = dx0; X < dx0 + dw; X++) {
+                    if (X < 0 || X >= w) continue;
+                    var sa = 0, sr = 0, sg = 0, sb = 0;
+                    for (sj = 0; sj < k; sj++) for (si = 0; si < k; si++) {
+                        var u = (X + (si + 0.5) / k - ccx) / fg + bw / 2 - 0.5, v = (Y + (sj + 0.5) / k - ccy) / fg + bh / 2 - 0.5, ux = Math.floor(u), vy = Math.floor(v), tx = u - ux, ty = v - vy;
+                        for (var jj = 0; jj < 2; jj++) for (var ii = 0; ii < 2; ii++) {
+                            var xx = ux + ii, yy = vy + jj; if (xx < 0 || yy < 0 || xx >= bw || yy >= bh) continue;
+                            var wgt = (ii ? tx : 1 - tx) * (jj ? ty : 1 - ty), pp = (yy * bw + xx) * 4, aw = cp.d[pp + 3] * wgt;
+                            sa += aw; sr += cp.d[pp] * aw; sg += cp.d[pp + 1] * aw; sb += cp.d[pp + 2] * aw;
+                        }
+                    }
+                    if (sa <= 0) continue; var kk = k * k, a_ = sa / kk / 255, r_ = sr / sa, g_ = sg / sa, b_ = sb / sa, po = (Y * w + X) * 4, da = out[po + 3] / 255, oa = a_ + da * (1 - a_);
+                    if (oa <= 0) continue; out[po] = (r_ * a_ + out[po] * da * (1 - a_)) / oa; out[po + 1] = (g_ * a_ + out[po + 1] * da * (1 - a_)) / oa; out[po + 2] = (b_ * a_ + out[po + 2] * da * (1 - a_)) / oa; out[po + 3] = oa * 255;
+                }
+            }
+        });
+        return { data: out, pieces: order.length, clampedTo: minF < f - 0.005 ? Math.round(minF * 100) / 100 : null, error: null };
+    }
+    var W20_ORIG = {};          // layer id -> { before: the layer image before the FIRST resize, bbox, after: the image the resize produced, el }
+    function w20xResized(el) { for (var k in W20_ORIG) if (W20_ORIG[k] && W20_ORIG[k].el === el) return true; return false; }          // did I resize this element in this session (then a bare "restore the numbers" is mine)
+    var W20_KRX = { logo: /logo/i, sponsor: /sponsor|logo/i, decal: /decal/i };
+    function w20xLayersFor(el, kinds, ids) {          // the element's own layers: numbers = the numbers layer; sponsors / logos / decals = the logo / decal layers whose NAME carries the word said (the car's fitted lights and grille on Car_Decal stay put for "logos")
+        var C = W.SpbProCar, rl = []; try { rl = C && C.roles ? C.roles() : []; } catch (e) { rl = []; }
+        var rx = el === 'numbers' ? /^numbers$/i : /logo|sponsor|decal/i, PL = W._psdLayers || [];
+        if (ids) {
+            if (!W.SpbElementResizeScope) throw Error('Exact resize scope is unavailable. Nothing was resized.');
+            return W.SpbElementResizeScope.exactTargets(ids, PL, rl, el);
+        }
+        var all = rl.filter(function (r) { return rx.test(String(r.role || '')) && r.visible !== false; }).map(function (r) {
+            if (W.SpbElementResizeScope) return W.SpbElementResizeScope.roleLayer(r, PL);
+            var named = PL.filter(function (l) { return l && l.name === r.name && l.img; });
+            if (named.length > 1) throw Error('Several artwork layers have the same name. Choose an exact group and layer.');
+            return named[0];
+        }).filter(Boolean);
+        if (el === 'numbers') return all;
+        var rxs = (kinds && kinds.length ? kinds : ['logo', 'sponsor']).map(function (k) { return W20_KRX[k]; }).filter(Boolean), named = all.filter(function (l) { return rxs.some(function (r) { return r.test(String(l.name)); }); });
+        return named.length ? named : all.filter(function (l) { return !/^pitbox|colors?$/i.test(String(l.name)); });
+    }
+    var W20_SHEET = 2048;
+    function w20xMake(w, h) { var c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+    function w20xScaleLayer(layer, f, el) {          // -> { changed, pieces, clampedTo, error }
+        var bb0 = layer.bbox ? layer.bbox.slice() : [0, 0, layer.img.width, layer.img.height];          // the working canvas = the 2048 sheet plus anything of this layer that hangs over its edge
+        var wx0 = Math.min(0, bb0[0]), wy0 = Math.min(0, bb0[1]), wx1 = Math.max(W20_SHEET, bb0[2]), wy1 = Math.max(W20_SHEET, bb0[3]), SW = wx1 - wx0, SH = wy1 - wy0;
+        var c0 = w20xMake(SW, SH), x0 = c0.getContext('2d', { willReadFrequently: true }); x0.drawImage(layer.img, bb0[0] - wx0, bb0[1] - wy0);
+        var id = x0.getImageData(0, 0, SW, SH), res = w20xScaleGroupsPx(id.data, SW, SH, f, { region: [-wx0, -wy0, W20_SHEET - wx0, W20_SHEET - wy0] });
+        if (res.error) return { changed: false, pieces: res.pieces, clampedTo: null, error: res.error };
+        var o = res.data, minx = SW, miny = SH, maxx = -1, maxy = -1, x, y;
+        for (y = 0; y < SH; y++) for (x = 0; x < SW; x++) if (o[(y * SW + x) * 4 + 3] > 0) { if (x < minx) minx = x; if (x > maxx) maxx = x; if (y < miny) miny = y; if (y > maxy) maxy = y; }
+        if (maxx < 0) return { changed: false, pieces: res.pieces, clampedTo: null, error: 'empty' };
+        var cwid = maxx - minx + 1, chei = maxy - miny + 1, c1 = w20xMake(SW, SH), x1 = c1.getContext('2d'); x1.putImageData(new ImageData(o, SW, SH), 0, 0);
+        var c2 = w20xMake(cwid, chei); c2.getContext('2d').drawImage(c1, -minx, -miny);
+        var oldImg = layer.img, oldBbox = layer.bbox ? layer.bbox.slice() : [0, 0, oldImg.width, oldImg.height];
+        if (typeof _pushLayerUndo !== 'function' || typeof commitLayerCanvasUpdate !== 'function') return { changed: false, pieces: res.pieces, clampedTo: null, error: 'noapi' };
+        _pushLayerUndo(layer, 'Resize ' + el);
+        layer.bbox = [minx + wx0, miny + wy0, minx + wx0 + cwid, miny + wy0 + chei]; commitLayerCanvasUpdate(layer, c2, null);
+        var rec = W20_ORIG[layer.id]; if (!rec) rec = W20_ORIG[layer.id] = { before: oldImg, bbox: oldBbox, el: el }; rec.after = layer.img;
+        return { changed: true, pieces: res.pieces, clampedTo: res.clampedTo, error: null };
+    }
+    function w20xRestoreLayer(layer) {          // 'ok' | 'none' | 'edited'
+        var o = W20_ORIG[layer.id]; if (!o) return 'none'; if (layer.img !== o.after) return 'edited';
+        if (typeof _pushLayerUndo !== 'function' || typeof commitLayerCanvasUpdate !== 'function') return 'none';
+        _pushLayerUndo(layer, 'Restore ' + o.el + ' size'); layer.bbox = o.bbox.slice(); commitLayerCanvasUpdate(layer, o.before, null); delete W20_ORIG[layer.id]; return 'ok';
+    }
+    // ===== SPB_W27 (builder) 2026-10-10 =====================================================================================================================================
+    // Lane W27 (owner "BIG SWINGS at the AI and OFFLINE HELPER"): a fully specified kit order from chat ("put 32 on both doors and the roof, white with a black outline", "fade the car red at the nose to blue
+    // at the tail", "give the whole car realistic materials") shows as steps; ▶ Run runs THE KIT (SpbOfflineAnswer._w27run), one chat entry with the measured result, and Undo = the kit's own one-step undo.
+    // Kill: window.SPB_W27_OFF / SPB_OF_CFG.noW27 / SPB_OF_CFG.noW27_kits (the steps then run as ordinary recolour / shine steps). Each kit's own switch is checked in _w27run (off = honest "nothing changed").
+    function w27OffB() { try { var c = W.SPB_OF_CFG || {}; return !!(W.SPB_W27_OFF || c.noW27 || c.noW27_kits); } catch (e) { return false; } }
+    function w27RunKitSteps() {
+        var kx = S.steps.filter(function (s) { return s.extra && s.extra.w27kit; }), said = readAs(kx), k = kx[0].extra.w27kit, OA = W.SpbOfflineAnswer;
+        var KN = { numbers: 'Number Kit', fade: 'Car-Space Fade', autospec: 'Auto Spec', doctor: 'Spec Doctor', sponsor: 'Sponsor Kit' };
+        tlStart('▶ Run: ' + said, 'run');
+        S.msg = 'Running the ' + (KN[k.kit] || 'kit') + '…'; S.ran = { at: Date.now() }; S.edit = null; draw();
+        var push = function (res) {
+            res = res || {}; var undo = res.ok && typeof res.undo === 'function' ? res.undo : null;
+            try { if (W.spbProAI && W.spbProAI._push) W.spbProAI._push({ role: 'ai', undoable: !!undo, layerUndo: 0, zoneUndo: false, w27undo: undo, request: said, text: res.text || 'Nothing changed.', offline: true, model: 'built-in', usage: { cost: 0 }, calls: 0, lines: res.lines || [], notes: [] }); } catch (eP) {}
+            S.msg = ''; draw();
+        };
+        if (!OA || typeof OA._w27run !== 'function') { push({ ok: false, text: 'The ' + (KN[k.kit] || 'kit') + ' is not available in this build, so nothing changed.' }); return; }
+        var p = null; try { p = OA._w27run(k); } catch (eR) { p = null; }
+        if (!p || typeof p.then !== 'function') { push({ ok: false, text: 'The ' + (KN[k.kit] || 'kit') + ' did not start, so nothing changed.' }); return; }
+        p.then(push, function (e) { push({ ok: false, text: 'The ' + (KN[k.kit] || 'kit') + ' stopped with an error (' + String(e && e.message || e).slice(0, 80) + '), so nothing changed.' }); });
+    }
+    // ===== SPB_W27-END (builder) ===========================================================================================================================================
+    function w20xRunSteps() {          // the Run of every w20x step on the card; 'done' = nothing else on the card, 'more' = ordinary steps remain (now S.steps)
+        var wx = S.steps.filter(function (s) { return s.extra && s.extra.w20x; }), rest = S.steps.filter(function (s) { return !(s.extra && s.extra.w20x); });
+        var said = readAs(wx), notes = [], did = [], undo = 0, resizeTargets = [];
+        // Validate every intended layer before the first write or Undo entry.
+        try { resizeTargets = wx.map(function (st) {
+            var x = st.extra.w20x, ls = w20xLayersFor(x.element, x.kinds, x.layer_ids);
+            if (W.SpbElementResizeScope) return W.SpbElementResizeScope.validate(x, ls);
+            if (ls.some(function (l) { return l.locked || l.visible === false; })) throw Error('A resize layer is locked or hidden. Nothing was resized.');
+            return ls;
+        }); } catch (resizeError) { S.msg = String(resizeError.message || resizeError); draw(); return 'done'; }
+        tlStart('▶ Run: ' + said, 'run');
+        wx.forEach(function (st, resizeIndex) {
+            var x = st.extra.w20x, nm = x.element === 'numbers' ? 'numbers' : 'sponsors and logos', ls = resizeTargets[resizeIndex];
+            if (x.op === 'restore') {
+                var okN = 0, edited = 0; ls.forEach(function (l) { var r0 = w20xRestoreLayer(l); if (r0 === 'ok') { okN++; undo++; } else if (r0 === 'edited') edited++; });
+                if (okN) did.push('put the ' + nm + ' back to their size before I resized them');
+                else if (edited) notes.push('The ' + nm + ' were changed after my resize, so I did not put them back (use Undo to step back).');
+                else {          // nothing of mine to put back: the last undoable helper change that mentioned them
+                    var lg = []; try { lg = (W.spbProAI && W.spbProAI.log ? W.spbProAI.log() : []) || []; } catch (e) { lg = []; }
+                    var last = lg.slice().reverse().filter(function (m) { return m && m.role === 'ai' && m.undoable && !m.undone; })[0], rx = x.element === 'numbers' ? /\bnumbers?\b/i : /\b(?:sponsors?|logos?|decals?)\b/i;
+                    if (last && rx.test(String(last.request || '')) && W.spbProAI && W.spbProAI._undoLast) { try { W.spbProAI._undoLast(); did.push('undid my last change to the ' + nm); } catch (e2) { notes.push('I could not undo that: press Undo under my last reply.'); } }
+                    else notes.push('I have not resized the ' + nm + ' in this session, so there is nothing to put back. If you changed their colour or finish, press Undo under that reply.');
+                }
+                return;
+            }
+            if (!ls.length) { notes.push('There is no separate ' + nm + ' layer on this paint, so there is nothing to resize.'); return; }
+            var tot = 0, clamp = null, err = null, tl = [];
+            ls.forEach(function (l) { var res = w20xScaleLayer(l, x.factor, x.element); if (res.changed) { tot += res.pieces; undo++; tl.push(String(l.name)); if (res.clampedTo && (!clamp || res.clampedTo < clamp)) clamp = res.clampedTo; } else if (res.error && res.error !== 'empty') err = res.error; });
+            if (tot) did.push('made the ' + nm + ' ' + (x.factor > 1 ? 'bigger' : 'smaller') + ' (' + tot + ' piece' + (tot === 1 ? '' : 's') + ' on ' + tl.join(', ') + ', ' + Math.round(Math.abs(x.factor - 1) * 100) + '% ' + (x.factor > 1 ? 'larger' : 'smaller') + ')');
+            if (clamp) notes.push('Some pieces are near the edge of the sheet, so they could only grow ' + Math.round((clamp - 1) * 100) + '%.');
+            if (!tot && err === 'one-piece') notes.push('The ' + nm + ' layer is one big piece, so resizing it would move everything. Draw a box around the part you want.');
+            else if (!tot && !err) notes.push('There was nothing drawn on the ' + nm + ' layer to resize.');
+        });
+        var txt = (did.length ? 'Done: I ' + did.join(', and ') + '.' : 'Nothing changed.') + (notes.length ? ' ' + notes.join(' ') : '') + (undo ? ' Undo takes it back.' : '');
+        var resizeEntry = { role: 'ai', undoable: undo > 0, layerUndo: undo, zoneUndo: false, request: said, text: txt, offline: true, model: 'built-in', usage: { cost: 0 }, calls: 0, lines: did.slice(), notes: notes.slice() };
+        try { if (W.spbProAI && W.spbProAI._push) W.spbProAI._push(resizeEntry); } catch (eP) {}
+        S.msg = ''; if (rest.length) { S.steps = rest; if (S.s5frame) S.s5read = readAs(rest); return 'more'; }          // the planner frame belongs to the rest of the sentence: its card line is now the rest alone
+        S.ran = { at: Date.now(), eid: resizeEntry.id, noChange: undo === 0, resize: true }; S.edit = null; draw(); return 'done';
+    }
+    // ===== SPB_W20X-END (builder) ========================================================================================================================================
+    function runCompleted(entry, receipt) {
+        if (!entry || !receipt || S.ran !== receipt || entry.id == null) return false;
+        receipt.eid = entry.id; receipt.undone = !!entry.undone; receipt.canUndo = !!entry.undoable;
+        receipt.noChange = !!entry.noChange || !!(entry.colourOutcomes && entry.colourOutcomes.length && !(entry.lines || []).length && entry.colourOutcomes.every(function (o) { return o.status === 'unchanged'; }));
+        draw(); return true;
+    }
+    function undoChanged(entry) {
+        var rep = s3Ran();
+        if (!S.ran || !entry || (S.ran.eid != null ? S.ran.eid !== entry.id : (!rep || rep.eid !== entry.id))) return false;
+        S.ran.undone = true; draw(); return true;
+    }
+    function sourceChanged() {
+        S = { steps: [], text: '', flags: [], edit: null, term: null, termPin: false, msg: '', ran: null, typed: null, box: null, search: {}, mini: true, liveText: '' };
+        if (HAS_DOM) draw();
+    }
+    W.SpbOfflineBuilder = { _runCompleted:runCompleted, _sourceChanged: sourceChanged, _undoChanged: undoChanged,
         typedNow: typedNow, offlineMode: offlineMode, envNow: envNow, configured: configured, showAnswer: showAnswer, showOnline: showOnline, showSteps: showSteps, hiddenPick: hiddenPick, compoundSteps: compoundSteps, v2Term: v2Term,
         // pure logic (node-testable)
         tokens: tokens, flag: flag, flagHtml: flagHtml, termById: termById, searchChoices: searchChoices, fromPlan: fromPlan, fromText: fromText, fromFlags: fromFlags, toPlan: toPlan, check: check,
@@ -989,6 +1266,7 @@
         // app
         enc: SpbEnc, articleFromTerm: articleFromTerm,
         claim: claim, state: function () { return S; }, draw: draw, attach: attach, markTyped: markTyped, run: run, takeAction: takeAction, gearName: gearName,      // one label for both ask-the-AI buttons (OFFLINE_BUILDER FINAL 2)
-        linkOut: function (l) { return HAS_DOM ? linkOut(l) : null; }
+        linkOut: function (l) { return HAS_DOM ? linkOut(l) : null; },
+        w20xScaleGroupsPx: w20xScaleGroupsPx, w20xRunSteps: w20xRunSteps, w20xResized: w20xResized          // [SPB-W20X 2026-10-09] element resize (numbers / sponsors): pure pixel core + the Run path
     };
 })();

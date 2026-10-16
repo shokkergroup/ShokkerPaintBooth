@@ -54,12 +54,17 @@
         return 'pink';
     }
     var PLAIN = { red: 1, orange: 1, yellow: 1, green: 1, blue: 1, purple: 1, pink: 1, black: 1, white: 1, grey: 1, gray: 1, silver: 1, brown: 1, teal: 1, gold: 1, tan: 1, cyan: 1, aqua: 1, turquoise: 1, magenta: 1, violet: 1, beige: 1, bronze: 1, copper: 1, 'hot pink': 1, 'neon green': 1, 'neon yellow': 1, 'neon orange': 1, 'neon pink': 1, 'neon blue': 1, lime: 1, 'lime green': 1, cream: 1, 'off white': 1, platinum: 1, champagne: 1, 'electric blue': 1, 'royal blue': 1, cobalt: 1, 'pepsi blue': 1, 'steel blue': 1, emerald: 1, jade: 1, ruby: 1, scarlet: 1, crimson: 1, lemon: 1, mustard: 1, amber: 1, coral: 1, salmon: 1, peach: 1, rose: 1 };
+    // lane R3-EDIT 2026-10-07: colour WORDS whose palette hex sits just across a family boundary (hue 300-346 = pink band): the family a buyer means by the word
+    function r3eOff(k) { try { if (typeof window !== 'undefined' && window[k]) return true; } catch (e) {} try { return !!(typeof process !== 'undefined' && process.env && process.env[k]); } catch (e2) { return false; } }          // lane R3-EDIT kill switches (window.<NAME> = true or env <NAME>=1)
+    var WORD_FAM = { crimson: 'red', wine: 'red', plum: 'purple', lilac: 'purple', 'army green': 'green' };
+    function wordFamily(word, hex) { var w = String(word || '').toLowerCase().trim(); return (!r3eOff('SPB_EDIT_NOWORDFAM') && WORD_FAM[w]) || (w === 'gray' ? 'grey' : familyOf(hex)); }
     var NEAR = { black: ['charcoal'], charcoal: ['black', 'grey'], grey: ['charcoal', 'silver'], silver: ['grey'] };                                   // used without asking (one grey is another grey)
     var NEAR_ASK = { white: ['silver'], red: ['pink', 'orange'], orange: ['yellow', 'red', 'brown'], yellow: ['orange', 'tan'], tan: ['yellow', 'brown'], brown: ['orange', 'tan'], green: ['teal'], teal: ['green', 'blue'], blue: ['teal', 'purple'], purple: ['blue', 'pink'], pink: ['purple', 'red'], silver: ['white'] };      // a different colour: ask first
     // a spoken colour word -> what to look for on the car
     function wantFor(word, hex, qual) {
         var q = hsl(hex), fam = familyOf(hex), band = null;
         if (word === 'gray') fam = 'grey';
+        if (WORD_FAM[word] && !r3eOff('SPB_EDIT_NOWORDFAM')) fam = WORD_FAM[word];          // lane R3-EDIT 2026-10-07 (MCP M3 train A-0329 "Change all red areas", refinish target "crimson"): crimson's own hex #a3123a (hue 343) fell in the PINK band, so "crimson" matched the hot-pink holo zones + the Number Fill zone; the word's family wins (A-0329 t1 decal px 297792 -> 0, see r3e/REPORT.md)
         if (['navy', 'midnight blue', 'maroon', 'burgundy', 'wine', 'forest green', 'dark green', 'dark blue', 'dark red', 'dark purple', 'chocolate', 'army green', 'olive', 'indigo', 'plum'].indexOf(word) !== -1) band = 'dark';
         else if (['sky blue', 'baby blue', 'light blue', 'powder blue', 'baby pink', 'light pink', 'light green', 'mint', 'mint green', 'seafoam', 'lavender', 'lilac', 'pastel'].indexOf(word) !== -1) band = 'light';
         else if (!PLAIN[word] && q.l < 0.3 && fam !== 'black') band = 'dark';
@@ -155,7 +160,7 @@
         [/\bgloss y\b/g, 'glossy'], [/\bshine y\b/g, 'shiny'], [/\bmatte ?finish\b/g, 'matte'], [/\blooking\b/g, 'look'], [/\blooks like\b/g, 'look like'], [/\bkinda\b|\bkind of\b|\bsort of\b|\bsorta\b/g, ' '], [/\bda\b|\bteh\b|\btha\b/g, 'the'], [/\bwanna\b/g, 'want to'], [/\bplz\b|\bpls\b/g, 'please']
     ]);
     var WORD_TYPOS = { blak: 'black', blck: 'black', blac: 'black', blacl: 'black', wite: 'white', whte: 'white', whit: 'white', yelow: 'yellow', yello: 'yellow', yellw: 'yellow', yelloe: 'yellow', bleu: 'blue', blu: 'blue', gren: 'green', grean: 'green', purpel: 'purple', purle: 'purple', orang: 'orange', ornge: 'orange', pnk: 'pink', gry: 'grey', gray: 'grey', silvr: 'silver', sliver: 'silver', slver: 'silver', redd: 'red', navey: 'navy', nvy: 'navy', mat: 'matte', matt: 'matte', flatt: 'flat', glos: 'gloss', shinny: 'shiny', shiney: 'shiny', metalic: 'metallic', metallics: 'metallic', crome: 'chrome', chrom: 'chrome', satn: 'satin', satan: 'satin', perl: 'pearl', pearls: 'pearl', canday: 'candy', candi: 'candy', chrme: 'chrome', chorme: 'chrome', chromee: 'chrome', chrmoe: 'chrome', numbrs: 'numbers', numbes: 'numbers', nubers: 'numbers', numers: 'numbers', numebrs: 'numbers', nmbers: 'numbers', nunbers: 'numbers', sponsers: 'sponsors', sponcers: 'sponsors', sponsrs: 'sponsors', stipes: 'stripes', stripse: 'stripes', striipes: 'stripes', whtie: 'white', wihte: 'white', whiet: 'white', blakc: 'black', balck: 'black', blck: 'black', yelllow: 'yellow', yeloow: 'yellow', oragne: 'orange', pruple: 'purple', purpul: 'purple', pupple: 'purple', gren: 'green', grene: 'green', golld: 'gold', gld: 'gold', satiin: 'satin', glossey: 'glossy', glosssy: 'glossy', shinney: 'shiny', dulll: 'dull', canndy: 'candy', pearll: 'pearl', pearal: 'pearl' };
-    var VOCAB = null, SAFE_WORDS = ' make paint color colour parts panels stripes pinstripes numbers sponsors decals lettering bumper hood spoiler wheels windows mirrors something nothing anything everything colors cannot should please thanks little really actually already another because between around against without within before after beyond better darker lighter brighter bigger smaller shiny metal glossier duller ';
+    var VOCAB = null, SAFE_WORDS = ' make paint color colour parts panels stripes pinstripes numbers sponsors decals lettering bumper hood spoiler wheels windows mirrors something nothing anything everything colors cannot should please thanks little really actually already another because between around against without within before after beyond better darker lighter brighter bigger smaller shiny metal glossier duller crushed crush crushing flatter classy placed plates feathered heathered nearly trapped wrapper robber peeled ripped dripped tipped zipped played pleated rubbed blushed violent skimmer hopper litter mellow strikes grassy copier fronted machine machines ';          // HELPER FIX PASS 8 2026-10-05 (owner live: "Saturday chrome crushed down" was read as BRUSHED metal): owner vocabulary (crushed = texture scale) + the real words the fuzzy fixer rewrote in the logs / corpora (p8_fuzz_sweep.js: nearly>pearly, classy>glassy, dripped>dipped, mellow>yellow ...)
     function dl1(a, b) {                      // Damerau-Levenshtein distance <= 1 ?
         if (a === b) return true; var la = a.length, lb = b.length; if (Math.abs(la - lb) > 1) return false;
         var i = 0; while (i < la && i < lb && a.charAt(i) === b.charAt(i)) i++;
@@ -245,6 +250,10 @@
         return { kind: 'ask', protected_parts: parts.slice(), requested_parts: requested, text: 'Nothing was changed. I can’t yet guarantee ' + subject + ' leaves ' + parts.map(function (p) { return 'the ' + p; }).join(' and ') + ' unchanged. Send the change as a separate panel-only request, or clarify the scope before I apply anything.', chips: [] };
     }
     var VARIANTS_RE = /\b(options?|variations?|variants?|alternatives?|choices|(a few|some|several|different|other|more) (looks?|finishes|ideas)|what (could|would|might) .{0,30}look like|try (a few|some|different|several) (looks?|finishes)|show me (some |a few )?(looks?|finishes))\b/;
+    // W2-ACCENT 2026-10-09: a request that names a part / side / colour keeps the design's ACCENT ART (painted stripe blocks, shapes) as it is, unless the buyer says to cover it:
+    // W5-ACCENT2 2026-10-09: accent protection is now DEFAULT ON (30 requests x 3 cars: accent pixels changed 21.4% -> 11.0%, base coverage within 5 pts on every request, Haiku harm flags 28 -> 20). Kill switch: window.SPB_ACCENT_OFF = true.
+    // "everything", "the whole car", "including the stripes", "even the accents", "all of it", "solid", or names the accent words themselves (then the stripes ARE the target). Kill switch (window.SPB_ACCENT_OFF === true).
+    var ACC_ALL_RE = /\b(everything|every ?thing|all of it|all over|including|even the|whole (?:car|truck|body|thing|livery|design|paint)|entire (?:car|truck|body|livery|design|paint)|completely|solid|wipe|cover (?:all|it all)|(?:and|with|plus) (?:all )?the (?:stripes?|accents?|graphics?|art)|stripes (?:too|and all)|accents? too|paint over)\b/, ACC_NAMED_RE = /\b(stripes?|pinstripes?|accents?|graphics?|trim|shapes?|swoosh(?:es)?|blocks?|artwork|lines?|bands?|tape|decals?)\b/;
     var SAME_RE = /\b(same|likewise|do that|do it|too|also|as well)\b/, WHOLE_RE = /\b(car|truck|vehicle|body|everything|whole|entire|all of it|everywhere)\b/;
     var REVERT_RE = /\b(put|set|change|turn|take|bring|restore|go|get)\b.{0,24}\b(back|to normal|to how it was|to what it was|to the original|as it was)\b|\b(undo|revert|reset|remove|cancel|forget|get rid of)\b (?:that |the |my |all the |all )?(?!last\b|that\b|everything\b|all\b|change|changes\b)/;
     var REVERT_WORDS_RE = /\b(put|take|bring|restore|go|get|set|back|to normal|to how it was|to what it was|to the original|as it was|undo|revert|reset|remove|cancel|forget|get rid of)\b/g;
@@ -362,6 +371,7 @@
         PART_WORDS.forEach(function (pw) { var m = pw[1].exec(rest); if (m) partsHit.push({ kind: 'part', part: pw[0], at: m.index }); });
         if (/\b(sides?|doors?)\b/.test(rest) && !partsHit.some(function (h) { return /side/.test(h.part); })) { var ms = /\b(sides?|doors?)\b/.exec(rest); partsHit.push({ kind: 'part', part: 'left side', at: ms.index }, { kind: 'part', part: 'right side', at: ms.index }); }
         if (/\bbumpers?\b/.test(rest) && !partsHit.some(function (h) { return /bumper/.test(h.part); })) { var mb = /\bbumpers?\b/.exec(rest); partsHit.push({ kind: 'part', part: 'front bumper', at: mb.index }, { kind: 'part', part: 'rear bumper', at: mb.index }); }
+        try { var DRe = window.SpbIntentDoor; if (DRe && DRe.editParts && !window.SPB_DOOR_OFF) { var dre = DRe.editParts(rest, partsHit); partsHit = dre.hits; if (dre.ask && !res.doorAsk) res.doorAsk = dre.ask; } } catch (eDr) {}          // D-DOOR 2026-10-08: door / fender / quarter / rocker words -> 'left side@door' (a portion of the side), or an ask when the car map cannot place it; kill SPB_DOOR_OFF
         // "the black ON THE HOOD": a colour target limited to a part - the part is a scope, not the target
         var scoped = null;
         cols.forEach(function (c) {
@@ -418,7 +428,8 @@
         restL = restL.replace(/_+/g, ' ');          // a reference element ("as the numbers") is masked with underscores above
         var left = restL.split(' ').filter(function (w) { return w.length > 2 && !cw[w] && !/^[0-9#]+$/.test(w) && !/^#[0-9a-f]{6}$/.test(w) && STOP.indexOf(' ' + w + ' ') === -1 && !NUMBERS_RE.test(w) && !SPONSORS_RE.test(w) && !ACCENT_RE.test(w) && !BODY_RE.test(w) && !PART_WORDS.some(function (pw) { return pw[1].test(w); }) && !/^(sides?|doors?|bumpers?|fenders?|windows?|wheels?|rims?|tires?|tyres?|mirrors?|grille?s?|lights?|headlights?|taillights?|splitter|diffuser|scoops?|vents?|plates?|handles?|wipers?|antenna|cockpit|interior|seats?|dash|dashboard|rollbar|rollbars|cage|glass|windshield|pitbox|pitboard)$/.test(w); });
         // The direction word belongs to a parsed left/right side alias (it is not an unknown look).
-        if (res.targets.some(function (x) { return x.kind === 'part' && /side/.test(x.part); })) left = left.filter(function (w) { return !/^(left|right|drivers?|passengers?)$/.test(w); });
+        if (res.targets.some(function (x) { return x.kind === 'part' && /side/.test(x.part); })) left = left.filter(function (w) { return !/^(left|right|drivers?|passengers?|both|each|either)$/.test(w); });          // D-DOOR: 'both doors gold'
+        if (res.targets.some(function (x) { return x.kind === 'part' && String(x.part).indexOf('@') > 0; })) left = left.filter(function (w) { return !/^(rockers?|skirts?|sills?|quarters?|panels?|fenders?|front|rear|back)$/.test(w); });          // D-DOOR: the words that named the sub-part are not an unknown look
         // ROUTER-FIX 2026-10-04 (owner T1: "the yellow on the spray can" was refused, "the black base hexagon" became the LOOK "base hexagon"): words naming a THING after a colour
         // target are an object the app must locate (layers that hold that colour / a box the buyer draws), never an unknown look. With no preposition they count only when the clause
         // also says what to do ("make the black base hexagon pink"), so "make the black carbon fiber" stays a catalogue look.
@@ -531,7 +542,18 @@
     // COPILOT-FIX 2026-10-04: a LAYER named in the sentence ("in the Numbers layer, all the pink to metallic silver", "make the Numbers layer gold") is a scope / a target,
     // never the look "Layered Cut Foil". Returns { layers:[real layer name], rest } or { ask } or null.
     var LAYER_ROLE_WORDS = { numbers: /^numbers?$/, sponsors: /^(sponsors?|logos?|decals?)$/, stripes: /^(stripes?|tape)$/, body: /^(body|base|paint|body paint)$/ };
+    function withLayerIds(rows) {          // CX3 2026-10-09: env.layers built by older callers carry {name, group, role} but no layer id; fill the id from the car map when (name, group) is unique, so repeated names (ARCA "Base Paint" x4) can be bound exactly
+        try {
+            if (window.SPB_CX3_OFF || !rows || !rows.length || rows.every(function (r) { return !r || r.id != null; })) return rows;
+            var cr = window.SpbProCar && window.SpbProCar.roles ? window.SpbProCar.roles() : null; if (!cr || !cr.length) return rows;
+            return rows.map(function (r) { if (!r || r.id != null) return r; var m = cr.filter(function (c) { return c.name === r.name && String(c.group || '') === String(r.group || ''); }); return m.length === 1 ? extend(extend({}, r), { id: m[0].id, group: r.group || m[0].group }) : r; });
+        } catch (e) { return rows; }
+    }
     function layerScope(text, layers) {
+        layers = withLayerIds(layers);
+        // CX3 2026-10-09 (Codex layer-targets; owner rule "change ONLY the named part"): "Paintable Area / Base Paint layer" or "Base Paint layer in the Paintable Area group" names ONE
+        // exact layer; a bare name shared by several layers (ARCA has four "Base Paint") asks with full-path chips instead of taking the first. Unique names fall through to the old logic.
+        var qualified3 = !window.SPB_CX3_OFF && window.SpbLayerTargets && window.SpbLayerTargets.scope(text, layers); if (qualified3) return qualified3;
         var raw = String(text || ''), lm = /\blayer\b\s*[,:]?/i.exec(raw); if (!lm) return null;
         var pre = raw.slice(0, lm.index).replace(/\s+$/, ''), words = pre.split(/\s+/), ls = (layers || []).filter(function (l) { return l && l.name; }), hit = [], k, used = 0;
         function find(nn) {
@@ -547,6 +569,12 @@
         if (!hit.length) return { ask: { kind: 'ask', text: 'I cannot find a layer called “' + name + '” in this file.' + (ls.length ? ' Your layers: ' + ls.slice(0, 12).map(function (l) { return l.name; }).join(', ') + '.' : ' This paint has no layers.'), chips: [] } };
         var head = words.slice(0, words.length - used).join(' ').replace(/(?:^|\s+)(?:(?:in|on|of|inside|within|for)\s+)?(?:the|my|that)$/i, '').replace(/(?:^|\s+)(?:in|on|of|inside|within|for)$/i, '');
         var rest = (head + ' ' + raw.slice(lm.index + lm[0].length)).replace(/\s+/g, ' ').replace(/^\s*[,;:]\s*/, '').trim();
+        if (!window.SPB_CX3_OFF && window.SpbLayerTargets) {          // CX3: only a REPEATED NAME is ambiguous (a role word such as "sponsors" that matches several differently-named layers keeps the first-hit behaviour)
+            if (hit.length > 1 && hit.every(function (h3) { return norm(h3.name) === norm(hit[0].name); })) return { ask: { kind: 'ask', text: 'Several layers are called \u201c' + hit[0].name + '\u201d. Say which one by its group, for example \u201c' + window.SpbLayerTargets.label(hit[0]) + '\u201d. Nothing has changed.', chips: [] } };
+            var pick3 = window.SpbLayerTargets.select(hit[0], ls);          // unique name -> the readable name; repeated name -> that row's exact id
+            if (!pick3.ok) return { ask: { kind: 'ask', text: pick3.reason + ' Nothing has changed.', chips: [] } };
+            return { layers: [pick3.selector], word: pick3.label, rest: rest };
+        }
         return { layers: [hit[0].name], word: hit[0].name, rest: rest };
     }
     // ROUTER-FIX 2026-10-04 (owner T2 "You covered up some of the white stripes near the back. That should stay white", T5 "You changed the white base to pink and should not
@@ -590,12 +618,19 @@
         return { kind: 'complaint', colours: colours, result: result, names: names, elements: elements, places: places, soft: soft, whole: !colours.length && !names.length && !elements.length && !places.length, text: t };
     }
     function plan(text, env) {
+        if (!window.SPB_CX3_OFF && window.SpbLayerColourFollowup) {
+            var nativeFollowup = window.SpbLayerColourFollowup.plan(text, env);
+            if (nativeFollowup) return nativeFollowup;
+        }
         env = env || {}; var raw0 = String(text || ''), force = /\banyway\b/i.test(raw0);
         text = tintColours(raw0.replace(/\s*\banyway\b\s*/ig, ' ').trim()).replace(/\s*(?:->|=>|\u2192|\u21d2)\s*/g, ' to ');          // FIRSTTEST: "yellow -> purple chrome" = from yellow to purple
         var cmp0 = complaint(raw0, env); if (cmp0 && !cmp0.soft) return cmp0;          // ROUTER-FIX: a complaint is never a look name ("changed base")
-        var sc = /\blayer\b/i.test(text) ? layerScope(text, env.layers) : null;
+        var protectedLayers = window.SpbPreservedColours ? SpbPreservedColours.layerPlan(raw0, env, plan, norm) : null;
+        if (protectedLayers) return protectedLayers;
+        var sc = layerScope(raw0, env.layers);
         if (sc && sc.ask) return sc.ask;
-        var pl = planCore(sc ? sc.rest : text, sc ? Object.assign({}, env, { _layerScope: sc.layers }) : env);
+        var keptColours = window.SpbPreservedColours ? SpbPreservedColours.plan(sc ? sc.rest : raw0, env, planCore, parseClause, norm) : null;
+        var pl = keptColours || planCore(sc ? sc.rest : text, sc ? Object.assign({}, env, { _layerScope: sc.layers }) : env);
         if (pl && pl.kind === 'ops') {
             if (sc) pl.ops.forEach(function (op) {
                 var tg = op.target; if (!tg) return;
@@ -687,6 +722,9 @@
         text = partFirstAssignment(text); t = fixText(text); if (!t) return null;
         var pal = prepPalette(env.palette), layers = env.layers || [], last = env.last || null;
         CTX.pal = pal; CTX.prevColour = false;
+        // W1-PLACE 2026-10-08 (sweep: "gold stripes on the hood" / "white stripes down the roof" ran the RECOLOUR-existing-stripes path, found no stripe pixels on that part and said "nothing visible changed"):
+        // "<colour> stripes on <part>" with no "the stripes" is a NEW stripe request: hand it to the planner that draws stripes. Kill switch: window.SPB_W1P_NOSTRIPE = true.
+        try { if (!window.SPB_W1P_NOSTRIPE && /^(?:(?:please|can you|could you|i want|i d like|i would like|add|put|paint|draw|give me|make)\s+)*(?:(?:a|an|some|two|three|2|3|a pair of|pair of)\s+)?(?:(?:thin|wide|narrow|thick|fat|skinny)\s+)?(?:[a-z]+\s+(?:and \s*)?){0,3}?(?:racing \s*)?(?:stripes?|pinstripes?)\s+(?:on|down|across|along|over)\s+(?:the |my )?(?:hood|bonnet|roof|trunk|rear deck|front bumper|rear bumper|bumper|spoiler|left side|right side|sides?|doors?)\s*$/.test(t.trim()) && !/^(?:the|my|those|these) /.test(t.replace(/^(?:please |can you |could you |i want |make |paint )+/, '').trim())) return null; } catch (eW2) {}
         text = String(text).replace(STAYS_RE, function (m) { return /^[,;]/.test(m) ? ', ' : ' '; }).trim(); t = fixText(text); if (!t) return null;
         var xcp = extractExcept(text), exclude = xcp.list; if (exclude.length) { text = xcp.text; t = fixText(text); }
         // WP7 2026-10-03: "add a big number 7 on the roof" / "put a dragon on the hood": drawing something NEW is not an edit of what is there (a look word keeps it ours: "add a pearl finish to the white")
@@ -799,6 +837,7 @@
             all.forEach(function (tg) { var op = { target: tg, look: lastLook(c), colour: c.colours[0] || null, rel: c.rel, soft: c.soft, strong: c.strong, shade: c.shade, keep: c.keep, pop: c.pop, recipe: c.recipe || null, sub: c.sub || null, ext: c.looks.length ? null : c.ext, texture: c.texture || null }; ops.push(op); madeOps.push(op); });
             prev = { targets: all, ops: madeOps };
         });
+        var dka = null; clauses.forEach(function (c) { if (c && c.doorAsk && !dka) dka = c.doorAsk; }); if (dka) return { kind: 'ask', text: dka, chips: [] };          // D-DOOR 2026-10-08: never guess the area, ask
         var umm = UNKNOWN_PART_RE.exec(t); if (umm && /^lights?$/.test(umm[1]) && /^lights? (?:red|orange|yellow|gold|lime|green|teal|cyan|blue|navy|purple|violet|pink|magenta|white|silver|gr[ae]y|black|brown|maroon|bronze|copper|cream|tan|beige|aqua|turquoise|mint|lavender|lilac|coral|peach|olive|khaki)\b/.test(t.slice(umm.index))) umm = null;          // HELPER_V2 fix pass 5 2026-10-05 owner: keep improving the Offline Helper -- FINAL 5a: "make it light blue" is a colour, never "the light" (an unknown part)
         if (umm && !clauses.some(function (c) { return c.targets.length; }) && clauses.some(function (c) { return c.looks.length || c.colours.length || c.rel || c.shade || c.pop || c.recipe; })) return { kind: 'ask', text: 'I cannot tell where the ' + umm[1] + ' ' + (/s$/.test(umm[1]) ? 'are' : 'is') + ' on your paint (that is drawn art, not a named part). Tell me its colour instead (“the yellow ones”), or say “let me show you the parts of my car”.', chips: topNames(pal, 3).map(function (e) { return 'Make the ' + e.name + ' matte'; }) };
         if (!ops.length && pending.length && pending[0].kind !== 'body' && pending[0].kind !== 'main') {                 // a target and nothing to do with it: "the black" / "the numbers"
@@ -807,6 +846,18 @@
         }
         if (!ops.length) return null;
         // painter shorthand: ghost the stripes (same colour as the body, a different sheen), blackout the X (near-black satin)
+        // W1-PLACE 2026-10-08 (owner: on the pink + mint ARCA "i want a green car" painted over the pink accent blocks; owner rule: accents / decals stay unless named):
+        // a plain one-colour whole-car recolour ("a green car", "make the car blue") on a body with a clear MAIN colour and distinct accent colours recolours the main
+        // colour's family only and says so; "everything / the whole car / entire / every colour / solid" still repaints all. Kill switch: window.SPB_W1P_NOACCENT = true.
+        try {
+            if (!window.SPB_W1P_NOACCENT && !/\b(everything|entire|whole|every colou?rs?|all (?:of )?(?:it|the colou?rs?|colou?rs?)|completely|everywhere|all over|solid|one colou?r|single colou?r|including|even the)\b/.test(t)) {
+                var w1fam = {}, w1ff = {}, w1neu = /^(white|black|grey|gray|silver|charcoal|cream|brown|tan)$/;
+                ((env && env.bodyLayers) || []).forEach(function (n) { var cs = []; try { cs = (env.layerColours && env.layerColours(n)) || []; } catch (eL) {} cs.forEach(function (c) { var f = familyOf(c.hex); if (w1neu.test(f)) return; w1fam[f] = (w1fam[f] || 0) + (Number(c.share_pct) || 0); if (!w1ff[f]) w1ff[f] = c.hex; }); });
+                var w1k = Object.keys(w1fam).sort(function (a, b) { return w1fam[b] - w1fam[a]; }), w1m = w1k[0], w1acc = w1k.slice(1).filter(function (f) { return w1fam[f] >= 5 && w1fam[f] >= 0.2 * w1fam[w1m]; });
+                var w1top = topNames(pal, 1)[0];
+                if (w1m && w1fam[w1m] >= 15 && w1acc.length && w1top && w1top.fam === w1m && clauses.every(function (c1) { return !c1 || !c1.colours || c1.colours.length <= 1; })) ops.forEach(function (op) { var tg0 = op.target; if (tg0 && tg0.kind === 'body' && op.colour && !op.keep && !op.look && !op.recipe && !op.rel && !op.shade && !op.pop && !op.texture && !op.sub && !op.ext) { op.target = { kind: 'main', w1acc: w1acc.slice(0, 2), w1main: w1top.name }; } });
+            }
+        } catch (eW1) {}
         var main = topNames(pal, 1)[0] || null, ghostAsk = false;
         ops = ops.filter(function (op) {
             if (!op.recipe) return true;
@@ -821,6 +872,7 @@
             var tg = op.target; if (!tg) return false;
             if (op.recipe) return true;
             if (tg.kind === 'layerword') return true;
+            if (tg.kind === 'part' && String(tg.part).indexOf('@') > 0) return true;          // D-DOOR: a sub-part ('left side@door') is ours; the older whole-side handler would paint the whole panel
             if (tg.kind === 'allpop' || tg.kind === 'colour' || tg.kind === 'accents' || tg.kind === 'numbers' || tg.kind === 'sponsors' || tg.kind === 'main') return true;
             if (tg.kind === 'body') return !!(op.keep || (op.look && !LEGACY_LOOKS[op.look.id]));          // whole-car matte / gloss / glossier / pop: the older handlers
             if (op.rel || op.shade || op.pop || op.keep) return true;
@@ -866,7 +918,7 @@
         planned.ops.forEach(function (o) { if (!o.target) return; var k = JSON.stringify([o.target.kind, o.target.word || o.target.part || '', o.target.hex || '']); if (!seen[k]) { seen[k] = 1; tgs.push(o.target); } });
         var lid = op.look && op.look.id !== 'ext' ? op.look.id : null, dir = null;
         if (!lid && op.rel) { lid = op.rel === 'up' ? (op.strong ? 'wet look' : 'gloss') : (op.soft ? 'satin' : 'matte'); dir = op.rel === 'up' ? 1 : -1; }         // "glossier" produced the gloss look: "a bit more" climbs from there
-        return { targets: tgs, act: { look: lid, dir: dir, colour: op.colour || null, soft: !!op.soft, strong: !!op.strong, shade: op.shade || null, keep: !!op.keep, pop: !!op.pop, lookObj: op.look ? JSON.parse(JSON.stringify(op.look)) : null, strength: op.strengthMul || null, texture: op.texture ? JSON.parse(JSON.stringify(op.texture)) : null, scale: op.scaleMul || null, shadeDir: op.shadeDir || 0 }, label: tgs.length ? targetChipName(tgs[0], []) : '' };          // HELPER_V2 fix pass 4: "on the roof too" / "smaller" need the exact look, texture and size
+        return { targets: tgs, act: { look: lid, dir: dir, colour: op.colour || null, soft: !!op.soft, strong: !!op.strong, shade: op.shade || null, keep: !!op.keep, pop: !!op.pop, lookObj: op.look ? JSON.parse(JSON.stringify(op.look)) : null, strength: op.strengthMul || null, texture: op.texture ? JSON.parse(JSON.stringify(op.texture)) : null, scale: op.scaleMul || null, shadeDir: op.shadeDir || 0, outline: op.outline ? JSON.parse(JSON.stringify(op.outline)) : null, gradient: op.gradient ? JSON.parse(JSON.stringify(op.gradient)) : null }, label: tgs.length ? targetChipName(tgs[0], []) : '' };          // HELPER_V2 fix pass 4: "on the roof too" / "smaller" need the exact look, texture and size
     }
     function targetChipName(tg, pal) {
         if (tg.kind === 'colour') { var w = wantFor(tg.word, tg.hex, tg.qual), r = resolveColour(w, pal); return r.entries.length ? r.label : tg.word; }
@@ -890,7 +942,7 @@
     }
     function relFinish(op) { if (op.rel === 'up') return op.strong ? { found: 'base::f_gel_coat', label: 'much glossier' } : { found: 'base::f_soft_gloss', label: 'glossier' }; return op.soft ? { found: 'base::f_clear_satin', label: 'a little duller' } : { found: 'base::f_soft_matte', label: 'duller (matte)' }; }
     function accentsOf(pal) { var real = pal.filter(function (e) { return e.share >= 1.5; }); return real.slice(1); }          // colours that are not the body: everything after the biggest real colour
-    function actionText(op) { if (op.look) return op.look.label; if (op.colour) return op.colour.name; if (op.rel) return op.rel === 'up' ? 'glossier' : 'duller'; if (op.pop) return 'pop'; if (op.shade) return op.shade; return 'satin'; }
+    function actionText(op) { if (op.copy && op.copy.zone_id) return 'the same as ' + (op.copy.from || ('“' + op.copy.zone + '”')); if (op.look) return op.look.label;          /* HELPER FIX PASS 8 2026-10-05: a copy-look chip reads back as a copy-look sentence */ if (op.colour) return op.colour.name; if (op.rel) return op.rel === 'up' ? 'glossier' : 'duller'; if (op.pop) return 'pop'; if (op.shade) return op.shade; return 'satin'; }
     function chipsLike(op, pal, n) { var al = actionText(op); return topNames(pal, n || 3).map(function (e) { return 'Make the ' + e.name + ' ' + al; }); }
     function extend(a, b) { for (var k in b) if (Object.prototype.hasOwnProperty.call(b, k)) a[k] = b[k]; return a; }
     function chDelta(h1, h2) { var a = hexRgb(h1), b = hexRgb(h2); return Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]), Math.abs(a[2] - b[2])); }
@@ -908,12 +960,18 @@
     function prepZoneColours(zc) {
         return (zc || []).filter(function (z) { return z && /^#[0-9a-f]{6}$/i.test(String(z.hex || '')); }).map(function (z) { var q = hsl(z.hex); return { hex: String(z.hex).toLowerCase(), zone: z.zone, zone_id: z.zone_id, index: z.index, share: z.share_pct != null ? Number(z.share_pct) : null, layers: z.layers || [], fam: familyOf(z.hex), l: q.l, s: q.s, h: q.h, name: (Dz().nameColour ? Dz().nameColour(z.hex) : familyOf(z.hex)) }; });
     }
-    function zoneHits(want, zcols, scope) {
+    function zoneHits(want, zcols, scope, env) {
         if (!zcols || !zcols.length) return [];
         var sc = (scope || []).map(norm), inScope = function (z) { return !sc.length || z.layers.some(function (l) { return sc.indexOf(norm(l)) !== -1; }); };
         var hit = zcols.filter(function (e) { return inScope(e) && (e.name === want.word || (e.fam === want.fam && bandOk(e, want.band))); });
         if (!hit.length && want.band) hit = zcols.filter(function (e) { return inScope(e) && e.fam === want.fam; });
         if (!hit.length) { var nb = NEAR[want.fam] || []; nb.forEach(function (f) { if (!hit.length) hit = zcols.filter(function (e) { return inScope(e) && e.fam === f; }); }); }
+        // lane R3-EDIT 2026-10-07 (MCP M3 train A-0329: "Change all red areas" also recoloured the Number Fill + logo zones): a zone limited to number / logo / decal layers is not
+        // "the red" of the car unless the buyer named numbers / logos (env.decalsNamed) or a layer; when the colour is ONLY on such zones they are still what the buyer means (kept).
+        if (hit.length && env && env.bodyLayers && env.bodyLayers.length && !env.decalsNamed && !sc.length && !r3eOff('SPB_EDIT_NODECALZONE')) {
+            var bl = env.bodyLayers.map(norm), bodyHit = hit.filter(function (z) { return !z.layers || !z.layers.length || z.layers.some(function (l) { return bl.indexOf(norm(l)) !== -1; }); });
+            if (bodyHit.length) hit = bodyHit;
+        }
         return hit;
     }
     function shadeHex(hex, word) { var q = hsl(hex); if (/darker|deeper|richer/.test(word)) return fromHsl(q.h, q.s, q.l * 0.65); if (/lighter|paler/.test(word)) return fromHsl(q.h, q.s * 0.9, q.l + (1 - q.l) * 0.4); if (/faded|washed|subdued|muted|less saturated/.test(word)) return fromHsl(q.h, q.s * 0.55, q.l); return fromHsl(q.h, Math.min(1, q.s * 1.25 + 0.05), Math.min(0.62, Math.max(0.42, q.l))); }
@@ -978,7 +1036,7 @@
         return { stops: [{ pos: 0, color: aLow ? a : b }, { pos: 100, color: aLow ? b : a }], direction: dir, fit: true };
     }
     function compile(planned, env) {
-        var pal = prepPalette(env.palette), layers = env.layers || [], zones = [], notes = [], missing = [], ask = null, zcols = prepZoneColours(env.zoneColours), objects = [], noops = [], lastCol = null;
+        var pal = prepPalette(env.palette), layers = withLayerIds(env.layers || []), zones = [], notes = [], missing = [], ask = null, zcols = prepZoneColours(env.zoneColours), objects = [], noops = [], lastCol = null;
         function layerNames(role) {         // the app's layer roles: 'numbers', 'decals / logos', 'tape / stripes', 'body paint', 'other art'
             var want = role === 'sponsors' ? { sponsors: 1, 'decals / logos': 1, 'decals/logos': 1, logos: 1 } : (role === 'stripes' ? { 'tape / stripes': 1, 'tape/stripes': 1, stripes: 1, tape: 1 } : { numbers: 1 });
             return layers.filter(function (l) { return want[String(l.role || '').toLowerCase()] && !l.hidden && !(role === 'numbers' && /sponsor|logo|decal|contingenc/i.test(String(l.name || ''))); }).map(function (l) { return l.name; });          // MCPSCEN 2026-10-05: a numbers layer that also holds the sponsors (DLM "SPONSORS NUMBERS") is shared: numbers are boxed instead
@@ -995,10 +1053,12 @@
             if (!tg) return;
             if (tg.kind === 'allpop') { popAll(pal, zones, notes); return; }
             if (tg.kind === 'colour') {
-                var w = wantFor(tg.word, tg.hex, tg.qual), r = resolveColour(w, pal), zh = zoneHits(w, zcols, tg.layers), shownPix = r.entries.reduce(function (a, e) { return a + (e.shown != null ? e.shown : e.share); }, 0);
+                var w = wantFor(tg.word, tg.hex, tg.qual), r = resolveColour(w, pal), zh = zoneHits(w, zcols, tg.layers, env), shownPix = r.entries.reduce(function (a, e) { return a + (e.shown != null ? e.shown : e.share); }, 0);
                 // ROUTER-FIX 2026-10-04 (owner: "the yellow on the spray can" -> "that yellow is a logo ... Show me the can"): the buyer NAMED a thing; the app offers the layers that hold
                 // that colour (+ a box to draw) and the other jobs in the sentence still run. Nothing is guessed here.
                 if (tg.object && op.colour && !op.colour.exact && /\bsame\b/.test(String(planned.raw || planned.text || '')) && zcols.length) { var sameO = zcols.filter(function (zc) { return zc.fam === familyOf(op.colour.hex); })[0]; if (sameO) op = extend(extend({}, op), { colour: { name: op.colour.name, hex: sameO.hex, exact: true } }); }          // ROUTER2: "the same color pink you use on the numbers" = that zone's exact hex for a named thing too
+                // HELPER FIX PASS 8 2026-10-05 (owner live: "In the Logos layer make the yellow on the spray can ..." asked to pick a layer the buyer had just named): a NAMED layer is the pick
+                if (tg.object && tg.layers && tg.layers.length) { notes.push('(You named the ' + tg.layers[0] + ' layer, so I changed the ' + tg.word + ' in that layer, the ' + tg.object + ' included. If other ' + tg.word + ' art in that layer should stay, say “show me the ' + tg.object + '” and draw a box around it.)'); tg = extend(extend({}, tg), { objectNamed: tg.object }); delete tg.object; }
                 if (tg.object) { objects.push({ object: tg.object, word: tg.word, hexes: r.entries.map(function (e) { return e.hex; }).concat(zh.map(function (z) { return z.hex; })), layers: tg.layers || null, action: actionText(op), colour: op.colour ? { name: op.colour.name, hex: applyQual(op.colour.hex, op.colour.qual) } : null, look: op.look ? op.look.id : null }); return; }
                 // a colour IN A PLACE that only a zone paints: that zone covers more than the place, so editing it would change the colour everywhere
                 if (zh.length && tg.parts && tg.parts.length && !r.entries.length) { missing.push({ why: 'zonescope', word: tg.word }); ask = { text: 'The ' + tg.word + ' there is painted by your zone' + (zh.length > 1 ? 's ' : ' ') + zh.slice(0, 3).map(function (z) { return '“' + z.zone + '”'; }).join(', ') + ', which also covers other places, so I did not change it. Say “make all the ' + tg.word + ' ' + actionText(op) + '” to change it everywhere.', chips: ['Make all the ' + tg.word + ' ' + actionText(op)] }; return; }
@@ -1037,6 +1097,7 @@
                 if (tg.parts && tg.parts.length) parts = tg.parts.slice();
             } else if (tg.kind === 'main') {
                 var top = topNames(pal, 1)[0]; if (!top) { missing.push({ why: 'colour', word: 'main colour' }); ask = { text: 'I cannot read the paint yet: wait for the car to show in the preview and ask again.', chips: [] }; return; }
+                if (tg.w1acc && tg.w1acc.length) notes.push('I changed the ' + tg.w1main + ' body paint and kept your ' + tg.w1acc.join(' and ') + ' accents (say “everything” or “the whole car” to repaint those too).');          // W1-PLACE 2026-10-08
                 var rm = resolveColour(wantFor(top.name, top.hex, null), pal); region = { colors: (rm.entries.length ? rm.entries : [top]).map(function (e) { return e.hex; }) }; if (env && env.paintableFlat) region.paintable = true; label = 'main colour (' + top.name + ')'; share = top.share; if (top.share < 25 && op.colour && env && env.mcpSemanticHexLabels != null) notes.push('The body is many colours (the biggest, ' + top.name + ', is only ' + Math.round(top.share) + '% of the car): this changes the ' + top.name + ' family only, so the other body colours stay as shapes around it. ' + 'For ONE colour over the whole body use spb_apply_scheme preset "solid" (numbers / sponsors stay).');          /* MCPSCEN 2026-10-05 (RAM2 Monster High camo: main colour (pink 16%) matte black left blue / teal / purple shards on the sides, and nothing said why) */
             } else if (tg.kind === 'numbers' || tg.kind === 'sponsors') {
                 var names = layerNames(tg.kind);
@@ -1054,7 +1115,7 @@
                     if (tg.kind === 'numbers' && tg.sub && nf && nf.fill) { var sc = tg.sub === 'fill' ? nf.fill : (tg.sub === 'outline' ? (nf.outline || (nf.others || [])[0]) : (nf.shadow || (nf.others || [])[1] || (nf.others || [])[0])); if (sc) { region.colors = [sc]; region.tolerance = nf.tol || 16; region._fixTol = 1; label = 'number ' + tg.sub; } }
                     else if (tg.kind === 'numbers' && op.colour && !op.keep && !tg.sub && nf && nf.fill && (nf.others || []).length) { region.colors = [nf.fill]; region.tolerance = nf.tol || 16; region._fixTol = 1; label = 'number fill'; notes.push('(I changed the number fill and kept the shadow and outline: say “the number outline too” for those.)'); }
                 }
-            } else if (tg.kind === 'part') { region = { part: tg.part }; label = tg.part; }
+            } else if (tg.kind === 'part') { var tpp = String(tg.part).split('@'); region = { part: tpp[0] }; label = tg.part; if (tpp[1]) { region.portion = tpp[1]; label = (/^left/.test(tpp[0]) ? 'left ' : (/^right/.test(tpp[0]) ? 'right ' : tpp[0] + ' ')) + tpp[1]; } }          // D-DOOR: 'left side@door' = the door of the left side
             else if (tg.kind === 'layer') { region = { layers: tg.layers.slice() }; label = tg.word + ' layer'; }          // COPILOT-FIX: "make the Numbers layer gold"
             else if (tg.kind === 'layerword') {
                 var lwr = LAYERWORDS.filter(function (x) { return x[0] === tg.word; })[0], lns = lwr ? layerNamesFor(layers, lwr[1]) : [];
@@ -1069,6 +1130,10 @@
                 else { missing.push({ why: 'accents' }); ask = { text: 'Which colour are the ' + tg.word + '? I can see ' + paletteLine(pal) + '.', chips: topNames(pal, 4).map(function (e) { return 'Make the ' + e.name + ' ' + tg.word + ' ' + actionText(op); }) }; return; }
             } else { region = (env && env.bodyLayers && env.bodyLayers.length) ? { everything: true } : { everything: true, paintable: true }; label = 'whole car'; }          // HELPER_V2 fix pass 4b 2026-10-04 owner: keep improving the Offline Helper -- body layers already keep decals out; the template-Mask 'paintable' grid left holes in the body
             // what does the buyer want it to BECOME
+            // HELPER FIX PASS 8 2026-10-05 (owner live: "the same color and finish that's on the numbers"): COPY LOOK = the source zone's finish + colour + scale + spec patterns + strengths,
+            // exactly (zone-kit copy_look_from); a colour the buyer says in the same breath still wins ("the same finish as the numbers, but red")
+            if (op.copy && !op.copy.zone_id && op.copy.sampled && /^#[0-9a-f]{6}$/i.test(String(op.copy.color || '')) && !c && !r3eOff('SPB_EDIT_NOLOGOSAMPLE')) { op.colour = op.colour || { name: op.copy.word || op.copy.color, hex: op.copy.color, exact: true }; op.copy = null; }          // lane R3-EDIT 2026-10-07 H1b: a colour sampled from the logo = a recolour with that hex
+            if (op.copy && op.copy.zone_id && !c) c = { id: 'copy', label: 'the same look as ' + (op.copy.from || ('“' + op.copy.zone + '”')), found: op.copy.finish || null, zone: { finish: op.copy.finish || 'base::gloss', copy_look_from: op.copy.zone_id }, colourFrom: 'zone', zoneColor: (op.copy.color && /^#[0-9a-f]{6}$/i.test(op.copy.color)) ? op.copy.color : 'source', about: '' };
             if (op.ext && !c) { missing.push({ why: 'look', query: op.ext }); ask = { text: 'I do not know a look called “' + op.ext + '”. Here is what I can do to ' + targetPhrase(tg, pal) + ':', chips: askWhat(targetChipName(tg, pal), pal) }; return; }
             var newHex = op.colour ? applyQual(op.colour.hex, op.colour.qual) : null, finish = null, color = 'source', what = [], zoneExtra = null, adj = null;
             // ROUTER-FIX 2026-10-04 (owner: "the same color pink you use on the numbers"): "the same <colour>" = the exact hex a zone already paints in that colour family
@@ -1094,17 +1159,26 @@
             else if (op.pop) { var shiny = (tg.kind === 'colour' || tg.kind === 'numbers' || tg.kind === 'sponsors' || tg.kind === 'accents'); finish = shiny ? 'base::f_metallic' : 'base::f_soft_matte'; what.push(shiny ? 'metallic, so it stands out' : 'flat matte, so the rest stands out'); }
             if (adj && !c && !finish) finish = 'base::gloss';
             if (newHex && !c) { what.push('recoloured ' + tintName(newHex, !!(env && env.mcpSemanticHexLabels))); if (!finish) finish = 'base::gloss'; color = newHex; }
-            else if (newHex && c) { color = newHex; var cn1 = tintName(newHex, !!(env && env.mcpSemanticHexLabels)); if (!saysColour(c.label, cn1)) what.push('in ' + cn1); }
+            else if (newHex && c) { color = newHex; var cn1 = tintName(newHex, !!(env && env.mcpSemanticHexLabels)); if (!saysColour(c.label, cn1) && c.id !== 'copy') what.push('in ' + cn1); }          /* PASS 8: a copied look carries its own colour */
             var tex = op.texture || null;          // FIRSTTEST 2026-10-04: the texture rides in the SAME zone as the colour / finish (two zones on the same pixels: only the top one shows)
             if (tex) { if (!finish) finish = 'base::f_soft_gloss'; what.push(tex.mode === 'pattern' ? tex.label + ' pattern (' + tex.patternName + ')' : tex.label + ' shine texture (' + tex.specName + ', in the spec)'); }
             if (!finish) { missing.push({ why: 'action', label: label }); ask = { text: 'What should I do with ' + targetPhrase(tg, pal) + '? Pick a look, or tell me a colour.', chips: askWhat(targetChipName(tg, pal), pal) }; return; }
             if (op.exclude && op.exclude.length) { region = JSON.parse(JSON.stringify(region)); region.exclude = op.exclude.slice(); }
             if (op.strengthMul > 0) what.push((op.strengthMul < 1 ? 'toned down' : 'stronger') + ' (strength ' + Math.round(Math.min(1, op.strengthMul) * 100) + '%)');          // HELPER_V2 fix pass 5 2026-10-05 owner: keep improving the Offline Helper: "less rainbow" = the same look, weaker
             if (op.scaleMul > 0 && finish) what.push((op.scaleMul < 1 ? 'smaller' : 'bigger') + ' (size ' + Math.round(op.scaleMul * 100) + '%)');          // HELPER_V2 fix pass 4: say the size change
+            if (region && region.layers && !window.SPB_CX3_OFF && window.SpbLayerTargets) {          // CX3 2026-10-09: bind to ONE exact layer (id when the name repeats); never the first same-named layer
+                var exact3 = region.layers.map(function (ref3) { return window.SpbLayerTargets.resolve(ref3, layers); });
+                if (exact3.some(function (x3) { return !x3.ok; })) { ask = { text: 'Choose the exact group and layer before applying this change. Nothing has changed.', chips: [] }; missing.push({ why: 'ambiguous-layer' }); return; }
+                region.layers = exact3.map(function (x3) { return x3.selector; });
+            }
             (parts || [null]).forEach(function (pt) {
                 var ptn = pt ? String(pt).split('@') : null;          // ROUTER-FIX: "left side@rear third" = that portion of the part
                 var rg = JSON.parse(JSON.stringify(region)), fixTol = !!rg._fixTol; delete rg._fixTol; if (rg.colors && !fixTol) { var paintMode = !!(newHex || adj || color !== 'source'), strictFamily = env && env.mcpSemanticColorFamily && tg.kind === 'colour' ? env.mcpSemanticColorFamily : null; if (strictFamily) { var familyColors = rg.colors.filter(function (h) { try { return familyOf(h) === strictFamily; } catch (e) { return false; } }); /* SPB-MCP 2026-10-05: accept an unambiguous exact label reported by this palette even at a display-name/family boundary; preserve all offline routing. */ if (!familyColors.length && r && r.entries) { var exactNamed = r.entries.filter(function (e) { return e.name === tg.word && rg.colors.indexOf(e.hex) !== -1; }), exactFamilies = []; exactNamed.forEach(function (e) { var f = familyOf(e.hex); if (exactFamilies.indexOf(f) === -1) exactFamilies.push(f); }); if (exactNamed.length && exactFamilies.length === 1) { strictFamily = exactFamilies[0]; familyColors = exactNamed.map(function (e) { return e.hex; }); } } rg.colors = familyColors; rg.mcpFamily = strictFamily; if (!rg.colors.length) { missing.push({ why: 'color-family', label: label }); ask = { text: 'I could not safely isolate only the ' + strictFamily + ' paint here, so I changed nothing.' }; return; } } var ef = edgeFitFor(rg.colors, paintMode, strictFamily, tg.kind === 'colour' || tg.kind === 'main'); rg.tolerance = paintMode ? TOL_PAINT : TOL_SPEC; if (ef) { rg.colors = ef.colors; rg.tols = ef.tols; rg.tolerance = ef.tolerance; } }
                 if (ptn && (rg.colors || rg.layers)) { rg.part = ptn[0]; if (ptn[1]) rg.portion = ptn[1]; }
+                if (!(window.SPB_ACCENT_OFF === true) && tg.kind === 'part' && rg.part && !rg.colors && !rg.layers && !rg.element && !rg.graphic && !op.recipe && !op.outline && !ACC_ALL_RE.test(String(planned.raw || planned.text || '')) && !ACC_NAMED_RE.test(String(planned.raw || planned.text || ''))) {          // W2-ACCENT 2026-10-09 (Haiku harm theme: a part repaint covering painted accent art)
+                    var accSh = 0; try { accSh = window.SpbProZone && SpbProZone.accentShare ? SpbProZone.accentShare(rg.part, rg.portion) : 0; } catch (eAc) { accSh = 0; }
+                    if (accSh > 0.01) { rg.keepAccents = true; var accMsg = 'I kept the stripes and painted shapes (the accent art) on the ' + String(rg.part) + ' as they are (say “everything” or “including the stripes” to repaint those too).'; if (notes.indexOf(accMsg) === -1 && !notes.some(function (n0) { return /accent art/.test(n0); })) notes.push(accMsg); }
+                }
                 var z = extend(zoneExtra ? JSON.parse(JSON.stringify(zoneExtra)) : {}, { name: cap(label) + (pt ? ' (' + String(pt).replace('@', ', ') + ')' : '') + ' ' + (what.join(', ') || 'edit'), finish: finish, color: color, region: rg });
                 if (adj) extend(z, adj);
                 if (tex) { if (tex.mode === 'pattern') { z.pattern = { id: tex.pattern, opacity: 60, scale: 1 }; z.spec_patterns = []; } else { z.spec_patterns = [{ id: tex.spec, opacity: 85, scale: 1 }]; z.pattern = { id: 'none' }; } }          // FIRSTTEST: the other version is one chip away (it replaces this one)
@@ -1114,15 +1188,19 @@
                 if (op.recipe === 'ghost') { z.name = cap(label) + ' ghosted'; what = ['ghosted: the body colour with a different sheen']; }
                 if (op.recipe === 'blackout') { z.name = cap(label) + ' blacked out'; what = ['blacked out (near-black ' + ((c && c.label) || 'satin') + ')']; }
                 // HELPER FIX PASS 7 2026-10-05 (blind5 b5-047: "a thin red line around the roof" made the WHOLE CAR red): an outline is a real line along the part's edge (js/spb-pro-graphics.js kind "outline"), never a fill
+                if (op.outline && tg.kind === 'layer' && tg.layers && tg.layers.length && newHex) { var ow8 = Number(op.outline.w) || 0.012; z.region = { graphic: { kind: 'outline', layer: tg.layers[0], colour: String(newHex).toLowerCase(), w: ow8 } }; what = [(ow8 < 0.015 ? 'a thin ' : 'a ') + tintName(newHex, false) + ' line along the edges of the ' + tg.layers[0] + ' art']; z.name = tg.layers[0] + ' ' + tintName(newHex, false) + ' accent line'; if (!c && /silver|gold|chrome|bronze|copper|platinum|gunmetal|steel/i.test(tintName(newHex, false))) z.finish = 'base::metallic'; }          // HELPER FIX PASS 8 2026-10-05: "light blue with silver accent" on a layer
                 if (op.outline && tg.kind === 'part' && !pt && newHex) { var ow = Number(op.outline.w) || 0.02; z.region = { graphic: { kind: 'outline', part: tg.part, colour: String(newHex).toLowerCase(), w: ow } }; if (rg.exclude) z.region.exclude = rg.exclude.slice(); what = [(ow < 0.015 ? 'a thin ' : (ow > 0.03 ? 'a thick ' : 'a ')) + tintName(newHex, false) + ' outline along its edge']; z.name = cap(label) + ' outline ' + tintName(newHex, false); }
                 // HELPER FIX PASS 7 2026-10-05 (blind5 b5-057: a door gradient became a solid whole-car blue): a fade on a part is a gradient zone fitted to THAT part, oriented by the car map (front->rear or roof-line->rocker)
                 if (op.gradient && tg.kind === 'part' && op.gradient.from && op.gradient.to) { var gsp = partGradient(tg.part, op.gradient); z.gradient = gsp; z.color = String(op.gradient.from).toLowerCase(); var gnm = op.gradient.names || [tintName(op.gradient.from, false), tintName(op.gradient.to, false)]; what = ['a fade from ' + gnm[0] + ' to ' + gnm[1]]; z.name = cap(label) + ' fade ' + gnm[0] + ' to ' + gnm[1]; }
+                if (op.copy && op.copy.zone_id) { z.copy_look_from = op.copy.zone_id; z.name = cap(tg.kind === 'colour' && tg.layers && tg.layers.length ? tg.word + ' in ' + tg.layers[0] : label) + ' like ' + (op.copy.from || ('“' + op.copy.zone + '”')); }          // HELPER FIX PASS 8: survives the outline / gradient rewrites above; a short name the zone list does not cut
                 z._meta = { label: label, what: what, share: share, element: !!rg.element, specOnly: color === 'source' && !adj, finishExplicit: !!(c || op.rel || op.pop), look: c ? c.id : null, parts: pt ? [ptn[0]] : (tg.kind === 'part' ? [tg.part] : []), kind: tg.kind, about: c ? c.about : '' };
                 if (tex) { z._meta.texture = { mode: tex.mode, label: tex.label, id: tex.mode === 'pattern' ? tex.pattern : tex.spec, name: tex.mode === 'pattern' ? tex.patternName : tex.specName }; if (tex.mode === 'pattern') z._meta.specOnly = false; }
                 if (below && below.ids.length) { z._meta.below = below.ids.slice(); z._meta.belowNames = below.names.slice(); z._meta.belowNote = below.note; }          // VISIBLE_COLOUR: the app places this zone under those
                 if (tg.kind === 'colour') z._meta.visForce = !!(planned.force || env.hiddenOk);          // VISIBLE_COLOUR: "anyway" / the buyer's yes = the hidden colour too (zone on top)
                 if (pt && tg.place) z._meta.placePart = true;          // ROUTER-FIX: one of several parts a PLACE stands for ("the rear of the car"): skipped when the car does not know it
                 if (pt && tg.kind === 'colour') z._meta.label = label + ' on the ' + (ptn[1] ? ptn[1] + ' of the ' + ptn[0] : ptn[0]);          // "the black on the rear third of the left side", not four times "the black"
+                if (op.copy && op.copy.zone_id) { z._meta.copyFrom = { zone_id: op.copy.zone_id, zone: op.copy.zone, desc: op.copy.desc || '' }; z._meta.specOnly = false; }          // HELPER FIX PASS 8
+                if (tg.objectNamed) z._meta.objectNamed = tg.objectNamed;
                 if (tg.bodyNamed) z._meta.bodyNamed = true; if (tg.artObjects) z._meta.artObjects = tg.artObjects.slice();          // FIRSTTEST2: "on the base paint and on the spray paint can" -> the app adds the art layers that hold the colour
                 zones.push(z);
             });
@@ -1166,11 +1244,49 @@
         var colour = null; if (req.colour) { req = Object.assign({}, req, { colour: /^#/.test(String(req.colour)) ? req.colour : tintColours(String(req.colour)) }); var pc = Dz().parseColours ? Dz().parseColours(norm(req.colour)) : []; if (pc.length) colour = { name: pc[0].name, hex: pc[0].hex, qual: qualBefore(' ' + norm(req.colour), norm(req.colour).indexOf(pc[0].name)) }; else if (/^#[0-9a-f]{6}$/i.test(String(req.colour))) colour = { name: req.colour, hex: String(req.colour).toLowerCase(), exact: true }; else return { error: 'colour not understood: ' + req.colour }; }
         var rel = req.relative === 'glossier' ? 'up' : (req.relative === 'duller' ? 'down' : null);
         var texture = req.texture ? textureFor(req.texture, req.texture_mode) : null; if (req.texture && !texture) return { error: 'texture not understood: ' + req.texture + ' (a concept like "snakeskin", "crocodile", "dragon scales", "fish scales", or a spec pattern id from find_spec_patterns)' };          // FIRSTTEST: the colour + finish + texture of ONE target in ONE zone
-        if (!looks && !colour && !rel && !texture) return { error: 'say what it should become: look ("matte", "powder coat" ...), colour, or relative ("glossier" / "duller")' };
-        var op = { texture: texture, target: tg, look: looks, colour: colour, rel: rel, soft: !!req.slightly, strong: false, shade: null, keep: !!req.keep_colours, pop: false };
+        var copy = null; if (req.same_as) { var lsrc = lookSource(req.same_as, env, req.same_colour || null); if (lsrc.ask) return { error: lsrc.ask }; copy = lsrc.copy; if (!req.colour_too) colour = null; looks = null; }          // HELPER FIX PASS 8 2026-10-05: copy a zone's whole look (online refinish same_as)
+        if (!looks && !colour && !rel && !texture && !copy) return { error: 'say what it should become: look ("matte", "powder coat" ...), colour, or relative ("glossier" / "duller")' };
+        var op = { texture: texture, target: tg, look: looks, colour: colour, rel: rel, soft: !!req.slightly, strong: false, shade: null, keep: !!req.keep_colours, pop: false, copy: copy };
         var exl = []; [].concat(req.exclude || []).forEach(function (w) { var k = /number/i.test(w) ? 'numbers' : (/stripe|tape/i.test(w) ? 'stripes' : (/sponsor|logo|decal/i.test(w) ? 'sponsors' : '')); if (k && exl.indexOf(k) === -1) exl.push(k); });
         if (exl.length && ['colour', 'main', 'body', 'part', 'accents'].indexOf(tg.kind) !== -1) op.exclude = exl;
         return compile({ ops: [op], text: '', raw: 'make the ' + tword + ' ' + (req.look || req.colour || ''), force: !!req.anyway }, env);
+    }
+    // HELPER FIX PASS 8 2026-10-05 (owner live 11:45, the spray-can case): WHICH zone's look "the same colour / finish / spec as the numbers | the hood | the Logos layer | zone X" means.
+    // env.zoneLooks (js/spb-pro-ai.js editEnv): { zone_id, zone, index, layers, parts, share, finish, color, desc, catchAll }. A colour word ("the purple ... on the numbers") prefers the
+    // zone painting that colour; otherwise the zone that SHOWS there, top first. -> { copy: {zone_id, zone, finish, color, desc, from}, others } or { ask }
+    function lookSource(src, env, colWord) {
+        var zl = ((env && env.zoneLooks) || []).filter(function (z) { return z && z.zone_id && (z.finish || z.color) && !z.muted; }), s = ' ' + norm(src) + ' ';
+        if (!zl.length) return { ask: 'There is no zone on the car yet to copy a look from. Tell me the look instead (for example “chrome purple”).' };
+        var lays = (env && env.layers) || [], cand = [], what = '';
+        var roleOf = function (n) { var l = lays.filter(function (x) { return x && x.name === n; })[0]; return String((l && l.role) || '').toLowerCase(); };
+        var named = lays.filter(function (l) { return l && l.name && norm(l.name).length > 2 && s.indexOf(' ' + norm(l.name) + ' ') !== -1; }).sort(function (a, b) { return b.name.length - a.name.length; })[0];
+        var byName = zl.filter(function (z) { var zn = norm(z.zone); return zn.length > 3 && s.indexOf(' ' + zn + ' ') !== -1; });
+        var ph = null; PART_WORDS.forEach(function (pw) { if (!ph && pw[1].test(s)) ph = pw[0]; });
+        if (byName.length) { cand = byName; what = 'zone “' + byName[0].zone + '”'; }
+        else if (/\b(numbers?|digits?)\b/.test(s)) { cand = zl.filter(function (z) { return (z.layers || []).some(function (n) { return /number/.test(roleOf(n)) || /number/i.test(n); }) || z.element === 'numbers' || /\bnumbers?\b/i.test(z.zone); }); what = 'the numbers'; }
+        else if (named) { cand = zl.filter(function (z) { return (z.layers || []).indexOf(named.name) !== -1; }); what = 'the ' + named.name + ' layer'; }
+        else if (SPONSORS_RE.test(s)) { cand = zl.filter(function (z) { return (z.layers || []).some(function (n) { return /logo|sponsor|decal/.test(roleOf(n)); }) || z.element === 'sponsors'; }); what = 'the sponsors / logos'; }
+        else if (ph) { cand = zl.filter(function (z) { return (z.parts || []).indexOf(ph) !== -1 || new RegExp('\\b' + ph + '\\b', 'i').test(z.zone); }); what = 'the ' + ph; }
+        else if (/\b(stripes?|tape|pinstripes?)\b/.test(s)) { cand = zl.filter(function (z) { return (z.layers || []).some(function (n) { return /tape|stripe/.test(roleOf(n)); }) || /stripe|tape/i.test(z.zone); }); what = 'the stripes'; }
+        else if (/\b(body|base|main|car)\b/.test(s)) { cand = zl.filter(function (z) { return (z.layers || []).some(function (n) { return /body/.test(roleOf(n)); }) || z.catchAll; }); what = 'the body'; }
+        if (!what) return { unknown: true, ask: 'Which part should I copy the look from? Name it (for example “the same finish as the numbers”).' };
+        cand = cand.filter(function (z) { return z.share !== 0; });
+        if (!cand.length) return { ask: 'I do not see a zone that paints ' + what + ', so there is no look there to copy. Tell me the look instead (for example “chrome purple”).' };
+        var fam = null; try { if (colWord) { var pc0 = Dz().parseColours ? Dz().parseColours(norm(colWord)) : []; if (pc0.length) fam = familyOf(pc0[0].hex); } } catch (eF) {}
+        var fOk = function (z) { return fam && /^#[0-9a-f]{6}$/i.test(String(z.color || '')) && familyOf(z.color) === fam ? 0 : 1; };
+        cand.sort(function (a, b) { var fa = fOk(a), fb = fOk(b); if (fa !== fb) return fa - fb; var sa = a.share > 0 ? 0 : 1, sb = b.share > 0 ? 0 : 1; if (sa !== sb) return sa - sb; return (a.index || 0) - (b.index || 0); });
+        var z0 = cand[0];
+        // lane R3-EDIT 2026-10-07 H1b (sealed: "make the hood the same red as the logo" copied the BLUE hood-logo zone): the buyer named a colour none of the source zones shows ->
+        // that colour SAMPLED from the source's own layer pixels (a recolour with the logo's real red), or unknown (the plain "<part> red" path). Kill switch: window.SPB_EDIT_NOLOGOSAMPLE
+        if (colWord && fOk(z0) && !r3eOff('SPB_EDIT_NOLOGOSAMPLE')) {
+            var fam1 = null; try { var pc1 = Dz().parseColours ? Dz().parseColours(norm(colWord)) : []; fam1 = wordFamily(colWord, pc1.length ? pc1[0].hex : null); } catch (eW) { fam1 = fam; }
+            var ln = []; if (named) ln = [named.name]; else { cand.forEach(function (z) { (z.layers || []).forEach(function (n) { if (ln.indexOf(n) === -1) ln.push(n); }); }); if (what === 'the sponsors / logos') lays.forEach(function (l) { if (l && /logo|sponsor|decal/.test(roleOf(l.name)) && ln.indexOf(l.name) === -1) ln.push(l.name); }); }
+            var lc = []; try { lc = (env && typeof env.layerColours === 'function' && ln.length) ? (env.layerColours(ln) || []) : []; } catch (eL) { lc = []; }
+            var hit1 = lc.filter(function (c) { return c && /^#[0-9a-f]{6}$/i.test(c.hex) && familyOf(c.hex) === (fam1 === 'grey' ? 'grey' : fam1); })[0];
+            if (hit1) return { copy: { zone_id: null, zone: null, finish: null, color: hit1.hex, word: colWord, desc: colWord + ' (' + hit1.hex + ', sampled from ' + what + ')', from: what, sampled: true }, byColour: true, others: [] };
+            return { unknown: true, ask: 'I do not see ' + colWord + ' on ' + what + '.' };
+        }
+        return { copy: { zone_id: z0.zone_id, zone: z0.zone, finish: z0.finish || null, color: z0.color || null, desc: z0.desc || '', from: what }, byColour: fOk(z0) === 0, others: cand.slice(1).map(function (z) { return z.zone; }) };
     }
 
     // the region a target resolves to (used to take a change back): compile with a dummy look and read the zone
@@ -1182,5 +1298,22 @@
         for (i = 0; i < cl.length; i++) { var pc = parseClause(cl[i]); for (j = 0; j < pc.targets.length; j++) { var tg = pc.targets[j]; if (tg.kind === 'colour') { var rf = regionFor(tg, env || {}); if (rf && rf.region && rf.region.colors) { var r = resolveColour(wantFor(tg.word, tg.hex, tg.qual), pal); return { label: rf.label, region: rf.region, hex: rf.region.colors[0], share: r.share }; } } } }
         return null;
     }
-    window.SpbProEdit = { fixParts: fixParts, complaint: complaint, placeParts: placeParts, prepZoneColours: prepZoneColours, layerScope: layerScope, colourTargetOf: colourTargetOf, ctxOf: ctxOf, regionFor: regionFor, variantLooks: variantLooks, lookById: lookById, stepLook: stepLook, plan: plan, compile: compile, compileRequest: compileRequest, resolveColour: resolveColour, wantFor: wantFor, familyOf: familyOf, describe: describe, suggestions: suggestions, askWhat: askWhat, LOOKS: LOOKS, lookFor: lookFor, fixText: fixText, prepPalette: prepPalette, targetPhrase: targetPhrase, targetChipName: targetChipName, paletteLine: paletteLine, parseClause: parseClause, splitClauses: splitClauses, STARTER_LOOK: STARTER_LOOK };
+    // W30-4 2026-10-10 (lane W30; own4 'hood green trunk purple' -> 'trade the hood and trunk colours' answered "the same colour"): ctxOf kept only ops[0].colour, so every
+    // part of a multi-colour turn was remembered with the FIRST colour. Keep each part's own colour too (act.partCols); colMemOf in spb-offline-answer.js reads it.
+    // Kill: window.SPB_W30_OFF or SPB_OF_CFG.noW30 / noW30_4 (then ctxOf is exactly the old one).
+    var ctxOf29w30 = ctxOf;
+    ctxOf = function (planned) {
+        var c = ctxOf29w30(planned);
+        try {
+            var cf = window.SPB_OF_CFG || {};
+            if (c && c.act && !window.SPB_W30_OFF && !cf.noW30 && !cf.noW30_4) {
+                var pc = {}, n = 0;
+                planned.ops.forEach(function (o) { if (o && o.target && o.target.kind === 'part' && o.target.part && o.colour && o.colour.hex && !pc[o.target.part]) { pc[o.target.part] = o.colour; n++; } });
+                if (n > 1) c.act.partCols = pc;
+            }
+        } catch (e) {}
+        return c;
+    };
+
+    window.SpbProEdit = { shadeColour: shadeHex, lookSource: lookSource, fixParts: fixParts, complaint: complaint, placeParts: placeParts, prepZoneColours: prepZoneColours, layerScope: layerScope, colourTargetOf: colourTargetOf, ctxOf: ctxOf, regionFor: regionFor, variantLooks: variantLooks, lookById: lookById, stepLook: stepLook, plan: plan, compile: compile, compileRequest: compileRequest, resolveColour: resolveColour, wantFor: wantFor, familyOf: familyOf, wordFamily: wordFamily, describe: describe, suggestions: suggestions, askWhat: askWhat, LOOKS: LOOKS, lookFor: lookFor, fixText: fixText, prepPalette: prepPalette, targetPhrase: targetPhrase, targetChipName: targetChipName, paletteLine: paletteLine, parseClause: parseClause, splitClauses: splitClauses, STARTER_LOOK: STARTER_LOOK };
 })();

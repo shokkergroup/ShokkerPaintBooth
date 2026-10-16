@@ -35,7 +35,7 @@
         return entry;
       });
       downloadText(JSON.stringify(zoneData, null, 2), `shokker_zones_${Date.now()}.json`, 'application/json');
-      showToast('Zone JSON exported!');
+      showToast('Zones exported.');
     };
 
     window.openModal = function openModal() {
@@ -51,7 +51,7 @@
 
     window.copyScript = function copyScript() {
       const el = document.getElementById('scriptOutput');
-      if (!el) { showToast('Script output element not found', true); return; }
+      if (!el) { showToast('Could not find the script output area.', true); return; }
       const text = el.textContent;
       if (!text) { showToast('No script to copy - generate a script first', true); return; }
       navigator.clipboard.writeText(text).then(() => {
@@ -131,7 +131,7 @@ echo.\r
 pause\r\n`;
 
       downloadText(batContent, batName, 'text/plain');
-      showToast(`Saved ${batName} - double-click to run!`);
+      showToast(`Saved ${batName} - double-click to run`);
     };
 
     window.getAutoScriptName = function getAutoScriptName() {

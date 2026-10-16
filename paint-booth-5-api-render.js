@@ -106,6 +106,32 @@ function _spbEscapeRenderHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
+// [S13 2026-10-12 owner: "lose this vibecoded look"] the server hands back raw codes/strings for a failed save to the iRacing folder (server.py render route; server_routes/write_security.py;
+// spec-sculpt twin; server_routes/iracing_pair_deploy.py). One plain sentence each; the raw text is returned separately so it can sit in a tooltip / the console only.
+// Sources: external_write_disabled | "iRacing output folder not found..." | "Visible iRacing Car Folder not found..." | "Saved Live Link folder not found..." |
+// "No active car configured..." | "Failed to push <file> after N attempts..." | "Copy verification failed..." | "...exact paint + spec install failed (<code>)..." | OS errors.
+function _spbSaveErrorInfo(rawErr) {
+    const code = String(rawErr == null ? '' : rawErr).trim();
+    const lc = code.toLowerCase();
+    let text;
+    if (lc === 'external_write_disabled' || lc.includes('external_write_disabled') || lc.includes('external filesystem writes are disabled') || lc.includes('may not write into the iracing')) {
+        text = 'Saving to your iRacing folder is switched off in this copy of Shokker.';
+    } else if (lc.includes('folder not found') || lc.includes('not a file') || lc.includes('point to a folder')) {
+        text = 'Check your iRacing Car Folder in the header.';
+    } else if (lc.includes('no active car configured')) {
+        text = 'Pick your iRacing Car Folder in the header first.';
+    } else if (lc.includes('exact paint + spec install failed')) {
+        text = 'The paint and spec files could not be installed together, so nothing was changed. Close any iRacing paint preview or image viewer that has the car files open, then try again.';
+    } else if (lc.includes('no space left') || lc.includes('not enough space') || lc.includes('disk full')) {
+        text = 'Your drive looks full. Free some space and render again.';
+    } else if (lc.includes('failed to push') || lc.includes('copy verification failed') || lc.includes('permission denied') || lc.includes('being used by another process') || lc.includes('winerror 32') || lc.includes('errno 13') || lc.includes('errno 22')) {
+        text = 'Shokker could not write the files into your iRacing folder. Close any iRacing paint preview or image viewer that has the car files open, then render again.';
+    } else {
+        text = 'Could not save to your iRacing folder.';
+    }
+    return { text: text, raw: code };
+}
+
 // 2026-10-04 SHOW MY FILES: the render status banner's button opens Explorer on the folder the last render wrote to,
 // with the paint TGA highlighted (server_routes/support_routes.py /api/support/show-files). The offline helper
 // (js/spb-support.js) calls the same function. Set by the banner code in the render-results handler.
@@ -119,7 +145,7 @@ async function spbShowRenderFiles(btn) {
             method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(target)
         });
         const j = await res.json().catch(() => ({ ok: false, error: 'bad reply' }));
-        if (j.ok) say('\u{1F4C2} Opened in File Explorer');
+        if (j.ok) say('Opened in File Explorer');
         else say('Could not open: ' + (j.error || res.status));
         return j;
     } catch (e) {
@@ -697,6 +723,8 @@ function _applyZoneRenderCore(zoneObj, z, options) {
     _applySpecMaterialRemap(zoneObj, z);
     _applySpecMaterialOverride(zoneObj, z);
     _applySpecLightingMask(zoneObj, z);
+    // [SPB-REV-FLAKE 2026-10-10] Flake Studio (js/rev/flake/flake-studio.js): the zone's flake recipe rides to the engine hook (engine/rev_flake.py) - same field for preview + RENDER; window.SPB_FLAKE_OFF drops it.
+    if (z.spbFlake && typeof z.spbFlake === 'object' && !window.SPB_FLAKE_OFF) zoneObj.spb_flake = JSON.parse(JSON.stringify(z.spbFlake));
     _applyBaseColorMode(zoneObj, z);
 
     if (hasPrimaryBase || (z.finish && hasPattern)) {
@@ -763,6 +791,11 @@ const API_TIMEOUT_GENERAL_MS = 15000;     // General API call timeout (config, c
 const POLL_INITIAL_INTERVAL_MS = 10000;   // Status polling start interval
 const POLL_MAX_INTERVAL_MS = 120000;      // Status polling max interval (2 min)
 const POLL_BACKOFF_FACTOR = 1.5;          // Status polling backoff multiplier
+// [S13 2026-10-12 owner: "lose this vibecoded look"] header engine dot: amber 'reconnecting' until this many health checks fail in a row, then red.
+const ENGINE_DOT_RED_AFTER_FAILS = 3;
+// [S13 2026-10-12 owner: "lose this vibecoded look"] while the engine does not answer, re-check at the base interval (never faster than POLL_INITIAL_INTERVAL_MS) so a restart is noticed in seconds, not after the 2-minute idle backoff.
+const ENGINE_DOT_RETRY_MS = POLL_INITIAL_INTERVAL_MS;
+const ENGINE_DOT_RETRY_RED_MS = POLL_INITIAL_INTERVAL_MS * POLL_BACKOFF_FACTOR;
 const RENDER_PROGRESS_POLL_MS = 2000;     // Render progress poll interval
 const RENDER_TERMINATE_DELAY_MS = 3000;   // Delay before showing TERMINATE button
 const RENDER_RESET_DELAY_MS = 1500;       // Delay before resetting render button
@@ -873,6 +906,8 @@ const ConnectionStatus = {
     _render() {
         const dot = document.getElementById('serverStatus');
         if (!dot) return;
+        // [S13 2026-10-12 owner: "lose this vibecoded look"] ShokkerAPI.updateUI is now the single writer of the dot's class + tooltip (it needs the failure streak); toggling 'reconnecting' here could wipe the state class it just set.
+        if (typeof ShokkerAPI !== 'undefined' && ShokkerAPI && typeof ShokkerAPI.updateUI === 'function') { ShokkerAPI.updateUI(); return; }
         if (this.state === 'reconnecting') {
             dot.classList.add('reconnecting');
             dot.title = 'Reconnecting...';
@@ -884,7 +919,7 @@ const ConnectionStatus = {
 if (typeof window !== 'undefined') window.ConnectionStatus = ConnectionStatus;
 
 // [IMP-13] Server version mismatch detection
-const CLIENT_VERSION = '10.0.3-beta';
+const CLIENT_VERSION = '11.0.0-beta';
 let _serverVersionWarned = false;
 function checkServerVersion(statusData) {
     if (!statusData || !statusData.version || _serverVersionWarned) return;
@@ -895,7 +930,7 @@ function checkServerVersion(statusData) {
     if (mm(statusData.version) !== mm(CLIENT_VERSION)) {
         _serverVersionWarned = true;
         console.warn(`[version] Client v${CLIENT_VERSION} but server v${statusData.version}.`);
-        if (typeof showToast === 'function') showToast(`Heads up: app v${statusData.version} vs UI v${CLIENT_VERSION} — if anything looks off, fully close and reopen the app.`, true);
+        if (typeof showToast === 'function') showToast(`Heads up: the app is v${statusData.version} but this window is v${CLIENT_VERSION}. If anything looks off, fully close and reopen the app.`, true);
     }
 }
 
@@ -945,7 +980,7 @@ function formatProgressPhase(status) {
     if (stage === 'composing' || stage === 'compose') return `Phase 3: composing layers (${pct}%)...`;
     if (stage === 'spec' || stage === 'spec_overlay') return `Phase 4: applying spec overlays (${pct}%)...`;
     if (stage === 'writing' || stage === 'output') return `Phase 5: writing output files (${pct}%)...`;
-    if (stage === 'done' || stage === 'complete') return `Complete!`;
+    if (stage === 'done' || stage === 'complete') return `Complete`;
     if (status.zone_name) return `Zone ${status.current_zone}/${status.total_zones} — ${status.zone_name} (${pct}%)`;
     return null;
 }
@@ -1321,7 +1356,11 @@ function classifyFetchError(err, context) {
     if (!err) return `${context} failed: unknown error`;
     if (err.name === 'AbortError') return `${context} was cancelled or timed out.`;
     if (err.name === 'TimeoutError') return `${context} timed out. The server may be overloaded.`;
-    if (err.message && err.message.includes('Failed to fetch')) return SPB_ENGINE_OFFLINE_MSG;
+    if (err.message && err.message.includes('Failed to fetch')) {
+        // [S13 2026-10-12 owner: "lose this vibecoded look"] a user request just could not reach the engine: ask the one existing health check now (rate-limited inside) so the header dot does not wait for the idle poll.
+        try { if (typeof ShokkerAPI !== 'undefined' && ShokkerAPI && ShokkerAPI._kickHealthCheck) ShokkerAPI._kickHealthCheck(); } catch (_) { /* presentation only */ }
+        return SPB_ENGINE_OFFLINE_MSG;
+    }
     if (err.message && err.message.includes('NetworkError')) return `Network error during ${context}. Check your connection.`;
     if (err.message && err.message.includes('JSON')) return `Server returned invalid data during ${context}. Try restarting the server.`;
     return `${context} failed: ${err.message || 'unknown error'}`;
@@ -1439,11 +1478,11 @@ function _showFinishPopupNow(e, finishId) {
     if (isBase && baseMeta) {
         if (baseMeta.family && typeof FAMILY_DISPLAY_NAMES !== 'undefined') popupChips.push(_chip(FAMILY_DISPLAY_NAMES[baseMeta.family] || baseMeta.family, '#00e5ff'));
         if (baseMeta.tier) popupChips.push(_chip(String(baseMeta.tier).toUpperCase(), '#ffd700'));
-        popupChips.push(_chip(baseMeta.sponsor_safe === false ? 'SPONSOR CAUTION' : 'SPONSOR SAFE', baseMeta.sponsor_safe === false ? '#ff9b66' : '#6be28b'));
-        if (baseMeta.aggression != null) popupChips.push(_chip(`IMPACT ${baseMeta.aggression}/5`, '#c68bff'));
+        popupChips.push(_chip(baseMeta.sponsor_safe === false ? 'Sponsor caution' : 'Sponsor safe', baseMeta.sponsor_safe === false ? '#ff9b66' : '#6be28b'));
+        if (baseMeta.aggression != null) popupChips.push(_chip(`Impact ${baseMeta.aggression}/5`, '#c68bff'));
     } else if (isPattern && patternMeta) {
         if (patternMeta.style) popupChips.push(_chip(String(patternMeta.style).toUpperCase(), '#00e5ff'));
-        if (patternMeta.readability) popupChips.push(_chip(`TEXT ${String(patternMeta.readability).toUpperCase()}`, patternMeta.readability === 'good' ? '#6be28b' : patternMeta.readability === 'fair' ? '#ffd700' : '#ff9b66'));
+        if (patternMeta.readability) popupChips.push(_chip(`Text ${String(patternMeta.readability)}`, patternMeta.readability === 'good' ? '#6be28b' : patternMeta.readability === 'fair' ? '#ffd700' : '#ff9b66'));
         if (patternMeta.density) popupChips.push(_chip(String(patternMeta.density).toUpperCase(), '#c68bff'));
     }
     const popupType = finish.cat || (isBase ? 'Base Material' : isPattern ? 'Pattern' : 'Special');
@@ -1723,6 +1762,8 @@ const ShokkerAPI = {
     // Build 19 FIX: Use the page's own origin instead of scanning ports.
     baseUrl: window.location.origin || 'http://localhost:5001',
     online: false,
+    _healthFails: 0,   // [S13 2026-10-12 owner: "lose this vibecoded look"] consecutive failed health checks (drives the header dot)
+    _lastCheckAt: 0,
     config: null,
     _renderAbort: null,
     _renderInProgress: false, // [16] dedup guard for render requests
@@ -1770,12 +1811,14 @@ const ShokkerAPI = {
      * @returns {Promise<Object|null>} Status data or null if offline
      */
     async checkStatus() {
+        this._lastCheckAt = Date.now();
         try { // [3] try/catch around fetch
             // First call: discover which port the server is on
             if (!this._portDiscovered) {
                 const discovered = await this.discoverPort();
                 if (discovered) {
                     this.online = true;
+                    this._noteHealth(true);
                     this.config = discovered.config || null;
                     this._lastStatusData = discovered;
                     if (discovered.license) {
@@ -1789,6 +1832,7 @@ const ShokkerAPI = {
                     return discovered;
                 }
                 this.online = false;
+                this._noteHealth(false);
                 this.config = null;
                 ConnectionStatus.set('offline');
                 this.updateUI();
@@ -1798,6 +1842,7 @@ const ShokkerAPI = {
             const data = await safeParseJSON(res, 'status check'); // [14] safe JSON parse
             const _wasOffline = !this.online;
             this.online = data.status === 'online';
+            this._noteHealth(this.online);
             // [2026-06-12 preview-deadlock fix] offline->online transition: the
             // live preview was silently skipping while offline, so kick one
             // fresh preview now that the server is reachable again.
@@ -1818,6 +1863,7 @@ const ShokkerAPI = {
             return data;
         } catch (e) {
             this.online = false;
+            this._noteHealth(false);
             this.config = null;
             this._portDiscovered = false; // Re-discover on next check
             ConnectionStatus.set('reconnecting');
@@ -1834,6 +1880,7 @@ const ShokkerAPI = {
      * @returns {Promise<Object|null>} Small health payload, or null if offline
      */
     async checkStatusLight() {
+        this._lastCheckAt = Date.now();
         try {
             if (!this._portDiscovered) return this.checkStatus();
             const res = await fetch(this.baseUrl + '/health', {
@@ -1843,6 +1890,7 @@ const ShokkerAPI = {
             const data = await safeParseJSON(res, 'health check');
             const wasOffline = !this.online;
             this.online = !!(res.ok && data && (data.ok || data.status === 'ok'));
+            this._noteHealth(this.online);
 
             // A successful reconnect needs one full refresh so config, license,
             // version, and live-link state cannot remain stale.
@@ -1854,6 +1902,7 @@ const ShokkerAPI = {
             return this.online ? data : null;
         } catch (e) {
             this.online = false;
+            this._noteHealth(false);
             this._portDiscovered = false;
             ConnectionStatus.set('reconnecting');
             this.updateUI();
@@ -1931,6 +1980,18 @@ const ShokkerAPI = {
             if (extras.stamp_image_base64) body.stamp_image_base64 = extras.stamp_image_base64;
             if (extras.stamp_spec_finish) body.stamp_spec_finish = extras.stamp_spec_finish;
         }
+        // [SPB-REV-SEAM 2026-10-10] Edge Bleed (Settings > Options): when ticked, send the car's UV-island mask so the server copies each
+        // panel's edge paint + spec a few px into the unused gap (iRacing texture filtering then stops pulling gap colour into edges).
+        // Additive + optional: unticked / no Wire layer / SPB_REV_SEAM_OFF = no field = the request is exactly what it was. Never throws.
+        try {
+            if (window.SpbRevSeam && typeof window.SpbRevSeam.renderField === 'function') {
+                const _seamField = await window.SpbRevSeam.renderField();
+                if (_seamField) body.edge_bleed = _seamField;
+            }
+        } catch (_seamErr) { console.warn('[SPB-REV-SEAM] edge bleed skipped:', _seamErr && _seamErr.message); }
+        // [SPB-RENDER-CARD 2026-10-10] hand the finished request body to the render-result screen (js/ui/spb-render-card-20261010.js) so its recipe is read
+        // from what was really sent, not from the zone UI. A slimmed copy only (big strings / masks become sizes). Additive, never throws, kill switch SPB_RENDER_CARD_OFF.
+        try { if (window.SpbRenderCard && typeof window.SpbRenderCard.capture === 'function') window.SpbRenderCard.capture(body); } catch (_rcErr) {}
         this.resetStatusInterval(); // Reset polling backoff on every render
         let renderSignal = this._renderAbort ? this._renderAbort.signal : undefined;
         let renderTimeoutId = null;
@@ -2108,8 +2169,12 @@ const ShokkerAPI = {
         const btn = document.getElementById('btnRender');
         const llRow = document.getElementById('liveLinkRow');
         if (dot) {
-            dot.className = 'server-status ' + (this.online ? 'online' : 'offline');
-            dot.title = this.online ? 'Server online' : 'Engine offline - restarting automatically';
+            // [S13 2026-10-12 owner: "lose this vibecoded look"] dot tells the truth in three states: online (green), reconnecting (muted amber, first failures or a refocus probe), offline (red, N failed checks in a row).
+            const _dotState = this._dotState();
+            dot.className = 'server-status ' + _dotState;
+            dot.title = _dotState === 'online' ? 'Server online'
+                : (_dotState === 'reconnecting' ? 'Reconnecting to the render engine...'
+                    : 'Render engine not reachable. It restarts by itself; if it does not, use Fresh Start.');
         }
         if (btn) {
             btn.textContent = this.online ? 'RENDER' : 'RENDER (Offline)';
@@ -2134,14 +2199,38 @@ const ShokkerAPI = {
         }
     },
 
+    // [S13 2026-10-12 owner: "lose this vibecoded look"] failure streak + dot state + next-poll rule. All three live here so the one existing /health poll (startPolling) stays the only poller.
+    _noteHealth(ok) { this._healthFails = ok ? 0 : (this._healthFails || 0) + 1; },
+    _dotState() {
+        // a tab refocus probes with ConnectionStatus 'reconnecting' while we still think we are online: show amber for that moment
+        if (this.online) return (typeof ConnectionStatus !== 'undefined' && ConnectionStatus.state === 'reconnecting') ? 'reconnecting' : 'online';
+        return (this._healthFails || 0) >= ENGINE_DOT_RED_AFTER_FAILS ? 'offline' : 'reconnecting';
+    },
+    _nextPollMs() {
+        if (this.online) {
+            const _next = this._pollWasOffline ? POLL_INITIAL_INTERVAL_MS : this._statusInterval;
+            this._pollWasOffline = false;
+            return Math.min(_next * POLL_BACKOFF_FACTOR, POLL_MAX_INTERVAL_MS); // [45] named constants (unchanged idle backoff)
+        }
+        this._pollWasOffline = true;
+        return (this._healthFails || 0) >= ENGINE_DOT_RED_AFTER_FAILS ? ENGINE_DOT_RETRY_RED_MS : ENGINE_DOT_RETRY_MS;
+    },
+    /** A real request just failed at the network level: re-check now, but never sooner than the base poll interval after the last check. */
+    _kickHealthCheck() {
+        if (Date.now() - (this._lastCheckAt || 0) < POLL_INITIAL_INTERVAL_MS) return;
+        try { this.checkStatusLight().catch(() => {}); } catch (_) { /* never break the caller */ }
+    },
+
     /** Start periodic status polling with exponential backoff. */
     startPolling() {
         this._statusInterval = POLL_INITIAL_INTERVAL_MS; // [45] named constant
+        // [S13 2026-10-12 owner: "lose this vibecoded look"] the static HTML dot says "offline" (red) before anything was asked; until the first answer it is honestly "reconnecting" (amber)
+        try { const _d0 = document.getElementById('serverStatus'); if (_d0 && !this.online) _d0.className = 'server-status reconnecting'; } catch (_) { /* presentation only */ }
         this.checkStatus();
         const statusPoll = () => {
             this.checkStatusLight().then(() => {
-                // Slow down polling when idle (no recent renders)
-                this._statusInterval = Math.min(this._statusInterval * POLL_BACKOFF_FACTOR, POLL_MAX_INTERVAL_MS); // [45] named constants
+                // Slow down polling when idle (no recent renders); while the engine does not answer, retry at the base interval instead (see _nextPollMs)
+                this._statusInterval = this._nextPollMs();
                 setTimeout(statusPoll, this._statusInterval);
             }).catch(() => {
                 setTimeout(statusPoll, this._statusInterval);
@@ -2163,7 +2252,8 @@ const ShokkerAPI = {
  */
 async function cleanupOldRenders() {
     if (!ShokkerAPI.online) { showToast(SPB_ENGINE_OFFLINE_MSG, true); return; } // [38] specific error
-    if (!confirm('Delete ALL old render job folders from output/? This frees disk space but removes cached render results.')) return;
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+    if (!(await SpbDialog.ask('Delete Old Renders?', { message: 'Every old render job folder in output/ is deleted. This frees disk space but removes cached render results.', okLabel: 'Delete Renders', danger: true, nativeText: 'Delete all old render job folders from output/? This frees disk space but removes cached render results.' }))) return;
     try {
         const res = await fetch(ShokkerAPI.baseUrl + '/cleanup', {
             method: 'POST',
@@ -2350,7 +2440,7 @@ let fleetCars = [];
 let fleetModeActive = false;
 
 function _showRetiredBatchModeToast(modeLabel) {
-    showToast(`${modeLabel} is disabled in this booth build. Use the normal single-car paint workflow instead.`, 'warn');
+    showToast(`${modeLabel} isn't available in this version. Use the normal single-car paint workflow instead.`, 'warn');
 }
 
 function toggleFleetMode() {
@@ -2412,7 +2502,7 @@ async function doFleetRender() {
     _showRetiredBatchModeToast('Fleet mode');
     return;
     if (!ShokkerAPI.online) { showToast(SPB_ENGINE_OFFLINE_MSG, true); return; } // [38] specific
-    if (fleetCars.length === 0) { showToast('Add at least one car to the fleet!', true); return; }
+    if (fleetCars.length === 0) { showToast('Add at least one car to the fleet', true); return; }
 
     // BUG #66 (Neidhart, HIGH): pre-fix, fleet loop called ShokkerAPI.render
     // with car.paintFile even when that was '' — server 400'd silently per
@@ -2424,7 +2514,7 @@ async function doFleetRender() {
         .filter(({ c }) => !((c.paintFile || '').trim()));
     if (_fleetMissing.length) {
         const names = _fleetMissing.map(({ c, i }) => (c.name || ('Car ' + (i + 1)))).join(', ');
-        showToast('Fleet render aborted: paintFile is empty for ' + names + '. Fill in the TGA path for every car.', true);
+        showToast('Fleet render stopped: the paint file is empty for ' + names + '. Fill in the TGA path for every car.', true);
         return;
     }
     const _fleetSeen = new Map();
@@ -2438,8 +2528,9 @@ async function doFleetRender() {
         const { first, second } = _fleetDupes[0];
         const _a = fleetCars[first].name || ('Car ' + (first + 1));
         const _b = fleetCars[second].name || ('Car ' + (second + 1));
-        if (!confirm('Cars "' + _a + '" and "' + _b + '" share the same paintFile. The second render will OVERWRITE the first on disk (iRacing paint folder or output_dir). Continue anyway?')) {
-            showToast('Fleet render cancelled — resolve duplicate paintFile paths first.', true);
+        // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+        if (!(await SpbDialog.ask('Two Cars Share A Paint File', { message: 'Cars "' + _a + '" and "' + _b + '" share the same paint file. The second render will overwrite the first on disk (iRacing paint folder or output folder).', okLabel: 'Render Anyway', danger: true, nativeText: 'Cars "' + _a + '" and "' + _b + '" share the same paintFile. The second render will overwrite the first on disk (iRacing paint folder or output_dir). Continue anyway?' }))) {
+            showToast('Fleet render cancelled. Two or more cars share a paint file. Fix the duplicates first.', true);
             return;
         }
     }
@@ -2452,7 +2543,7 @@ async function doFleetRender() {
     if (results) results.innerHTML = ''; // [55] null check
 
     const validZones = zones.filter((z, i) => !(typeof _isSuppressedLegacyZone === 'function' && _isSuppressedLegacyZone(z, i)) && !z.muted && _zoneHasRenderableMaterial(z) && (z.color !== null || z.colorMode === 'multi' || (_renderMaskHasPixels(z.regionMask))));
-    if (validZones.length === 0) { showToast('Set up zones first!', true); btn.disabled = false; progress.style.display = 'none'; return; }
+    if (validZones.length === 0) { showToast('Set up zones first', true); btn.disabled = false; progress.style.display = 'none'; return; }
 
     const serverZones = validZones.map(z => {
         const zoneObj = { name: z.name, color: formatColorForServer(z.color, z), intensity: z.intensity };
@@ -2469,6 +2560,8 @@ async function doFleetRender() {
         _applySpecMaterialRemap(zoneObj, z);
         _applySpecMaterialOverride(zoneObj, z);
         _applySpecLightingMask(zoneObj, z);
+        // [SPB-REV-FLAKE 2026-10-10] Flake Studio (js/rev/flake/flake-studio.js): the zone's flake recipe rides to the engine hook (engine/rev_flake.py) - same field for preview + RENDER; window.SPB_FLAKE_OFF drops it.
+        if (z.spbFlake && typeof z.spbFlake === 'object' && !window.SPB_FLAKE_OFF) zoneObj.spb_flake = JSON.parse(JSON.stringify(z.spbFlake));
         // BOIL THE OCEAN drift hunt #4: base color mode header → single helper.
         _applyBaseColorMode(zoneObj, z);
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) zoneObj.pattern_spec_mult = Number(z.patternSpecMult ?? 1);
@@ -2547,7 +2640,7 @@ async function doFleetRender() {
                         const _key = (z.name || '?') + '|' + z.sourceLayer;
                         if (!window._SPB_DANGLING_SOURCE_TOASTED[_key] && typeof showToast === 'function') {
                             window._SPB_DANGLING_SOURCE_TOASTED[_key] = true;
-                            showToast(`Zone "${z.name || ''}" source layer is missing — painting nothing. Re-restrict or clear source.`, 'warn');
+                            showToast(`Zone "${z.name || ''}" source layer is missing, so nothing will be painted. Choose the layer again, or clear the source.`, 'warn');
                         }
                     }
                 } catch (_) {}
@@ -2589,7 +2682,7 @@ async function doFleetRender() {
     }
     // Decals + per-decal spec finishes + decal mask.
     if (typeof compositeDecalsForRender === 'function' && typeof decalLayers !== 'undefined' && decalLayers.length > 0) {
-        const _fleetComposite = compositeDecalsForRender();
+        const _fleetComposite = _nuqCompositeDecals();
         if (_fleetComposite) extras.paint_image_base64 = await canvasToBase64Async(_fleetComposite);
         if (typeof compositeDecalMaskForRender === 'function') {
             const _fleetMaskUrl = compositeDecalMaskForRender();
@@ -2605,7 +2698,7 @@ async function doFleetRender() {
         typeof _psdLayers !== 'undefined' && _psdLayers.length > 0 &&
         !extras.paint_image_base64) {
         const _fleetPc = (typeof window !== 'undefined' && typeof window.buildLivePaintCompositeCanvas === 'function')
-            ? window.buildLivePaintCompositeCanvas()
+            ? _nuqRenderComposite()
             : document.getElementById('paintCanvas');
         if (_fleetPc) extras.paint_image_base64 = await canvasToBase64Async(_fleetPc);
     }
@@ -2632,7 +2725,7 @@ async function doFleetRender() {
                     <div class="batch-result-name">${car.name}</div>
                 </div>`;
         } catch (err) {
-            results.innerHTML += `<div class="batch-result-card"><div class="batch-result-name" style="color: #ff4444;">FAILED: ${car.name}</div></div>`;
+            results.innerHTML += `<div class="batch-result-card"><div class="batch-result-name" style="color: #ff4444;">Failed: ${car.name}</div></div>`;
         }
     }
 
@@ -2692,7 +2785,7 @@ function renderSeasonList() {
 }
 
 function quickFillSeasonWear() {
-    if (seasonJobs.length < 2) { showToast('Add at least 2 races for wear progression!', true); return; }
+    if (seasonJobs.length < 2) { showToast('Add at least 2 races for wear progression', true); return; }
     for (let i = 0; i < seasonJobs.length; i++) {
         seasonJobs[i].wearLevel = Math.round((i / (seasonJobs.length - 1)) * 100);
     }
@@ -2707,11 +2800,11 @@ async function doSeasonRender() {
     _showRetiredBatchModeToast('Season mode');
     return;
     if (!ShokkerAPI.online) { showToast(SPB_ENGINE_OFFLINE_MSG, true); return; } // [38] specific
-    if (seasonJobs.length === 0) { showToast('Add at least one race!', true); return; }
+    if (seasonJobs.length === 0) { showToast('Add at least one race', true); return; }
 
     const paintFile = document.getElementById('paintFile')?.value.trim();
     const iracingId = document.getElementById('iracingId')?.value.trim();
-    if (!paintFile) { showToast('Set paint file in Car Info!', true); return; }
+    if (!paintFile) { showToast('Set paint file in Car Info', true); return; }
 
     const btn = document.getElementById('btnSeasonRender');
     const progress = document.getElementById('seasonProgress');
@@ -2721,7 +2814,7 @@ async function doSeasonRender() {
     if (results) results.innerHTML = ''; // [55] null check
 
     const validZones = zones.filter((z, i) => !(typeof _isSuppressedLegacyZone === 'function' && _isSuppressedLegacyZone(z, i)) && !z.muted && _zoneHasRenderableMaterial(z) && (z.color !== null || z.colorMode === 'multi' || (_renderMaskHasPixels(z.regionMask))));
-    if (validZones.length === 0) { showToast('Set up zones first!', true); if (btn) btn.disabled = false; if (progress) progress.style.display = 'none'; return; } // [55] null checks
+    if (validZones.length === 0) { showToast('Set up zones first', true); if (btn) btn.disabled = false; if (progress) progress.style.display = 'none'; return; } // [55] null checks
 
     const serverZones = validZones.map(z => {
         const zoneObj = { name: z.name, color: formatColorForServer(z.color, z), intensity: z.intensity };
@@ -2738,6 +2831,8 @@ async function doSeasonRender() {
         _applySpecMaterialRemap(zoneObj, z);
         _applySpecMaterialOverride(zoneObj, z);
         _applySpecLightingMask(zoneObj, z);
+        // [SPB-REV-FLAKE 2026-10-10] Flake Studio (js/rev/flake/flake-studio.js): the zone's flake recipe rides to the engine hook (engine/rev_flake.py) - same field for preview + RENDER; window.SPB_FLAKE_OFF drops it.
+        if (z.spbFlake && typeof z.spbFlake === 'object' && !window.SPB_FLAKE_OFF) zoneObj.spb_flake = JSON.parse(JSON.stringify(z.spbFlake));
         // BOIL THE OCEAN drift hunt #4: base color mode header → single helper.
         _applyBaseColorMode(zoneObj, z);
         if (z.base || (z.finish && z.pattern && z.pattern !== 'none')) zoneObj.pattern_spec_mult = Number(z.patternSpecMult ?? 1);
@@ -2799,7 +2894,7 @@ async function doSeasonRender() {
                         const _key = (z.name || '?') + '|' + z.sourceLayer;
                         if (!window._SPB_DANGLING_SOURCE_TOASTED[_key] && typeof showToast === 'function') {
                             window._SPB_DANGLING_SOURCE_TOASTED[_key] = true;
-                            showToast(`Zone "${z.name || ''}" source layer is missing — painting nothing. Re-restrict or clear source.`, 'warn');
+                            showToast(`Zone "${z.name || ''}" source layer is missing, so nothing will be painted. Choose the layer again, or clear the source.`, 'warn');
                         }
                     }
                 } catch (_) {}
@@ -2848,7 +2943,7 @@ async function doSeasonRender() {
     }
     // Decals + per-decal spec finishes + decal mask.
     if (typeof compositeDecalsForRender === 'function' && typeof decalLayers !== 'undefined' && decalLayers.length > 0) {
-        const _seasonDecalComposite = compositeDecalsForRender();
+        const _seasonDecalComposite = _nuqCompositeDecals();
         if (_seasonDecalComposite) _seasonSharedExtras.paint_image_base64 = await canvasToBase64Async(_seasonDecalComposite);
         if (typeof compositeDecalMaskForRender === 'function') {
             const _seasonMaskUrl = compositeDecalMaskForRender();
@@ -2864,7 +2959,7 @@ async function doSeasonRender() {
         typeof _psdLayers !== 'undefined' && _psdLayers.length > 0 &&
         !_seasonSharedExtras.paint_image_base64) {
         const _seasonPc = (typeof window !== 'undefined' && typeof window.buildLivePaintCompositeCanvas === 'function')
-            ? window.buildLivePaintCompositeCanvas()
+            ? _nuqRenderComposite()
             : document.getElementById('paintCanvas');
         if (_seasonPc) _seasonSharedExtras.paint_image_base64 = await canvasToBase64Async(_seasonPc);
     }
@@ -2893,10 +2988,10 @@ async function doSeasonRender() {
                 <div class="batch-result-card">
                     ${paintUrl ? `<img src="${ShokkerAPI.baseUrl + paintUrl[1]}" alt="${job.name}">` : '<div style="height: 60px; background: #111; border-radius: 3px;"></div>'}
                     <div class="batch-result-name">${job.name}</div>
-                    ${job.wearLevel > 0 ? `<span class="batch-wear-badge">WEAR ${job.wearLevel}%</span>` : ''}
+                    ${job.wearLevel > 0 ? `<span class="batch-wear-badge">Wear ${job.wearLevel}%</span>` : ''}
                 </div>`;
         } catch (err) {
-            results.innerHTML += `<div class="batch-result-card"><div class="batch-result-name" style="color: #ff4444;">FAILED: ${job.name}</div></div>`;
+            results.innerHTML += `<div class="batch-result-card"><div class="batch-result-name" style="color: #ff4444;">Failed: ${job.name}</div></div>`;
         }
     }
 
@@ -2929,7 +3024,7 @@ async function setOutputToIracingFolder() {
             outputDir.value = carPath;
             showToast(`Save To set to: ${activeCar} (${carPath})`);
         } else if (!carPath) {
-            showToast('No active car configured on server. Check shokker_config.json', true); // [39] specific
+            showToast('No active car is set. Check shokker_config.json.', true); // [39] specific
         }
     } catch (e) {
         showToast(classifyFetchError(e, 'iRacing folder lookup'), true); // [12] friendly error
@@ -2960,7 +3055,7 @@ function safeDoRender() {
             // Force recheck, then try render if now online
             ShokkerAPI.checkStatus().then(() => {
                 if (ShokkerAPI.online) {
-                    showToast('Server is back! Starting render...');
+                    showToast('Server is back. Starting render...');
                     doRender();
                 } else {
                     showToast(SPB_ENGINE_OFFLINE_MSG, true);
@@ -3001,6 +3096,10 @@ function buildServerZonesForRender(zones) {
         if (window.SPBStableZoneSeeds && window.SPBStableZoneSeeds.validIndex(z.renderSeedIndex)) {
             zoneObj.render_seed_index = z.renderSeedIndex;
         }
+        // [ENGINE_TEXTURE_ANCHOR 2026-10-06] opt-in: the zone's finish/spec texture is generated in
+        // full-canvas coordinates, so a part-limited copy of a whole-car zone (same renderSeedIndex)
+        // renders the same texture pixels inside the part as the original.
+        if (z.textureAnchor === 'canvas' || z.texture_anchor === 'canvas') zoneObj.texture_anchor = 'canvas';
         _applyPatternMaterialControls(zoneObj, z);
         const _primaryBaseId = z.base || (_zoneNeedsNeutralBaseAnchor(z) ? 'gloss' : null);
         const _hasPrimaryBase = !!_primaryBaseId;
@@ -3053,6 +3152,8 @@ function buildServerZonesForRender(zones) {
         _applySpecMaterialRemap(zoneObj, z);
         _applySpecMaterialOverride(zoneObj, z);
         _applySpecLightingMask(zoneObj, z);
+        // [SPB-REV-FLAKE 2026-10-10] Flake Studio (js/rev/flake/flake-studio.js): the zone's flake recipe rides to the engine hook (engine/rev_flake.py) - same field for preview + RENDER; window.SPB_FLAKE_OFF drops it.
+        if (z.spbFlake && typeof z.spbFlake === 'object' && !window.SPB_FLAKE_OFF) zoneObj.spb_flake = JSON.parse(JSON.stringify(z.spbFlake));
         // BOIL THE OCEAN drift hunt #4: base color mode header → single helper.
         _applyBaseColorMode(zoneObj, z);
         // [PERF] Only send non-default values to reduce JSON payload size
@@ -3118,7 +3219,7 @@ function buildServerZonesForRender(zones) {
                             const _key = (z.name || '?') + '|' + z.sourceLayer;
                             if (!window._SPB_DANGLING_SOURCE_TOASTED[_key] && typeof showToast === 'function') {
                                 window._SPB_DANGLING_SOURCE_TOASTED[_key] = true;
-                                showToast(`Zone "${z.name || ''}" source layer is missing — painting nothing. Re-restrict or clear source.`, 'warn');
+                                showToast(`Zone "${z.name || ''}" source layer is missing, so nothing will be painted. Choose the layer again, or clear the source.`, 'warn');
                             }
                         }
                     } catch (_) {}
@@ -3307,7 +3408,7 @@ async function doExportToPhotoshop() {
     if (exportSpecPath) extras.import_spec_map = exportSpecPath;
     // [PERF] Use async canvasToBase64Async for PS export too
     if (typeof compositeDecalsForRender === 'function' && typeof decalLayers !== 'undefined' && decalLayers.length > 0) {
-        const compositeCanvas = compositeDecalsForRender();
+        const compositeCanvas = _nuqCompositeDecals();
         if (compositeCanvas) extras.paint_image_base64 = await canvasToBase64Async(compositeCanvas);
         if (typeof compositeDecalMaskForRender === 'function') {
             const maskDataUrl = compositeDecalMaskForRender();
@@ -3336,7 +3437,7 @@ async function doExportToPhotoshop() {
     // canvas sources, not trusted local paths. Export the visible canvas.
     if (hasLiveFlatSource && !extras.paint_image_base64) {
         const _flatPcExp = (typeof window !== 'undefined' && typeof window.buildLivePaintCompositeCanvas === 'function')
-            ? window.buildLivePaintCompositeCanvas()
+            ? _nuqRenderComposite()
             : document.getElementById('paintCanvas');
         if (_flatPcExp) {
             extras.paint_image_base64 = await canvasToBase64Async(_flatPcExp);
@@ -3356,7 +3457,7 @@ async function doExportToPhotoshop() {
         typeof _psdLayers !== 'undefined' && _psdLayers.length > 0 &&
         !extras.paint_image_base64) {
         const _pcExp = (typeof window !== 'undefined' && typeof window.buildLivePaintCompositeCanvas === 'function')
-            ? window.buildLivePaintCompositeCanvas()
+            ? _nuqRenderComposite()
             : document.getElementById('paintCanvas');
         if (_pcExp) {
             extras.paint_image_base64 = await canvasToBase64Async(_pcExp);
@@ -3400,11 +3501,11 @@ async function importSpecFromLastExport() {
         });
         var data;
         try { data = await res.json(); } catch (e) {
-            showToast('SPB returned an invalid response. Use Restart Server from the SPB tray after code changes.', true);
+            showToast('Shokker Paint Booth returned an invalid response. Use Restart Server from the tray icon, then try again.', true);
             return;
         }
         if (data.error) {
-            if (data.error === 'not_found') showToast('Server needs to be restarted to load the new import endpoint.', true);
+            if (data.error === 'not_found') showToast('Restart Shokker Paint Booth to load the new import feature.', true);
             else showToast(data.error, true);
             return;
         }
@@ -3426,6 +3527,142 @@ async function importSpecFromLastExport() {
  * Main render pipeline. Builds zone payload, sends to server, handles progress polling, // [46]
  * displays results, and updates render history. Called by safeDoRender().
  */
+// [NUQ-FIX #1 2026-10-10 first-hour new-user QA] RENDER shipped the template wireframe: Wire / Mask / Car Mandatory
+// (the "Turn Off Before Exporting TGA" group) arrive ON after a PSD load and were composited into the paint TGA.
+// Guide layers now never reach an output composite (render, export, fleet, season), whatever their eye state. The
+// editor stays untouched; the live preview uses the same guide policy below. Nothing to leave out =
+// the exact same canvas as before (byte-identical). KILL SWITCH: window.SPB_NUQ_OFF = true (or localStorage SPB_NUQ_OFF=1).
+function _nuqOff() {
+    try { if (window.SPB_NUQ_OFF) return true; } catch (_) {}
+    try { return localStorage.getItem('SPB_NUQ_OFF') === '1'; } catch (_) { return false; }
+}
+function _nuqIsGuideLayer(l) {
+    if (!l) return false;
+    // Owner 2026-10-14: Car Mandatory contains visible headlights/grille.
+    // A folder label is not enough to discard artwork. Only recognized
+    // guide leaves in that folder are omitted; Car Mandatory and unknown
+    // artwork follow their eye state in preview AND render/export.
+    const leaf = String(l.name || String(l.path || '').split(/[\\/]/).pop() || '').trim();
+    if (!/^(?:wire(?:[ _-]*frame)?|uv[ _-]*wire(?:[ _-]*frame)?|mask|number[ _-]*blocks?|sponsor[ _-]*blocks?)$/i.test(leaf)) return false;
+    const re = /turn\s*off\s*before\s*export/i;
+    if (re.test(String(l.groupName || '')) || re.test(String(l.path || ''))) return true;
+    const ch = l.groupChain;
+    if (Array.isArray(ch)) for (let i = 0; i < ch.length; i++) if (ch[i] && re.test(String(ch[i].name || ch[i].path || ''))) return true;
+    return false;
+}
+// guide layers that would otherwise be drawn into the composite (pixels present, eye on)
+function _nuqGuideSet() {
+    const set = new Set();
+    try {
+        if (_nuqOff()) return set;
+        if (typeof _psdLayersLoaded === 'undefined' || !_psdLayersLoaded || typeof _psdLayers === 'undefined' || !Array.isArray(_psdLayers)) return set;
+        for (const l of _psdLayers) if (l && l.img && l.visible !== false && _nuqIsGuideLayer(l)) set.add(l);
+    } catch (_) {}
+    return set;
+}
+function _nuqRememberGuides(set) {
+    try {
+        if (!set || !set.size) { window.__spbRenderGuides = null; return; }
+        const order = ['wire', 'wireframe', 'mask', 'number blocks', 'sponsor blocks'];
+        const names = Array.from(new Set(Array.from(set).map(l => String(l.name || '').trim()).filter(Boolean)));
+        const rank = n => { const i = order.indexOf(n.toLowerCase().replace(/[_\s]+/g, ' ')); return i < 0 ? 9 : i; };
+        names.sort((a, b) => rank(a) - rank(b));
+        window.__spbRenderGuides = { names: names, at: Date.now() };
+    } catch (_) {}
+}
+function _nuqRenderComposite() {
+    const live = (typeof window !== 'undefined' && typeof window.buildLivePaintCompositeCanvas === 'function')
+        ? window.buildLivePaintCompositeCanvas() : document.getElementById('paintCanvas');
+    const guides = _nuqGuideSet();
+    if (!guides.size) { _nuqRememberGuides(null); return live; }
+    try {
+        const pc = document.getElementById('paintCanvas');
+        if (!pc || pc.width <= 0 || pc.height <= 0 || typeof _spbCompositeLayerStack !== 'function') return live;
+        const tc = document.createElement('canvas');
+        tc.width = pc.width; tc.height = pc.height;
+        const tctx = tc.getContext('2d', { willReadFrequently: true });
+        const activeLayer = (typeof getSelectedLayer === 'function') ? getSelectedLayer() : null;
+        const res = _spbCompositeLayerStack(tctx, _psdLayers, {
+            includeLayer: function (layer) { return !guides.has(layer); },
+            sourceOverrideFor: function (layer) {
+                return activeLayer && typeof _activeLayerCanvas !== 'undefined' && _activeLayerCanvas && layer.id === activeLayer.id ? _activeLayerCanvas : null;
+            }
+        });
+        if (!res || !res.ok) return live;   // can not rebuild safely: keep the old behaviour rather than fail the render
+        tctx.globalAlpha = 1.0;
+        tctx.globalCompositeOperation = 'source-over';
+        _nuqRememberGuides(guides);
+        console.log('[doRender] Guide layers left out of the render:', Array.from(guides).map(l => l.name).join(', '));
+        return tc;
+    } catch (e) {
+        console.warn('[doRender] guide-free composite failed, using the live composite:', e);
+        return live;
+    }
+}
+// decals composite = (guide-free paint) + decals; with no guides to leave out it IS compositeDecalsForRender()
+function _nuqCompositeDecals() {
+    if (!_nuqGuideSet().size) { _nuqRememberGuides(null); return compositeDecalsForRender(); }
+    try {
+        if (typeof drawDecalsOnContext !== 'function' || typeof decalLayers === 'undefined' || !decalLayers.length) return compositeDecalsForRender();
+        const base = _nuqRenderComposite();
+        const pc = document.getElementById('paintCanvas');
+        if (!base || !pc || base === pc) return compositeDecalsForRender();
+        const c = document.createElement('canvas');
+        c.width = pc.width; c.height = pc.height;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(base, 0, 0);
+        drawDecalsOnContext(ctx, c.width, c.height);
+        return c;
+    } catch (e) {
+        console.warn('[doRender] guide-free decal composite failed, using the normal one:', e);
+        return compositeDecalsForRender();
+    }
+}
+// [SPB-POLISH-F 2026-10-10 P0 WYSIWYG] The LIVE PREVIEW must show what the render writes. NUQ-FIX left guide layers
+// out of every render but the preview still sent them to /preview-render, so the right pane
+// showed the white template mesh over the car (34 percent of pixels) that the TGA no longer has. This is the preview's
+// composite: the editor's live composite when there is nothing to leave out (the very same canvas object, so every
+// memo downstream behaves as before), otherwise a guide-free rebuild that is memoised on the layer revision + guide
+// set + eye states (a preview kick must not recomposite 13 layers each time). The SOURCE pane (#paintCanvas) is not
+// touched: it stays the editing view. No side effects (no render banner note, no log). Same kill switch SPB_NUQ_OFF.
+var _nuqPrevMemo = { canvas: null, key: null, at: 0 };
+function _nuqPreviewComposite() {
+    const live = (typeof window !== 'undefined' && typeof window.buildLivePaintCompositeCanvas === 'function')
+        ? window.buildLivePaintCompositeCanvas() : document.getElementById('paintCanvas');
+    try {
+        const guides = _nuqGuideSet();
+        if (!guides.size) return live;
+        const pc = document.getElementById('paintCanvas');
+        if (!pc || pc.width <= 0 || pc.height <= 0 || typeof _spbCompositeLayerStack !== 'function') return live;
+        const activeKey = (typeof _activeLayerCanvas !== 'undefined' && _activeLayerCanvas) ? 'a' : 'n';
+        let eyes = '';
+        for (const l of _psdLayers) eyes += (l && l.visible !== false) ? '1' : '0';
+        const key = ((window._spbLayerRev | 0) + ':' + pc.width + 'x' + pc.height + ':' + _psdLayers.length + ':' + eyes + ':' +
+            Array.from(guides).map(l => l.id).join(','));
+        const now = performance.now();
+        if (_nuqPrevMemo.canvas && _nuqPrevMemo.key === key && activeKey === 'n' && (now - _nuqPrevMemo.at) < 30000) return _nuqPrevMemo.canvas;
+        const tc = document.createElement('canvas');
+        tc.width = pc.width; tc.height = pc.height;
+        const tctx = tc.getContext('2d', { willReadFrequently: true });
+        const activeLayer = (typeof getSelectedLayer === 'function') ? getSelectedLayer() : null;
+        const res = _spbCompositeLayerStack(tctx, _psdLayers, {
+            includeLayer: function (layer) { return !guides.has(layer); },
+            sourceOverrideFor: function (layer) {
+                return activeLayer && typeof _activeLayerCanvas !== 'undefined' && _activeLayerCanvas && layer.id === activeLayer.id ? _activeLayerCanvas : null;
+            }
+        });
+        if (!res || !res.ok) return live;   // can not rebuild safely: keep the editor's composite rather than fail the preview
+        tctx.globalAlpha = 1.0;
+        tctx.globalCompositeOperation = 'source-over';
+        _nuqPrevMemo.canvas = tc; _nuqPrevMemo.key = key; _nuqPrevMemo.at = now;
+        return tc;
+    } catch (e) {
+        console.warn('[preview] guide-free composite failed, using the live composite:', e);
+        return live;
+    }
+}
+window._nuqPreviewComposite = _nuqPreviewComposite;
+
 async function doRender() {
     // SPB-93 09-08: keyboard/direct calls must also reject an unpublished source.
     if (window.SPBRenderReadiness && !window.SPBRenderReadiness.allowRender()) return;
@@ -3447,6 +3684,7 @@ async function doRender() {
         return;
     }
     window._spbLastDoRenderAt = _drNow;
+    window.__spbRenderGuides = null; // [NUQ-FIX #1] set again below only when guide layers are actually left out of this render
     console.log('[doRender] Starting render... baseUrl=' + ShokkerAPI.baseUrl + ' origin=' + window.location.origin + ' online=' + ShokkerAPI.online);
     _ensureRenderFloatVisible();
     if (!ShokkerAPI.online) { showToast(SPB_ENGINE_OFFLINE_MSG, true); return; }
@@ -3480,10 +3718,10 @@ async function doRender() {
         window.clearFlatPaintLiveSource('full render prefers fresh disk paint_file');
         hasLiveFlatSource = !!(typeof window !== 'undefined' && window._spbFlatPaintLiveSource);
     }
-    if (!paintFile && !hasLiveFlatSource) { showToast('Set the Source Paint path in the header bar!', true); return; }
+    if (!paintFile && !hasLiveFlatSource) { showToast('Set the Source Paint path in the header bar', true); return; }
     // Quick check: warn if path looks like just a filename (no directory)
     if (paintFile && !hasLiveFlatSource && !paintFile.includes('/') && !paintFile.includes('\\')) {
-        showToast('Source Paint needs a FULL path (e.g. C:\\Users\\You\\Documents\\iRacing\\paint\\carname\\car_num_12345.tga), not just a filename!', true);
+        showToast('Source Paint needs the full path (e.g. C:\\Users\\You\\Documents\\iRacing\\paint\\carname\\car_num_12345.tga), not just a file name.', true);
         return;
     }
     // [SPB-ALPHA-GUARD 2026-06-06] Block render when the iRacing User ID is blank/invalid. Every
@@ -3553,7 +3791,7 @@ async function doRender() {
     // reads so external edits are never masked by stale in-memory canvas bytes.
     if (hasLiveFlatSource && !extras.paint_image_base64) {
         const flatCanvas = (typeof window !== 'undefined' && typeof window.buildLivePaintCompositeCanvas === 'function')
-            ? window.buildLivePaintCompositeCanvas()
+            ? _nuqRenderComposite()
             : document.getElementById('paintCanvas');
         if (flatCanvas) {
             extras.paint_image_base64 = await canvasToBase64Async(flatCanvas);
@@ -3571,7 +3809,7 @@ async function doRender() {
     // Decals: composite paint + decals and send as image so render includes them
     // [PERF] Use async canvasToBase64Async (toBlob) instead of sync toDataURL (~2-3x faster)
     if (typeof compositeDecalsForRender === 'function' && typeof decalLayers !== 'undefined' && decalLayers.length > 0) {
-        const compositeCanvas = compositeDecalsForRender();
+        const compositeCanvas = _nuqCompositeDecals();
         if (compositeCanvas) {
             extras.paint_image_base64 = await canvasToBase64Async(compositeCanvas);
         }
@@ -3596,7 +3834,7 @@ async function doRender() {
         typeof _psdLayers !== 'undefined' && _psdLayers.length > 0 &&
         !extras.paint_image_base64) {
         const pc = (typeof window !== 'undefined' && typeof window.buildLivePaintCompositeCanvas === 'function')
-            ? window.buildLivePaintCompositeCanvas()
+            ? _nuqRenderComposite()
             : document.getElementById('paintCanvas');
         if (pc) {
             extras.paint_image_base64 = await canvasToBase64Async(pc);
@@ -3621,7 +3859,7 @@ async function doRender() {
     try {
         if (!extras.paint_image_base64) {
             const _pcFinal = (typeof window !== 'undefined' && typeof window.buildLivePaintCompositeCanvas === 'function')
-                ? window.buildLivePaintCompositeCanvas()
+                ? _nuqRenderComposite()
                 : document.getElementById('paintCanvas');
             if (_pcFinal && _pcFinal.width > 0 && _pcFinal.height > 0) {
                 extras.paint_image_base64 = await canvasToBase64Async(_pcFinal);
@@ -3714,7 +3952,7 @@ async function doRender() {
         clearInterval(_progressPoll);
         stopRenderTimer();
         if (barInner) barInner.style.width = '100%';
-        if (barText) barText.textContent = 'Complete!';
+        if (barText) barText.textContent = 'Complete';
 
         if (result.success) {
             // [IMP-31] Record render time for smart estimator
@@ -3724,7 +3962,7 @@ async function doRender() {
             // [IMP-33] Post-render verification — confirm preview URLs exist
             if (!result.preview_urls || Object.keys(result.preview_urls).length === 0) {
                 console.warn('[doRender] Server reported success but returned no preview URLs!');
-                showToast('Render succeeded but no preview files were returned. Check server logs.', true);
+                showToast('The render finished, but no preview came back. Try rendering again.', true);
             }
 
             let msg = easySculptSpecOnly
@@ -3734,14 +3972,19 @@ async function doRender() {
             if (result.includes?.suit) msg += ' + suit';
             if (result.includes?.wear) msg += ` (wear ${result.wear_level})`;
             if (result.output_dir?.success) {
-                msg += ` | Saved to ${result.output_dir.pushed_files?.length || 0} files!`;
+                msg += ` | Saved to ${result.output_dir.pushed_files?.length || 0} files`;
             } else if (result.output_dir?.error) {
-                msg += ' | OUTPUT FOLDER ERROR: ' + result.output_dir.error;
+                // [S13 2026-10-12 owner: "lose this vibecoded look"] plain sentence in the toast, raw code in the console (window._spbRenderOutcome.folderError keeps the raw text for the MCP report)
+                const _saveErr = _spbSaveErrorInfo(result.output_dir.error);
+                console.warn('[render] save to the iRacing folder failed:', _saveErr.raw);
+                msg += ' | Not saved: ' + _saveErr.text;
             }
             if (result.live_link?.success) {
-                msg += ' | Files pushed to iRacing!';
+                msg += ' | Files pushed to iRacing';
             }
             showToast(msg);
+            // MCP-RENDER 2026-10-09 (owner: "Build yourself a way to Render the car for me when you make those changes"): the outcome for spb_render (js/spb-pro-ai.js mcpRender)
+            window._spbRenderOutcome = { ok: true, at: Date.now(), msg: msg, elapsed: result.elapsed_seconds, zones: result.zone_count, saved: (result.output_dir && result.output_dir.success) ? ((result.output_dir.pushed_files || []).length) : 0, folderError: (result.output_dir && result.output_dir.error) || null, iracing: !!(result.live_link && result.live_link.success) };
             RenderNotify.onRenderComplete(true, result.elapsed_seconds, result.zone_count);
             // [IMP-34] Browser notification + optional ding
             notifyRenderComplete(true, result.zone_count, result.elapsed_seconds);
@@ -3775,6 +4018,7 @@ async function doRender() {
                             : (err.includes('memory') || err.includes('OOM'))
                                 ? 'Out of memory. Try fewer zones or simpler patterns.'
                                 : err;
+            window._spbRenderOutcome = { ok: false, at: Date.now(), error: friendly };          // MCP-RENDER 2026-10-09
             showRetryableToast('Render failed: ' + friendly, () => doRender());
             RenderNotify.onRenderComplete(false, 0, 0);
             notifyRenderComplete(false, 0, 0);
@@ -3783,6 +4027,7 @@ async function doRender() {
     } catch (e) {
         clearInterval(_progressPoll);
         stopRenderTimer();
+        window._spbRenderOutcome = { ok: false, at: Date.now(), error: e.name === 'AbortError' ? 'cancelled' : e.name === 'TimeoutError' ? 'timed out after 5 minutes' : String(e && e.message || e) };          // MCP-RENDER 2026-10-09
         if (e.name === 'AbortError') {
             showToast('Render cancelled.', false);
         } else if (e.name === 'TimeoutError') { // [40] specific timeout error
@@ -3936,8 +4181,8 @@ function showRenderResults(result) {
     const paintDownloadKey = downloadKeys.find(k => /^car_num_\d+$/.test(k))
         || downloadKeys.find(k => /^car_\d+$/.test(k));
     const specDownloadKey = downloadKeys.find(k => /^car_spec_\d+$/.test(k));
-    if (paintLabel) paintLabel.textContent = paintDownloadKey ? `PAINT (${paintDownloadKey}.tga)` : 'PAINT';
-    if (specLabel) specLabel.textContent = specDownloadKey ? `SPEC MAP (${specDownloadKey}.tga)` : 'SPEC MAP';
+    if (paintLabel) paintLabel.textContent = paintDownloadKey ? `Paint (${paintDownloadKey}.tga)` : 'Paint';
+    if (specLabel) specLabel.textContent = specDownloadKey ? `Spec map (${specDownloadKey}.tga)` : 'Spec map';
 
     const cacheBust = '?v=' + (window.APP_SESSION_ID || Date.now());
     if (paintImg && paintUrl) paintImg.src = ShokkerAPI.baseUrl + paintUrl[1] + cacheBust;
@@ -3972,6 +4217,8 @@ function showRenderResults(result) {
             if (_pEmpty) _pEmpty.style.display = 'none';
         }
         if (_lpSpec && specUrl) _lpSpec.src = ShokkerAPI.baseUrl + specUrl[1] + cacheBust;
+        // ONLINE-AI 2026-10-09 P7: tag what the pane now holds, so SpbIntentReport.snap() never takes this 2048 full render as the "before" shot of the next write (it differs from the live pipeline everywhere = ~100k px of false spill). Kill switch SPB_P7_OFF (read in js/spb-intent-report.js).
+        window.__spbFullPane = { p: (_lpImg && paintUrl) ? _lpImg.src : '', s: (_lpSpec && specUrl) ? _lpSpec.src : '', t: Date.now() };
     } catch (_) { /* live-pane sync must never break the render flow */ }
 
     // Elapsed + zone info
@@ -3982,7 +4229,7 @@ function showRenderResults(result) {
     const wearBadge = document.getElementById('renderWearBadge');
     if (wearBadge) {
         if (result.includes?.wear && result.wear_level > 0) {
-            wearBadge.textContent = `WEAR: ${result.wear_level}%`;
+            wearBadge.textContent = `Wear: ${result.wear_level}%`;
             wearBadge.style.display = 'inline-block';
         } else {
             wearBadge.style.display = 'none';
@@ -4034,22 +4281,26 @@ function showRenderResults(result) {
         // Show output_dir status (primary output)
         if (result.output_dir?.success) {
             const fileCount = result.output_dir.pushed_files?.length || 0;
-            msgParts.push(`<span style="color:var(--accent-green)"><strong>&#10003; Saved ${fileCount} files</strong> to <code>${_spbEscapeRenderHtml(result.output_dir.path)}</code></span>`);
+            // [SPB-NUQ-FIX 2026-10-10 #13] say which of the saved files iRacing actually uses (the rest are the Photoshop channel exports)
+            const _nuqNote = (fileCount > 2 && !_nuqOff()) ? ` <span style="opacity:.75">(iRacing uses the 2 car files; the other ${fileCount - 2} are Photoshop channel files)</span>` : '';
+            msgParts.push(`<span style="color:var(--accent-green)"><strong>&#10003; Saved ${fileCount} files</strong> to <code>${_spbEscapeRenderHtml(result.output_dir.path)}</code>${_nuqNote}</span>`);
         } else if (result.output_dir?.error) {
-            msgParts.push(`<span style="color:#ff4444"><strong>&#10007; Output Error:</strong> ${_spbEscapeRenderHtml(result.output_dir.error)}</span>`);
+            const _outErr = _spbSaveErrorInfo(result.output_dir.error); // [S13 2026-10-12 owner: "lose this vibecoded look"] plain sentence, raw text in the tooltip
+            msgParts.push(`<span style="color:#ff4444" title="${_spbEscapeRenderHtml(_outErr.raw)}"><strong>Output error:</strong> ${_spbEscapeRenderHtml(_outErr.text)}</span>`);
         }
         if (result.live_link?.success) {
             const liveCount = result.live_link.pushed_files?.length || 0;
             const livePath = result.live_link.path || result.live_link.active_car_path || result.live_link.destination || 'Live Link destination';
             msgParts.push(`<span style="color:var(--accent-green)"><strong>&#10003; Live Link pushed ${liveCount} files</strong> to <code>${_spbEscapeRenderHtml(livePath)}</code></span>`);
         } else if (result.live_link?.error) {
-            msgParts.push(`<span style="color:#ff4444"><strong>&#10007; Live Link Error:</strong> ${_spbEscapeRenderHtml(result.live_link.error)}</span>`);
+            const _llErr = _spbSaveErrorInfo(result.live_link.error); // [S13 2026-10-12 owner: "lose this vibecoded look"] plain sentence, raw text in the tooltip
+            msgParts.push(`<span style="color:#ff4444" title="${_spbEscapeRenderHtml(_llErr.raw)}"><strong>Live Link error:</strong> ${_spbEscapeRenderHtml(_llErr.text)}</span>`);
         } else if (requestedLiveLink) {
             msgParts.push(`<span style="color:var(--text-dim)"><strong>Live Link:</strong> no deployment status returned. Verify the destination folder timestamp before blaming iRacing.</span>`);
         }
         // Show iRacing reload instruction (if live link or output_dir succeeded)
         if (result.live_link?.success || result.output_dir?.success) {
-            msgParts.push(`<span style="color:var(--accent-gold); font-size:10px;">💡 <strong>Alt+Tab</strong> to iRacing and press <strong>Ctrl+R</strong> to see your new render!</span>`);
+            msgParts.push(`<span style="color:var(--accent-gold); font-size:10px;"><strong>Alt+Tab</strong> to iRacing and press <strong>Ctrl+R</strong> to see your new render</span>`);
         }
         if (msgParts.length > 0) {
             llMsg.style.display = 'block';
@@ -4060,7 +4311,7 @@ function showRenderResults(result) {
             llMsg.style.display = 'block';
             llMsg.style.borderColor = 'var(--accent-gold)';
             llMsg.style.color = 'var(--accent-gold)';
-            llMsg.innerHTML = '<strong>&#9888; No output folder set!</strong> Set the "iRacing Car Folder" path in the header to save files. Previews are still available below.';
+            llMsg.innerHTML = '<strong>No output folder set</strong> Set the "iRacing Car Folder" path in the header to save files. Previews are still available below.';
         }
     }
 
@@ -4089,7 +4340,7 @@ function showRenderResults(result) {
         _spbLastRenderFiles = _saveSucceeded
             ? { folder: _savedPath, select: _paintName }
             : (!_saveErrored && result.job_id ? { job_id: result.job_id, select: _jobPaintKey ? _jobPaintKey + '.tga' : '' } : null);
-        const _showBtn = (label) => ` <button type="button" class="spb-show-files-btn" style="margin-left:6px; padding:3px 10px; font-weight:700; cursor:pointer; border-radius:4px; border:1px solid currentColor; background:transparent; color:inherit;">&#128194; ${label}</button>`;
+        const _showBtn = (label) => ` <button type="button" class="spb-show-files-btn" style="margin-left:6px; padding:3px 10px; font-weight:700; cursor:pointer; border-radius:4px; border:1px solid currentColor; background:transparent; color:inherit;">${label}</button>`;
         if (_saveSucceeded) {
             // Green success line — reuse the existing "Alt+Tab → Ctrl+R" hint + show the saved path.
             _statusBanner.style.background = 'rgba(0,255,136,0.14)';
@@ -4105,29 +4356,38 @@ function showRenderResults(result) {
                   'The spec must be the <code>.mip</code> iRacing makes next to it the first time you drive the car.</div>'
                 : '';
             _statusBanner.innerHTML =
-                '<strong style="font-size:14px;">&#10003; Saved!</strong> ' +
+                '<strong style="font-size:14px;">&#10003; Saved</strong> ' +
                 '<strong>Alt+Tab</strong> to iRacing and press <strong>Ctrl+R</strong> to load it on your car.' +
                 _pathHtml + _showBtn('Show my files') + _filesHtml;
         } else if (_saveErrored) {
             // A save was attempted but the folder errored — surface it clearly (red).
-            const _errMsg = result.output_dir?.error || result.live_link?.error || 'Unknown save error.';
+            const _errInfo = _spbSaveErrorInfo(result.output_dir?.error || result.live_link?.error || ''); // [S13 2026-10-12 owner: "lose this vibecoded look"] plain sentence; the raw code goes in the tooltip + console
+            console.warn('[render] save to the iRacing folder failed:', _errInfo.raw);
             _statusBanner.style.background = 'rgba(255,68,68,0.14)';
             _statusBanner.style.border = '2px solid #ff4444';
             _statusBanner.style.color = '#ff6b6b';
             _statusBanner.innerHTML =
-                '<strong style="font-size:14px;">&#10007; Save failed</strong> &mdash; ' +
-                _spbEscapeRenderHtml(_errMsg) +
-                ' Check your iRacing Car Folder in the header.';
+                // [S11 2026-10-12 owner: "lose this vibecoded look"] action first, the raw error code last and in brackets (was "Save failed - external_write_disabled Check your...")
+                '<strong style="font-size:14px;">Save failed</strong> &mdash; ' +
+                '<span class="spb-save-err" title="' + _spbEscapeRenderHtml(_errInfo.raw) + '">' + _spbEscapeRenderHtml(_errInfo.text) + '</span>';
         } else {
             // No output folder set — amber warning (matches the #renderLiveLinkMsg "No output folder set!" path).
             _statusBanner.style.background = 'rgba(255,176,0,0.14)';
             _statusBanner.style.border = '2px solid var(--accent-gold, #ffb000)';
             _statusBanner.style.color = 'var(--accent-gold, #ffb000)';
             _statusBanner.innerHTML =
-                '<strong style="font-size:14px;">&#9888; No iRacing folder set</strong> &mdash; ' +
+                '<strong style="font-size:14px;">No iRacing folder set</strong> &mdash; ' +
                 'set your <strong>iRacing Car Folder</strong> in the header or the paint won\'t appear on your car.' +
                 (_spbLastRenderFiles ? '<div style="margin-top:5px; font-size:11px; font-weight:600;">This render is only in Shokker\'s own render folder (iRacing never looks there, and only the two newest renders are kept).' + _showBtn('Show where it was saved') + '</div>' : '');
         }
+        // [NUQ-FIX #1 2026-10-10] one quiet line when template guide layers were left out of this render
+        try {
+            const _gd = window.__spbRenderGuides;
+            if (_gd && _gd.names && _gd.names.length && (Date.now() - _gd.at) < 15 * 60 * 1000) {
+                const _gn = _gd.names.length > 4 ? _gd.names.slice(0, 3).join(', ') + ', ...' : _gd.names.join(', ');
+                _statusBanner.insertAdjacentHTML('beforeend', '<div class="spb-guides-note" style="margin-top:4px; font-size:11px; font-weight:500; opacity:.8;">Guide layers (' + _spbEscapeRenderHtml(_gn) + ') left out of the render.</div>');
+            }
+        } catch (_) {}
         const _showFilesBtn = _statusBanner.querySelector('.spb-show-files-btn');
         if (_showFilesBtn) _showFilesBtn.addEventListener('click', () => spbShowRenderFiles(_showFilesBtn));
     }
@@ -4236,7 +4496,7 @@ function showRenderResults(result) {
 
 // [IMP-41] Channels view — render R/G/B/A as separate canvas overlays so users can inspect spec map
 async function showSpecChannels(specUrl) {
-    if (!specUrl) { showToast('No spec URL for channel view', true); return; }
+    if (!specUrl) { showToast('No spec image for this view', true); return; }
     try {
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -4377,7 +4637,7 @@ if (typeof window !== 'undefined') window.computeZoneStats = computeZoneStats;
 
 // [IMP-45] Render share — copy a permalink-style URL containing the job_id
 function copyRenderShareLink(jobId) {
-    if (!jobId) { showToast('No job ID for this render', true); return; }
+    if (!jobId) { showToast('This render has no share link yet.', true); return; }
     const link = `${window.location.origin}/render/${encodeURIComponent(jobId)}`;
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(link).then(() => showToast('Render link copied: ' + link)).catch(() => showToast('Could not copy link', true));
@@ -4440,9 +4700,12 @@ function filterRenderHistory(query) {
 if (typeof window !== 'undefined') window.filterRenderHistory = filterRenderHistory;
 
 // [IMP-48] Delete a history entry
-function deleteHistoryItem(idx) {
+async function deleteHistoryItem(idx) {
     if (idx < 0 || idx >= renderHistory.length) return;
-    if (!confirm(`Delete render #${idx + 1} from history?`)) return;
+    const _histEntry = renderHistory[idx];
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+    if (!(await SpbDialog.ask('Delete Render From History?', { message: `Render #${idx + 1} is removed from your render history.`, okLabel: 'Delete Render', danger: true, nativeText: `Delete render #${idx + 1} from history?` }))) return;
+    if (renderHistory[idx] !== _histEntry) return;   // the history changed while the box was open
     renderHistory.splice(idx, 1);
     updateHistoryStrip();
     persistRenderHistory();
@@ -4476,10 +4739,12 @@ function setHistoryPage(p) {
 if (typeof window !== 'undefined') window.setHistoryPage = setHistoryPage;
 
 // [IMP-51] Edit notes on a history entry
-function editHistoryNotes(idx) {
+// [SPB-PROMPT-FIX 2026-10-10] async: window.prompt() throws in Electron (the Note button did nothing) -> in-app box (SpbDialog.prompt).
+// Everything after the box is unchanged; Esc = notes unchanged. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+async function editHistoryNotes(idx) {
     const e = renderHistory[idx];
     if (!e) return;
-    const v = prompt('Notes for render #' + (idx + 1) + ':', e.notes || '');
+    const v = await SpbDialog.prompt('Render Notes', e.notes || '', { message: 'Notes for render #' + (idx + 1) + '.', okLabel: 'Save', maxLength: 500, nativeText: 'Notes for render #' + (idx + 1) + ':' });
     if (v == null) return;
     e.notes = v.slice(0, 500);
     persistRenderHistory();
@@ -4489,10 +4754,12 @@ function editHistoryNotes(idx) {
 if (typeof window !== 'undefined') window.editHistoryNotes = editHistoryNotes;
 
 // [IMP-52] Add/remove tags on a history entry
-function editHistoryTags(idx) {
+// [SPB-PROMPT-FIX 2026-10-10] async: window.prompt() throws in Electron (the Tags button did nothing) -> in-app box (SpbDialog.prompt).
+// Everything after the box is unchanged; Esc = tags unchanged. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+async function editHistoryTags(idx) {
     const e = renderHistory[idx];
     if (!e) return;
-    const v = prompt('Tags (comma-separated):', (e.tags || []).join(', '));
+    const v = await SpbDialog.prompt('Render Tags', (e.tags || []).join(', '), { message: 'Tags for render #' + (idx + 1) + ', separated by commas.', okLabel: 'Save', nativeText: 'Tags (comma-separated):' });
     if (v == null) return;
     e.tags = v.split(',').map(t => t.trim()).filter(Boolean).slice(0, 12);
     persistRenderHistory();
@@ -5368,7 +5635,7 @@ async function copyRecipeCardToClipboard() {
         const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
         if (!blob) { showToast('Could not render card image', true); return; }
         await navigator.clipboard.write([new window.ClipboardItem({ 'image/png': blob })]);
-        showToast('Recipe card copied — paste it into Discord!');
+        showToast('Recipe card copied — paste it into Discord');
     } catch (e) { showToast('Copy failed: ' + (e && e.message || e) + ' — try Save PNG', true); }
 }
 
@@ -5430,7 +5697,7 @@ function exportRecipeCardPDF() {
         document.body.appendChild(a); a.click();
         setTimeout(() => { try { URL.revokeObjectURL(url); a.remove(); } catch (_) {} }, 1500);
         showToast('Recipe card saved as PDF');
-    } catch (e) { showToast('PDF export failed (canvas may be tainted): ' + (e && e.message || e), true); }
+    } catch (e) { showToast('PDF export failed (the preview image could not be read): ' + (e && e.message || e), true); }
 }
 
 function _hasRecipeToExport() {
@@ -5514,12 +5781,13 @@ function importRecipeFile() {
 
 function _applyImportedRecipeFile(file) {
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
         let data;
         try { data = JSON.parse(reader.result); } catch (_) { showToast('That file is not a valid Shokker recipe', true); return; }
         const snap = data && (data.zoneSnapshot || data.zones);
         if (!Array.isArray(snap) || !snap.length) { showToast('No recipe data found in that file', true); return; }
-        if (!confirm(`Import this recipe (${snap.length} zones)? Your current zones will be replaced.`)) return;
+        // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+        if (!(await SpbDialog.ask('Import Recipe?', { message: `Your current zones are replaced with the ${snap.length} zones in this file.`, okLabel: 'Import Recipe', nativeText: `Import this recipe (${snap.length} zones)? Your current zones will be replaced.` }))) return;
         try {
             zones = _recipeSnapshotToZones(snap);
             selectedZoneIndex = 0;
@@ -5630,7 +5898,7 @@ async function deployToIracing() {
         return;
     }
     if (!lastRenderedJobId) {
-        showToast('No render available to deploy. Render first!', true); // [40] specific
+        showToast('No render available to deploy. Render first', true); // [40] specific
         return;
     }
     const iracingId = document.getElementById('iracingId')?.value?.trim() || '00000';
@@ -5646,7 +5914,7 @@ async function deployToIracing() {
         if (data.success) {
             const deployedCount = Array.isArray(data.deployed) ? data.deployed.length : 0;
             if (status) {
-                status.textContent = `Deployed ${deployedCount} files to ${carFolder}. Alt+Tab to iRacing, press Ctrl+R!`;
+                status.textContent = `Deployed ${deployedCount} files to ${carFolder}. Alt+Tab to iRacing, press Ctrl+R`;
                 status.style.color = 'var(--success)';
             }
             showToast(`Deployed to iRacing! ${deployedCount} files → ${carFolder}`);
@@ -5721,7 +5989,7 @@ function copyTPDescription() {
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(() => {
-            showToast('Trading Paints description copied!');
+            showToast('Trading Paints description copied');
         }).catch(() => {
             fallbackCopyTP(text);
         });
@@ -5739,7 +6007,7 @@ function fallbackCopyTP(text) {
     ta.select();
     try {
         document.execCommand('copy');
-        showToast('Trading Paints description copied!');
+        showToast('Trading Paints description copied');
     } catch (e) {
         showToast('Could not copy - check browser permissions', true);
     }
@@ -5817,7 +6085,7 @@ function updateHistoryStrip() {
     if (!container) return;
 
     if (renderHistory.length === 0) {
-        container.innerHTML = '<div style="grid-column:1/-1;font-size:10px;color:var(--text-dim);padding:10px;text-align:center;">No renders yet — hit RENDER and your last 20 land here.</div>';
+        container.innerHTML = '<div style="grid-column:1/-1;font-size:10px;color:var(--text-dim);padding:10px;text-align:center;">No renders yet — hit render and your last 20 land here.</div>';
         return;
     }
 
@@ -5881,11 +6149,11 @@ function toggleLiveLink(enabled) {
         if (res && res.success) { // [55] null check on res
             const badge = document.getElementById('liveLinkBadge');
             if (badge) badge.style.display = enabled ? 'inline' : 'none';
-            showToast(enabled ? 'iRacing Live Link enabled!' : 'Live Link disabled');
+            showToast(enabled ? 'iRacing Live Link enabled' : 'Live Link disabled');
         } else if (res && res.error) {
             showToast('Could not save Live Link setting: ' + res.error, true); // [40] specific
         }
-    }).catch(() => showToast('Could not save config. Is the server running?', true)); // [38] specific
+    }).catch(() => showToast('Couldn\'t save your settings. Make sure Shokker Paint Booth is still running.', true)); // [38] specific
 }
 
 /** Toggle custom number mode for car file naming. // [49]
@@ -5898,7 +6166,7 @@ function toggleCustomNumber(enabled) {
         } else if (res && res.error) {
             showToast('Could not save number setting: ' + res.error, true); // [40] specific
         }
-    }).catch(() => showToast('Could not save config. Is the server running?', true)); // [38] specific
+    }).catch(() => showToast('Couldn\'t save your settings. Make sure Shokker Paint Booth is still running.', true)); // [38] specific
 }
 
 // ===== RENDER HISTORY GALLERY WITH COMPARE =====
@@ -5966,7 +6234,7 @@ function buildGalleryHTML() {
         const ageLabel = age < 60 ? `${age}s ago` : age < 3600 ? `${Math.round(age / 60)}m ago` : `${Math.round(age / 3600)}h ago`;
         const selA = idx === historyCompareA ? ' compare-selected' : '';
         const selB = idx === historyCompareB ? ' compare-selected' : '';
-        const badge = idx === 0 ? '<span class="history-card-badge" style="background:rgba(0,255,136,0.2);color:var(--success);">LATEST</span>' : '';
+        const badge = idx === 0 ? '<span class="history-card-badge" style="background:rgba(0,255,136,0.2);color:var(--success);">Latest</span>' : '';
         const favIcon = entry.favorite ? '&#9733;' : '&#9734;';
         // BUG #69 (Bigelow, HIGH): tags / notes / zones_summary come from the
         // painter's own `prompt()` input via editHistoryTags / editHistoryNotes
@@ -6079,13 +6347,15 @@ function clearHistoryCompare() {
 /** Restore zone configuration from a history entry (double-click in gallery). // [50]
  * @param {number} idx - Index in renderHistory array
  */
-function restoreHistoryItem(idx) {
+async function restoreHistoryItem(idx) {
     const entry = renderHistory[idx];
     if (!entry || !entry.zoneSnapshot) {
         showToast('No zone snapshot for this render', true);
         return;
     }
-    if (!confirm(`Restore zone config from render #${idx + 1}? Your current zones will be replaced.`)) return;
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+    if (!(await SpbDialog.ask('Restore Zone Config?', { message: `Your current zones are replaced with the zone config from render #${idx + 1}.`, okLabel: 'Restore Config', nativeText: `Restore zone config from render #${idx + 1}? Your current zones will be replaced.` }))) return;
+    if (renderHistory[idx] !== entry) return;   // the history changed while the box was open
 
     zones = _recipeSnapshotToZones(entry.zoneSnapshot);
     selectedZoneIndex = 0;
@@ -6203,9 +6473,9 @@ async function openRecentRendersPanel() {
     overlay.className = 'recent-renders-overlay';
     overlay.innerHTML =
         '<div class="recent-renders-card" role="dialog" aria-label="Recent renders">' +
-        '<div class="recent-renders-header"><h3>📁 RECENT RENDERS — last 10 (auto-saved)</h3>' +
+        '<div class="recent-renders-header"><h3>Recent renders — last 10 (auto-saved)</h3>' +
         '<span style="flex:1 1 auto;"></span>' +
-        '<button class="btn btn-sm" onclick="importRecipeFile()" style="border-color:var(--accent-gold);color:var(--accent-gold);" title="Import a .shokkerrecipe file (yours or shared by someone) and restore the full recipe">📥 Import Recipe</button>' +
+        '<button class="btn btn-sm" onclick="importRecipeFile()" style="border-color:var(--accent-gold);color:var(--accent-gold);" title="Import a .shokkerrecipe file (yours or shared by someone) and restore the full recipe">Import Recipe</button>' +
         '<button class="btn btn-sm" onclick="closeRecentRendersPanel()" aria-label="Close recent renders">&times; Close</button></div>' +
         '<div class="recent-renders-body" id="recentRendersBody"><div style="padding:20px;color:var(--text-dim);">Loading…</div></div></div>';
     overlay.addEventListener('click', (e) => { if (e.target === overlay) closeRecentRendersPanel(); });
@@ -6258,12 +6528,13 @@ function closeRecentRendersPanel() {
 }
 
 /** [SPB-RECENTS-001] Restore the full recipe from a recalled disk-saved render. */
-function restoreRecipeFromRecent(i) {
+async function restoreRecipeFromRecent(i) {
     const renders = window._recentRendersCache || [];
     const r = renders[i];
     const snap = r && r.recipe && r.recipe.zoneSnapshot;
     if (!snap || !Array.isArray(snap) || !snap.length) { showToast('No recipe data for this render', true); return; }
-    if (!confirm('Restore this full recipe? Your current zones will be replaced.')) return;
+    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+    if (!(await SpbDialog.ask('Restore Full Recipe?', { message: 'Your current zones are replaced with this recipe.', okLabel: 'Restore Recipe', nativeText: 'Restore this full recipe? Your current zones will be replaced.' }))) return;
     zones = _recipeSnapshotToZones(snap);
     selectedZoneIndex = 0;
     renderZones();

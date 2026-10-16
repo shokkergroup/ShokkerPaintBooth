@@ -6,6 +6,15 @@ The Living Wiki has been consolidated twice: **2026-07-19** (2.62 MB → 186 KB)
 
 ---
 
+## 2026-10-10 rollup
+
+| File | Size | Contents |
+|---|---|---|
+| [`docs/wiki_archive/daily_log_full_2026-10-10.md`](docs/wiki_archive/daily_log_full_2026-10-10.md) | 506 KB | **351** Daily Work Log entries (2026-08-29 to 2026-10-08) verbatim. The log had regrown to 395 entries / 642 KB since 09-04; the wiki now keeps the **44 newest** (2026-10-09 onward) plus one row per rolled entry in the history table. |
+| [`docs/wiki_archive/agent_board_full_2026-10-10.md`](docs/wiki_archive/agent_board_full_2026-10-10.md) | 9 KB | The **15** finished Agent Board rows (status DONE / COMPLETE / SHIPPED) removed from Active lanes, verbatim; each now has a one-sentence line under *Recently shipped*. |
+
+---
+
 ## 2026-09-04 rollup
 
 | File | Size | Contents |

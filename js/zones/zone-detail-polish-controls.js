@@ -34,7 +34,7 @@
 
             var header = documentRef.createElement('div');
             header.className = 'overlay-studio-header';
-            header.innerHTML = '<span class="ekg-dot"></span><span>ADDITIONAL OVERLAYS</span><span style="margin-left:auto; font-size:9px; color:#8a96b3;">&#9662;</span>';
+            header.innerHTML = '<span class="ekg-dot"></span><span>Additional overlays</span><span style="margin-left:auto; font-size:9px; color:#8a96b3;">&#9662;</span>';
 
             var body = documentRef.createElement('div');
             body.className = 'overlay-studio-body collapsed';
@@ -214,7 +214,7 @@
 
             var bar = documentRef.createElement('div');
             bar.className = 'zone-heartbeat-bar ' + energyClass;
-            bar.innerHTML = '<span class="hb-label">ZONE HEARTBEAT</span><div class="hb-ekg"><svg viewBox="0 0 120 14" preserveAspectRatio="none"><polyline points="0,7 6,7 9,3 12,11 15,7 21,7 24,2 27,12 30,7 36,7 39,4 42,10 45,7 51,7 54,1 57,13 60,7 66,7 69,3 72,11 75,7 81,7 84,2 87,12 90,7 96,7 99,4 102,10 105,7 111,7 114,1 117,13 120,7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><span class="hb-energy">' + energyLabel + ' &middot; ' + overlayCount + ' layers</span>';
+            bar.innerHTML = '<span class="hb-label">Zone heartbeat</span><div class="hb-ekg"><svg viewBox="0 0 120 14" preserveAspectRatio="none"><polyline points="0,7 6,7 9,3 12,11 15,7 21,7 24,2 27,12 30,7 36,7 39,4 42,10 45,7 51,7 54,1 57,13 60,7 66,7 69,3 72,11 75,7 81,7 84,2 87,12 90,7 96,7 99,4 102,10 105,7 111,7 114,1 117,13 120,7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><span class="hb-energy">' + energyLabel + ' &middot; ' + overlayCount + ' layers</span>';
 
             var body = floatPanel.querySelector('.zone-detail-body');
             if (body) {

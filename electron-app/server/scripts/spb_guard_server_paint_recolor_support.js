@@ -21,6 +21,7 @@ const failures = [];
   'return apply_paint_recolor_impl(',
   'engine=engine',
   'logger=logger',
+  'decode_spatial_mask_payload=_decode_spatial_mask_payload',
 ].forEach((needle) => {
   if (!server.includes(needle)) failures.push(`server.py missing bridge: ${needle}`);
 });
@@ -28,7 +29,8 @@ const failures = [];
 [
   'def apply_paint_recolor_impl(',
   'mask_has_include=False',
-  'Recolor mask decode failed',
+  'decode_spatial_mask_payload(',
+  'expected_shape=(h, w)',
   'engine.hsv_to_rgb_vec(new_h, new_s, new_v)',
   'engine.write_tga_24bit(recolored_path, recolored)',
 ].forEach((needle) => {

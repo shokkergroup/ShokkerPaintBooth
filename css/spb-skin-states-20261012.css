@@ -1,0 +1,223 @@
+/* SPB skin: app states (S11, owner 2026-10-12: "MUST lose this vibecoded look ... keeping the same good functionality").
+   First run / no paint loaded, loading, rendering, errors/offline, drag-drop, Fracture. Loads LAST. Same rules: @layer spb-skin, html:not(.spb-skin-off), !important.
+   Kill switch: localStorage SPB_SKIN_OFF='1'. */
+@layer spb-skin {
+
+/* ==S11A-BEGIN== */
+/* S11A. One calm spinner everywhere.
+   Recipe (same as the boot veil): 2px ring, --sk-line-3 track, --sk-accent head, .8s linear.
+   Trap: iRacing performance mode (default ON) adds body.fx-off and spb-iracing-coexistence.css then sets `animation:none !important` on EVERY element,
+   so every loading ring in the app sat frozen and a frozen ring reads as a hung app. A cascade-layer !important beats that unlayered !important
+   (same trick as the RENDER busy bar). Only a transform animation on a 14-22px ring, only while something is loading, never under reduced motion. */
+@keyframes spbS11Spin { to { transform: rotate(360deg); } }
+/* paint-booth-pro-theme.css W3-069 gave EVERY [aria-busy="true"] element animated orange hazard stripes (the live-preview spinner wore them, so did any "Opening..." button). Gone. */
+html:not(.spb-skin-off) [aria-busy="true"]:not([style*="background-image"]) { background-image: none !important; animation-name: none !important; }
+html:not(.spb-skin-off) #previewSpinner { gap: 10px !important; color: var(--sk-text-2) !important; font: 500 12px/16px var(--sk-font) !important; letter-spacing: 0 !important; }
+html:not(.spb-skin-off) #previewSpinner .spinner-ring {
+  width: 20px !important; height: 20px !important; box-sizing: border-box !important; border: 2px solid var(--sk-line-3) !important; border-top-color: var(--sk-accent) !important;
+  border-radius: 50% !important; box-shadow: none !important; animation: spbS11Spin .8s linear infinite !important;
+}
+html:not(.spb-skin-off) :is(.spinner, .loading-spinner) {
+  box-sizing: border-box !important; border: 2px solid var(--sk-line-3) !important; border-top-color: var(--sk-accent) !important; border-radius: 50% !important;
+  box-shadow: none !important; filter: none !important; animation: spbS11Spin .8s linear infinite !important;
+}
+html:not(.spb-skin-off) .file-picker-loading { padding: 28px 16px !important; color: var(--sk-text-2) !important; font: 400 12px/16px var(--sk-font) !important; }
+html:not(.spb-skin-off) .file-picker-loading.with-spinner::before {
+  width: 20px !important; height: 20px !important; margin: 0 auto 12px !important; box-sizing: border-box !important; border: 2px solid var(--sk-line-3) !important; border-top-color: var(--sk-accent) !important;
+  border-radius: 50% !important; animation: spbS11Spin .8s linear infinite !important;
+}
+html:not(.spb-skin-off) :is(.spb-doc-status.busy, .spb-as-status.busy)::before { animation: spbS11Spin .8s linear infinite !important; border-color: var(--sk-line-3) !important; border-top-color: var(--sk-accent) !important; }
+html:not(.spb-skin-off) #spbChatStudio .spb-cs-spin { width: 14px !important; height: 14px !important; box-sizing: border-box !important; border: 2px solid var(--sk-line-3) !important; border-top-color: var(--sk-accent) !important; animation: spbS11Spin .8s linear infinite !important; }
+html:not(.spb-skin-off) .recipe-card-loading { padding: 44px 16px !important; color: var(--sk-text-3) !important; font: 400 12px/16px var(--sk-font) !important; letter-spacing: 0 !important; text-align: center !important; }
+html:not(.spb-skin-off) .swatch-stage.is-loading .swatch-stage-imgwrap::after {
+  font: 500 11px/16px var(--sk-font) !important; color: var(--sk-text-2) !important; background: var(--sk-panel) !important; border: 1px solid var(--sk-line-2) !important; border-radius: var(--sk-r-sm) !important; padding: 0 8px !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not(.spb-skin-off) :is(#previewSpinner .spinner-ring, .spinner, .loading-spinner, #spbChatStudio .spb-cs-spin) { animation: none !important; }
+  html:not(.spb-skin-off) .file-picker-loading.with-spinner::before, html:not(.spb-skin-off) :is(.spb-doc-status.busy, .spb-as-status.busy)::before { animation: none !important; }
+}
+/* ==S11A-END== */
+
+/* ==S11B-BEGIN== */
+/* S11B. Notices: one recipe for every banner/strip that tells you something happened.
+   Neutral raised surface, 1px hairline, a 2-3px tone rule on the leading edge (ok / warn / danger via tokens), 12px text-2, the lead word in the tone colour. No tinted fills, no 2px coloured frames. */
+
+/* Render result banner (top of the Render recipe window): was a 2px green / red / amber frame with a 14% tinted fill and 14px bold lead. Tone is read off the inline colour JS sets. */
+html:not(.spb-skin-off) #renderStatusBanner {
+  background: var(--sk-raised) !important; background-image: none !important; border: 0 !important; border-bottom: 1px solid var(--sk-line-2) !important; border-left: 3px solid var(--sk-line-3) !important;
+  border-radius: 0 !important; box-shadow: none !important; color: var(--sk-text-2) !important; padding: 10px 16px !important; font: 400 12px/18px var(--sk-font) !important; letter-spacing: 0 !important; text-shadow: none !important; text-align: left !important;
+}
+html:not(.spb-skin-off) #renderStatusBanner[style*="0, 255, 136"] { border-left-color: var(--sk-ok) !important; }
+html:not(.spb-skin-off) #renderStatusBanner[style*="255, 68, 68"] { border-left-color: var(--sk-danger) !important; }
+html:not(.spb-skin-off) #renderStatusBanner[style*="255, 176, 0"] { border-left-color: var(--sk-warn) !important; }
+html:not(.spb-skin-off) #renderStatusBanner > strong:first-child { font-size: 13px !important; font-weight: 600 !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) #renderStatusBanner[style*="0, 255, 136"] > strong:first-child { color: var(--sk-ok) !important; }
+html:not(.spb-skin-off) #renderStatusBanner[style*="255, 68, 68"] > strong:first-child { color: var(--sk-danger) !important; }
+html:not(.spb-skin-off) #renderStatusBanner[style*="255, 176, 0"] > strong:first-child { color: var(--sk-warn) !important; }
+html:not(.spb-skin-off) #renderStatusBanner strong { font-weight: 600 !important; }
+html:not(.spb-skin-off) #renderStatusBanner :is(b, strong):not(:first-child) { color: var(--sk-text) !important; }
+html:not(.spb-skin-off) #renderStatusBanner code { font: 400 11px/16px var(--sk-mono) !important; color: var(--sk-text) !important; background: var(--sk-sunken) !important; border: 1px solid var(--sk-line) !important; border-radius: 3px !important; padding: 0 4px !important; }
+html:not(.spb-skin-off) #renderStatusBanner > div { color: var(--sk-text-2) !important; font-size: 12px !important; font-weight: 400 !important; line-height: 18px !important; }
+html:not(.spb-skin-off) #renderStatusBanner .spb-show-files-btn {
+  height: 24px !important; padding: 0 10px !important; margin-left: 10px !important; font: 500 11px/22px var(--sk-font) !important; letter-spacing: 0 !important; text-transform: none !important;
+  background: var(--sk-hover) !important; border: 1px solid var(--sk-line-3) !important; border-radius: var(--sk-r-sm) !important; color: var(--sk-text) !important; box-shadow: none !important; vertical-align: 1px !important;
+}
+html:not(.spb-skin-off) #renderStatusBanner .spb-show-files-btn:hover { background: var(--sk-raised) !important; border-color: var(--sk-accent-line) !important; }
+
+/* "Some finish thumbnails could not be loaded" strip (left zone rail) */
+html:not(.spb-skin-off) #thumbnailWarningBanner {
+  background: var(--sk-raised) !important; border: 1px solid var(--sk-line-2) !important; border-left: 2px solid var(--sk-warn) !important; border-radius: var(--sk-r) !important;
+  padding: 8px 8px 8px 10px !important; margin: 6px 8px !important; font: 400 11px/16px var(--sk-font) !important; color: var(--sk-text-2) !important; box-shadow: none !important;
+}
+html:not(.spb-skin-off) #thumbnailWarningBanner:not([style*="display: none"]):not([style*="display:none"]) { display: flex !important; align-items: flex-start !important; gap: 6px !important; }
+html:not(.spb-skin-off) #thumbnailWarningBanner > span { flex: 1 1 auto !important; min-width: 0 !important; }
+html:not(.spb-skin-off) #thumbnailWarningBanner button {
+  flex: 0 0 auto !important; width: 20px !important; height: 20px !important; min-height: 20px !important; padding: 0 !important; margin: -2px -2px 0 0 !important;
+  background: transparent !important; border: 0 !important; color: var(--sk-text-3) !important; border-radius: var(--sk-r-sm) !important; box-shadow: none !important;
+}
+html:not(.spb-skin-off) #thumbnailWarningBanner button:hover { background: var(--sk-hover) !important; color: var(--sk-text) !important; }
+
+/* New-version bar (very top of the window). The emoji is dropped, the orange frame becomes a hairline; the one action is a quiet accent button. */
+html:not(.spb-skin-off) #spbUpdateBanner {
+  background: var(--sk-panel) !important; border-bottom: 1px solid var(--sk-line-2) !important; color: var(--sk-text) !important; padding: 8px 16px !important; font: 400 12px/18px var(--sk-font) !important;
+}
+html:not(.spb-skin-off) #spbUpdateBanner > div > span:first-child { display: none !important; }
+html:not(.spb-skin-off) #spbUpdateBanner strong { font-weight: 600 !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) #spbUpdateBannerVersion { opacity: 1 !important; color: var(--sk-text-2) !important; }
+html:not(.spb-skin-off) #spbUpdateBannerDownload, html:not(.spb-skin-off) #spbUpdateBannerSnooze {
+  height: var(--sk-h) !important; padding: 0 12px !important; font: 500 12px/26px var(--sk-font) !important; border-radius: var(--sk-r) !important; box-shadow: none !important;
+}
+html:not(.spb-skin-off) #spbUpdateBannerDownload { background: var(--sk-accent-soft) !important; border: 1px solid var(--sk-accent-line) !important; color: var(--sk-accent-hi) !important; }
+html:not(.spb-skin-off) #spbUpdateBannerDownload:hover { background: var(--sk-accent-line) !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) #spbUpdateBannerSnooze { background: transparent !important; border: 1px solid var(--sk-line-3) !important; color: var(--sk-text-2) !important; }
+html:not(.spb-skin-off) #spbUpdateBannerSnooze:hover { background: var(--sk-hover) !important; color: var(--sk-text) !important; }
+/* ==S11B-END== */
+
+/* ==S11C-BEGIN== */
+/* S11C. Drag a file over the editor. Was a 2px dashed accent outline (inline style set by JS on .center-panel). Now a neutral scrim, one hairline, one line of copy.
+   .center-panel::before already carries the logo watermark, so the scrim lives on ::after. pointer-events none: no flicker while dragging. */
+html:not(.spb-skin-off) .center-panel[style*="dashed"] { outline: 0 !important; }
+html:not(.spb-skin-off) .center-panel[style*="dashed"]::after {
+  content: "Drop to open this paint file" !important; position: absolute !important; inset: 0 !important; z-index: 60 !important; pointer-events: none !important;
+  display: flex !important; align-items: center !important; justify-content: center !important; box-sizing: border-box !important; padding-left: inherit !important;
+  background: color-mix(in srgb, var(--sk-bg) 74%, transparent) !important; box-shadow: inset 0 0 0 1px var(--sk-accent-line) !important;
+  color: var(--sk-text) !important; font: 500 14px/20px var(--sk-font) !important; letter-spacing: 0 !important; text-shadow: none !important; transform: none !important; border-radius: 0 !important;
+}
+/* ==S11C-END== */
+
+/* ==S11D-BEGIN== */
+/* S11D. RENDER while the engine is offline: JS only dims it to opacity .5 (orange mud). Now a flat muted button that still reads as the render action. Not :disabled, so clicks keep working as before. */
+html:not(.spb-skin-off) #btnRender:not(:disabled)[style*="opacity: 0.5"] {
+  opacity: 1 !important; background: var(--sk-raised) !important; background-image: none !important; color: var(--sk-text-3) !important; border: 1px solid var(--sk-line-2) !important; box-shadow: none !important;
+}
+/* "last render 05:18 AM" sat in the render dock as a flex item. After the first render it made the dock 372px wide, the colour strip + zoom bar no longer fit one row,
+   wrapped into a second row and the 56px bar clipped its top 20px (RENDER slid under the tool band). It is now a caption under the button and takes no width. */
+html:not(.spb-skin-off) #renderFloat { position: relative !important; }
+html:not(.spb-skin-off) #spbRenderStatus {
+  position: absolute !important; left: 2px !important; top: 100% !important; margin-top: 1px !important; align-self: auto !important; max-width: 228px !important; overflow: hidden !important; text-overflow: ellipsis !important;
+  font: 400 10px/10px var(--sk-font) !important; color: var(--sk-text-3) !important; letter-spacing: 0 !important; pointer-events: none !important;
+}
+/* Below 1900px the dock already wraps to two rows (zone editor open), so the caption under the button would sit on the colour strip. Hidden there (the time is in Render history and the result window); the dock keeps one layout before and after a render. */
+@media (max-width: 1899px) { html:not(.spb-skin-off) #spbRenderStatus { display: none !important; } }
+/* [S13 2026-10-12] S11's stop-gap here (bar height:auto / overflow:visible below the compact threshold) is gone: js/spb-polish-g barNeed() now measures the real single-row width instead of the fixed 800, and S13B stops the colour dock from wrapping inside a row. Checked at 1100/1440/1700/1850/1920 with and without the Compare button: identical geometry with the rule removed. */
+/* ==S11D-END== */
+
+/* ==S11E-BEGIN== */
+/* S11E. Fracture confirm window (js/ui/spb-nuq-fix.js, .spb-nuq-dlg): same chrome as the other 22 modal windows (S8): neutral scrim, --sk-panel, 1px line-2, radius 8,
+   14/600 sentence-case title, 28px buttons. The amber warning box becomes a neutral raised note with a warn-coloured edge. */
+html:not(.spb-skin-off) .spb-nuq-dlg-wrap { background: rgba(8,10,12,.62) !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+html:not(.spb-skin-off) .spb-nuq-dlg {
+  background: var(--sk-panel) !important; background-image: none !important; border: 1px solid var(--sk-line-2) !important; border-radius: 8px !important; box-shadow: 0 16px 40px rgba(0,0,0,.5) !important;
+  color: var(--sk-text) !important; padding: 16px 20px !important; font: 400 13px/20px var(--sk-font) !important; letter-spacing: 0 !important;
+}
+html:not(.spb-skin-off) .spb-nuq-dlg h3 { margin: 0 0 12px !important; font: 600 14px/20px var(--sk-font) !important; letter-spacing: 0 !important; text-transform: none !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) .spb-nuq-row { gap: 14px !important; }
+html:not(.spb-skin-off) .spb-nuq-txt p { margin: 0 0 6px !important; color: var(--sk-text-2) !important; font-size: 13px !important; line-height: 20px !important; }
+html:not(.spb-skin-off) .spb-nuq-txt p:last-child { margin-bottom: 0 !important; color: var(--sk-text-3) !important; }
+html:not(.spb-skin-off) .spb-nuq-thumb { width: 72px !important; height: 72px !important; border-radius: var(--sk-r) !important; border: 1px solid var(--sk-line-2) !important; background: var(--sk-raised) !important; }
+html:not(.spb-skin-off) .spb-nuq-warn {
+  margin: 14px 0 0 !important; padding: 8px 12px !important; background: var(--sk-raised) !important; border: 1px solid var(--sk-line-2) !important; border-left: 2px solid var(--sk-warn) !important;
+  border-radius: var(--sk-r) !important; color: var(--sk-text-2) !important; font-size: 12px !important; line-height: 18px !important;
+}
+html:not(.spb-skin-off) .spb-nuq-btns { gap: 8px !important; margin-top: 16px !important; }
+html:not(.spb-skin-off) .spb-nuq-btns button {
+  height: var(--sk-h) !important; padding: 0 14px !important; border-radius: var(--sk-r) !important; border: 1px solid var(--sk-line-2) !important; background: var(--sk-raised) !important; background-image: none !important;
+  color: var(--sk-text) !important; font: 500 12px/26px var(--sk-font) !important; letter-spacing: 0 !important; text-transform: none !important; box-shadow: none !important;
+}
+html:not(.spb-skin-off) .spb-nuq-btns button:hover { background: var(--sk-hover) !important; }
+html:not(.spb-skin-off) .spb-nuq-btns button.primary { background: var(--sk-accent-soft) !important; border-color: var(--sk-accent-line) !important; color: var(--sk-accent-hi) !important; }
+html:not(.spb-skin-off) .spb-nuq-btns button.primary:hover { background: var(--sk-accent-line) !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) .spb-nuq-btns button:focus-visible { outline: 2px solid var(--sk-accent) !important; outline-offset: 2px !important; }
+/* ==S11E-END== */
+
+/* ==S11F-BEGIN== */
+/* S11F. Front-door (Chat) transient states, CSS only (the chat lane owns the JS): the "painting..." chip and the one-line toast were navy / white-framed 10px-radius cards,
+   the model chip warning was amber. Same neutral raised notice as everywhere else. */
+html:not(.spb-skin-off) #spbChatStudio .spb-cs-wait { background: var(--sk-raised) !important; border: 1px solid var(--sk-line-2) !important; border-radius: var(--sk-r) !important; color: var(--sk-text-2) !important; box-shadow: none !important; font: 400 12px/16px var(--sk-font) !important; }
+html:not(.spb-skin-off) #spbChatStudio .spb-cs-wait em { font: 400 12px/16px var(--sk-font) !important; font-style: normal !important; color: var(--sk-text-2) !important; }
+html:not(.spb-skin-off) #spbChatStudio .spb-cs-toast { background: var(--sk-raised) !important; border: 1px solid var(--sk-line-2) !important; border-radius: var(--sk-r-lg) !important; color: var(--sk-text) !important; box-shadow: 0 8px 24px rgba(0,0,0,.4) !important; font: 400 12px/18px var(--sk-font) !important; padding: 8px 14px !important; }
+html:not(.spb-skin-off) #spbChatStudio .spb-cs-modelchip.warn { background: var(--sk-raised) !important; border-color: var(--sk-line-3) !important; color: var(--sk-warn) !important; }
+/* ==S11F-END== */
+
+/* ==S11G-BEGIN== */
+/* S11G. Finish picker thumbnails while they load: an <img> with no src yet drew an empty box with a bright 18% white outline. Now a quiet sunken tile with the normal hairline (a 1px transparent `content` image stops Chrome drawing its silver broken-image frame; it disappears once a real src is set). */
+html:not(.spb-skin-off) img.deferred-swatch:not([src]) { background: var(--sk-sunken) !important; border-color: var(--sk-line-2) !important; content: url("data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==") !important; }
+/* ==S11G-END== */
+
+/* ==S13A-BEGIN== */
+/* S13A. Engine dot, three honest states. JS (ShokkerAPI._dotState in paint-booth-5-api-render.js) sets .online / .reconnecting / .offline:
+   green only while the engine answers, muted amber while it re-checks (first failures, or a refocus probe), red once 3 health checks in a row failed.
+   The words next to the dot ("Reconnecting" / "Engine offline") come from the existing ::after rules. 5 id-level :not()s = the specificity of the older dot rules, so these win in every look. */
+html:not(.spb-skin-off) body:not(#spb-pl):not(#spb-plc1):not(#spb-plc2):not(#spb-pld1):not(#spb-s13) #serverStatus.online::before { background: var(--sk-ok) !important; opacity: 1 !important; }
+html:not(.spb-skin-off) body:not(#spb-pl):not(#spb-plc1):not(#spb-plc2):not(#spb-pld1):not(#spb-s13) #serverStatus.reconnecting::before { background: var(--sk-warn) !important; opacity: .9 !important; }
+html:not(.spb-skin-off) body:not(#spb-pl):not(#spb-plc1):not(#spb-plc2):not(#spb-pld1):not(#spb-s13) #serverStatus.offline::before { background: var(--sk-danger) !important; opacity: 1 !important; }
+/* ==S13A-END== */
+
+/* ==S13B-BEGIN== */
+/* S13B. Render dock: the colour/eyedropper group was `flex: 1 1 280px`, so in a row that had 280-384px left it squeezed in, wrapped its four buttons (+ Add Color, Exclude, Set, Use Region)
+   into a 2nd line and the 36px group clipped them (they peeked out under it). Basis = its own natural width: it now only shares a line when it fits whole, otherwise it drops to its own
+   line and stretches (js/spb-polish-g barNeed() measures the same widths for the single-row threshold). 4 ids beat the older `html body #previewBottomBar #eyedropperDockTop` rule. */
+html:not(.spb-skin-off) body:not(#spb-s13):not(#spb-s13b) #previewBottomBar > #eyedropperDockTop { flex: 1 1 auto !important; }
+/* ==S13B-END== */
+
+/* ==S13C-BEGIN== */
+/* S13C. Front door (Chat studio) header on windows under 1440px. The header is one row of brand + car chip + view tabs + Encyclopedia + Render & save + Full editor and needs ~955px;
+   the column it lives in is window width minus the 400-470px AI panel, so from 1100 to ~1430px it wrapped onto a 2nd row (85px bar, Encyclopedia and the two right buttons dropped under the brand).
+   CSS only (the chat lane owns the markup): wordmark shortens to SHOKKER, Encyclopedia becomes the book icon (its tooltip stays), the car chip is the one item that gives way (block box so the ellipsis works), tighter gap/padding.
+   6 ids (the older :not(#spb-pl..) chain + #spbChatStudio is 5). From 1440px up nothing changes. */
+@media (max-width: 1439px) {
+  html:not(.spb-skin-off) body:not(#spb-pl):not(#spb-plc1):not(#spb-plc2):not(#spb-pld1):not(#spb-s13) #spbChatStudio .spb-cs-top { flex-wrap: nowrap !important; gap: 6px !important; padding: 10px 14px !important; }
+  html:not(.spb-skin-off) body:not(#spb-pl):not(#spb-plc1):not(#spb-plc2):not(#spb-pld1):not(#spb-s13) #spbChatStudio .spb-cs-top .spb-cs-tab { padding: 0 9px !important; }
+  html:not(.spb-skin-off) body:not(#spb-pl):not(#spb-plc1):not(#spb-plc2):not(#spb-pld1):not(#spb-s13) #spbChatStudio .spb-cs-top > * { flex-shrink: 0 !important; }
+  html:not(.spb-skin-off) body:not(#spb-pl):not(#spb-plc1):not(#spb-plc2):not(#spb-pld1):not(#spb-s13) #spbChatStudio .spb-cs-top > .spb-cs-brand b { display: none !important; }
+  html:not(.spb-skin-off) body:not(#spb-pl):not(#spb-plc1):not(#spb-plc2):not(#spb-pld1):not(#spb-s13) #spbChatStudio .spb-cs-top > .spb-cs-car { flex-shrink: 1 !important; min-width: 56px !important; max-width: 220px !important; display: block !important; line-height: 22px !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+  html:not(.spb-skin-off) body:not(#spb-pl):not(#spb-plc1):not(#spb-plc2):not(#spb-pld1):not(#spb-s13) #spbChatStudio .spb-cs-top > .spb-cs-sp { flex: 1 1 0 !important; min-width: 0 !important; }
+  html:not(.spb-skin-off) body:not(#spb-pl):not(#spb-plc1):not(#spb-plc2):not(#spb-pld1):not(#spb-s13) #spbChatStudio .spb-cs-top > .spb-cs-btn[data-pld-t="Encyclopedia"] { padding: 0 9px !important; gap: 0 !important; }
+  html:not(.spb-skin-off) body:not(#spb-pl):not(#spb-plc1):not(#spb-plc2):not(#spb-pld1):not(#spb-s13) #spbChatStudio .spb-cs-top > .spb-cs-btn[data-pld-t="Encyclopedia"]::after { display: none !important; }
+}
+/* ==S13C-END== */
+
+/* ==S14A-BEGIN== */
+/* S14A. #spbStaleBanner ("Shokker Paint Booth was updated. Reload to use the new version." + Reload now + x), js/spb-mcp-bridge.js, inline-styled #1d1f27 / #e0a020 frame / 13px.
+   Cross-lane leftover: the main skin's polish rule for it says `font: 600 11px/1 inherit`, which is invalid CSS (the family slot cannot be `inherit`), so the browser dropped the whole
+   declaration and "Reload now" fell back to the default 13.33px button. Rebuilt on the S11B notice recipe: raised surface, hairline, a 2px warn rule on the leading edge, 12px text-2.
+   "Reload now" = the quiet accent button of #spbUpdateBannerDownload (28px), the dismiss x = a 28px ghost icon button. 3 id-level :not()s beat the older polish rules in every look. */
+html:not(.spb-skin-off) #spbStaleBanner:not(#s14):not(#s14):not(#s14) {
+  display: flex !important; align-items: center !important; gap: 8px !important; box-sizing: border-box !important;
+  background: var(--sk-raised) !important; background-image: none !important; border: 1px solid var(--sk-line-2) !important; border-left: 2px solid var(--sk-warn) !important; border-radius: var(--sk-r-lg) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4) !important; color: var(--sk-text-2) !important; font: 400 12px/18px var(--sk-font) !important; letter-spacing: 0 !important; padding: 8px 8px 8px 12px !important; max-width: 400px !important;
+}
+html:not(.spb-skin-off) #spbStaleBanner button:not(#s14):not(#s14):not(#s14) {
+  flex: 0 0 auto !important; box-sizing: border-box !important; height: var(--sk-h) !important; min-height: 0 !important; margin: 0 !important; padding: 0 12px !important;
+  font: 500 12px/26px var(--sk-font) !important; letter-spacing: 0 !important; text-transform: none !important; border-radius: var(--sk-r) !important; box-shadow: none !important; cursor: pointer !important;
+  background: transparent !important; border: 1px solid var(--sk-line-3) !important; color: var(--sk-text-2) !important;
+}
+html:not(.spb-skin-off) #spbStaleBanner button:not(#s14):not(#s14):not(#s14):hover { background: var(--sk-hover) !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) #spbStaleBanner button:first-of-type:not(#s14):not(#s14):not(#s14) { background: var(--sk-accent-soft) !important; border-color: var(--sk-accent-line) !important; color: var(--sk-accent-hi) !important; }
+html:not(.spb-skin-off) #spbStaleBanner button:first-of-type:not(#s14):not(#s14):not(#s14):hover { background: var(--sk-accent-line) !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) #spbStaleBanner button:last-of-type:not(#s14):not(#s14):not(#s14) { width: var(--sk-h) !important; padding: 0 !important; border-color: transparent !important; color: var(--sk-text-3) !important; font-size: 16px !important; line-height: 26px !important; }
+html:not(.spb-skin-off) #spbStaleBanner button:last-of-type:not(#s14):not(#s14):not(#s14):hover { color: var(--sk-text) !important; }
+html:not(.spb-skin-off) #spbStaleBanner button:focus-visible:not(#s14):not(#s14):not(#s14) { outline: none !important; box-shadow: var(--sk-ring) !important; }
+/* ==S14A-END== */
+
+}

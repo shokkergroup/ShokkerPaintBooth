@@ -119,10 +119,10 @@
         this.playSound(success);
         if (doc && !doc.hasFocus()) {
           if (success) {
-            this.flashTitle('Render done! (' + elapsed + 's)');
+            this.flashTitle('Render done (' + elapsed + 's)');
             this.browserNotify('Shokker Render Complete', zoneCount + ' zones rendered in ' + elapsed + 's');
           } else {
-            this.flashTitle('Render failed!');
+            this.flashTitle('Render failed');
             this.browserNotify('Shokker Render Failed', 'Check the Paint Booth for details');
           }
         }

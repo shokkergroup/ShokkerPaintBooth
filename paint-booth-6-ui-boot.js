@@ -1075,11 +1075,12 @@
             document.body.appendChild(overlay);
         }
 
-        function applyLiveryTemplate(idx) {
+        async function applyLiveryTemplate(idx) {
             const tmpl = LIVERY_TEMPLATES[idx];
             if (!tmpl) return;
             if (zones.some(z => z.base || z.finish || z.color !== null)) {
-                if (!confirm(`Apply "${tmpl.name}" template? Your current zones will be replaced.`)) return;
+                // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+                if (!(await SpbDialog.ask('Apply Template?', { message: `"${tmpl.name}" replaces your current zones. Ctrl+Z brings them back.`, okLabel: 'Apply Template', nativeText: `Apply "${tmpl.name}" template? Your current zones will be replaced.` }))) return;
             }
 
             pushZoneUndo();
@@ -1108,7 +1109,7 @@
             triggerPreviewRender();
             autoSave();
             closeTemplateLibrary();
-            showToast(`Template loaded: "${tmpl.name}" - ${tmpl.zones.length} zones. Now assign colors with eyedropper or brush!`);
+            showToast(`Template loaded: "${tmpl.name}" - ${tmpl.zones.length} zones. Now assign colors with eyedropper or brush`);
         }
 
         function closeTemplateLibrary() {
@@ -1160,12 +1161,17 @@
 
         function toggleCompareMode() {
             if (!renderedImage) {
-                showToast('Render first to use compare mode!', true);
+                showToast('Render first to use compare mode', true);
                 return;
             }
             compareMode = !compareMode;
             const btn = document.getElementById('btnCompare');
             if (btn) btn.classList.toggle('active', compareMode);
+            // [SPB-TFX3 2026-10-09 BA-button] the source-bar B/A button drives this same Compare; keep its lit state in step (button, Esc or API)
+            if (!window.SPB_TFX3_OFF) ['btnBeforeAfter', 'btnBeforeAfterSource'].forEach(function (id) {
+                const ba = document.getElementById(id);
+                if (ba) { ba.classList.toggle('active', compareMode); ba.setAttribute('aria-pressed', compareMode ? 'true' : 'false'); }
+            });
 
             if (compareMode) {
                 compareDividerX = 0.5;
@@ -1345,7 +1351,7 @@
             for (const cat of allCats) {
                 if (!grouped[cat] || grouped[cat].length === 0) continue;
                 html += `<div style="grid-column:1/-1; padding:8px 4px 4px; margin-top:8px; border-bottom:1px solid var(--border); font-size:11px; font-weight:700; letter-spacing:1.5px; color:var(--accent); text-transform:uppercase;">
-            ${categoryIcons[cat] || '🎨'} ${cat} <span style="font-weight:400; color:var(--text-dim); font-size:9px;">(${grouped[cat].length})</span>
+            ${cat} <span style="font-weight:400; color:var(--text-dim); font-size:9px;">(${grouped[cat].length})</span>
         </div>`;
 
                 for (const { id, preset } of grouped[cat]) {
@@ -1959,7 +1965,7 @@
         function openFinishCompare(zoneIndex) {
             compareTargetZone = zoneIndex;
             const z = zones[zoneIndex];
-            if (!z) { showToast('Invalid zone index for compare', true); return; }
+            if (!z) { showToast('That zone can\'t be compared.', true); return; }
             // Pre-populate first column with current zone's finish
             compareColumns = [
                 { base: z.base || 'chrome', pattern: z.pattern || 'none', mono: z.finish || null },
@@ -2197,7 +2203,7 @@
                 }
             });
             renderZones();
-            showToast(`Randomized all ${zones.length} zones!`);
+            showToast(`Randomized all ${zones.length} zones`);
         }
 
         // ===== ⚡ SHOKK ME — Total Chaos Randomization =====
@@ -2207,7 +2213,7 @@
                 if (typeof showToast === 'function') showToast('That zone is protected (template / sponsor / decal / muted) — left it alone. Try Shokk Me on a paint zone.');
                 return;
             }
-            pushZoneUndo('SHOKK ME');
+            pushZoneUndo('Shokk me');
             const zone = zones[index];
 
             // Helper: random int in [min, max]
@@ -2424,7 +2430,7 @@
             // Pre-fix `, 4000` was treated as truthy isError → the celebratory
             // SHOKK'D toast was styled as an error. showToast has no duration
             // arg; drop it and let the default styling stand.
-            showToast(`⚡ SHOKK'D! ${baseName} + ${patName}${overlayMsg}`);
+            showToast(`Shokk'd: ${baseName} + ${patName}${overlayMsg}`);
         }
         if (typeof window !== 'undefined') window.shokkMe = shokkMe;
 
@@ -2640,7 +2646,7 @@
                     return;
                 }
                 var scopeSet = {}; scope.forEach(function (n) { scopeSet[n] = true; });
-                if (typeof pushZoneUndo === 'function') pushZoneUndo('SHOKK Whole Car · ' + vibe.label);
+                if (typeof pushZoneUndo === 'function') pushZoneUndo('Shokk Whole Car · ' + vibe.label);
 
                 var pal = _shokkPalette(vibe);
                 var heroPool = _shokkResolvePool(vibe.hero);
@@ -2704,7 +2710,7 @@
                 }
                 if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
                 var protectedCount = zones.length - scope.length;
-                if (typeof showToast === 'function') showToast(vibe.emoji + ' ' + vibe.label + ' · ' + designed + ' zone' + (designed === 1 ? '' : 's') + (protectedCount > 0 ? ' · ' + protectedCount + ' kept safe' : ''));
+                if (typeof showToast === 'function') showToast(vibe.label + ' · ' + designed + ' zone' + (designed === 1 ? '' : 's') + (protectedCount > 0 ? ' · ' + protectedCount + ' kept safe' : ''));
             } catch (err) {
                 if (typeof console !== 'undefined') console.warn('[shokkMeWholeCar] failed', err);
                 if (typeof showToast === 'function') showToast('Whole-car Shokk hit a snag — design unchanged (Ctrl+Z safe).');
@@ -2745,12 +2751,12 @@
                 if (!menu) { shokkMeWholeCar(); return; }
                 if (menu.style.display === 'block') { menu.style.display = 'none'; return; }
 
-                var html = '<div class="more-menu-header">⚡ SHOKK MY WHOLE CAR</div>';
+                var html = '<div class="more-menu-header">Shokk my whole car</div>';
                 html += '<div style="padding:4px 8px 8px;">';
                 html += '<label style="font-size:10px;color:var(--text-dim,#999);display:block;margin-bottom:2px;">Vibe</label>';
                 html += '<select id="shokkVibeSelect" style="width:100%;font-size:11px;padding:3px 5px;margin-bottom:8px;background:var(--bg-input,#222);color:var(--text-main,#eee);border:1px solid var(--border,#444);border-radius:3px;">';
-                html += '<option value="">\u{1F3B2} Surprise Me (random vibe)</option>';
-                shokkVibeList().forEach(function (v) { html += '<option value="' + v.id + '">' + v.emoji + ' ' + _shokkEsc(v.label) + '</option>'; });
+                html += '<option value="">Surprise me (random vibe)</option>';
+                shokkVibeList().forEach(function (v) { html += '<option value="' + v.id + '">' + _shokkEsc(v.label) + '</option>'; });
                 html += '</select>';
                 html += '<div style="font-size:10px;color:var(--text-dim,#999);margin-bottom:3px;">Design these zones:</div>';
                 if (typeof zones === 'undefined' || !Array.isArray(zones) || zones.length === 0) {
@@ -2762,7 +2768,7 @@
                         var nm = _shokkEsc(z && z.name ? z.name : ('Zone ' + (i + 1)));
                         if (reason) {
                             html += '<label style="display:flex;align-items:center;gap:6px;font-size:10px;padding:2px 0;opacity:0.55;cursor:not-allowed;" title="Protected — left untouched">'
-                                + '<input type="checkbox" disabled> \u{1F512} ' + nm + ' <span style="color:var(--text-dim,#999);">· ' + _shokkEsc(reason) + '</span></label>';
+                                + '<input type="checkbox" disabled> ' + nm + ' <span style="color:var(--text-dim,#999);">· ' + _shokkEsc(reason) + '</span></label>';
                         } else {
                             var layerName = _shokkZoneLayerName(z);
                             var meta = layerName ? ('layer "' + _shokkEsc(layerName) + '"') : ('finish: ' + _shokkEsc(_shokkFinishLabel(z)));
@@ -2774,7 +2780,7 @@
                     html += '</div>';
                 }
                 html += '<div style="font-size:9px;color:var(--text-dim,#999);margin:2px 0 6px;line-height:1.3;">ℹ Sponsors, numbers &amp; decals on the Layers panel are never touched. Locked zones keep their own settings.</div>';
-                html += '<button onclick="shokkRunFromPanel()" style="width:100%;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;font-weight:800;letter-spacing:0.4px;padding:6px;border:none;border-radius:4px;cursor:pointer;">⚡ Design Selected Zones</button>';
+                html += '<button onclick="shokkRunFromPanel()" style="width:100%;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;font-weight:800;letter-spacing:0.4px;padding:6px;border:none;border-radius:4px;cursor:pointer;">Design selected zones</button>';
                 html += '</div>';
                 menu.innerHTML = html;
                 menu.style.display = 'block';
@@ -2863,7 +2869,7 @@
             if (!name) return;
             const templates = getTemplateStore();
             const data = templates[name];
-            if (!data) { showToast('Template not found!', true); return; }
+            if (!data) { showToast('Template not found', true); return; }
             pushZoneUndo();
 
             zones = data.map(t => ({
@@ -2917,12 +2923,14 @@
             }
             sel.innerHTML = html;
             // Override the onchange to handle delete
-            sel.onchange = function () {
+            sel.onchange = async function () {
                 const v = this.value;
                 if (v.startsWith('__delete__:')) {
                     const delName = v.substring(11);
-                    if (confirm(`Delete template "${delName}"?`)) deleteZoneTemplate(delName);
-                    this.value = '';
+                    // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+                    const _selEl = this;
+                    if (await SpbDialog.ask('Delete Template?', { message: `"${delName}" will be removed from your saved templates.`, okLabel: 'Delete Template', danger: true, nativeText: `Delete template "${delName}"?` })) deleteZoneTemplate(delName);
+                    _selEl.value = '';
                 } else {
                     loadZoneTemplate(v);
                 }
@@ -2973,11 +2981,13 @@
             catch { return {}; }
         }
 
-        function saveCombo() {
+        // [SPB-PROMPT-FIX 2026-10-10] async: window.prompt() throws in Electron (Save Combo did nothing) -> in-app box (SpbDialog.prompt).
+        // The zone is read BEFORE the box (as before) and the save below is unchanged; Esc = nothing saved. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+        async function saveCombo() {
             const z = zones[selectedZoneIndex];
             if (!z) return;
             if (!z.base && !z.finish) { showToast('Zone has no finish to save as combo', true); return; }
-            const name = prompt('Name this finish combo:');
+            const name = await SpbDialog.prompt('Name This Finish Combo', '', { message: 'Saves this zone\'s base, pattern, finish and strength so you can recall it later.', okLabel: 'Save', nativeText: 'Name this finish combo:' });
             if (!name || !name.trim()) return;
             const combos = getComboStore();
             combos[name.trim()] = {
@@ -3014,11 +3024,12 @@
             showToast(`Applied combo: "${name}"`);
         }
 
-        function deleteCombo() {
+        async function deleteCombo() {
             const sel = document.getElementById('comboDropdown');
             const name = sel ? sel.value : '';
             if (!name) { showToast('Select a combo first', true); return; }
-            if (!confirm(`Delete combo "${name}"?`)) return;
+            // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+            if (!(await SpbDialog.ask('Delete Combo?', { message: `"${name}" will be removed from your saved combos.`, okLabel: 'Delete Combo', danger: true, nativeText: `Delete combo "${name}"?` }))) return;
             const combos = getComboStore();
             delete combos[name];
             localStorage.setItem('shokker_finish_combos', JSON.stringify(combos));
@@ -3485,9 +3496,9 @@
             let currentGroup = '';
             let html = '';
             const headerLabels = {
-                'base_or_mono': 'SELECT BASE OR MONOLITHIC',
-                'pattern': 'SELECT PATTERN',
-                'intensity': 'SELECT INTENSITY'
+                'base_or_mono': 'Select base or monolithic',
+                'pattern': 'Select pattern',
+                'intensity': 'Select intensity'
             };
 
             // Add category header
@@ -3910,6 +3921,17 @@
             }
             // Shift+N: Add new zone (bare N = pen tool)
             if (e.key === 'N' && e.shiftKey && !e.ctrlKey && !e.altKey) {
+                // [SPB-TFX4 2026-10-10 INTEGRATION-QA T-11, lane TOOLS-FIX-4] this key fires from anywhere on the page and gave no sign it had done anything; holding it
+                // (key auto-repeat) spawned a zone per repeat.  Now: ignore auto-repeat, and say what happened + how to undo (addZone() already pushes an undo step).
+                // SPB_TFX4_OFF = the old silent behaviour.
+                if (!window.SPB_TFX4_OFF) {
+                    e.preventDefault();
+                    if (e.repeat) return;
+                    const _zBefore = zones.length;
+                    addZone();
+                    if (zones.length > _zBefore && typeof showToast === 'function') showToast('Zone ' + zones.length + ' added (Ctrl+Z undoes it)', 'info');
+                    return;
+                }
                 addZone();
                 return;
             }
@@ -3986,16 +4008,16 @@
             const btn = document.getElementById('themeToggleBtn');
             const isLight = body.classList.toggle('theme-light');
             localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
-            if (btn) btn.textContent = isLight ? '🌙 Dark' : '☀ Light';
+            if (btn) btn.textContent = isLight ? 'Dark' : 'Light';
         }
         function applySavedTheme() {
             const saved = localStorage.getItem(THEME_KEY);
             const btn = document.getElementById('themeToggleBtn');
             if (saved === 'light') {
                 document.body.classList.add('theme-light');
-                if (btn) btn.textContent = '🌙 Dark';
+                if (btn) btn.textContent = 'Dark';
             } else if (btn) {
-                btn.textContent = '☀ Light';
+                btn.textContent = 'Light';
             }
         }
 
@@ -4100,14 +4122,14 @@
             if (typeof triggerPreviewRender === 'function') triggerPreviewRender();
         }
 
-        function clearAllStamps() {
+        async function clearAllStamps() {
             // 2026-04-19 FIVE-HOUR DEEP SHIFT (Pillman recon W13): destructive without confirm.
             // One misclick wiped every imported stamp with no undo. Sister
             // operations (delete one stamp, clear decals) all confirm — parity fix.
             var n = (window.stampLayers && window.stampLayers.length) || 0;
             if (n === 0) { showToast('No stamps to clear'); return; }
-            if (typeof confirm === 'function' &&
-                !confirm('Clear all ' + n + ' stamp' + (n === 1 ? '' : 's') + '? This cannot be undone.')) {
+            // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+            if (!(await SpbDialog.ask('Clear All Stamps?', { message: n + ' stamp' + (n === 1 ? '' : 's') + ' will be removed. This cannot be undone.', okLabel: 'Clear Stamps', danger: true, nativeText: 'Clear all ' + n + ' stamp' + (n === 1 ? '' : 's') + '? This cannot be undone.' }))) {
                 return;
             }
             window.stampLayers = [];
@@ -4267,7 +4289,8 @@
                 const ctrl = (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) ? { signal: AbortSignal.timeout(4000) } : {};
                 const res = await fetch(ShokkerAPI.baseUrl + '/build-check', ctrl);
                 if (res && res.ok) {
-                    if (h.online === false) SPB.showServerBanner('reconnected');
+                    if (h.online === false && h.bannerUp !== false) SPB.showServerBanner('reconnected');   // [SPB-NUQ-FIX 2026-10-10 #14] no green bar for a drop the buyer never saw
+                    h.bannerUp = undefined;
                     h.online = true;
                     h.lastOk = Date.now();
                     h.failures = 0;
@@ -4277,10 +4300,18 @@
                 }
             } catch (e) {
                 h.failures += 1;
-                if (h.online !== false) {
+                // [SPB-NUQ-FIX 2026-10-10 #14] cold start: the first failed probe is normal (the render server is still booting) and the red bar used to cover the top bar;
+                // it now appears only after 2 failures in a row. Kill switch SPB_NUQ_OFF restores the old behaviour.
+                const _nuqGrace = (function () { try { return !(window.SPB_NUQ_OFF || localStorage.getItem('SPB_NUQ_OFF') === '1'); } catch (e) { return true; } })();
+                if (_nuqGrace) {
+                    if (h.failures === 1) h.bannerUp = false;
+                    if (h.failures >= 2 && !h.bannerUp) { h.bannerUp = true; SPB.showServerBanner('down', 'Render server unreachable (attempt ' + h.failures + ') — retrying...'); }
+                } else if (h.online !== false) {
                     SPB.showServerBanner('down', 'Render server unreachable (attempt ' + h.failures + ') — retrying...');
                 }
                 h.online = false;
+                // [S13 2026-10-12 owner: "lose this vibecoded look"] this probe saw the engine drop: let the header dot re-check now (rate-limited inside) instead of waiting for its idle poll (up to 120 s).
+                try { if (ShokkerAPI && ShokkerAPI._kickHealthCheck) ShokkerAPI._kickHealthCheck(); } catch (_) { /* presentation only */ }
                 // Improvement 7: Exponential backoff capped at maxMs.
                 h.currentMs = Math.min(h.maxMs, Math.max(h.minMs, h.currentMs * 1.6));
             }
@@ -4308,7 +4339,7 @@
                 // Improvement 11: Update detection — toast if build number jumped while app was open elsewhere.
                 if (b && SPB.lastKnownBuild && String(b) !== String(SPB.lastKnownBuild)) {
                     if (typeof showToast === 'function') {
-                        showToast('New build detected (B' + b + '). Press F5 to reload.', false);
+                        showToast('A new version is available (B' + b + '). Press F5 to reload.', false);
                     }
                 }
                 if (b) {
@@ -4582,7 +4613,7 @@
             if (typeof window.loadPaintByPath === 'function') {
                 try { window.loadPaintByPath(last.path); return; } catch (e) {}
             }
-            if (typeof showToast === 'function') showToast('Recent paint reload is not ready — last path: ' + last.path, true);
+            if (typeof showToast === 'function') showToast('Could not reopen the recent paint yet. Last file: ' + last.path, true);
         };
 
         // Improvement 26: Network error wrapper — produces friendly user-facing message.
@@ -4625,7 +4656,7 @@
                 if (age > SPB.STALE_THRESHOLD_MS) {
                     const days = Math.floor(age / (24 * 60 * 60 * 1000));
                     if (typeof showToast === 'function') {
-                        showToast('Restored config is ' + days + 'd old — verify before rendering.', false);
+                        showToast('Restored settings are ' + days + (days === 1 ? ' day' : ' days') + ' old. Check them before rendering.', false);
                     }
                 }
             } catch (e) {}
@@ -4786,7 +4817,7 @@
                 SPB._lastErrTs = now;
                 const msg = (ev && ev.message) ? ev.message : 'Script error';
                 console.error('[SPB-ERR]', msg, ev && ev.error);
-                if (typeof showToast === 'function') showToast('Script error: ' + msg, true);
+                if (typeof showToast === 'function') showToast('Something went wrong: ' + msg + '. Try again, or restart the app if it keeps happening.', true);
             } catch (e) {}
         });
 
@@ -4971,7 +5002,7 @@
                 SPB._bc.onmessage = function(ev) {
                     if (!ev || !ev.data) return;
                     if (ev.data.type === 'build' && SPB.lastKnownBuild && String(ev.data.build) !== String(SPB.lastKnownBuild)) {
-                        if (typeof showToast === 'function') showToast('Another tab detected a new build (B' + ev.data.build + ')', false);
+                        if (typeof showToast === 'function') showToast('Another tab found a new version (B' + ev.data.build + ').', false);
                     }
                 };
             }
@@ -5041,7 +5072,7 @@
             localStorage.setItem('spb_has_launched', '1');
             setTimeout(function() {
                 if (typeof showToast === 'function') {
-                    showToast('Welcome to Shokker Paint Booth! Press ? or F1 for keyboard shortcuts.', false);
+                    showToast('Welcome to Shokker Paint Booth. Press ? or F1 for keyboard shortcuts.', false);
                 }
             }, 2000);
         } else if (SPB.shouldShowWelcomeThisSession && SPB.shouldShowWelcomeThisSession()) {
@@ -5199,7 +5230,7 @@
                         if (typeof window.loadPaintByPath === 'function') {
                             try { window.loadPaintByPath(p.path); } catch (e) {}
                         } else if (typeof showToast === 'function') {
-                            showToast('Recent paint reload is not ready — path: ' + p.path, true);
+                            showToast('Could not reopen that paint yet. File: ' + p.path, true);
                         }
                     };
                 });
@@ -5276,7 +5307,17 @@
                     console.warn('[BUILD-CHECK] ShokkerAPI not available yet');
                     return;
                 }
-                const res = await fetch(ShokkerAPI.baseUrl + '/build-check', { signal: AbortSignal.timeout(5000) });
+                // [SPB-PERF2 2026-10-10] QA T-9: on a busy host (other renders running) this 3 s-after-boot check timed out at 5 s and raised the "Render server
+                // unreachable" banner + a "Server Unreachable" title although the server was fine. A TIMEOUT is retried once with 25 s before it counts as down;
+                // a real connection error still fails at once. Kill switch window.SPB_PERF2_OFF = true.
+                let res;
+                try {
+                    res = await fetch(ShokkerAPI.baseUrl + '/build-check', { signal: AbortSignal.timeout(5000) });
+                } catch (e1) {
+                    if (window.SPB_PERF2_OFF === true || !e1 || e1.name !== 'TimeoutError') throw e1;
+                    console.warn('[BUILD-CHECK] 5 s timeout (busy host?) - retrying once with 25 s');
+                    res = await fetch(ShokkerAPI.baseUrl + '/build-check', { signal: AbortSignal.timeout(25000) });
+                }
                 if (!res.ok) console.warn('[BUILD-CHECK] Server returned status ' + res.status);
                 const rawText = await res.text();
                 console.log('[BUILD-CHECK] status=' + res.status + ' raw=' + rawText.substring(0, 200));
@@ -5413,14 +5454,14 @@
                 + 'background:linear-gradient(160deg,#0d1420,#0a0f17);border:1px solid #2bd4ff;'
                 + 'box-shadow:0 0 0 1px rgba(43,212,255,0.25),0 18px 60px rgba(0,0,0,0.6),0 0 40px rgba(43,212,255,0.25);'
                 + 'color:#e8f3ff;text-align:center">'
-                + '<div style="font-size:46px;line-height:1;margin-bottom:10px">🧪🤖</div>'
+                + ''
                 + '<div style="font-size:22px;font-weight:800;letter-spacing:1.5px;color:#2bd4ff;'
-                + 'text-shadow:0 0 12px rgba(43,212,255,0.6)">AUTOPAINTER</div>'
+                + 'text-shadow:0 0 12px rgba(43,212,255,0.6)">Autopainter</div>'
                 + '<div style="font-size:13px;font-weight:700;letter-spacing:2px;color:#ffd23a;margin-top:8px">'
-                + 'FUTURE FEATURE — COMING SOON!</div>'
-                + '<div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#ff5d73;margin-top:4px">EXPERIMENTAL!</div>'
+                + 'Coming soon</div>'
+                + '<div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#ff5d73;margin-top:4px">Experimental</div>'
                 + '<div style="font-size:13px;color:#9fb6cc;margin-top:14px;font-style:italic">'
-                + '🧬 Mad scientist experiment in progress<span id="apsDots"></span></div>'
+                + 'Work in progress<span id="apsDots"></span></div>'
                 + '<div style="font-size:12px;color:#7e93a8;margin-top:14px;line-height:1.5">'
                 + 'Turn photos / renders of a car into an editable iRacing paint template — auto-detect every '
                 + 'zone, fill paint + spec, drop it straight into the booth. Not wired in yet. Check back soon.</div>'
@@ -5521,7 +5562,8 @@
                     case 'devtools':
                         if (window.electronAPI && typeof window.electronAPI.toggleDevTools === 'function') await window.electronAPI.toggleDevTools();
                         else if (typeof showToast === 'function') showToast('Use F12 or your browser menu to open Developer Tools.');
-                        else alert('Use F12 or your browser menu to open Developer Tools.');
+                        // [SPB-CONFIRM-POLISH 2026-10-10] native alert() -> in-app SpbDialog.notice (kill switch SPB_CONFIRM_POLISH_OFF).
+                        else await SpbDialog.notice('Developer Tools', { message: 'Use F12 or your browser menu to open Developer Tools.', nativeText: 'Use F12 or your browser menu to open Developer Tools.' });
                         break;
                     case 'fullscreen':
                         if (!document.fullscreenElement && document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
@@ -5535,7 +5577,8 @@
                         break;
                     case 'about':
                         if (window.electronAPI && typeof window.electronAPI.showAbout === 'function') await window.electronAPI.showAbout();
-                        else alert('Shokker Paint Booth');
+                        // [SPB-CONFIRM-POLISH 2026-10-10] native alert() -> in-app SpbDialog.notice (kill switch SPB_CONFIRM_POLISH_OFF).
+                        else await SpbDialog.notice('Shokker Paint Booth', { nativeText: 'Shokker Paint Booth' });
                         break;
                     case 'app-home':
                         window.open(window.location.origin + '/paint-booth-v2.html', '_blank');
@@ -5544,7 +5587,7 @@
                         break;
                 }
             } catch (err) {
-                if (typeof showToast === 'function') showToast('Command failed: ' + (err.message || err));
+                if (typeof showToast === 'function') showToast('Could not complete that action: ' + (err.message || err));
                 else console.warn('[SPB-COMMAND]', err);
             }
         }

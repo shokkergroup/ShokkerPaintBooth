@@ -1,0 +1,23 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const E=path.resolve(__dirname,'../../_codex_mcp_work/chatgpt-dev/59910'),read=n=>JSON.parse(fs.readFileSync(path.join(E,n),'utf8'));
+const probeName='context-session-probe-2026-10-10T07-13-45-455Z.json',probe=read(probeName);
+const names=['paint-journey-ready-2026-10-10T07-13-28-701Z.json','paint-journey-j01-advice-2026-10-10T07-14-55-432Z.json','paint-journey-j01-applied-2026-10-10T07-16-05-393Z.json','paint-journey-j01-undo-2026-10-10T07-17-10-308Z.json'];
+const rows=names.map(read),states=rows.map(r=>JSON.parse(r.calls.find(c=>c.tool==='spb_get_state').text));
+const images=r=>r.images.map(i=>i.sha256);
+assert.equal(states[0].layers.length,42);
+for(const n of [1,3]){assert.deepEqual(states[n].layers,states[0].layers);assert.deepEqual(states[n].zones,states[0].zones);assert.deepEqual(images(rows[n]),images(rows[0]));}
+assert.deepEqual(states[2].zones,states[0].zones);
+assert.deepEqual(states[2].layers.filter(l=>l.id!=='psd_0'),states[0].layers.filter(l=>l.id!=='psd_0'));
+assert.deepEqual(states[2].layers.find(l=>l.id==='psd_0').colour_overlay,{blend:'source-over',colour:'#101010',enabled:true,opacity:100});
+assert.equal(rows[2].images[2].sha256,rows[0].images[2].sha256);
+assert.notEqual(rows[2].images[0].sha256,rows[0].images[0].sha256);
+assert.equal(probe.authentication,'ChatGPT');assert.equal(probe.apiFallback,false);
+const edits=probe.calls.filter(c=>c.tool==='spb_edit_layer');assert.equal(edits.length,1);assert.equal(edits[0].arguments.colour,'#101010');
+assert.equal(probe.calls.filter(c=>c.tool==='spb_do').length,0);
+const checked=JSON.parse(rows[2].calls.find(c=>c.tool==='spb_check').text).measured;
+assert.deepEqual(checked.scope.layers,['psd_0']);assert.deepEqual(checked.scope.parts,[]);assert.match(checked.line,/Paintable Area \/ Base Paint/);assert.equal(checked.decal_px,1664);
+const delivery=require('./session-delivery.cjs')(probe.calls,3);assert.equal(delivery.pass,false);assert.deepEqual(delivery.missing_reply_to,[13]);
+const result={schema:'spb-design-journey-acceptance/1',probe:probeName,receipts:names,advice_unchanged:true,selected_option_colour_correct:true,only_requested_layer_metadata_changes:true,spec_preview_unchanged:true,exact_layer_report_scope:true,estimated_protected_artwork_pixels:1664,customer_final_reply_delivered:false,delivery,undo_all_42_records_zones_previews_exact:true,full_raster_verification:false,complete_scheme:false,journey_pass:false};
+fs.writeFileSync(path.join(E,'journey-j01-acceptance.json'),JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify(result));

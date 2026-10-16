@@ -97,11 +97,19 @@ def main() -> int:
         raise AssertionError("photoshop exchange root missing path")
 
     with tempfile.TemporaryDirectory() as tmp:
-        ps_list = _expect("photoshop import list", client.get(f"/api/photoshop-import-list?exchange_folder={tmp}"), 200)
+        internal_headers = {"X-Shokker-Internal": "1"}
+        ps_list = _expect(
+            "photoshop import list",
+            client.get(f"/api/photoshop-import-list?exchange_folder={tmp}", headers=internal_headers),
+            200,
+        )
         if ps_list != {"files": [], "subfolders": []}:
             raise AssertionError(f"unexpected empty photoshop list: {ps_list!r}")
 
-        missing_file = client.get(f"/api/photoshop-import-file?exchange_folder={tmp}&path=missing.tga")
+        missing_file = client.get(
+            f"/api/photoshop-import-file?exchange_folder={tmp}&path=missing.tga",
+            headers=internal_headers,
+        )
         if missing_file.status_code != 404:
             raise AssertionError(f"missing photoshop import file expected 404, got {missing_file.status_code}")
         print(f"photoshop missing file: {missing_file.status_code}")

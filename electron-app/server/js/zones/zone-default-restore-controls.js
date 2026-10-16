@@ -19,11 +19,11 @@
             return [
                 {
                     name: 'Zone 1', color: null, base: null, pattern: 'none', finish: null, intensity: '100', colorMode: 'none', pickerColor: '#3366ff', pickerTolerance: 40, colors: [], regionMask: null,
-                    hint: 'Use Pick Color mode - click your PRIMARY body color on the paint'
+                    hint: 'Use Pick Color mode - click your primary body color on the paint'
                 },
                 {
                     name: 'Zone 2', color: null, base: null, pattern: 'none', finish: null, intensity: '100', colorMode: 'none', pickerColor: '#ffcc00', pickerTolerance: 40, colors: [], regionMask: null,
-                    hint: 'Click your SECOND body color (delete this zone if single-color car)'
+                    hint: 'Click your second body color (delete this zone if single-color car)'
                 },
                 {
                     name: 'Zone 3', color: null, base: null, pattern: 'none', finish: null, intensity: '100', colorMode: 'none', pickerColor: '#ffaa00', pickerTolerance: 35, colors: [], regionMask: null,

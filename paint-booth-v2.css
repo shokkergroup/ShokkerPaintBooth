@@ -5491,21 +5491,35 @@ input[type="range"] {
    center width, "quite a bit bigger", directly above the SOURCE | LIVE PREVIEW squares.
    The thumbnail buffer renders at 192px (SPEC_DOCK_THUMB) so they stay crisp. */
 .spb-unified #previewTopStrip .spec-channel-dock-cell { align-items: stretch; width: 100%; position: relative; }
+/* [SPB-DOCKLABEL-V 2026-10-09 owner] "Put the text vertically down" - the bottom-overlay label
+   (SPB-HEADER-SLIM 2026-08-29) covered the bottom of every channel thumbnail. The label now runs
+   top-to-bottom beside the thumbnail's right edge: no overlap, and the strip stays the same
+   height so SOURCE/LIVE PREVIEW keep every px. Cell = row [thumbnail][label], centred. */
+.spb-unified #previewTopStrip .spec-channel-dock-cell {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
 .spb-unified #previewTopStrip .spec-channel-dock-label {
+    order: 2;
+    position: static;
+    width: auto;
+    flex: 0 0 auto;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    white-space: nowrap;
     font-size: 10px;
     letter-spacing: 0.8px;
+    line-height: 1;
     text-align: center;
-    /* [SPB-HEADER-SLIM 2026-08-29] label overlays the thumbnail's bottom edge instead of
-       stacking above it — the strip's height drops ~16px and every reclaimed px flows 1:1
-       into the height-bound SOURCE/LIVE PREVIEW squares (owner: "make them BIGGER"). */
-    position: absolute;
-    bottom: 2px;
-    left: 0;
-    right: 0;
+    padding: 0;
+    border-radius: 0;
     z-index: 2;
     pointer-events: none;
     text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,0.9);
 }
+.spb-unified #previewTopStrip .spec-channel-dock-cell .spec-channel-dock-canvas { margin: 0; }
 .spb-unified #previewTopStrip .spec-channel-dock-canvas {
     /* SPB-SIMPLIFY-2026-07-19L (owner): "They NEED to be perfect squares even if they are
        small to show the full car template." width:100% + fixed height stretched the 2048²
@@ -6650,8 +6664,13 @@ html body .toast { z-index: 100100 !important; }
     pointer-events: auto;
 }
 
-.eyedropper-dock-top:has(#eyedropperInfo[style*="display: block"]),
-.eyedropper-dock-top:has(#eyedropperInfo:not([style*="display: none"])) {
+/* [SPB-PERF1 2026-10-10 PERF-BOOT, REV-LENS finding] a :has() that tests a style ATTRIBUTE is re-checked after EVERY inline-style write on the page
+   (~50 ms whole-page style recalc per frame: brush cursor, slider drag, HUD). js/spb-perf1-client.js now mirrors the SAME two tests onto a class on the dock
+   (.spb-perf1-info) and this rule keys on it. The two old :has() rules now live ONLY in css/spb-perf1-legacy-dock.css, which the <head> script loads when
+   SPB_PERF1_OFF is on (they cannot stay here even gated: Blink collects a :has() rule's invalidation features whether or not its leading selector matches;
+   deleting just these 2 rules took the per-write recalc from 44 ms to 0.2 ms in a CSSOM bisect). Same look: display:flex whenever #eyedropperInfo is inside
+   the dock and its style attribute does not say display:none. */
+#eyedropperDockTop.eyedropper-dock-top.spb-perf1-info {
     display: flex;
 }
 
@@ -12308,6 +12327,10 @@ select option {
 }
 #layerPanelContent::-webkit-scrollbar { width: 4px; }
 #layerPanelContent::-webkit-scrollbar-thumb { background: rgba(0,229,255,0.2); border-radius: 4px; }
+/* [SPB-TFX2 2026-10-09 AI-pill] The fixed purple "AI" pill (.spb-pai-fab, bottom-right) covered the last layer row when the list was
+   scrolled to the end at wide widths (last row bottom 1065 vs pill 1029-1062 at 1920x1080). Pad the scroll list so the last row can
+   scroll clear of it; the pill does not move. Kill switch: SPB_TFX2_OFF sets data-spb-tfx2-off on <html> (pc-tool-defaults.js). */
+html:not([data-spb-tfx2-off]) #layerPanelContent { padding-bottom: 56px !important; }
 #templateToggles {
     display: flex;
     gap: 8px;

@@ -21,9 +21,15 @@ class CodexSetupTests(unittest.TestCase):
         self.root = Path(self.tmp.name)
         self.env = patch.dict(os.environ, {'CODEX_HOME': str(self.root / 'codex'), 'SPB_MCP_DIR': str(self.root / 'pairing')})
         self.env.start()
+        # Config preservation tests isolate readiness; actual install checks live separately.
+        self.runtime = patch('server_routes.codex_setup.resolve_runtime', return_value={
+            'ready': True, 'command': 'node', 'env': {'ELECTRON_RUN_AS_NODE': '0', 'NODE_OPTIONS': '', 'NODE_PATH': ''}})
+        self.knowledge = patch('server_routes.codex_setup.knowledge_status', return_value={'ready': True})
+        self.runtime.start(); self.knowledge.start()
+        self.addCleanup(self.runtime.stop); self.addCleanup(self.knowledge.stop)
         (self.root / 'mcp' / 'server').mkdir(parents=True)
         (self.root / 'mcp' / 'server' / 'index.js').write_text('// test')
-        self.payload = setup_payload(self.root / 'mcp', '59876')
+        self.payload = setup_payload(self.root / 'mcp', '59910')
 
     def tearDown(self):
         self.env.stop()
@@ -75,13 +81,13 @@ class CodexSetupTests(unittest.TestCase):
         self.assertEqual(len(list(target.parent.glob('config.toml.spb-backup-*'))), 1)
 
     def test_apostrophe_path_and_missing_node(self):
-        with patch('server_routes.codex_setup.shutil.which', return_value="C:/Ricky's PC/node.exe"):
-            p = setup_payload(self.root / 'mcp', '59877')
+        with patch('server_routes.codex_setup.resolve_runtime', return_value={'ready': True, 'command': "C:/Ricky's PC/node.exe", 'env': {}}):
+            p = setup_payload(self.root / 'mcp', '59910')
             self.assertIn("Ricky''s PC", p['command'])
             cfg = tomllib.loads(p['config'])
-            self.assertEqual(cfg['mcp_servers']['shokker-paint-booth']['env']['SPB_PORT'], '59877')
-        with patch('server_routes.codex_setup.shutil.which', return_value=None):
-            self.assertFalse(install_setup(setup_payload(self.root / 'mcp', '59876'))['ok'])
+            self.assertEqual(cfg['mcp_servers']['shokker-paint-booth']['env']['SPB_PORT'], '59910')
+        with patch('server_routes.codex_setup.resolve_runtime', return_value={'ready': False, 'command': None}):
+            self.assertFalse(install_setup(setup_payload(self.root / 'mcp', '59910'))['ok'])
 
     def app(self):
         bridge._STATE.update(enabled=False, loaded=True, last_poll=0, calls=0, last_tool=None, last_call=0)

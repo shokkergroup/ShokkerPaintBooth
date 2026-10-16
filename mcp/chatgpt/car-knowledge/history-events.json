@@ -1,0 +1,44 @@
+{
+  "schema": "spb-history-dedup-proposal/1",
+  "status": "reviewed proposal only; not applied to shared compiler or runtime",
+  "checked_date": "2026-10-09",
+  "groups": [
+    {
+      "car_id": "dallarair18",
+      "event_key": "dallarair18:2022-s3:suspension-rim-template-controls",
+      "member_ids": ["dallarair18-doc-2", "ir18-special-colour-blocks"],
+      "member_sha256": {"dallarair18-doc-2": "5f8e646369611f8f93cf424c70659820b765119ba1d8f54379bed18638ab4d6f", "ir18-special-colour-blocks": "358168f90fbd66e182510408fcef8572021f4df76d7e8bbc9384eb54acf1c302"},
+      "expected_source_ids": ["oval:2022-s3", "road:2022s3"],
+      "source_article_id": "31000167405",
+      "release": {"year": 2022, "season": 3, "patch": 0, "label": "2022 Season 3"},
+      "canonical_topic": "template-revision",
+      "canonical_text": "The 2022 S3 IR18 template added suspension-wrap and wheel-rim color blocks; its spec map also gained suspension-wrap blocks."
+    },
+    {
+      "car_id": "dallarair18",
+      "event_key": "dallarair18:2025-s3:shared-aero-template",
+      "member_ids": ["dallarair18-doc-1", "ir18-shared-aero-template"],
+      "member_sha256": {"dallarair18-doc-1": "8d57010309bfbe1f3dd24ceaa3a69b03a2aedd7373823df98883ae243b0a238a", "ir18-shared-aero-template": "0229bb6482d6ddfb2473a253686df533fb6859bed3af71f01d73f245688b8308"},
+      "expected_source_ids": ["oval:2025-s3", "road:2025s3"],
+      "source_article_id": "31000176558",
+      "release": {"year": 2025, "season": 3, "patch": 0, "label": "2025 Season 3"},
+      "canonical_topic": "template-compatibility",
+      "canonical_text": "The 2025 S3 notes document Road, Short Track and Speedway aero configurations sharing one updated IR18 template."
+    },
+    {
+      "car_id": "dallarair18",
+      "event_key": "dallarair18:2026-s1:template-textures",
+      "member_ids": ["dallarair18-doc-3", "ir18-new-textures"],
+      "member_sha256": {"dallarair18-doc-3": "f3f23723ed514a347436a5636eece94cb5af405f0894ec7c14364d2932a401c3", "ir18-new-textures": "bd042017c45ce212a077f8fb68483f3e6b84d861ccb7ff99b7db6c0fd498ed53"},
+      "expected_source_ids": ["oval:2026-s1", "road:2026s1"],
+      "source_article_id": "31000177717",
+      "release": {"year": 2026, "season": 1, "patch": 0, "label": "2026 Season 1"},
+      "canonical_topic": "template-revision",
+      "canonical_text": "The IR18 paint template received new textures in 2026 S1."
+    }
+  ],
+  "do_not_merge": [
+    {"car_id": "dallarair18", "member_ids": ["ir18-new-textures", "ir18-duct-airhose"], "reason": "Different release events and assertion scopes: new template textures in 2026 S1 versus paint-pattern corrections in 2026 S4."},
+    {"car_id": "dallarair18", "member_ids": ["dallarair18-psd-4", "template-special-layers-dallarair18"], "reason": "Same archive/hash but partially different observed label sets and dimensions. Keep as complementary metadata, or losslessly union structured labels; never discard one by URL alone."}
+  ]
+}

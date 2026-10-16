@@ -1405,8 +1405,22 @@ try:
         _e = BASE_REGISTRY.setdefault(_id, {"M": 40, "R": 24, "CC": 16, "desc": _id.replace("_", " ").title()})
         _e["paint_fn"] = getattr(_flm26, "paint_" + _id)
         _e["base_spec_fn"] = getattr(_flm26, "spec_" + _id)
+        _e["authored_color"] = True  # FLAMES-FIX 2026-10-07: swatch = the paint_fn colours (server._render_swatch_bytes)
 except Exception as _flm_exc:
     print(f"[FLAMES 2026] wiring skipped: {_flm_exc}")
+
+# FLAMES-FIX 2026-10-07 (owner: "I didn't want you to delete the old one's just add new one's"):
+# the flame_* ids above are the owner's ORIGINAL renderers again (flames_2026.py == HEAD); the
+# 2026-10-06 rebuild lives on as 20 NEW finishes in flames_2026_v2.py, same Flames group.
+try:
+    from engine.paint_v2 import flames_2026_v2 as _flm26b
+    for _id in _flm26b.NEW_IDS:
+        _e = BASE_REGISTRY.setdefault(_id, {"M": 40, "R": 24, "CC": 16, "desc": _id.replace("_", " ").title()})
+        _e["paint_fn"] = getattr(_flm26b, "paint_" + _id)
+        _e["base_spec_fn"] = getattr(_flm26b, "spec_" + _id)
+        _e["authored_color"] = True  # FLAMES-FIX 2026-10-07
+except Exception as _flm2_exc:
+    print(f"[FLAMES 2026 v2] wiring skipped: {_flm2_exc}")
 
 
 # ── MARBLE&ONYX / SOCK HOP / GROOVY VIBES 2026 (replace Premium Luxury / Satin&Wrap / Weathered&Aged) ──

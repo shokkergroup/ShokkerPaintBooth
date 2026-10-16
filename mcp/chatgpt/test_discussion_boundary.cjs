@@ -1,0 +1,10 @@
+'use strict';
+const assert=require('node:assert/strict'),I=require('./design-intent.js'),M=require('./candidates/design-intent.cjs'),B=require('./candidates/spb-design-intent.js');
+const native='I want bold checkers that keep the number readable. Is the current pattern too large, and how would you improve it? Let’s discuss before changing anything.';
+for(const text of [native,"Let's discuss before changing anything.",'Explain the plan before we change anything.',"Don't do anything yet. I want a chrome hood.",'Don’t do anything yet. I want a chrome hood.','No edits for now. Compare checker sizes.','Only talk through the scheme.','Just plan the livery first.',
+ 'And what does spec amount 0% mean? Please explain only.','Explain only.','Comparison only: satin versus matte.','Just an explanation of the spec map.','No edits. How does this work?','Paint the body blue. Explanation only.']){
+ const result=I.classify(text);assert.equal(result.mode,'advice',text);assert.equal(result.explicit,true,text);assert.equal(result.mutation_allowed,false,text);assert.deepEqual(M.classify(text),result,'MCP gate and context share the exact classifier');assert.deepEqual(B.classify(text),result,'Shared browser proposal uses the same classifier');
+}
+for(const text of ['Make the selected pattern coarser and keep the numbers readable.',"Don't add glitter; paint the body blue.",'Discuss these colours, then make the body black.','Explain why gold works, then paint the body gold.','Explain only the roof, then paint Body blue.','Make only the checker finer.','Apply the plan only to Body.']){assert.equal(I.classify(text).mode,'unspecified',text);assert.deepEqual(M.classify(text),I.classify(text));}
+assert.equal(I.classify('Discuss before changing anything. Then paint the hood.').mutation_allowed,false,'Explicit discussion boundary has precedence within this message');
+console.log(JSON.stringify({pass:true,native_multi_sentence_boundary:true,typographic_apostrophes:true,ordinary_edit_and_protected_art_preferences_not_globally_blocked:true}));

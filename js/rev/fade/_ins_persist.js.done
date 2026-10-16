@@ -1,0 +1,67 @@
+    // ---------------------------------------------------------------- project round trip
+    // [SPB-REV-FADE 2026-10-10 FADE-2] serialize() -> ONE plain JSON-able object (or null when there are no fades), restore(obj) puts it back; js/features/spb-projects.js
+    // stores it in the optional project field `revFade` (a project without fades is byte-for-byte what it was, like REV-MATERIAL's `revMaterial`).
+    //   {v:1, size:[W,H], seq, recs:[{id, key, name, dir, parts, paintOn, keepDecals, stops:[{p,color,mat,finish}], clip:{bbox:[x,y,w,h], png}|null}]}
+    // A record is its own settings (a few hundred bytes) plus, only when it was added inside a selection / zone clip, that clip as a bbox-cropped 8-bit gray PNG
+    // (lossless). The t-field and the coverage are NOT stored: they are recomputed from the car model, so the render after a re-open is the same bytes.
+    // restore() is all-or-nothing, rebinds the records to the current car model (a project always opens on its own car) and starts the undo history fresh
+    // (old entries would point at records that no longer exist). Kill switch: SPB_REV_FADE_OFF (off() above) - serialize() then returns null.
+    const CPC = new WeakMap(); let restoreGen = 0;
+    function encodeClip(clip, W, H) {
+        if (!clip) return null;
+        const hit = CPC.get(clip); if (hit) return hit;
+        let x0 = W, y0 = H, x1 = -1, y1 = -1;
+        for (let y = 0; y < H; y++) { const s = y * W; for (let x = 0; x < W; x++) if (clip[s + x]) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; } }
+        let out;
+        if (x1 < 0) out = { bbox: [0, 0, 0, 0], png: null };                   // an all-zero clip (nothing allowed) stays all-zero
+        else {
+            const bw = x1 - x0 + 1, bh = y1 - y0 + 1;
+            out = { bbox: [x0, y0, bw, bh], png: pngOf(bw, bh, d => { for (let y = 0; y < bh; y++) { let s = (y + y0) * W + x0, o = y * bw * 4; for (let x = 0; x < bw; x++, s++, o += 4) { const v = clip[s]; d[o] = v; d[o + 1] = v; d[o + 2] = v; d[o + 3] = 255; } } }) };
+        }
+        CPC.set(clip, out); return out;
+    }
+    function decodeImage(url) { return new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('a saved fade area did not decode')); im.src = url; }); }
+    async function decodeClip(c, W, H) {
+        if (!c) return null;
+        const out = new Uint8Array(W * H); if (!c.png) return out;
+        const im = await decodeImage(c.png), bw = c.bbox[2], bh = c.bbox[3];
+        const cv = doc.createElement('canvas'); cv.width = bw; cv.height = bh; const x = cv.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0);
+        const d = x.getImageData(0, 0, bw, bh).data;
+        for (let y = 0; y < bh; y++) { let s = (y + c.bbox[1]) * W + c.bbox[0], o = y * bw * 4; for (let k = 0; k < bw; k++, s++, o += 4) out[s] = d[o]; }
+        return out;
+    }
+    function serialize() {
+        if (off() || !S.recs.length) return null;
+        const sp = RF() && RF().cur(), W = sp ? sp.W : 2048, H = sp ? sp.H : 2048;
+        return {
+            v: 1, size: [W, H], seq: S.seq,
+            recs: S.recs.map(r => ({ id: r.id, key: r.key, name: r.name, dir: cloneDir(r.dir), parts: r.parts ? r.parts.slice() : null, paintOn: !!r.paintOn, keepDecals: r.keepDecals !== false,
+                stops: sortedStops(r).map(cloneStop), clip: encodeClip(r.clip, W, H) }))
+        };
+    }
+    function adoptRecs(recs, seq) {
+        S.recs = recs; S.undo.length = 0; S.redo.length = 0;
+        let mx = S.seq || 0; recs.forEach(r => { const n = +String(r.id || '').replace(/^\D+/, ''); if (n > mx) mx = n; }); S.seq = Math.max(mx, seq || 0);
+        if (D && D.id) D.id = null;
+        changed();
+    }
+    async function restore(obj) {
+        if (off()) return { ok: true, n: 0 };
+        const my = ++restoreGen;
+        try {
+            if (!obj || !Array.isArray(obj.recs) || !obj.recs.length) { if (S.recs.length) adoptRecs([], 0); return { ok: true, n: 0 }; }   // a document without fades empties the previous one's
+            const W = obj.size && obj.size[0], H = obj.size && obj.size[1];
+            if (!(W > 0 && H > 0)) return { ok: false, why: 'the saved fades have no sheet size' };
+            const recs = [];
+            for (const o of obj.recs) {
+                if (!o || !o.dir || !Array.isArray(o.stops) || o.stops.length < 2) return { ok: false, why: 'a saved fade is incomplete' };
+                recs.push({ id: String(o.id), key: o.key || null, name: o.name || '', dir: cloneDir(o.dir), parts: o.parts ? o.parts.slice() : null, paintOn: !!o.paintOn, keepDecals: o.keepDecals !== false,
+                    stops: o.stops.map(cloneStop), clip: await decodeClip(o.clip, W, H) });
+            }
+            let sp = null; try { sp = await ensureSpace(); } catch (e) { warn('restore space', e); }   // the model must exist, or a render without opening the panel would skip the fades
+            if (my !== restoreGen) return { ok: false, why: 'superseded by a newer open' };
+            if (sp && sp.W === W && sp.H === H) recs.forEach(r => { r.key = sp.key; });
+            adoptRecs(recs, obj.seq);
+            return { ok: true, n: recs.length, bound: !!(sp && sp.W === W && sp.H === H) };
+        } catch (e) { warn('restore', e); return { ok: false, why: String(e && e.message || e) }; }
+    }

@@ -89,7 +89,7 @@
           if (typeof assignFinishToSelected === 'function') assignFinishToSelected(finishId);
           if (typeof applyFinishToAllZones === 'function') {
             setTimeout(() => {
-              if (!confirm('Apply this finish to ALL zones?')) return;
+              if (!confirm('Apply this finish to all zones?')) return;
               const src = getZones()[getSelectedZoneIndex()];
               if (!src || (!src.base && !src.finish)) return;
               pushZoneUndo('Apply finish to all zones');
@@ -227,7 +227,7 @@
         {
           type: 'action',
           id: 'apply-all',
-          label: 'Apply current finish to ALL zones',
+          label: 'Apply current finish to all zones',
           meta: 'Action',
           action: () => {
             if (typeof applyFinishToAllZones === 'function') applyFinishToAllZones();
@@ -266,10 +266,10 @@
       }
 
       resultsEl.innerHTML = cmdPaletteItems.map((item, idx) => {
-        let icon = '&#127912;';
-        if (item.type === 'zone') icon = '&#128205;';
-        if (item.type === 'action') icon = '&#9889;';
-        if (item.meta === 'Recent') icon = '&#128338;';
+        let icon = '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-2px"><rect x="2.5" y="2.5" width="11" height="11" rx="2.4"/><path d="M2.5 8h11"/></svg>';
+        if (item.type === 'zone') icon = '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-2px"><path d="M8 14s4.5-4.2 4.5-7.6A4.5 4.5 0 0 0 3.5 6.4C3.5 9.8 8 14 8 14z"/><circle cx="8" cy="6.4" r="1.5"/></svg>';
+        if (item.type === 'action') icon = '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-2px"><path d="M9 1.8L3.8 9h3.6l-.8 5.2L12.2 7H8.6z"/></svg>';
+        if (item.meta === 'Recent') icon = '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="vertical-align:-2px"><circle cx="8" cy="8" r="5.6"/><path d="M8 4.8V8l2.2 1.4"/></svg>';
         return [
           `<div class="spb-command-palette-item ${idx === cmdPaletteSelectedIndex ? 'selected' : ''}" data-index="${idx}">`,
           `<span class="icon">${icon}</span>`,

@@ -1,0 +1,32 @@
+[
+  {
+    "name": "01-first-run-card",
+    "size": "1920x1080",
+    "ls": {},
+    "boot": 15000
+  },
+  {
+    "name": "02-pro-front-door",
+    "size": "1920x1080",
+    "ls": { "spb_view_mode": "pro" },
+    "boot": 15000
+  },
+  {
+    "name": "03-easy-catalog-1920",
+    "size": "1920x1080",
+    "ls": { "spb_view_mode": "easy" },
+    "boot": 16000
+  },
+  {
+    "name": "04-easy-catalog-1440",
+    "size": "1440x900",
+    "ls": { "spb_view_mode": "easy" },
+    "boot": 16000
+  },
+  {
+    "name": "05-easy-catalog-1100",
+    "size": "1100x760",
+    "ls": { "spb_view_mode": "easy" },
+    "boot": 16000
+  }
+]

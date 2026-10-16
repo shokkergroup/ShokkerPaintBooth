@@ -169,6 +169,9 @@ def main():
             z = np.load(NPZ, allow_pickle=True)
             ids = list(z["ids"]); struct = z["struct"]; phash = z["phash"]
             old_meta = json.loads(META.read_text(encoding="utf-8")) if META.exists() else {}
+            # FLAMES-FIX 2026-10-07: META is written as {"generated","count","res","items":{id:meta}};
+            # reading it flat gave every id mtime -1, so the "incremental" run re-rendered the whole catalog.
+            old_meta = old_meta.get("items", old_meta) if isinstance(old_meta, dict) else {}
             for k, i in enumerate(ids):
                 cache[i] = (struct[k], phash[k], old_meta.get(i, {}))
         except Exception:
@@ -199,6 +202,15 @@ def main():
         if rendered % 50 == 0:
             print(f"  …{rendered} rendered ({n+1}/{len(items)})")
 
+    # FLAMES-FIX 2026-10-07: a partial run (--ids / --limit) used to SAVE ONLY those items, wiping the
+    # whole-catalog index (8.4 MB -> 40 rows) and making the uniqueness gate compare against nothing.
+    # Keep every cached entry the partial run did not touch.
+    if args.ids or args.limit:
+        done = set(ids_out)
+        for item_id, (c_struct, c_phash, c_meta) in cache.items():
+            if item_id not in done:
+                rows_struct.append(c_struct); rows_phash.append(c_phash)
+                ids_out.append(item_id); meta_out[item_id] = c_meta
     struct = np.asarray(rows_struct, np.float32)
     phash = np.asarray(rows_phash, np.uint8)
     np.savez_compressed(NPZ, ids=np.array(ids_out, dtype=object), struct=struct, phash=phash)

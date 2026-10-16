@@ -5575,8 +5575,8 @@ def test_finish_popup_uses_metadata_chips_and_pairing_hints():
     src = Path("paint-booth-5-api-render.js").read_text(encoding="utf-8")
     assert "getBaseMetadata" in src
     assert "getPatternMetadata" in src
-    assert "SPONSOR SAFE" in src
-    assert "SPONSOR CAUTION" in src
+    assert "Sponsor safe" in src
+    assert "Sponsor caution" in src
     assert "Best with:" in src
     assert "Similar:" in src
     assert "Best on:" in src

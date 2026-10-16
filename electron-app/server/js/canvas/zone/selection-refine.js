@@ -5,6 +5,20 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    // PORT-W1 (2026-10-09, owner: "our tools basically SUCK"): Expand/Contract
+    // (true circular EDT), Feather (Gaussian sigma = r/2, uncapped) and Smooth
+    // (box + contrast curve, real radius) now come from SPBPcSelection, ported
+    // from PhotoCraft crates/algo/src/selection.rs + selection_blur.rs
+    // (MIT, see THIRD_PARTY_NOTICES.md). window.SPB_PC_W1_OFF = true restores
+    // the legacy square/box implementations below exactly.
+    const G = typeof window !== 'undefined' ? window : globalThis;
+    function pcCore() {
+        if (G.SPB_PC_W1_OFF) return null;
+        if (G.SPBPcSelection) return G.SPBPcSelection;
+        try { if (typeof require === 'function') return require('../pc-selection-core.js'); } catch (e) { /* legacy path */ }
+        return null;
+    }
+
     function dimensions(widthValue, heightValue, mask) {
         const width = Math.max(0, Math.floor(Number(widthValue) || 0));
         const height = Math.max(0, Math.floor(Number(heightValue) || 0));
@@ -101,6 +115,12 @@
             };
         }
 
+        const pc = pcCore();
+        if (pc) {
+            const pcRadius = Math.max(1, Math.min(512, Math.floor(Number(radiusInput) || 1)));
+            const pcOut = mode === 'grow' ? pc.expand(mask, width, height, pcRadius) : pc.contract(mask, width, height, pcRadius);
+            return { mask: pcOut, mode, radius: pcRadius, ...compareMasks(mask, pcOut) };
+        }
         const intermediate = new Uint8Array(size);
         const output = new Uint8Array(size);
         const keepMaximum = mode === 'grow';
@@ -212,11 +232,18 @@
 
     function feather(mask, widthValue, heightValue, radiusInput) {
         const { width, height, size } = dimensions(widthValue, heightValue, mask);
-        const radius = Math.max(1, Math.min(12, Math.floor(Number(radiusInput) || 2)));
+        const pc = pcCore();
+        const radius = pc
+            ? Math.max(1, Math.min(500, Number(radiusInput) || 2))
+            : Math.max(1, Math.min(12, Math.floor(Number(radiusInput) || 2)));
         let maximum = 0;
         for (let index = 0; index < size; index++) maximum = Math.max(maximum, mask[index]);
         if (!size || maximum === 0) {
             return { mask: new Uint8Array(mask.slice(0, size)), radius, changedPixels: 0, selectedPixels: 0, softPixels: 0 };
+        }
+        if (pc) {
+            const pcOut = pc.feather(mask, width, height, radius);
+            return { mask: pcOut, radius, ...compareMasks(mask, pcOut) };
         }
         let current = new Uint8Array(mask.slice(0, size));
         const horizontal = new Uint8Array(size);
@@ -230,8 +257,14 @@
         return { mask: current, radius, ...compareMasks(mask, current) };
     }
 
-    function smooth(mask, widthValue, heightValue) {
+    function smooth(mask, widthValue, heightValue, radiusInput) {
         const { width, height } = dimensions(widthValue, heightValue, mask);
+        const pc = pcCore();
+        if (pc) {
+            const pcRadius = Math.max(1, Math.min(250, Math.round(Number(radiusInput) || 2)));
+            const pcOut = pc.smooth(mask, width, height, pcRadius);
+            return { mask: pcOut, radius: pcRadius, ...compareMasks(mask, pcOut) };
+        }
         const shrunk = morph(mask, width, height, 1, 'shrink');
         const grown = morph(shrunk.mask, width, height, 1, 'grow');
         return { mask: grown.mask, ...compareMasks(mask, grown.mask) };

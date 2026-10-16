@@ -1,0 +1,16 @@
+{
+  "_note": "DRAFT (orchestrator 2026-10-07). Not live. Merge into data/encyclopedia/finishes.json articles after the R3-EDIT-2 lane finishes its gates, then re-run enc_test + helper_eval.",
+  "id": "finishes.flames_shelf",
+  "title": "Flames: 40 flame finishes",
+  "domain": "finishes",
+  "summary": "The Flames shelf holds 40 whole-car flame finishes: the 20 original flame_* finishes and 20 newer flame2_* finishes. Each is a field of fine licks over the whole car, not one big flame decal.",
+  "what": "Every Flames finish fills the whole car with many small licks that flow front to back, so it reads as a flame paint job at any distance. The 20 newer ones (added 2026-10-07) are each a different idea: Pinstripe Licks (hot-rod licks with a pale-blue pinstripe), Blackbody Fire (realistic fire), Gas Torch (blue), Witchlight Flames (green), Pop-Art Flames (comic, violet and magenta), Charcoal Ghost Licks (tonal, only the shine shows them), Firestorm Wall, Spark Shower, Spectral Contours (rainbow bands over chrome), Coal Bed, Candy Film Flake (candy red over gold flake), Arc Discharge (electric violet), Crystal Blade Fire (ice), Crust-Tear Lava, Fire Feathers, Radioactive Fire (acid lime), Neon Tube Flames (pink outlines on plum), Smoke Curl Fire, Barbed Blades (tribal, red on gunmetal) and Dragon Scroll (red and gold on black). The original 20 are still there with their own names.",
+  "when": ["Flames on the whole car", "Blue flames", "Ghost flames you only see in the light", "Hot-rod flames with a pinstripe", "Green or toxic flames"],
+  "how": ["Open the finish picker and choose the Flames shelf.", "Pick a finish; it paints the zone you have selected.", "For flames on one part only, make a zone for that part first (for example the hood), then pick the flame finish for that zone."],
+  "tips": ["Charcoal Ghost Licks keeps a dark car dark: the flames only show in the shine.", "Use the scale slider to make the licks bigger or smaller."],
+  "pitfalls": ["A flame finish paints its own colours, so it replaces the colour of the zone it is on. Logos and numbers on their own layers stay on top."],
+  "related": ["finishes.fractured_mortal_neon"],
+  "aliases": ["flames", "flame paint", "fire paint", "hot rod flames", "ghost flames", "tribal flames", "blue flames"],
+  "level": "basic",
+  "updated": "2026-10-07"
+}

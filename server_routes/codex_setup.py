@@ -2,10 +2,11 @@
 import json
 import os
 from pathlib import Path
-import shutil
 import tempfile
 import threading
 import tomllib
+from server_routes.codex_knowledge import knowledge_status
+from server_routes.codex_runtime import resolve_runtime
 
 _LOCK = threading.Lock()
 NAME = 'shokker-paint-booth'
@@ -16,24 +17,30 @@ def setup_payload(mcp_dir, port):
     if not 1 <= int(port) <= 65535:
         raise ValueError('Invalid SPB port')
     server = Path(mcp_dir) / 'server' / 'index.js'
-    node = shutil.which('node')
+    runtime = resolve_runtime(mcp_dir, os.environ.get('SPB_MCP_ELECTRON_EXE'))
+    node = runtime.get('command')
+    runtime_env = runtime.get('env', {})
+    knowledge = knowledge_status(mcp_dir, node, runtime_env)
+    ready = bool(runtime.get('ready') and server.is_file() and knowledge.get('ready'))
     cfg_dir = Path(os.environ.get('CODEX_HOME') or Path.home() / '.codex')
     quote = lambda value: json.dumps(str(value), ensure_ascii=False)
     block = ('[mcp_servers.' + NAME + ']\ncommand = ' + quote(node or 'node') +
              '\nargs = [' + quote(server.as_posix()) + ']\nstartup_timeout_sec = 20\n'
              'tool_timeout_sec = 200\n\n[mcp_servers.' + NAME + '.env]\nSPB_PORT = ' + quote(port) + '\n')
+    block += ''.join(key + ' = ' + quote(value) + '\n' for key, value in runtime_env.items())
     # PowerShell single-quoted literals escape apostrophes by doubling them.
     ps = lambda value: "'" + str(value).replace("'", "''") + "'"
-    command = 'codex mcp add ' + NAME + ' --env SPB_PORT=' + str(port) + ' -- ' + ps(node or 'node') + ' ' + ps(server.as_posix())
-    return {'ok': True, 'ready': bool(node and server.is_file()), 'nodeFound': bool(node),
+    command = 'codex mcp add ' + NAME + ' --env SPB_PORT=' + str(port) + ''.join(' --env ' + ps(key + '=' + value) for key, value in runtime_env.items()) + ' -- ' + ps(node or 'node') + ' ' + ps(server.as_posix())
+    return {'ok': True, 'ready': ready, 'knowledgeReady': bool(knowledge.get('ready')), 'knowledge': knowledge, 'nodeFound': bool(node), 'runtime': runtime,
             'serverFound': server.is_file(), 'configPath': str(cfg_dir / 'config.toml'),
-            'config': block, 'command': command,
-            'message': 'Sign into Codex with ChatGPT. Choose the model in Codex: /model in the CLI, or the model picker beneath the composer. Your plan limits apply.'}
+            'config': block if ready else '', 'command': command if ready else '',
+            'commandNote': ('The CLI command sets the runtime and environment. Also apply startup_timeout_sec = 20 and tool_timeout_sec = 200 from the shown TOML.' if ready else ''),
+            'message': ('SPB’s bundled knowledge is ready. Sign into Codex with ChatGPT and choose your model there; plan limits apply.' if ready else knowledge.get('message', 'SPB setup is incomplete.'))}
 
 
 def install_setup(payload):
     if not payload['ready']:
-        return {'ok': False, 'message': 'Install Node.js and make sure this SPB install includes mcp/server/index.js.'}
+        return {'ok': False, 'ready': False, 'knowledge': payload.get('knowledge'), 'message': payload.get('message', 'SPB setup is incomplete. Update or repair SPB.')}
     target = Path(payload['configPath'])
     with _LOCK:
         original = target.read_bytes() if target.exists() else b''
@@ -43,7 +50,7 @@ def install_setup(payload):
         desired = tomllib.loads(payload['config'])['mcp_servers'][NAME]
         if existing is not None:
             return {'ok': existing == desired, 'alreadyConfigured': existing == desired,
-                    'message': 'Already connected. Restart Codex.' if existing == desired else
+                    'message': 'SPB is already configured. Restart Codex to connect.' if existing == desired else
                     'An SPB entry already exists. It was preserved; use the shown config to update it manually (including tool_timeout_sec = 200).'}
         updated = original + (b'\n' if original else b'') + payload['config'].encode('utf-8')
         tomllib.loads(updated.decode('utf-8-sig'))
@@ -73,4 +80,4 @@ def install_setup(payload):
         finally:
             if os.path.exists(tmp):
                 os.unlink(tmp)
-    return {'ok': True, 'message': 'Connected. Restart Codex, sign in with ChatGPT, then choose your model in Codex.'}
+    return {'ok': True, 'message': 'SPB connection added. Restart Codex, sign in with ChatGPT, then choose your model in Codex.'}

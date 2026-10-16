@@ -108,7 +108,7 @@ Similarly rejected without iteration:
 | Gate | Result |
 |---|---|
 | `python -m pytest tests/ -q` | **1067 passed** (up from 731 at loop start; +336 new test assertions) |
-| `python audit_finish_quality.py` | 375 OK / 0 broken / 0 GGX / 0 flat / 0 slow |
+| the old finish-quality audit (retired; its job is now `scripts/spb_finish_law.py` + `scripts/spb_golden_net.py`) | 375 OK / 0 broken / 0 GGX / 0 flat / 0 slow |
 | `node --check paint-booth-0-finish-metadata.js` | parses |
 | `node --check paint-booth-0-finish-data.js` | parses |
 | `node scripts/sync-runtime-copies.js --write` | no drift across 34 copy targets |

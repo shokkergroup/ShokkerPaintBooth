@@ -12,6 +12,8 @@
     let strokeSource = null;
     let toneDelta = [0, 0, 0];
     let strokeFootprintShape = 'round';
+    let healRunning = false; // [SPB-TFX2 TA-008] true while healBuf is the running healed image of this stroke
+    let healBuf = null; // PORT-W2: destination-aligned healed colours for the current dab
     let sourcePickArmed = false;
 
     function currentLayerId() {
@@ -96,6 +98,13 @@
             return false;
         }
         toneDelta = (srcMean && dstMean) ? dstMean.map((value, channel) => value - srcMean[channel]) : [0, 0, 0];
+        // [SPB-TFX2 2026-10-09 TA-008] running healed buffer: starts as the pre-stroke image and receives each dab's full-strength
+        // healed colours, so the next dab's membrane boundary follows what was ALREADY healed (offset field continuous across dabs).
+        if (!window.SPB_TFX2_OFF) {
+            if (!healBuf || healBuf.length !== strokeSource.length) healBuf = new Uint8ClampedArray(strokeSource.length);
+            healBuf.set(strokeSource);
+            healRunning = true;
+        } else healRunning = false;
         return true;
     }
 
@@ -117,6 +126,86 @@
         const footprint = typeof window._createBrushFootprint === 'function'
             ? window._createBrushFootprint(radius, strokeFootprintShape)
             : null;
+
+        // PORT-W2 (2026-10-09, owner "tools basically SUCK"): Poisson (gradient-domain) healing, ported from PhotoCraft
+        // crates/algo/src/poisson.rs. Each dab solves the membrane h = harmonic interpolant of (dst - src) on the dab ring
+        // and heals to src + h: the source TEXTURE is kept, colour/lighting follow the destination (no constant tone offset,
+        // no seam). Composited through the stroke coverage buffer so opacity is a cap. Before: constant mean tone shift.
+        if (window.SPBPcStroke && window.SPBPcPoisson && !window.SPB_PC_W2_OFF && footprint) {
+            const sub = window._spbDabSub;
+            const cxs = (sub && Math.round(sub.x) === x && Math.round(sub.y) === y) ? sub.x : x;
+            const cys = (sub && Math.round(sub.x) === x && Math.round(sub.y) === y) ? sub.y : y;
+            const sdx = Math.round(x + offset.dx) - Math.round(x), sdy = Math.round(y + offset.dy) - Math.round(y);
+            const rr = radius + 2;
+            const wx0 = Math.max(0, Math.round(x) - rr), wy0 = Math.max(0, Math.round(y) - rr);
+            const wx1 = Math.min(w, Math.round(x) + rr + 1), wy1 = Math.min(h, Math.round(y) + rr + 1);
+            const ww = wx1 - wx0, wh = wy1 - wy0;
+            if (ww > 2 && wh > 2) {
+                if (!healBuf || healBuf.length !== w * h * 4) healBuf = new Uint8ClampedArray(w * h * 4);
+                const unknown = new Uint8Array(ww * wh), valid = new Uint8Array(ww * wh);
+                for (let yy = 0; yy < wh; yy++) {
+                    for (let xx = 0; xx < ww; xx++) {
+                        const gx = wx0 + xx, gy = wy0 + yy, sx = gx + sdx, sy = gy + sdy, wi = yy * ww + xx;
+                        const sOk = sx >= 0 && sx < w && sy >= 0 && sy < h && strokeSource[(sy * w + sx) * 4 + 3] > 0;
+                        valid[wi] = sOk ? 1 : 0;
+                        const ddx = gx - Math.round(x), ddy = gy - Math.round(y);
+                        const inside = footprint.contains(ddx, ddy, ddx * ddx + ddy * ddy);
+                        unknown[wi] = (inside || !sOk) ? 1 : 0;
+                    }
+                }
+                const hs = [new Float32Array(ww * wh), new Float32Array(ww * wh), new Float32Array(ww * wh)];
+                // TOOLS-FIX 2026-10-09 (QA defect 1, 12.4k opaque black px): destination pixels that are (nearly) transparent
+                // carry RGB 0 and must NOT be boundary constraints (dst - src = -src => black). They become extra unknowns of the
+                // membrane; with no opaque boundary at all the membrane is 0 and the source is copied unchanged.
+                const sUnknown = new Uint8Array(unknown);
+                for (let yy = 0; yy < wh; yy++) {
+                    for (let xx = 0; xx < ww; xx++) {
+                        const wi = yy * ww + xx;
+                        if (!sUnknown[wi] && strokeSource[((wy0 + yy) * w + (wx0 + xx)) * 4 + 3] < 16) sUnknown[wi] = 1;
+                    }
+                }
+                for (let ch = 0; ch < 3; ch++) {
+                    const v = hs[ch];
+                    for (let yy = 0; yy < wh; yy++) {
+                        for (let xx = 0; xx < ww; xx++) {
+                            const wi = yy * ww + xx;
+                            if (sUnknown[wi]) continue;
+                            const gx = wx0 + xx, gy = wy0 + yy;
+                            // [SPB-TFX2 2026-10-09 TA-008] boundary = running healed image (not the pre-stroke one) -> no dab-rim seam arcs
+                            v[wi] = (healRunning ? healBuf : strokeSource)[(gy * w + gx) * 4 + ch] - strokeSource[((gy + sdy) * w + (gx + sdx)) * 4 + ch];
+                        }
+                    }
+                    window.SPBPcPoisson.solveMembrane(ww, wh, sUnknown, v);
+                }
+                for (let yy = 0; yy < wh; yy++) {
+                    for (let xx = 0; xx < ww; xx++) {
+                        const wi = yy * ww + xx, gx = wx0 + xx, gy = wy0 + yy, sx = gx + sdx, sy = gy + sdy;
+                        if (!valid[wi]) continue;
+                        // [SPB-TFX2 TA-008] running mode only writes the dab footprint; the ring keeps the already-healed colours
+                        if (healRunning && !unknown[wi]) continue;
+                        const bi = (gy * w + gx) * 4, si = (sy * w + sx) * 4;
+                        for (let ch = 0; ch < 3; ch++) {
+                            const val = strokeSource[si + ch] + hs[ch][wi];
+                            healBuf[bi + ch] = val < 0 ? 0 : (val > 255 ? 255 : val + 0.5);
+                        }
+                        healBuf[bi + 3] = strokeSource[si + 3];
+                    }
+                }
+                // healBuf is already destination-aligned (sdx = sdy = 0)
+                window.SPBPcStroke.paintDabData(data, w, h, strokeSource, {
+                    x: cxs, y: cys, radius, hardness, footprint, cap: opacityBase,
+                    flow: (typeof window._resolveBrushDynamics === 'function' ? window._resolveBrushDynamics(radiusBase, 1, flow).opacity : flow),
+                    sel: selection, selW: w, pre: strokeSource, src: healBuf, sdx: 0, sdy: 0,
+                    // [SPB-TFX2 TA-008] refresh: a pixel is re-composited from the running healed image by EVERY dab covering it (a hard tip
+                    // saturates coverage on the first dab, which froze the rim-dominated value and left the seam arcs)
+                    refresh: healRunning
+                });
+            }
+            if (typeof window._markActivePaintDirtyCircle === 'function') window._markActivePaintDirtyCircle(x, y, radius, 2);
+            _flushPaintImageDataToCurrentSurface();
+            if (typeof _logPaintPerf === 'function') _logPaintPerf('healing', t0, radius);
+            return true;
+        }
 
         for (let dy = -radius; dy <= radius; dy++) {
             for (let dx = -radius; dx <= radius; dx++) {
@@ -157,6 +246,7 @@
 
     function endStroke() {
         strokeSource = null;
+        healRunning = false;
         toneDelta = [0, 0, 0];
         strokeFootprintShape = 'round';
         if (!isAligned()) offset = null;
@@ -164,6 +254,7 @@
 
     function resetStroke() {
         strokeSource = null;
+        healRunning = false;
         toneDelta = [0, 0, 0];
         strokeFootprintShape = 'round';
         offset = null;

@@ -80,7 +80,19 @@
         return { nextMask: next, enclosedPixels, changedPixels };
     }
 
+    // PORT-W1 (2026-10-09): feather = Gaussian sigma = radius/2 (Photoshop /
+    // PhotoCraft selection_blur.rs), no 50 px cap. The legacy 3-pass box (sigma
+    // ~ radius) remains behind window.SPB_PC_W1_OFF = true.
     function featherMask(sourceMask, width, height, pixels) {
+        const pcG = typeof window !== 'undefined' ? window : globalThis;
+        let pcCore = pcG.SPB_PC_W1_OFF ? null : pcG.SPBPcSelection;
+        if (!pcCore && !pcG.SPB_PC_W1_OFF) { try { if (typeof require === 'function') pcCore = require('../pc-selection-core.js'); } catch (e) { pcCore = null; } }
+        if (pcCore) {
+            const pcSource = sourceMask instanceof Uint8Array ? sourceMask : new Uint8Array(sourceMask || 0);
+            const pcRadius = Math.max(0, Math.min(1000, Number(pixels) || 0));
+            if (!pcRadius || pcSource.length !== width * height) return new Uint8Array(pcSource);
+            return pcCore.feather(pcSource, width, height, pcRadius);
+        }
         const radius = Math.max(0, Math.min(50, Math.floor(Number(pixels) || 0)));
         const source = sourceMask instanceof Uint8Array ? sourceMask : new Uint8Array(sourceMask || 0);
         if (!radius || source.length !== width * height) return new Uint8Array(source);

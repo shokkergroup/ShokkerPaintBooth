@@ -31,7 +31,7 @@ SOURCES = [
     ENG + ':20467',                # engine per-zone wear step
     ENG + ':22944',                # apply_wear
     ENG + ':23013',
-    ENG + ':23354-23380',
+    ENG + ':23355-23381',
     ZONES + ':2098',               # Base Strength slider on the zone card
     'js/zones/zone-config-preset-controls.js:113',   # wear is saved with a zone setup
     FD + ':1107',                  # Sun Faded

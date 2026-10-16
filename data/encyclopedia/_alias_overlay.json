@@ -1,18 +1,429 @@
 {
  "_about": "HELPER_V2 fix pass 4 2026-10-04 owner: keep improving the Offline Helper. Search aliases layered over the articles at index time (offline helper js/spb-offline-answer.js AND server_routes/encyclopedia_routes.py read this file, so online / MCP grounding gets the same picks). add = extra aliases, drop = aliases that send a question to the wrong card. The article files stay untouched (a fact-check lane owns them). Files starting with _ are skipped by the encyclopedia generators and gates.",
  "overlay": {
-  "help_howto_3.what_are_layers": { "add": ["how do layers work", "how layers work", "layers explained", "what is a layer", "what do layers do"] },
-  "recipes.candy": { "add": ["what is candy paint", "candy paint", "candy finish", "what is candy", "how does candy work", "candy look"] },
-  "preview_render.trading_paints_mip": { "add": ["where do spec maps go for trading paints", "spec map trading paints", "spec maps trading paints", "upload my spec to trading paints", "where does the spec go"] },
-  "spec.channel_b_clearcoat": { "add": ["what does the blue channel do", "blue channel spec map", "blue channel do", "b channel spec map"] },
-  "help_howto_1.add_logo": { "add": ["use my own logo", "my own logo", "import my logo", "add my logo", "put my logo on", "own logo"] },
-  "help_howto_2.make_chrome": { "add": ["mirror finish", "get a mirror finish", "mirror look", "mirror shine", "liquid metal look", "full chrome"] },
-  "patterns.choosing_at_car_scale": { "add": ["how big should features be", "feature size", "how big should the detail be", "how fine should a pattern be", "detail size", "8 to 32 pixels", "how big should a pattern be"] },
-  "finishes.colour_source_modes": { "add": ["lock base color", "lock base colour", "try lots of finishes on the same colour", "try many finishes on one colour", "keep my colour when i swap the finish", "same colour different finishes", "keep the colour when changing finish"] },
-  "settings.overview": { "add": ["old spec in every render", "old spec shows up", "old spec under every render", "clear import spec map", "clear the imported spec", "remove imported spec map", "import spec map clear"] },
-  "support.numbers_vanished": { "add": ["sponsors are gone", "sponsors gone after finish", "sponsors disappeared after finish", "numbers gone after finish", "sponsors missing after finish", "logos gone after finish"] },
-  "help_howto_1.colour_not_applying": { "add": ["still the old colour", "roof still yellow", "part still old colour", "colour did not change", "colour not changing", "why is it still"] },
-  "ui_shell.number_modes": { "add": ["add a number", "how do i add a number", "add numbers to my car", "put a number on my car", "race number"] },
-  "recipes.retro_stripes": { "drop": ["add a number", "how do i add a number", "add numbers to my car"] }
+  "help_howto_3.what_are_layers": {
+   "add": [
+    "how do layers work",
+    "how layers work",
+    "layers explained",
+    "what is a layer",
+    "what do layers do"
+   ]
+  },
+  "recipes.candy": {
+   "add": [
+    "what is candy paint",
+    "candy paint",
+    "candy finish",
+    "what is candy",
+    "how does candy work",
+    "candy look"
+   ]
+  },
+  "preview_render.trading_paints_mip": {
+   "add": [
+    "where do spec maps go for trading paints",
+    "spec map trading paints",
+    "spec maps trading paints",
+    "upload my spec to trading paints",
+    "where does the spec go",
+    "can other drivers see my spec map",
+    "can people see my spec map",
+    "do i need a mip file",
+    "what file do i upload to trading paints"
+   ]
+  },
+  "spec.channel_b_clearcoat": {
+   "add": [
+    "what does the blue channel do",
+    "blue channel spec map",
+    "blue channel do",
+    "b channel spec map"
+   ]
+  },
+  "help_howto_1.add_logo": {
+   "add": [
+    "use my own logo",
+    "my own logo",
+    "import my logo",
+    "add my logo",
+    "put my logo on",
+    "own logo"
+   ]
+  },
+  "help_howto_2.make_chrome": {
+   "add": [
+    "mirror finish",
+    "get a mirror finish",
+    "mirror look",
+    "mirror shine",
+    "liquid metal look",
+    "full chrome"
+   ]
+  },
+  "patterns.choosing_at_car_scale": {
+   "add": [
+    "how big should features be",
+    "feature size",
+    "how big should the detail be",
+    "how fine should a pattern be",
+    "detail size",
+    "8 to 32 pixels",
+    "how big should a pattern be"
+   ]
+  },
+  "finishes.colour_source_modes": {
+   "add": [
+    "lock base color",
+    "lock base colour",
+    "try lots of finishes on the same colour",
+    "try many finishes on one colour",
+    "keep my colour when i swap the finish",
+    "same colour different finishes",
+    "keep the colour when changing finish"
+   ]
+  },
+  "settings.overview": {
+   "add": [
+    "old spec in every render",
+    "old spec shows up",
+    "old spec under every render",
+    "clear import spec map",
+    "clear the imported spec",
+    "remove imported spec map",
+    "import spec map clear"
+   ]
+  },
+  "support.numbers_vanished": {
+   "add": [
+    "sponsors are gone",
+    "sponsors gone after finish",
+    "sponsors disappeared after finish",
+    "numbers gone after finish",
+    "sponsors missing after finish",
+    "logos gone after finish"
+   ]
+  },
+  "help_howto_1.colour_not_applying": {
+   "add": [
+    "still the old colour",
+    "roof still yellow",
+    "part still old colour",
+    "colour did not change",
+    "colour not changing",
+    "why is it still"
+   ]
+  },
+  "ui_shell.number_modes": {
+   "add": [
+    "add a number",
+    "how do i add a number",
+    "add numbers to my car",
+    "put a number on my car",
+    "race number"
+   ]
+  },
+  "recipes.retro_stripes": {
+   "drop": [
+    "add a number",
+    "how do i add a number",
+    "add numbers to my car"
+   ]
+  },
+  "preview_render.where_files_go": {
+   "add": [
+    "where do i save the tga",
+    "where do i save my paint",
+    "where do i put the tga file",
+    "where does the tga go",
+    "where to save tga",
+    "where does shokker save my paint",
+    "where are the tga files saved",
+    "where do the tga files go",
+    "where does this get saved on my pc",
+    "where does it save on my computer",
+    "what folder do i drop the paint in for iracing",
+    "what folder does the paint go in",
+    "which folder do i put the paint in"
+   ]
+  },
+  "preview_render.output_files": {
+   "add": [
+    "what is car spec tga",
+    "what is a car num file",
+    "difference between car and car num",
+    "what do the tga files do",
+    "what is the tga file",
+    "what is a tga file"
+   ]
+  },
+  "support.trading_paints": {
+   "add": [
+    "can other drivers see my paint",
+    "can people see my paint online",
+    "can other people see my spec map",
+    "do other drivers see my custom paint",
+    "how do other drivers see my car",
+    "can opponents see my livery",
+    "racing online with a custom paint",
+    "can i race online with my paint",
+    "will other racers see this paint",
+    "my car is white online",
+    "my car is plain white online",
+    "others see a different paint than me",
+    "other drivers see the default car",
+    "other people see the wrong paint",
+    "only i can see my paint",
+    "how do my viewers see my paint",
+    "so other drivers see my paint when they race me",
+    "will my league see my livery if only i have the files",
+    "do other people see my custom paint",
+    "how do i share my paint with other drivers online"
+   ]
+  },
+  "support.fps_and_performance": {
+   "add": [
+    "will this tank my fps",
+    "will my paint lower my fps",
+    "does a custom paint hurt fps",
+    "will a heavy finish lower my framerate",
+    "is this going to make my fps worse"
+   ]
+  },
+  "preview_render.reload_in_iracing": {
+   "add": [
+    "alt tab ctrl r didnt work",
+    "ctrl r not working in iracing",
+    "how do i reload the paint in iracing",
+    "iracing still shows old paint after ctrl r"
+   ]
+  },
+  "support.not_in_iracing": {
+   "add": [
+    "iracing says paint not found",
+    "iracing cant find my paint",
+    "my paint isnt in iracing",
+    "shokker made the files but iracing doesnt see them",
+    "iracing doesnt see my files",
+    "why is my car still white in the sim",
+    "still plain white in iracing",
+    "keeps showing plain white in the sim",
+    "rendered it three times and the sim still shows white",
+    "car is plain white in iracing after i rendered",
+    "i dont know what im doing wrong iracing white"
+   ]
+  },
+  "spec.what_is_spec_map": {
+   "add": [
+    "what does the spec map do in iracing",
+    "spec map not doing anything in sim"
+   ]
+  },
+  "help_howto_1.gloss_level": {
+   "add": [
+    "how do i make the car shinier",
+    "how can i make it shinier",
+    "how do i make it more shiny",
+    "how do i make the paint shinier",
+    "how do i make the hood shinier"
+   ]
+  },
+  "support.render_slow_or_fails": {
+   "add": [
+    "render just sits there",
+    "takes like 10 min to render",
+    "render takes 10 minutes",
+    "render is taking forever",
+    "render hangs",
+    "render never finishes"
+   ]
+  },
+  "help_howto_3.render_wont_start": {
+   "add": [
+    "render button does nothing",
+    "render button wont click",
+    "i press render and nothing happens",
+    "render button is greyed out"
+   ]
+  },
+  "help_howto_2.numbers_look_wrong": {
+   "add": [
+    "logos look dull under chrome",
+    "sponsors look dull under chrome",
+    "numbers look dull under chrome",
+    "logos look flat under candy",
+    "my sponsors look washed out under the finish"
+   ]
+  },
+  "support.flat_or_shiny": {
+   "add": [
+    "no shine in the sim",
+    "shine is dead flat in iracing",
+    "looks great in the preview but flat in the sim",
+    "totally flat in the sim",
+    "shine is gone in iracing",
+    "dead flat in the sim"
+   ]
+  },
+  "preview_render.number_modes": {
+   "add": [
+    "number shows twice",
+    "number appears two times",
+    "two numbers on my car",
+    "double number on the car",
+    "number is there twice one big one small",
+    "number is two times on my car"
+   ]
+  },
+  "zones.named_parts": {
+   "add": [
+    "change just the hood and nothing else",
+    "recolour one part and not the whole car",
+    "change only one panel colour"
+   ]
+  },
+  "zones.regions": {
+   "add": [
+    "keep stripe edges crisp",
+    "stripe edges come out soft or blurry",
+    "make the edges of a stripe sharp"
+   ]
+  },
+  "ideas.fade_gradient": {
+   "add": [
+    "fade one colour into another",
+    "blend two colours down the side",
+    "colour fade along the car"
+   ]
+  },
+  "ai_copilot.can_and_cannot": {
+   "add": [
+    "why does the helper take so many steps",
+    "cant the helper just do it for me in one go",
+    "does the helper do everything by itself"
+   ]
+  },
+  "finishes.catalogue_overview": {
+   "add": [
+    "why are there so many finishes",
+    "which finish should i pick first",
+    "where do i start with the finishes"
+   ]
+  },
+  "zones.not_showing": {
+   "add": [
+    "i changed a part and nothing changed on the car",
+    "my change does not show on the car"
+   ]
+  },
+  "spec.channel_a_mask": {
+   "add": [
+    "what is in the alpha channel of the spec map",
+    "spec map alpha",
+    "what does alpha do in the spec"
+   ]
+  },
+  "ideas.gulf_style": {
+   "add": [
+    "gulf livery",
+    "gulf racing livery",
+    "gulf oil livery",
+    "gulf racing",
+    "powder blue and orange livery",
+    "gulf style paint job"
+   ]
+  },
+  "ideas.martini_style": {
+   "add": [
+    "martini livery",
+    "martini racing livery",
+    "martini racing",
+    "martini stripes",
+    "martini rossi livery"
+   ]
+  },
+  "ideas.black_gold_luxury": {
+   "add": [
+    "jps livery",
+    "john player special",
+    "john player special livery",
+    "jps lotus livery",
+    "black and gold pinstripe livery"
+   ]
+  },
+  "ideas.racing_green_heritage": {
+   "add": [
+    "british racing green livery",
+    "brg livery"
+   ]
+  },
+  "ideas.police_emergency": {
+   "add": [
+    "police livery",
+    "police car livery"
+   ]
+  },
+  "tools.shine_lens": {
+   "add": [
+    "shine lense",
+    "shine lens bar",
+    "shyne lens",
+    "peek at the shine",
+    "tilde key shine",
+    "backtick shine"
+   ]
+  },
+  "tools.select_material": {
+   "add": [
+    "select materal",
+    "selct material",
+    "material wand",
+    "select by metal",
+    "select by gloss"
+   ]
+  },
+  "tools.material_brush": {
+   "add": [
+    "materal brush",
+    "material bruhs",
+    "paint with chrome",
+    "paint with candy"
+   ]
+  },
+  "tools.spec_brush": {
+   "add": []
+  },
+  "tools.wear_brush": {
+   "add": []
+  },
+  "tools.spec_eyedropper": {
+   "add": [
+    "spec dropper",
+    "spek eyedropper",
+    "spec eyedroper",
+    "finish eyedropper",
+    "shine eyedropper"
+   ]
+  },
+  "tools.mirror_paint": {
+   "add": [
+    "symmetry painting"
+   ]
+  },
+  "tools.mirror_to_other_side": {
+   "add": []
+  },
+  "tools.car_stripe": {
+   "add": []
+  },
+  "tools.whats_new": {
+   "add": [
+    "wat is new",
+    "new stuff in shokker",
+    "new menus",
+    "new brushes",
+    "new in this version"
+   ]
+  }
  }
 }

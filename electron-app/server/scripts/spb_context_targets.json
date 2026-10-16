@@ -1782,7 +1782,7 @@
     },
     "release-readiness": {
       "domain": "tooling",
-      "description": "SPB-105 alpha release plan, release gauntlet, and handoff pointers.",
+      "description": "SPB-105 release contract, phase boundary, R2 artifact integrity, current-state gates, and isolated proof tooling.",
       "slices": [
         [
           "docs/SPB_ALPHA_RELEASE_PLAN.md",
@@ -1795,9 +1795,9 @@
           210
         ],
         [
-          "SPB_LINEAR_HANDOFF.md",
-          29,
-          86
+          "_archive/root_cleanup_2026-09-04/superseded_docs/CODEX_REVIEW_FINDINGS_2026-08-22.md",
+          1,
+          70
         ],
         [
           "scripts/spb_release_gate_status.js",
@@ -1813,6 +1813,106 @@
           "scripts/spb_generated_drift_guard.js",
           1,
           90
+        ],
+        [
+          "docs/RELEASE_PROCESS.md",
+          1,
+          190
+        ],
+        [
+          "scripts/spb_current_state.js",
+          1,
+          150
+        ],
+        [
+          "scripts/spb_release_preflight.js",
+          1,
+          100
+        ],
+        [
+          "scripts/spb_release_fixture_audit.py",
+          1,
+          110
+        ],
+        [
+          "scripts/spb_release_evidence_gate.js",
+          1,
+          145
+        ],
+        [
+          "scripts/spb_isolated_verify.js",
+          1,
+          180
+        ],
+        [
+          "scripts/spb_run_isolated_server.py",
+          1,
+          80
+        ],
+        [
+          "runtime_identity_manifest.json",
+          1,
+          80
+        ],
+        [
+          "scripts/spb_runtime_identity.js",
+          1,
+          80
+        ],
+        [
+          "server_routes/request_security.py",
+          1,
+          120
+        ],
+        [
+          "server_routes/write_security.py",
+          1,
+          100
+        ],
+        [
+          "server_routes/runtime_identity.py",
+          1,
+          180
+        ],
+        [
+          "server_routes/observability.py",
+          45,
+          150
+        ],
+        [
+          "server_routes/v5_entrypoint_security.py",
+          1,
+          190
+        ],
+        [
+          "scripts/spb_release_contract.js",
+          1,
+          140
+        ],
+        [
+          "deploy_r2.py",
+          1,
+          275
+        ],
+        [
+          "deploy_r2.py",
+          278,
+          330
+        ],
+        [
+          "scripts/spb_release_r2_publish.py",
+          1,
+          110
+        ],
+        [
+          "spb_release.ps1",
+          180,
+          365
+        ],
+        [
+          "tests/test_release_r2_integrity.py",
+          1,
+          190
         ]
       ]
     },

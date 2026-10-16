@@ -732,84 +732,86 @@
    "why": "pattern-group:\u25c6 Geometry, Deco & Op-Art"
   },
   "astra_event_horizon": {
-   "baked_at": "2026-09-05 02:14:35",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner rebuilds (SPB-105): AT-R2 09-16, ERA120 09-17, FLAW LAB21 09-18, ASTRA R2 09-27/29, SHOKK WORKS (core_works_2026) 09-30; reports in docs/finish_audits/; looked at 1:1, wholesale redesigns",
+   "baked_at": "2026-10-06 11:10:08",
    "channels": {
     "cell.CC": "ad286c64373644140ff927b256b8415467b5d27645ff997010b15519d022631b",
     "cell.M": "ad286c64373644140ff927b256b8415467b5d27645ff997010b15519d022631b",
     "cell.R": "2238f30df488055daf5e8f362cf904e370011a172d20df193c1b7ae8e5db8e01",
-    "paint": "1d8cd585f89401b0b0ca5a11d5051590e42385da50bcb341f28a365773ccf8aa",
-    "spec[0]": "26d587243f85af2f12c58b8bfbd1fc4a0f7778a162eea3808bdf7b18fa7b8eaa",
-    "spec[1]": "44bbee98d1e2f22fcef2d3102256386f32b74401b863155f05002b5ee33c4b33",
-    "spec[2]": "d5bb4424b16926e167a153ab56ea79264c2de45cb340c090f7f7a9997bb00ad0"
+    "paint": "d52eb064468f2e79e133d3fa6bef3d6725e12a65f80313c18743cd95de38dad8",
+    "spec[0]": "f4ebc47d48b8e405f2206386373c136a488ad826f2328833b66828d23b42b7be",
+    "spec[1]": "f9cc06e61b8bee429fed97e507a620192c5d2f731119be9a5a4b700eb9cd097c",
+    "spec[2]": "b202d122879d9d9cfcbc04d85b41ba1a6054aeaae30d8383d5db81235140199f"
    },
    "fn": {
     "base_spec_fn": "engine.expansions.astra.event_horizon.bind.<locals>.spec_fn",
     "paint_fn": "engine.expansions.astra.event_horizon.bind.<locals>.paint_fn"
    },
    "kind": "base",
-   "ms": 2394.7,
+   "ms": 2930.9,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.3306,
-     0.3169
+     0.2142,
+     0.1981
     ],
     "spec[0]": [
-     98.6199,
-     79.8993
+     121.8768,
+     49.4396
     ],
     "spec[1]": [
-     145.5071,
-     68.3341
+     118.5192,
+     38.519
     ],
     "spec[2]": [
-     151.8454,
-     59.9878
+     136.4914,
+     51.8116
     ]
    },
    "status": "ok",
-   "why": "base-group:ASTRA"
+   "why": "cli"
   },
   "at_beige_box": {
-   "baked_at": "2026-09-05 02:14:43",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner rebuilds (SPB-105): AT-R2 09-16, ERA120 09-17, FLAW LAB21 09-18, ASTRA R2 09-27/29, SHOKK WORKS (core_works_2026) 09-30; reports in docs/finish_audits/; looked at 1:1, wholesale redesigns",
+   "baked_at": "2026-10-06 11:10:11",
    "channels": {
-    "cell.CC": "5d5d32c7cf8e2ca77d9af6bf35a0ba5cd09074ccb4f3871aba6f67420b324a57",
-    "cell.M": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
-    "cell.R": "e0c47cd112af99e9a5c07c5cf9cdfff4df8a953dcddcefbe4704713cdb2254fa",
-    "paint": "2f3e55abac20d63470be35d905e85de20841698f0403ac66c38edac6cfca3ec5",
-    "spec[0]": "14635ddd4018d44aee70aa5754635476c878585bb6a01ea104d3d84b40b45cb1",
-    "spec[1]": "87432e7847b971305078ea4e8c4792b6c5545179dab677b1b8f37c1a57fc6a7c",
-    "spec[2]": "4c49a0dcadfb70ea64a7c582aaf0cfe63950fb3a4fc39a42317cb56f167e1929"
+    "cell.CC": "3cd1b56bda3eaed2c4e957a2724e9cebebe4673952006a7a06c8c3bbd6a6e1d2",
+    "cell.M": "5eaa5c1a4fa99cf34af94ccef42ea122dbc921d2498f68c20bf9b4d5150f5083",
+    "cell.R": "036e9b266a530820e8f0c6d3030fe482e27056b1dbeee96c70b3bca9b648b748",
+    "paint": "0d5cdef95683f2f9215b01d92473005bd05bee4866b289db77f5e42070def128",
+    "spec[0]": "69dffcbadca4f715141592450cc5d6ee8c80f9f4bbb74ecbe40ddccec50ad988",
+    "spec[1]": "2bb8fc94ed05f7dbc3279fc45bf10c00d925f2fa0e3d377029e9d585c6782d91",
+    "spec[2]": "100644240da7e0d6a921805e731fec9d4011e46d860f0ff1c6f8127bd96a669e"
    },
    "fn": {
-    "base_spec_fn": "engine.paint_v2.era_base_2026.make.<locals>._mk_spec.<locals>.spec_fn",
-    "paint_fn": "engine.paint_v2.era_base_2026.make.<locals>._mk_paint.<locals>.paint_fn"
+    "base_spec_fn": "engine.paint_v2.all_that_image_2026.at_beige_box.make_spec.<locals>.spec",
+    "paint_fn": "engine.paint_v2.all_that_image_2026.at_beige_box.make_paint.<locals>.paint"
    },
    "kind": "base",
-   "ms": 1687.2,
+   "ms": 200.1,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.6477,
-     0.1157
+     0.6678,
+     0.1555
     ],
     "spec[0]": [
-     13.5551,
-     38.1158
+     9.1018,
+     1.4359
     ],
     "spec[1]": [
-     102.5033,
-     51.8247
+     77.5281,
+     41.3665
     ],
     "spec[2]": [
-     92.5092,
-     54.151
+     116.8156,
+     23.2976
     ]
    },
    "status": "ok",
-   "why": "base-group:\ud83d\udcbf ALL THAT"
+   "why": "cli"
   },
   "atelier_brushed_titanium": {
    "baked_at": "2026-09-05 02:31:36",
@@ -963,44 +965,45 @@
    "why": "pattern-group:\u2726 Abstract, Fractal & Paradigm"
   },
   "bth_fisheye": {
-   "baked_at": "2026-09-05 02:14:38",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner rebuilds (SPB-105): AT-R2 09-16, ERA120 09-17, FLAW LAB21 09-18, ASTRA R2 09-27/29, SHOKK WORKS (core_works_2026) 09-30; reports in docs/finish_audits/; looked at 1:1, wholesale redesigns",
+   "baked_at": "2026-10-06 11:10:11",
    "channels": {
-    "cell.CC": "7b5162138ba6d8ae67efbf14d2266a9b11a531bf8e8b090e4bb2586f8f87a52e",
-    "cell.M": "8502957747a29907927566be940a9b39fee0a15dd471ba428eb9eedd15aa80e7",
-    "cell.R": "fb7614b89815f3ebaaba34a1cbd1fe490c839c39571d6a45e3a3cff5fcb1383c",
-    "paint": "31bceb2ceb105e01ea38d367b6066ef1c9304c5dd679d41da6c1985ddd57061c",
-    "spec[0]": "c163575ab17430bb0471a33843ce8d8edf3c59affab189b5fabeadbb80c8838d",
-    "spec[1]": "a069e48393f0b07b99daedba158ed719f066a49fc482064ba8acf38f1acfe4e1",
-    "spec[2]": "88185868486ac8d5f6c99c9c5636fd47ec4b854947c716bbcc8cc3f78a671cfc"
+    "cell.CC": "903bcb21795914c23316b499c6309024f3324f9d4cdfe8b14ea9441287b7496c",
+    "cell.M": "51ef91410107edc42bb64a2d728c6286738446f39c7be06fdd26eb4bbedbb42c",
+    "cell.R": "9e68899d414196dcbc335ae49ddefc8f9638200df8e4a2ba604e739040e1978c",
+    "paint": "5740ac79babe3384ebd8420f9e8f250891f2f25c43fd70953a14e77c2cbb136c",
+    "spec[0]": "1338e258eef43ea524bd7d7f488b78be194601ff59a99f3668143020f3e39e68",
+    "spec[1]": "9fa76f854a9605be95913011393d2deb71028893d8bac983c9a58f4da2e220df",
+    "spec[2]": "7fa9e288c16a38b9b5f79c9399b83834349142011030155fbae618da952eb737"
    },
    "fn": {
-    "base_spec_fn": "engine.paint_v2.the_booth_2026.spec_bth_fisheye",
-    "paint_fn": "engine.paint_v2.the_booth_2026.paint_bth_fisheye"
+    "base_spec_fn": "engine.paint_v2.core_works_2026.finishes.bth_fisheye.bind.<locals>.spec_fn",
+    "paint_fn": "engine.paint_v2.core_works_2026.finishes.bth_fisheye.bind.<locals>.paint_fn"
    },
    "kind": "base",
-   "ms": 53.8,
+   "ms": 2635.5,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.4989,
-     0.1194
+     0.3594,
+     0.1859
     ],
     "spec[0]": [
-     47.5295,
-     6.5899
+     114.0104,
+     37.6638
     ],
     "spec[1]": [
-     45.4832,
-     20.0302
+     58.5725,
+     43.4352
     ],
     "spec[2]": [
-     27.7092,
-     12.7768
+     83.0251,
+     53.5602
     ]
    },
    "status": "ok",
-   "why": "base-group:\ud83c\udfa8 THE BOOTH"
+   "why": "cli"
   },
   "burnt_headers": {
    "baked_at": "2026-09-05 02:15:23",
@@ -1123,44 +1126,45 @@
    "why": "pattern-group:\u2699 Tech, Carbon & Industrial"
   },
   "cbp_acid_rain": {
-   "baked_at": "2026-09-05 02:14:49",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner rebuilds (SPB-105): AT-R2 09-16, ERA120 09-17, FLAW LAB21 09-18, ASTRA R2 09-27/29, SHOKK WORKS (core_works_2026) 09-30; reports in docs/finish_audits/; looked at 1:1, wholesale redesigns",
+   "baked_at": "2026-10-06 11:10:14",
    "channels": {
-    "cell.CC": "140efb356462f70dd1c7f1dfb10bcc07d0f14d439043fb9e9d50f4d7be71ea96",
-    "cell.M": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
-    "cell.R": "2c173cfb1af55c53f06991e9817ae866bd5f4207b70b426001c32745a2c2df3e",
-    "paint": "d3dd92f41368fbf0889f5fb99a4e7ffc84f1884815652d70a034d9650b459d6f",
-    "spec[0]": "f9642066ea56f2203492ac15d401fa9a1f1aed85c736e9a5c5bf0f5c660be775",
-    "spec[1]": "269496ae419e1e6d317e76c6f35cf32d277c2912fc46c76d8f4d1ca7ae141d0d",
-    "spec[2]": "fb8e6fc886b7ed1ded680a5f49b065cc6b2ba00eafb9c5bb25caf959a28fba61"
+    "cell.CC": "b8b7d518f6758d7318b45e29798b4287dc9926ee336dd32b445e6d9e52b2ae4f",
+    "cell.M": "1ad3b99b167daa0cd4b231cd3584ca2f6b81a26323ede5d0ac662402e2835030",
+    "cell.R": "b037be4fb2de4670723a2021e6aa8b3e10309c2d5a1dd72c33778791164c21a7",
+    "paint": "8e6f6ecd2c5d36bdb869b7c6fee75cefa6cb8450dde3ce07101ef9ec79a36b6b",
+    "spec[0]": "37b1c257e20685d94883906caf31616fd99bbe59b6d756507fef43e19ceb95f0",
+    "spec[1]": "7a1000847d16aa81af7b6f6ac0c20baae230227bc3f9162ae271655729b98a86",
+    "spec[2]": "a3767b5586b22f36c940e3516cda39ba0f2c6e358bc48319dbca9d5b59bf9e3a"
    },
    "fn": {
-    "base_spec_fn": "engine.paint_v2.era_base_2026.make.<locals>._mk_spec.<locals>.spec_fn",
-    "paint_fn": "engine.paint_v2.era_base_2026.make.<locals>._mk_paint.<locals>.paint_fn"
+    "base_spec_fn": "engine.paint_v2.era_image_2026.cbp_acid_rain.make_spec.<locals>.spec",
+    "paint_fn": "engine.paint_v2.era_image_2026.cbp_acid_rain.make_paint.<locals>.paint"
    },
    "kind": "base",
-   "ms": 2417.8,
+   "ms": 195.2,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.4037,
-     0.2048
+     0.3857,
+     0.2616
     ],
     "spec[0]": [
-     85.3476,
-     79.0786
+     24.5639,
+     31.1922
     ],
     "spec[1]": [
-     107.5764,
-     52.7206
+     125.3297,
+     32.7772
     ],
     "spec[2]": [
-     112.2302,
-     51.1554
+     120.5648,
+     43.9101
     ]
    },
    "status": "ok",
-   "why": "base-group:\ud83c\udf03 CYBERPUNK"
+   "why": "cli"
   },
   "cc_acid_burn": {
    "baked_at": "2026-09-05 02:16:24",
@@ -4253,6 +4257,87 @@
    "status": "ok",
    "why": "color-monolithic-family (v1/v2 factory question)"
   },
+  "cz_bok_globules": {
+   "baked_at": "2026-10-13 00:58:15",
+   "channels": {
+    "paint": "84d62532835272f1c77026925af151a58e2b5b93d493e892b1e13cbefedc2896",
+    "spec": "3d92d30eccdb795af8b15a506e069986511431b47cecd008a3fdf00d1e426803"
+   },
+   "fn": {
+    "paint_fn": "engine.expansions.fractured_cosmos_r2._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
+    "spec_fn": "engine.expansions.fractured_cosmos_r2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+   },
+   "kind": "monolithic",
+   "ms": 4898.8,
+   "protected": false,
+   "res": 512,
+   "stats": {
+    "paint": [
+     0.4382,
+     0.2864
+    ],
+    "spec": [
+     108.5272,
+     100.6819
+    ]
+   },
+   "status": "ok",
+   "why": "cli"
+  },
+  "cz_cosmic_strings": {
+   "baked_at": "2026-10-13 00:58:23",
+   "channels": {
+    "paint": "f4db16b239b0f5b16c20310d7448372071e8265463067d77383c6bfa486048e4",
+    "spec": "4810ae5ea026cf63131f325c3cbd198a0d78f7ce8d803ddbda300e44b5c7c16a"
+   },
+   "fn": {
+    "paint_fn": "engine.expansions.fractured_cosmos_r2._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
+    "spec_fn": "engine.expansions.fractured_cosmos_r2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+   },
+   "kind": "monolithic",
+   "ms": 3596.9,
+   "protected": false,
+   "res": 512,
+   "stats": {
+    "paint": [
+     0.2524,
+     0.1839
+    ],
+    "spec": [
+     124.6324,
+     83.9589
+    ]
+   },
+   "status": "ok",
+   "why": "cli"
+  },
+  "cz_solar_granulation": {
+   "baked_at": "2026-10-13 00:58:21",
+   "channels": {
+    "paint": "08cdecb0243eea41df6a0a2de0d48719033a376c3a3caa2d27def17d355560c3",
+    "spec": "d1dd5056115f7fab3419789c9f55fb77db7d5fb209222f4e43a287d3f560ddfa"
+   },
+   "fn": {
+    "paint_fn": "engine.expansions.fractured_cosmos_r2._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
+    "spec_fn": "engine.expansions.fractured_cosmos_r2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+   },
+   "kind": "monolithic",
+   "ms": 1851.1,
+   "protected": false,
+   "res": 512,
+   "stats": {
+    "paint": [
+     0.3503,
+     0.2727
+    ],
+    "spec": [
+     146.5253,
+     75.0527
+    ]
+   },
+   "status": "ok",
+   "why": "cli"
+  },
   "decade_50s_atomic_reactor": {
    "baked_at": "2026-09-05 02:31:36",
    "channels": {
@@ -6356,22 +6441,23 @@
    "why": "base-group:Foundation EFX"
   },
   "eggshell": {
-   "baked_at": "2026-09-05 02:16:46",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner mandate 2026-09-30 'REGULAR foundations SHOULD BE PURE' - grain/peel removed, constant M/R/CC (engine/base_registry_data.py _spec_foundation_pure_bound); looked at 1:1, old had +/-5 grain, new flat, same means",
+   "baked_at": "2026-10-06 11:09:58",
    "channels": {
     "cell.CC": "6e83e65609db04c592c3d0a24609a21c735373169ac50cf0c7ee0192fffe4932",
     "cell.M": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
     "cell.R": "6a113f85ca377dad38d93c88135a92ba4821d6853f9c5be3679a07f3139238ff",
     "paint": "6091e2f48d9507fd262504e27057c9c1793c83e808f88853737450d44d7a26f1",
     "spec[0]": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
-    "spec[1]": "1971279221738fab21c9f3c58c359660782808ffb3386bf6b87afd44da883999",
-    "spec[2]": "a0988d912e0b8657f2c0a097031ce0847d67210e48e86744ded33e2075578203"
+    "spec[1]": "07506e4403cfeabdcc78a159db136d368551af640812ac8086c866016e0ae5ec",
+    "spec[2]": "0a9d6148734da7f26eb376a1171496a5cf02a25c5d2aee54b0aff52a1641447f"
    },
    "fn": {
     "base_spec_fn": "engine.base_registry_data._make_foundation_spec.<locals>._spec",
     "paint_fn": "engine.spec_paint.paint_none"
    },
    "kind": "base",
-   "ms": 12.6,
+   "ms": 2.9,
    "protected": false,
    "res": 512,
    "stats": {
@@ -6384,16 +6470,16 @@
      0.0
     ],
     "spec[1]": [
-     140.1751,
-     3.8659
+     140.0,
+     0.0
     ],
     "spec[2]": [
-     93.7956,
-     2.6429
+     95.0,
+     0.0
     ]
    },
    "status": "ok",
-   "why": "foundation"
+   "why": "cli"
   },
   "elm_downpour": {
    "baked_at": "2026-09-05 02:14:55",
@@ -6666,44 +6752,45 @@
    "why": "special-group:\u2692 FRACTURED FOUNDRY"
   },
   "fl_penetrant_bleed": {
-   "baked_at": "2026-09-05 02:14:38",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner rebuilds (SPB-105): AT-R2 09-16, ERA120 09-17, FLAW LAB21 09-18, ASTRA R2 09-27/29, SHOKK WORKS (core_works_2026) 09-30; reports in docs/finish_audits/; looked at 1:1, wholesale redesigns",
+   "baked_at": "2026-10-06 11:10:15",
    "channels": {
-    "cell.CC": "fb7614b89815f3ebaaba34a1cbd1fe490c839c39571d6a45e3a3cff5fcb1383c",
-    "cell.M": "8502957747a29907927566be940a9b39fee0a15dd471ba428eb9eedd15aa80e7",
-    "cell.R": "24da5299a07bd30aafb4e74978cc56120416c1df1900d48be3584565dc85d6db",
-    "paint": "0e152ec1115ee517cb1bcad2dd75a8f3dd19f1ad0a95f7f5789efd2ea2b7879b",
-    "spec[0]": "b2f71f329e527c70c7b539082a5e5555c66e0ab911625c8a1ccadb5eb94087f8",
-    "spec[1]": "a8fad1aa205208fea99a8f7b9f4a8e67341e93d26568cf1ac1d06bc21b432544",
-    "spec[2]": "d1db2badcb9e1bae8d4a99ff02f83c11cee670247363675e87c68f481377ab2a"
+    "cell.CC": "814e223b91cb65a962256b15f351f22ac7bcbb3c2b82d2a4b3ecf174db8de764",
+    "cell.M": "d9fc8a51763953481a1808af3156bcb8144c2f925e96dec623c886f6d9d975b2",
+    "cell.R": "b1d13142548ff141cfe16f5acef0bb74a32e3ecd8c6d49ceb64a1868203a2780",
+    "paint": "8028886a585aef0911f45022a77dba543b693df68455da299e805d133c764591",
+    "spec[0]": "166c0fd74f0b2ae0f48726c87fa0e9f1e41dea5dfbf749074142e66ae6b6f7e6",
+    "spec[1]": "74d4d24700f649c31e40f9e5f752806f508f29cd073ea4a46b84197ef13c50a5",
+    "spec[2]": "4647e92229ad7702aa0527b3ce696086b4fd6704f976275bb19233beeb27a17f"
    },
    "fn": {
-    "base_spec_fn": "engine.paint_v2.flaw_lab_2026.spec_fl_penetrant_bleed",
-    "paint_fn": "engine.paint_v2.flaw_lab_2026.paint_fl_penetrant_bleed"
+    "base_spec_fn": "engine.paint_v2.flaw_lab_rebuild_2026.make_spec.<locals>.spec",
+    "paint_fn": "engine.paint_v2.flaw_lab_rebuild_2026.make_paint.<locals>.paint"
    },
    "kind": "base",
-   "ms": 56.6,
+   "ms": 144.5,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.508,
-     0.1387
+     0.249,
+     0.2059
     ],
     "spec[0]": [
-     25.5186,
-     9.989
+     12.7732,
+     4.9307
     ],
     "spec[1]": [
-     134.8738,
-     26.8257
+     97.6605,
+     45.749
     ],
     "spec[2]": [
-     53.0846,
-     12.2676
+     138.3059,
+     35.2439
     ]
    },
    "status": "ok",
-   "why": "base-group:\ud83d\udd2c FLAW LAB"
+   "why": "cli"
   },
   "flame_hotrod": {
    "baked_at": "2026-09-05 02:14:52",
@@ -6746,22 +6833,23 @@
    "why": "base-group:Flames"
   },
   "flat_black": {
-   "baked_at": "2026-09-05 02:16:46",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner mandate 2026-09-30 'REGULAR foundations SHOULD BE PURE' - grain/peel removed, constant M/R/CC (engine/base_registry_data.py _spec_foundation_pure_bound); looked at 1:1, old had +/-5 grain, new flat, same means",
+   "baked_at": "2026-10-06 11:09:58",
    "channels": {
     "cell.CC": "270696d298cc689d8e5bd75897918aa617a25a5030ccae98017053dddd974995",
     "cell.M": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
     "cell.R": "790ae12c34496bfe41c52a4786035ab076ce6771b936c6adf4608fd641420958",
     "paint": "6091e2f48d9507fd262504e27057c9c1793c83e808f88853737450d44d7a26f1",
     "spec[0]": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
-    "spec[1]": "ba64f7353b48c02180f59f33706e34d139e16dbc70515f5e03c1c03e6e8d108a",
-    "spec[2]": "e41baf8401dba8eca6759373b15585a446f82a271eb8d2aae41af37d01cd2ba6"
+    "spec[1]": "68d4b64aa8658da01f4a52c099796ce75a92c852b63f874ab7b0252206dd3c40",
+    "spec[2]": "63c2633fa957d7e6691f8c3fce9c1229dca97cb977a5a9650956fcd8a448cccb"
    },
    "fn": {
     "base_spec_fn": "engine.base_registry_data._make_foundation_spec.<locals>._spec",
     "paint_fn": "engine.spec_paint.paint_none"
    },
    "kind": "base",
-   "ms": 10.4,
+   "ms": 2.9,
    "protected": false,
    "res": 512,
    "stats": {
@@ -6774,16 +6862,16 @@
      0.0
     ],
     "spec[1]": [
-     249.428,
-     5.1604
+     250.0,
+     0.0
     ],
     "spec[2]": [
-     250.9516,
-     4.163
+     255.0,
+     0.0
     ]
    },
    "status": "ok",
-   "why": "foundation"
+   "why": "cli"
   },
   "fm_basalt": {
    "baked_at": "2026-09-05 02:15:07",
@@ -7042,22 +7130,23 @@
    "why": "special-group:GRUNGE & FUN"
   },
   "gloss": {
-   "baked_at": "2026-09-05 02:16:44",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner mandate 2026-09-30 'REGULAR foundations SHOULD BE PURE' - grain/peel removed, constant M/R/CC (engine/base_registry_data.py _spec_foundation_pure_bound); looked at 1:1, old had +/-5 grain, new flat, same means",
+   "baked_at": "2026-10-06 11:09:58",
    "channels": {
     "cell.CC": "140efb356462f70dd1c7f1dfb10bcc07d0f14d439043fb9e9d50f4d7be71ea96",
     "cell.M": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
     "cell.R": "409303c5035263c102682239f8d654e7e194daae6235aff347c036576a261d96",
     "paint": "6091e2f48d9507fd262504e27057c9c1793c83e808f88853737450d44d7a26f1",
     "spec[0]": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
-    "spec[1]": "b4bcbe326606790471ddebb938109c67dcc936697aa46c13b2bcc33963224587",
-    "spec[2]": "7dc66a86d2323894f5d868182f6e6ffd59661e297e952eda120e2720e09f4d5e"
+    "spec[1]": "c07500b6f966d65dda9261e3e701fb5bb13e31239ff3a89d74c0046d0ba4ec12",
+    "spec[2]": "c8bd758514b5533a66a0cda44ff8d26a6dfb9edc74799a82855191b6dffe3191"
    },
    "fn": {
     "base_spec_fn": "engine.base_registry_data._make_foundation_spec.<locals>._spec",
     "paint_fn": "engine.spec_paint.paint_none"
    },
    "kind": "base",
-   "ms": 14.1,
+   "ms": 2.9,
    "protected": false,
    "res": 512,
    "stats": {
@@ -7070,16 +7159,16 @@
      0.0
     ],
     "spec[1]": [
-     30.0614,
-     1.3559
+     30.0,
+     0.0
     ],
     "spec[2]": [
-     16.2212,
-     0.4616
+     16.0,
+     0.0
     ]
    },
    "status": "ok",
-   "why": "foundation"
+   "why": "cli"
   },
   "grad_amber_night": {
    "baked_at": "2026-09-05 02:18:00",
@@ -10484,31 +10573,13 @@
    "why": "special-group:\ud83c\udf08 GRADIENTS"
   },
   "hou_veiled_skull": {
-   "baked_at": "2026-09-05 02:15:29",
-   "channels": {
-    "paint": "6c8b3543d24cfd06661a6fbb25690d60452c2fcc3e2525bdb990f5e609308aba",
-    "spec": "e08fbc7093050f26d76ed7b13745ac6e88e026869c60e839b3d8c1d0e71e859f"
-   },
-   "fn": {
-    "paint_fn": "engine.expansions.fractured_houdini_reveal_2026._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.fractured_houdini_reveal_2026._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
-   },
-   "kind": "monolithic",
-   "ms": 662.6,
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: owner 09-18 replaced FRACTURED HOUDINI with FRACTURED SHOKK (engine/registry.py:678); id intentionally unregistered -> recorded ABSENT so a resurrection reports ADDED",
+   "baked_at": "2026-10-06 11:10:48",
+   "kind": null,
    "protected": false,
    "res": 512,
-   "stats": {
-    "paint": [
-     0.2812,
-     0.0783
-    ],
-    "spec": [
-     162.0104,
-     98.5822
-    ]
-   },
-   "status": "ok",
-   "why": "special-group:\ud83c\udfa9 FRACTURED HOUDINI"
+   "status": "absent",
+   "why": "cli"
   },
   "impossible_cinder_pulse": {
    "baked_at": "2026-09-05 02:14:26",
@@ -10626,44 +10697,45 @@
    "why": "pattern-group:\ud83c\udf86 Let Freedom Ring"
   },
   "lsk_return_stroke": {
-   "baked_at": "2026-09-05 02:14:38",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner rebuilds (SPB-105): AT-R2 09-16, ERA120 09-17, FLAW LAB21 09-18, ASTRA R2 09-27/29, SHOKK WORKS (core_works_2026) 09-30; reports in docs/finish_audits/; looked at 1:1, wholesale redesigns",
+   "baked_at": "2026-10-06 11:10:15",
    "channels": {
-    "cell.CC": "8502957747a29907927566be940a9b39fee0a15dd471ba428eb9eedd15aa80e7",
-    "cell.M": "409303c5035263c102682239f8d654e7e194daae6235aff347c036576a261d96",
-    "cell.R": "9f026d3444cc513ec1ff6522fa56bf3e019d158c785f07c12be84096715db94e",
-    "paint": "ca01ca498e6cbb8fdcb863c8f68d6b6ab6879ebdb356d27e4fb4bc39eca089e1",
-    "spec[0]": "35417e55e5b30a52833f5df713f75b247ab19f4a67744420246a9d009cecf9b4",
-    "spec[1]": "2df2099b99b7411de6130e58967be72ce663f36f37b6c2dc5bca73a5b5a10690",
-    "spec[2]": "dcbe542260862c63424c1af2f7f335a7fdcb51de6e8c5a8aac0272c2d6216a43"
+    "cell.CC": "2b402cd3350664d5d07ed374ece5e98aee3fc3debaf5b1f4b94d3e3f7c939051",
+    "cell.M": "0dbe27768f13d85a4d9e5ec3350945a4a6121c0cbcc6514f61b7a602c2a4c0fb",
+    "cell.R": "03c51902793a159c4f9c00b2e3e8f0d687a0f4c83dc1a0524e003210528ff4a0",
+    "paint": "d3c85fbce005963eb41170f552bb96290276f52410767574410e2191cd34e5e1",
+    "spec[0]": "1a4e91c2f20042ee46f644a6358d9ee20bf45c5dc19606798b3a633435903e93",
+    "spec[1]": "32b331c43c3c1e0e82a150f86ce8fee32f05179ceb5d5d218d676a7f689651f0",
+    "spec[2]": "0e4ec6c42a460e9732829e821f87db78b901b577aa30998e7b37d75b1a670c7f"
    },
    "fn": {
-    "base_spec_fn": "engine.paint_v2.lightning_shokk_2026.spec_lsk_return_stroke",
-    "paint_fn": "engine.paint_v2.lightning_shokk_2026.paint_lsk_return_stroke"
+    "base_spec_fn": "engine.paint_v2.core_works_2026.finishes.lsk_return_stroke.bind.<locals>.spec_fn",
+    "paint_fn": "engine.paint_v2.core_works_2026.finishes.lsk_return_stroke.bind.<locals>.paint_fn"
    },
    "kind": "base",
-   "ms": 58.0,
+   "ms": 1742.9,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.6297,
-     0.1609
+     0.3767,
+     0.1873
     ],
     "spec[0]": [
-     53.279,
-     33.572
+     80.0023,
+     64.814
     ],
     "spec[1]": [
-     146.3768,
-     26.8576
+     94.5712,
+     53.6397
     ],
     "spec[2]": [
-     79.1365,
-     15.6669
+     108.6754,
+     57.5624
     ]
    },
    "status": "ok",
-   "why": "base-group:\u26a1 LIGHTNING SHOKK"
+   "why": "cli"
   },
   "materials2_carbon": {
    "baked_at": "2026-09-05 02:16:31",
@@ -10693,22 +10765,23 @@
    "why": "special-group:Materials & Physics"
   },
   "matte": {
-   "baked_at": "2026-09-05 02:16:45",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner mandate 2026-09-30 'REGULAR foundations SHOULD BE PURE' - grain/peel removed, constant M/R/CC (engine/base_registry_data.py _spec_foundation_pure_bound); looked at 1:1, old had +/-5 grain, new flat, same means",
+   "baked_at": "2026-10-06 11:09:58",
    "channels": {
     "cell.CC": "0cdfd18d7eb08099473e8d2b5b92b2d7769b9a2b80793af7a8ec4e66b9e3cbe6",
     "cell.M": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
     "cell.R": "531ad685bf4dd31ed89c6b99e76c2b9451d6a6d04d82de7d4b1a73217f55e551",
     "paint": "6091e2f48d9507fd262504e27057c9c1793c83e808f88853737450d44d7a26f1",
     "spec[0]": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
-    "spec[1]": "b108221b6e874cfc294d7eb1c2b9cd8255a1886be1564435783d11bf2d7e3977",
-    "spec[2]": "cb1637caf5a43d14bf40466549f5ab2580f4330b8e93a1015caa9697d1a14586"
+    "spec[1]": "384e81ecf37bb6a0d631da25a745b6d28895f1467deb2421931382cc7ce04e81",
+    "spec[2]": "e257c7f0dd8d4a2d152286d03feb28139941fed6b29b997cd635f43940cd2320"
    },
    "fn": {
     "base_spec_fn": "engine.base_registry_data._make_foundation_spec.<locals>._spec",
     "paint_fn": "engine.spec_paint.paint_none"
    },
    "kind": "base",
-   "ms": 14.8,
+   "ms": 3.3,
    "protected": false,
    "res": 512,
    "stats": {
@@ -10721,372 +10794,386 @@
      0.0
     ],
     "spec[1]": [
-     200.2371,
-     5.235
+     200.0,
+     0.0
     ],
     "spec[2]": [
-     158.1786,
-     3.9969
+     160.0,
+     0.0
     ]
    },
    "status": "ok",
-   "why": "foundation"
+   "why": "cli"
   },
   "mc_black_marble": {
-   "baked_at": "2026-09-05 02:16:49",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:32",
    "channels": {
-    "paint": "5cccedbccc07b77ab32dd036574c74c3281f016bc1b4d2b7b2384f783d1cd926",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "1feced51c82bcd01136e317d196734e29c1b84aa9793b4fbbcb2da84da1ebce8",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 78.9,
+   "ms": 104.4,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.4039,
-     0.2799
+     0.3299,
+     0.1827
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "lazy-only-family"
+   "why": "cli"
   },
   "mc_blood_splat": {
-   "baked_at": "2026-09-05 02:19:48",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:33",
    "channels": {
-    "paint": "58170e8131b11419e871532bec9a56c35011da09f541699ea5fbf5a1cc33255b",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "301cb18258b5c3a61b4c8f8b04c4c0a3a7002df287e3de8401cc5b8fbb1fc05e",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 35.6,
+   "ms": 50.6,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.1708,
-     0.1437
+     0.2441,
+     0.1034
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_blue_camo": {
-   "baked_at": "2026-09-05 02:19:48",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:33",
    "channels": {
-    "paint": "5d1e9670bf4d6e6321847af667edb3f9ef6e1914bde8bb1b834607af6ba437c9",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "c2bc530ce17aeebce9f4e70f3b040f307c2a2ec8ac59ffdfda67278ed4025f1a",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 26.6,
+   "ms": 54.5,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.2919,
-     0.2043
+     0.3722,
+     0.2061
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_christmas": {
-   "baked_at": "2026-09-05 02:19:48",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:33",
    "channels": {
-    "paint": "3759788aa1599ae65be580f166fb5fa5f93bbcee862edc7c0163ee015efaa213",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "eae0653cf219d373b40eb3b3e0c93d1ca32c3602c05de960bfae322e6101af31",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 35.1,
+   "ms": 112.9,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.3282,
-     0.2184
+     0.4514,
+     0.2038
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_deep_space": {
-   "baked_at": "2026-09-05 02:19:49",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:34",
    "channels": {
-    "paint": "7247c16678eb0239ba6cdf7063500f6e461b2deda6387d72bc5e6e0bda042b8d",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "6433ca79640cdb367ea8471814060a85380cfaa2215b618c05d156da21316039",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 34.4,
+   "ms": 47.8,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.3603,
-     0.216
+     0.2409,
+     0.1421
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_desert_camo": {
-   "baked_at": "2026-09-05 02:19:49",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:34",
    "channels": {
-    "paint": "00bd135aafe3e356b06f1e9b6edf95c982e70f8be64b46b1418ef77821aee8b4",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "5d7599c04cf10ab7a84e5ae33bce5f7c8399be3ee3289327ac32295709d6101a",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 26.6,
+   "ms": 43.7,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.559,
-     0.2997
+     0.5033,
+     0.2434
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_earth_tone": {
-   "baked_at": "2026-09-05 02:19:49",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:34",
    "channels": {
-    "paint": "771f923e4fa0d6c4a12565fc94ec301d62ebfb75088cc7bc0b089c2df8bfdccf",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "4c6453508d228134b31cb7ac8be0a04644109b7646941dfe3a93340bab029a81",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 32.4,
+   "ms": 39.8,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.4894,
-     0.1804
+     0.534,
+     0.1961
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_fire_storm": {
-   "baked_at": "2026-09-05 02:19:49",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:34",
    "channels": {
-    "paint": "a9b10ec5ddaf3563edbfa4e76d343f80bf2aae023da05efb8312f324e2fe56bb",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "3abf8c75ff0a53f6da7b5308c544fce5fcc1c0f13e2e5f8bdc97a58838e0b287",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 36.5,
+   "ms": 71.4,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.4724,
-     0.3211
+     0.5366,
+     0.3113
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_gold_marble": {
-   "baked_at": "2026-09-05 02:19:49",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:34",
    "channels": {
-    "paint": "6e3a05e7fd1a770cd0adcaa77c1e08bbb9ee9bce832e73788112bdfb64076ca8",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "f2e0eeeb4469359ac4b1b14de6e3667b0c23ad2a6047e582ec5897650d0e8329",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 46.3,
+   "ms": 69.0,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.3767,
-     0.2649
+     0.4328,
+     0.2137
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_green_marble": {
-   "baked_at": "2026-09-05 02:19:49",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:35",
    "channels": {
-    "paint": "04371a979150ae8276f1e15c577873d2a61bf332eb6d9744a2a7c28919193321",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "743f25c9a7f1d837b076b25018a7ce43b61a66fbe09a40e78b5d1c4f86a0cdb2",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 39.1,
+   "ms": 60.5,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.2534,
-     0.1889
+     0.2797,
+     0.1571
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_halloween": {
-   "baked_at": "2026-09-05 02:19:50",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:35",
    "channels": {
-    "paint": "a4ff75d7d9f3cb4c1c3dc43c15ecc7bcd516cbf3fbdc7f2620e82fdb4f3cdb46",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "b08c8861f50eb21318c482ee3e2a5c2c5d8df414bf65be01044e9dac62eaf594",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 31.8,
+   "ms": 49.5,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.2372,
-     0.2344
+     0.3447,
+     0.1818
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_ink_splat": {
-   "baked_at": "2026-09-05 02:19:50",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:35",
    "channels": {
-    "paint": "23d4bdac40f649b52f1186ca87f778b4efe66eaa6c0739d8475bcaa1376a2288",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "9aed2b19de38e14960103f72da8afb476d06374bfde7e18c7b00fcd16d093e56",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 27.7,
+   "ms": 75.7,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.3688,
-     0.1981
+     0.5556,
+     0.2009
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_miami_vice": {
-   "baked_at": "2026-09-05 02:19:50",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:35",
    "channels": {
-    "paint": "8668343e626a933ddb850db42499961b7b8c198530a8a172316d2eeb401de145",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "2fec1e450ef3e213b2c7bd76af3c4649852061eaa2e69e0501d26f535d3e80b3",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 28.3,
+   "ms": 62.6,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.5245,
-     0.2704
+     0.6955,
+     0.1787
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_neon_camo": {
-   "baked_at": "2026-09-05 02:19:50",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:36",
    "channels": {
-    "paint": "3ec2235c996d8dfe0d72ed68823939cada363c31452c2ca5206206b1f6ff6f03",
+    "paint": "d5b3cfdcc0e2411fe73a8f58f4360ea7cb167ce76c9171303297aede9778c01e",
     "spec": "1851b9e3a9ee2e9e06644854b1733e03d83226fa3c3a4d1afef07b6ae2b83b41"
    },
    "fn": {
@@ -11094,13 +11181,13 @@
     "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 58.0,
+   "ms": 105.0,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.5029,
-     0.2856
+     0.3808,
+     0.2396
     ],
     "spec": [
      116.6866,
@@ -11108,304 +11195,315 @@
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_neon_splat": {
-   "baked_at": "2026-09-05 02:19:50",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:36",
    "channels": {
-    "paint": "4376abbdf3a204fcf8acbc362a98a194f139ebba0e4264736588a8ffc1dc9356",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "b248dd8171e2ee8f733fd5554c6b706f69a469efb7097191addea44dc761a1aa",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 47.0,
+   "ms": 55.8,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.5607,
-     0.2549
+     0.583,
+     0.1854
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_paint_splat": {
-   "baked_at": "2026-09-05 02:19:50",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:36",
    "channels": {
-    "paint": "c76225aff2f68bf213d10aa9d54e4102764d7fd5f023bf89071fe21e2545a178",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "f80d14d465728b42d08612e0619bb35b1b67d3808127cb1829427725aa730cf3",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 27.0,
+   "ms": 127.9,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.5177,
-     0.3095
+     0.5257,
+     0.2396
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_rasta": {
-   "baked_at": "2026-09-05 02:19:51",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:37",
    "channels": {
-    "paint": "31f6671a0c4d0269e1dc1d9d19db5389c6f35e2c5c463669b1945004af9fc50b",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "b866728966aef9c1eab52723b66b0bbb3a584f2fd41d222361844d026f75f99c",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 26.5,
+   "ms": 56.0,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.5186,
-     0.3324
+     0.3976,
+     0.2182
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_red_marble": {
-   "baked_at": "2026-09-05 02:19:51",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:37",
    "channels": {
-    "paint": "8f6ae2d5c70ab98b8d80cf0bbb7a3d018743e294904d004e099cf97babbe9c58",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "6838a0d37ed173686c713fa83fef208837ee8dc682071a7edbd96a9d4c71f8f7",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 43.0,
+   "ms": 66.2,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.2965,
-     0.2172
+     0.2923,
+     0.2018
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_snow_camo": {
-   "baked_at": "2026-09-05 02:19:51",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:37",
    "channels": {
-    "paint": "4fba9426c83ef35ba3d47f263b5b2b365161fcb5032f1d4801441105ec9b9ad2",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "48bfaa936a3c6cbf78d745901af495201ca400ed4869c2dc280118bb66e0a6b6",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 27.0,
+   "ms": 84.4,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.7634,
-     0.0928
+     0.6966,
+     0.1264
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_tropical": {
-   "baked_at": "2026-09-05 02:19:51",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:37",
    "channels": {
-    "paint": "c66ee343f7f19a6f70aca16caa20f015f3928bf8c4046cc67036807a4c090674",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "4fda0f6caef287a86c913653f3da64643b5745f471953b09ed641b91e3269104",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 28.5,
+   "ms": 71.5,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.4846,
-     0.2605
+     0.5463,
+     0.2367
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_urban_camo": {
-   "baked_at": "2026-09-05 02:19:51",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:38",
    "channels": {
-    "paint": "ad0e3c03813bb394aa202e43b6cc9a0181d6f4f07e6c0fd1ae18db398038bdeb",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "50c2747938023298032366fd1746aae1d27238e1140b4b6a02909922f166b4f5",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 29.1,
+   "ms": 49.1,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.6117,
-     0.2165
+     0.4996,
+     0.2112
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_usa_flag": {
-   "baked_at": "2026-09-05 02:19:51",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:38",
    "channels": {
-    "paint": "fbac93102d742bc94751d00642c52e75033e8101a7889a054b21d9b49f7ca34c",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "d329cb042b8e8d1e5edcbf47ee762749d162109b7e618f38303ae074cd19c0e0",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 31.2,
+   "ms": 55.5,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.7149,
-     0.2913
+     0.5694,
+     0.226
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_vaporwave": {
-   "baked_at": "2026-09-05 02:19:51",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:38",
    "channels": {
-    "paint": "ed485dc55547759dd2c6acee6d5f1ea204128309b2c4803e62ce6445640ef6b4",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "282bb98e957d72d5288eab7bd7dc5d770d290d37b1ecb645fef5454d64d99aab",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 30.8,
+   "ms": 62.3,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.4884,
-     0.2327
+     0.5494,
+     0.1908
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_white_marble": {
-   "baked_at": "2026-09-05 02:19:52",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:38",
    "channels": {
-    "paint": "7a3edbf46a8fda6e4e2a8f35fa55cbf5307c40763b800e31dc511e4f9f236dc7",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "6516b053e3d401e0066d3e24f3e2bff6d201e27ad0aa37cdcc04ea163599eb73",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 38.0,
+   "ms": 67.9,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.6403,
-     0.2506
+     0.7072,
+     0.1611
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "mc_woodland_camo": {
-   "baked_at": "2026-09-05 02:19:52",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: RETIRED mc_* (hidden since 06-03). 09-05 bake caught the v1 fallback while _staging/ was archived; _staging restore brings back the live v2 color_mono_factories (check_after_staging.log 09-05). Looked at 1:1: v1 hard blobs -> v2 soft fields",
+   "baked_at": "2026-10-06 11:10:39",
    "channels": {
-    "paint": "e4186cb1c59ef3424f5f003b73457b55c13bfb99f5deb98f8d1cbd6794bc9e11",
-    "spec": "5a8e8b5719bd2d63e708ea6286b183a43b1870b61006faed5ecfb318106ca087"
+    "paint": "51e1089f92393feb4f68d384835973d408ab56de84c9327d7d42cb3ad05d470c",
+    "spec": "e97c489ba3277080e75edd274faef5bf1d0dc8df178a320e1094f4ee21405bc8"
    },
    "fn": {
     "paint_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
-    "spec_fn": "engine.expansions.color_monolithics._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+    "spec_fn": "_staging_color_mono_factories_v2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
    },
    "kind": "monolithic",
-   "ms": 32.1,
+   "ms": 50.5,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.3903,
-     0.1949
+     0.3222,
+     0.1684
     ],
     "spec": [
-     121.25,
-     89.399
+     115.1681,
+     90.1782
     ]
    },
    "status": "ok",
-   "why": "color-monolithic-family (v1/v2 factory question)"
+   "why": "cli"
   },
   "metallic": {
    "baked_at": "2026-09-05 02:16:45",
@@ -11502,44 +11600,45 @@
    "why": "special-group:\u2605 MONEY SHOKK"
   },
   "mul_erlkonig_swirl": {
-   "baked_at": "2026-09-05 02:14:38",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner rebuilds (SPB-105): AT-R2 09-16, ERA120 09-17, FLAW LAB21 09-18, ASTRA R2 09-27/29, SHOKK WORKS (core_works_2026) 09-30; reports in docs/finish_audits/; looked at 1:1, wholesale redesigns",
+   "baked_at": "2026-10-06 11:10:17",
    "channels": {
-    "cell.CC": "5d5d32c7cf8e2ca77d9af6bf35a0ba5cd09074ccb4f3871aba6f67420b324a57",
-    "cell.M": "8502957747a29907927566be940a9b39fee0a15dd471ba428eb9eedd15aa80e7",
-    "cell.R": "6e83e65609db04c592c3d0a24609a21c735373169ac50cf0c7ee0192fffe4932",
-    "paint": "9774e2e2309b0a1c826ea52653b864ce8f84eecf57dce10b1ccfa284968475b9",
-    "spec[0]": "f3c5fdb780e9a3768b015ac6a187682e5b434b8a7cad9bede2affa03b38fcdc3",
-    "spec[1]": "b20b3187cd4368fcf593279d1c03f6b5d04a6e76adea243b5665c5c63c7021ff",
-    "spec[2]": "c08e9c889b27b938c1bac3e22b4a2d4dc605fde088307f9b1455d4d19b542d13"
+    "cell.CC": "0f03cf49226c15ef68b4a3418211ff7f76390f8df5b63a2ece41b644c087ffe0",
+    "cell.M": "bab538f5fc0bf52d61d61e92e73b0709050f389166a29ccd561258d83a5b34f1",
+    "cell.R": "c5ef22b0ea364eadade4b0aa4902114ebc3c2c24a25d4193aaa059b7b1a01d35",
+    "paint": "b3b4def4b8ac76d75fe123901057739bcb23072510ce135523c51b796c106a63",
+    "spec[0]": "2179caac341525c02f7c3a64456d40172f273d86438b9a0d708ed3afc7398436",
+    "spec[1]": "cdb995af996be63394ece627c893a6a9a8a3825d3af56cd31de04d6804ede147",
+    "spec[2]": "47a5295fd132e9456c45ff6f4267fbe9c9e59e671e61c5fc589327af3808ec54"
    },
    "fn": {
-    "base_spec_fn": "engine.paint_v2.mule_2026.spec_mul_erlkonig_swirl",
-    "paint_fn": "engine.paint_v2.mule_2026.paint_mul_erlkonig_swirl"
+    "base_spec_fn": "engine.paint_v2.core_works_2026.finishes.mul_erlkonig_swirl.bind.<locals>.spec_fn",
+    "paint_fn": "engine.paint_v2.core_works_2026.finishes.mul_erlkonig_swirl.bind.<locals>.paint_fn"
    },
    "kind": "base",
-   "ms": 38.3,
+   "ms": 2202.9,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.5,
-     0.3138
+     0.4958,
+     0.2051
     ],
     "spec[0]": [
-     41.9992,
-     20.6606
+     109.5461,
+     50.1906
     ],
     "spec[1]": [
-     95.0013,
-     32.8692
+     122.7982,
+     43.634
     ],
     "spec[2]": [
-     57.0009,
-     21.5997
+     140.4714,
+     50.4454
     ]
    },
    "status": "ok",
-   "why": "base-group:\ud83d\udd75\ufe0f MULE"
+   "why": "cli"
   },
   "neon_electric_blue": {
    "baked_at": "2026-09-05 02:15:30",
@@ -11716,22 +11815,23 @@
    "why": "special-group:SOURCE PATTERN PLATES"
   },
   "primer": {
-   "baked_at": "2026-09-05 02:16:46",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner mandate 2026-09-30 'REGULAR foundations SHOULD BE PURE' - grain/peel removed, constant M/R/CC (engine/base_registry_data.py _spec_foundation_pure_bound); looked at 1:1, old had +/-5 grain, new flat, same means",
+   "baked_at": "2026-10-06 11:09:58",
    "channels": {
     "cell.CC": "531ad685bf4dd31ed89c6b99e76c2b9451d6a6d04d82de7d4b1a73217f55e551",
     "cell.M": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
     "cell.R": "38452667161a466903bd8c1c140bd8f9d480f319136ba4bdbfea2b9d0b542f83",
     "paint": "6091e2f48d9507fd262504e27057c9c1793c83e808f88853737450d44d7a26f1",
     "spec[0]": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
-    "spec[1]": "3a9701e3e79fa760ea44dfb76c811eae1fe0c9a4bd213daeab38052c6c9d3e69",
-    "spec[2]": "23f874434d7a6da0a8843a9cae37823165a9a96ea76a82c4c27edbd583687609"
+    "spec[1]": "bd060b241b87a6943387fdcfa0418581f854884031ab113eb3bcf52f9b991f59",
+    "spec[2]": "384e81ecf37bb6a0d631da25a745b6d28895f1467deb2421931382cc7ce04e81"
    },
    "fn": {
     "base_spec_fn": "engine.base_registry_data._make_foundation_spec.<locals>._spec",
     "paint_fn": "engine.spec_paint.paint_none"
    },
    "kind": "base",
-   "ms": 15.5,
+   "ms": 5.1,
    "protected": false,
    "res": 512,
    "stats": {
@@ -11744,16 +11844,16 @@
      0.0
     ],
     "spec[1]": [
-     215.2526,
-     5.5772
+     215.0,
+     0.0
     ],
     "spec[2]": [
-     197.7989,
-     4.8301
+     200.0,
+     0.0
     ]
    },
    "status": "ok",
-   "why": "foundation"
+   "why": "cli"
   },
   "prizm_adaptive": {
    "baked_at": "2026-09-05 02:16:19",
@@ -11783,44 +11883,45 @@
    "why": "special-group:Prizm"
   },
   "rad_amber_terminal": {
-   "baked_at": "2026-09-05 02:14:40",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner rebuilds (SPB-105): AT-R2 09-16, ERA120 09-17, FLAW LAB21 09-18, ASTRA R2 09-27/29, SHOKK WORKS (core_works_2026) 09-30; reports in docs/finish_audits/; looked at 1:1, wholesale redesigns",
+   "baked_at": "2026-10-06 11:10:19",
    "channels": {
-    "cell.CC": "140efb356462f70dd1c7f1dfb10bcc07d0f14d439043fb9e9d50f4d7be71ea96",
-    "cell.M": "80c8a717ccd70c8809eb78e6a9591c003e11c721fe0ccaf62fd592abda1a5593",
-    "cell.R": "a5d4cd5b9cc4aba67ebe403c68466c378868947703d75704381d0c90e2615d1e",
-    "paint": "a3db3489d3e0c558b0a4ff455476594055c3fcfec1c0dc96d77808ce7d92f74e",
-    "spec[0]": "9da7fd3034ad3a499b8e7e1e7bc07a9dbfdd53637dc50f9c2d2356a336cb307e",
-    "spec[1]": "04eb0a17d08efcf5ffbd9785a566d19c80f6140c93df7338f1fd48f11221cc43",
-    "spec[2]": "584167f6a3782ada12536b4640e7f7d6f6d1d100c2ac922f0d77154e5f715897"
+    "cell.CC": "3e16bff492d33f7cd71535b1cd2e45bc5087f15f8500cc787b910e39bef7e906",
+    "cell.M": "82ea9fbbb7d45ae1a3c6dbdd96cea7af5a1d984e1bf6af86df9ec425924f8fd6",
+    "cell.R": "b9b1e20a06ed1eb0d9c85bc9ae6e5891f2bfa91aaa4d9c64b7d6d7d1d67f505f",
+    "paint": "7d12333b791b29535c6b56e69545194cba268773bfa902adbd65b28842a5cf0c",
+    "spec[0]": "3c85a520e55ee9b63a7c476672a6264a09b046d4279291df4ffffe53e7e1cbfa",
+    "spec[1]": "8aaa0a62982b38f10d9c21a74314bc8a99e124b35a72a7b536c59556a749a32b",
+    "spec[2]": "7511d50aac9156469256bef093fa5590673087f2b267db317b6361928b25d441"
    },
    "fn": {
-    "base_spec_fn": "engine.paint_v2.era_base_2026.make.<locals>._mk_spec.<locals>.spec_fn",
-    "paint_fn": "engine.paint_v2.era_base_2026.make.<locals>._mk_paint.<locals>.paint_fn"
+    "base_spec_fn": "engine.paint_v2.era_image_2026.rad_amber_terminal.make_spec.<locals>.spec",
+    "paint_fn": "engine.paint_v2.era_image_2026.rad_amber_terminal.make_paint.<locals>.paint"
    },
    "kind": "base",
-   "ms": 1880.2,
+   "ms": 143.1,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.2067,
-     0.2309
+     0.1272,
+     0.189
     ],
     "spec[0]": [
-     39.2136,
-     63.3787
+     41.4019,
+     38.9495
     ],
     "spec[1]": [
-     158.4189,
-     101.7933
+     134.6492,
+     47.9181
     ],
     "spec[2]": [
-     163.4785,
-     98.7588
+     120.8811,
+     50.1947
     ]
    },
    "status": "ok",
-   "why": "base-group:\u26a1 BAD & RAD"
+   "why": "cli"
   },
   "rs_akane_flake_fog": {
    "baked_at": "2026-09-05 02:16:53",
@@ -11877,22 +11978,23 @@
    "why": "special-group:RISING SUN"
   },
   "satin": {
-   "baked_at": "2026-09-05 02:16:45",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner mandate 2026-09-30 'REGULAR foundations SHOULD BE PURE' - grain/peel removed, constant M/R/CC (engine/base_registry_data.py _spec_foundation_pure_bound); looked at 1:1, old had +/-5 grain, new flat, same means",
+   "baked_at": "2026-10-06 11:09:58",
    "channels": {
     "cell.CC": "4acaf7a70ab216e9be31d0bad8c8ec720947257cf0104db6dcadf3cf2caa3782",
     "cell.M": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
     "cell.R": "6e83e65609db04c592c3d0a24609a21c735373169ac50cf0c7ee0192fffe4932",
     "paint": "6091e2f48d9507fd262504e27057c9c1793c83e808f88853737450d44d7a26f1",
     "spec[0]": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
-    "spec[1]": "aaba2f07a70984135e1d7dd0358b735c03075b0863e4bd9e10a24a4cfc0fbba6",
-    "spec[2]": "835508bf5c2a352e6a2714230df27c4dd52e6cf0b8c12beeb4cecca5e3e2465d"
+    "spec[1]": "0a9d6148734da7f26eb376a1171496a5cf02a25c5d2aee54b0aff52a1641447f",
+    "spec[2]": "da6dd6307c1460af916b577405c51cbaaa241a8a89818043e2116e33b564bdf2"
    },
    "fn": {
     "base_spec_fn": "engine.base_registry_data._make_foundation_spec.<locals>._spec",
     "paint_fn": "engine.spec_paint.paint_none"
    },
    "kind": "base",
-   "ms": 15.8,
+   "ms": 6.2,
    "protected": false,
    "res": 512,
    "stats": {
@@ -11905,16 +12007,16 @@
      0.0
     ],
     "spec[1]": [
-     95.1286,
-     2.8391
+     95.0,
+     0.0
     ],
     "spec[2]": [
-     69.0329,
-     2.1221
+     70.0,
+     0.0
     ]
    },
    "status": "ok",
-   "why": "foundation"
+   "why": "cli"
   },
   "shimmer_quantum_shard": {
    "baked_at": "2026-09-05 02:16:39",
@@ -11961,44 +12063,45 @@
    "why": "pattern-group:\u2728 Reactive & Surface Accents"
   },
   "slt_reticulated": {
-   "baked_at": "2026-09-05 02:14:37",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner rebuilds (SPB-105): AT-R2 09-16, ERA120 09-17, FLAW LAB21 09-18, ASTRA R2 09-27/29, SHOKK WORKS (core_works_2026) 09-30; reports in docs/finish_audits/; looked at 1:1, wholesale redesigns",
+   "baked_at": "2026-10-06 11:10:20",
    "channels": {
-    "cell.CC": "9f026d3444cc513ec1ff6522fa56bf3e019d158c785f07c12be84096715db94e",
-    "cell.M": "7b5162138ba6d8ae67efbf14d2266a9b11a531bf8e8b090e4bb2586f8f87a52e",
-    "cell.R": "687d28ac07129c8d2d9617b4fdec17f87a3d47e05af05940e320d4b6946e1101",
-    "paint": "e95b0e3df71256751159fbfe7c44bc4a986e9eec5c6284737b5002c1e6b036a0",
-    "spec[0]": "b1ccb523064401d6cca8304642998dc6ce4b75b6b8ead71416e5580c1e6e52b0",
-    "spec[1]": "76e77f604f9f545dc970a5b142000ba6e72f1f1c5106d400eba070a2fb8a3532",
-    "spec[2]": "beda4966b25675d32490784acb167494fd0bd4154d05bbd6a8b257ed44b21367"
+    "cell.CC": "3e307a1f31894c1b0a6b368bfcd79bdfc36c6e2fdb20f47e14f7ddfec1a3e631",
+    "cell.M": "989950a5daefa76c2c7d04c74a188626a0d6dc5d64d21f853d99c2b33b417f97",
+    "cell.R": "70405d3971e59b63ae801cd507609e0b7e468b627fe753d5dd85a75a67bedd12",
+    "paint": "402177754cae5dd9d0dc3f7caeb11c236856b87901dcb3668596402aa498869e",
+    "spec[0]": "cbcb29c6b30c7278b201c341bd73eb89271a0759347c6c957035a0b64a918fb2",
+    "spec[1]": "2f9c50efae0ff49a1feb72b4f80fa29601e070db32a992030e690483c8cc0cce",
+    "spec[2]": "2ffac0ac4faf86b9ded2d34e3956616eadf8651c1589e823a7d7d92b62d021f4"
    },
    "fn": {
-    "base_spec_fn": "engine.paint_v2.slitherin_2026.spec_slt_reticulated",
-    "paint_fn": "engine.paint_v2.slitherin_2026.paint_slt_reticulated"
+    "base_spec_fn": "engine.paint_v2.core_works_2026.finishes.slt_reticulated.bind.<locals>.spec_fn",
+    "paint_fn": "engine.paint_v2.core_works_2026.finishes.slt_reticulated.bind.<locals>.paint_fn"
    },
    "kind": "base",
-   "ms": 159.0,
+   "ms": 1438.3,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.476,
-     0.2668
+     0.4965,
+     0.2281
     ],
     "spec[0]": [
-     45.6208,
-     20.7638
+     133.0852,
+     66.8383
     ],
     "spec[1]": [
-     126.4333,
-     23.73
+     84.928,
+     27.9143
     ],
     "spec[2]": [
-     67.0383,
-     13.0515
+     94.443,
+     37.5262
     ]
    },
    "status": "ok",
-   "why": "base-group:\ud83d\udc0d SLITHERIN"
+   "why": "cli"
   },
   "spectrum_aberration_glitch": {
    "baked_at": "2026-09-05 02:16:27",
@@ -12243,22 +12346,23 @@
    "why": "special-group:Wave & Flow"
   },
   "wet_look": {
-   "baked_at": "2026-09-05 02:14:39",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner mandate 2026-09-30 'REGULAR foundations SHOULD BE PURE' - grain/peel removed, constant M/R/CC (engine/base_registry_data.py _spec_foundation_pure_bound); looked at 1:1, old had +/-5 grain, new flat, same means",
+   "baked_at": "2026-10-06 11:09:58",
    "channels": {
     "cell.CC": "140efb356462f70dd1c7f1dfb10bcc07d0f14d439043fb9e9d50f4d7be71ea96",
     "cell.M": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
     "cell.R": "a5d4cd5b9cc4aba67ebe403c68466c378868947703d75704381d0c90e2615d1e",
     "paint": "6091e2f48d9507fd262504e27057c9c1793c83e808f88853737450d44d7a26f1",
     "spec[0]": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
-    "spec[1]": "83705a79d963754f34521fd911008aef8208e9000d18ca2e09a421e4521e4920",
-    "spec[2]": "7dc66a86d2323894f5d868182f6e6ffd59661e297e952eda120e2720e09f4d5e"
+    "spec[1]": "edb437f58817efef6d8089db848e691909871800ece15be0a2d17fdc5d70fc5f",
+    "spec[2]": "c8bd758514b5533a66a0cda44ff8d26a6dfb9edc74799a82855191b6dffe3191"
    },
    "fn": {
     "base_spec_fn": "engine.base_registry_data._make_foundation_spec.<locals>._spec",
     "paint_fn": "engine.spec_paint.paint_none"
    },
    "kind": "base",
-   "ms": 32.7,
+   "ms": 3.0,
    "protected": false,
    "res": 512,
    "stats": {
@@ -12271,16 +12375,16 @@
      0.0
     ],
     "spec[1]": [
-     15.4312,
-     0.6052
+     15.0,
+     0.0
     ],
     "spec[2]": [
-     16.2212,
-     0.4616
+     16.0,
+     0.0
     ]
    },
    "status": "ok",
-   "why": "base-group:Foundation"
+   "why": "cli"
   },
   "woc_aran_cable": {
    "baked_at": "2026-09-05 02:15:19",
@@ -12310,44 +12414,153 @@
    "why": "special-group:\ud83c\udf0d WORLD OF COLOR"
   },
   "wrap_panel_seam": {
-   "baked_at": "2026-09-05 02:14:38",
+   "accept_reason": "GOLDEN_NET_TRIAGE 2026-10-06: declared owner rebuilds (SPB-105): AT-R2 09-16, ERA120 09-17, FLAW LAB21 09-18, ASTRA R2 09-27/29, SHOKK WORKS (core_works_2026) 09-30; reports in docs/finish_audits/; looked at 1:1, wholesale redesigns",
+   "baked_at": "2026-10-06 11:10:21",
    "channels": {
-    "cell.CC": "31a31881904683472ce2f04e99ca8f2ae25bdf1e7527b7026ebc5beb44b7f8a6",
-    "cell.M": "409303c5035263c102682239f8d654e7e194daae6235aff347c036576a261d96",
-    "cell.R": "fb7614b89815f3ebaaba34a1cbd1fe490c839c39571d6a45e3a3cff5fcb1383c",
-    "paint": "55bf45cf4d01fb0a7745e91a59dd4aa9a0c25bfeabc32de4149ca8f8a81ac341",
-    "spec[0]": "b285770d284ab48262445a35e3a8dab8b9c2f61e21c0becda64b9ac9f468f9e5",
-    "spec[1]": "a2b4c28ec1af46b2068ea7fa019da68220bb416121466495ed41043a652f6be1",
-    "spec[2]": "c45e8818be1e89224013d5fa41120e8541720fda4e31c216d997cdb601337149"
+    "cell.CC": "cd7780aaaf8a5e77aa1147a1294c96e06f4a4a51c4cded1ecd25077ad7642032",
+    "cell.M": "b01fba8aa4075c962c15003045e89c89900c68d01539f2cdfe6dd7140f5f47a6",
+    "cell.R": "bd26aa065df6588972e8e2ef011bad04e9bc6eea94f82eed7b01f536e6f8ac45",
+    "paint": "0e2d8e6bd02ecc047b23bc7298a4c1de6979ae90556646d63f36179dd04ac116",
+    "spec[0]": "f21b56925426967572831547e8fb1071c69d215044ee8ff97e43f716b0760bac",
+    "spec[1]": "d6aae3acceee0e30d8c9372eb5d9d7ee63c65ee1d76a3eb0f0588edd0fc95ca4",
+    "spec[2]": "6d501d63a04bd08cd8997837ca0444aa638bf9ba95ea9ff28be7aa39a846b10b"
    },
    "fn": {
-    "base_spec_fn": "engine.paint_v2.wrap_shop_2026.spec_wrap_panel_seam",
-    "paint_fn": "engine.paint_v2.wrap_shop_2026.paint_wrap_panel_seam"
+    "base_spec_fn": "engine.paint_v2.core_works_2026.finishes.wrap_panel_seam.bind.<locals>.spec_fn",
+    "paint_fn": "engine.paint_v2.core_works_2026.finishes.wrap_panel_seam.bind.<locals>.paint_fn"
    },
    "kind": "base",
-   "ms": 100.0,
+   "ms": 1602.8,
    "protected": false,
    "res": 512,
    "stats": {
     "paint": [
-     0.5052,
-     0.1334
+     0.4323,
+     0.1181
     ],
     "spec[0]": [
-     46.5514,
-     18.343
+     107.0863,
+     54.3845
     ],
     "spec[1]": [
-     50.7022,
-     15.9507
+     130.8947,
+     60.0205
     ],
     "spec[2]": [
-     23.0239,
-     8.9261
+     146.6099,
+     66.186
     ]
    },
    "status": "ok",
-   "why": "base-group:WRAP SHOP"
+   "why": "cli"
+  },
+  "wx_marsh_lights": {
+   "baked_at": "2026-10-13 00:58:30",
+   "channels": {
+    "paint": "ecbdcbbf67937ecb2e4260db891d39be818f5d1b33bbbcada93d9b8fa4a02f21",
+    "spec": "49cfae473f30cb6b1135e5d6bf5de2dcb8cf24db5f4d41a12212a0bda18b0658"
+   },
+   "fn": {
+    "paint_fn": "engine.expansions.fractured_wilds_r2._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
+    "spec_fn": "engine.expansions.fractured_wilds_r2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+   },
+   "kind": "monolithic",
+   "ms": 4657.0,
+   "protected": false,
+   "res": 512,
+   "stats": {
+    "paint": [
+     0.1846,
+     0.1419
+    ],
+    "spec": [
+     157.1114,
+     81.5174
+    ]
+   },
+   "status": "ok",
+   "why": "cli"
+  },
+  "wx_peacock_ocelli": {
+   "baked_at": "2026-10-13 00:58:27",
+   "channels": {
+    "paint": "3f47fe6b0378fbf04a7dd97dc64f94f07c0630385aa953016e738701c6d5d0dc",
+    "spec": "8fd5281c345585c987387c2a2e2dfa633b5c5c703529ff376b66bcbdccb5b46e"
+   },
+   "fn": {
+    "paint_fn": "engine.expansions.fractured_wilds_r2._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
+    "spec_fn": "engine.expansions.fractured_wilds_r2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+   },
+   "kind": "monolithic",
+   "ms": 3348.8,
+   "protected": false,
+   "res": 512,
+   "stats": {
+    "paint": [
+     0.3447,
+     0.2157
+    ],
+    "spec": [
+     137.4643,
+     91.6012
+    ]
+   },
+   "status": "ok",
+   "why": "cli"
+  },
+  "wx_poppy_field": {
+   "baked_at": "2026-10-13 00:58:38",
+   "channels": {
+    "paint": "6fbb907cc78b03394f500242e5ca0350c72d17621fb04aeaf66d99a8113b2a88",
+    "spec": "08dd6a54ffe1db9e0e5b788093d6020df4f3f63bb6dc2dbd9ab8e8c017f3317f"
+   },
+   "fn": {
+    "paint_fn": "engine.expansions.fractured_wilds_r2._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
+    "spec_fn": "engine.expansions.fractured_wilds_r2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+   },
+   "kind": "monolithic",
+   "ms": 3537.9,
+   "protected": false,
+   "res": 512,
+   "stats": {
+    "paint": [
+     0.2912,
+     0.2344
+    ],
+    "spec": [
+     122.393,
+     85.9862
+    ]
+   },
+   "status": "ok",
+   "why": "cli"
+  },
+  "wx_tigers_eye": {
+   "baked_at": "2026-10-13 00:58:35",
+   "channels": {
+    "paint": "97f1799037680711fc8390dba083d3e318a9facebf6cdda7e72211bf9c9420d9",
+    "spec": "ffd00cfe2981dde2598dfd40076b4e60c28d7715aa0c738894f5c2d421a0136b"
+   },
+   "fn": {
+    "paint_fn": "engine.expansions.fractured_wilds_r2._spb_wrap_monolithic_paint_contract.<locals>._wrapped",
+    "spec_fn": "engine.expansions.fractured_wilds_r2._spb_wrap_monolithic_spec_contract.<locals>._wrapped"
+   },
+   "kind": "monolithic",
+   "ms": 2222.3,
+   "protected": false,
+   "res": 512,
+   "stats": {
+    "paint": [
+     0.3541,
+     0.2684
+    ],
+    "spec": [
+     147.719,
+     96.4277
+    ]
+   },
+   "status": "ok",
+   "why": "cli"
   },
   "xlab_abyssal_lens": {
    "baked_at": "2026-09-05 02:15:26",
@@ -12432,13 +12645,13 @@
   }
  },
  "meta": {
-  "baked_at": "2026-09-05 02:31:36",
+  "baked_at": "2026-10-13 00:58:15",
   "baked_from": "shokker_engine_v2 legacy dicts after _ensure_expansions_loaded()",
   "convention": "finish-law: float32 0.5 base, float32 ones mask, direct fn calls",
   "registry": {
-   "bases": 1236,
-   "gpu_backend": "cuda",
-   "monolithics": 3016,
+   "bases": 1256,
+   "gpu_backend": "cpu",
+   "monolithics": 3205,
    "numpy": "2.4.2",
    "patterns": 718,
    "python": "3.13.5",

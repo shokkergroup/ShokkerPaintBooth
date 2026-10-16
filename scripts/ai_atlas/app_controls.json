@@ -563,7 +563,7 @@
    "default": "100%",
    "unit": "%",
    "applies_to": "Patterns.",
-   "effect": "Pattern effect in paint and spec: 0 removes the effect.",
+   "effect": "Pattern paint strength: 0 removes the pattern's paint effect. The shine it adds is set separately by the Spec amount slider.",
    "interactions": "Pairs with Opacity. The UI help text says spec amount is independent.",
    "planner_hint": "Leave at 100; use opacity for 'subtle'.",
    "evidence": [
@@ -571,6 +571,28 @@
     "zones:10092 setZonePatternSpecMult",
     "api-render:678",
     "engine:18791"
+   ]
+  },
+  {
+   "id": "zone_pattern_spec_amount",
+   "group": "pattern",
+   "ui_label": "Spec amount (pattern)",
+   "where": "Pro > zone detail > PATTERN",
+   "kind": "slider",
+   "zone_field": "patternSpecOpacity",
+   "spec_key": "(not in the kit)",
+   "payload_field": "pattern_spec_opacity",
+   "range": "UI 0-100% in steps of 5",
+   "default": "0%",
+   "unit": "%",
+   "applies_to": "Patterns.",
+   "effect": "How much of the pattern's own metal, roughness and clearcoat is mixed into the spec map: 0 keeps the base finish's shine, 100 replaces it.",
+   "interactions": "Independent of the pattern's paint Opacity and Strength, and of Hue / Saturation (engine/pattern_material.py:3-5).",
+   "planner_hint": "Leave at 0 unless the pattern should also change the shine.",
+   "evidence": [
+    "js/zones/pattern-transform-controls.js:12",
+    "engine/pattern_material.py:3-5",
+    "zones:4287"
    ]
   },
   {

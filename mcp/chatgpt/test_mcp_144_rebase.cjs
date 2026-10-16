@@ -1,0 +1,18 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'../..'),read=f=>fs.readFileSync(path.join(root,f),'utf8').replace(/\r\n/g,'\n');
+const shared=read('mcp/server/index.js'),candidate=read('mcp/chatgpt/candidates/index.js');
+const guard=shared.split('\n').find(l=>l.startsWith('  if (CX3 && APP_CHAT_ADVICE'));
+assert.ok(guard);assert.ok(candidate.includes(guard),'Keep installed advice guard and read-only kit exception exactly');
+assert.equal((candidate.match(/APP_CHAT_ADVICE = false, APP_CHAT_ADVICE_AT = 0/g)||[]).length,1,'No duplicate advice state declaration');
+assert.match(candidate,/if \(newest3\) APP_CHAT_SCOPE = newest3.document_scope \|\| null;/);
+assert.match(candidate,/reply_to: newest3 && newest3.seq/);
+assert.match(candidate,/DESIGN_INTENT = require\('\.\.\/chatgpt\/candidates\/design-intent\.cjs'\)/,'Private MCP uses the reviewed common classifier candidate');
+const c={CX3:true,APP_CHAT_ADVICE:true,APP_CHAT_ADVICE_AT:Date.now(),READ_ONLY:new Set(['spb_get_state']),Date};vm.createContext(c);
+vm.runInContext('function check(name,args){'+guard+'\nreturn {allowed:true};}',c);
+for(const name of ['spb_edit_layer','spb_render'])assert.equal(c.check(name,{}).isError,true);
+for(const action of ['apply','undo'])assert.equal(c.check('spb_kit',{action}).isError,true);
+for(const action of ['check','propose'])assert.equal(c.check('spb_kit',{action}).allowed,true);
+assert.equal(c.check('spb_get_state',{}).allowed,true);assert.equal(c.check('spb_reply',{}).allowed,true);
+c.APP_CHAT_ADVICE=false;assert.equal(c.check('spb_edit_layer',{}).allowed,true);
+console.log('PASS 1.4.4 rebase preserves actual shared advice guard/read-only kits and adds document/reply scope without duplicate advice state. No model or tool writes.');

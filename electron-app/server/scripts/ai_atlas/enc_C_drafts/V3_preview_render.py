@@ -1,0 +1,348 @@
+"""v3 depth for the preview_render domain (lane C, 2026-10-04). Facts: js/spb-support-answers.js, docs/ai_knowledge/10_support_troubleshooting.md, paint-booth-v2.html (all already cited in the articles)."""
+V3 = {
+ 'preview_render.preview_vs_render': {
+  'level': 'beginner',
+  'deep': [
+   {'heading': 'Two things in the middle of the window',
+    'body': 'The LIVE PREVIEW redraws by itself after you change a zone, a colour or a finish, so you can judge the look. RENDER is the slow, full-quality step that builds the finished paint file and the spec file and copies them where iRacing can load them. Only RENDER writes files.'},
+   {'heading': 'Why iRacing never matches exactly',
+    'body': 'iRacing lights your car with its own sun, shadows and materials and adds its own number and sponsor stamps. The same colours and patterns show up, but the shine is never an exact match for the preview.'},
+   {'heading': 'Reading the shine views',
+    'body': 'The strip under the preview (COMBINED, R METAL, G ROUGH, B COAT) shows the spec map. Brighter red means more metal, darker green means a sharper mirror, darker blue means a glassier clearcoat. Judge shine here, not in the colour view, which cannot show a mirror.'},
+   {'heading': 'When the preview is stuck',
+    'body': 'Press Refresh above the preview (or F5) to stop a stuck preview and start a new one. A red failure bar means Shokker is showing the last good picture; F5 rebuilds it. Before After flips between the last preview and the current one.'}],
+  'examples': [
+   {'title': 'Check the real effect of a change', 'goal': 'See exactly what a slider did',
+    'settings': {'Change': 'One slider', 'Button': 'Before After'},
+    'result': 'You flip between the two pictures and see only the difference.'},
+   {'title': 'Judge a mirror finish', 'goal': 'Confirm the shine is right',
+    'settings': {'Strip': 'G ROUGH', 'Look for': 'Darker green = sharper mirror'},
+    'result': 'You see the roughness directly instead of guessing from colour.'}],
+  'faq': [
+   {'q': 'Does the preview change my iRacing files?', 'a': 'Never. Only RENDER writes files.'},
+   {'q': 'The preview is blank or stale.', 'a': 'Press Refresh or F5.'},
+   {'q': 'Why does iRacing look a little different?', 'a': 'iRacing adds its own lighting and stamps the number and sponsors on top.'},
+   {'q': 'Do I need to render after changing only the shine?', 'a': 'Yes. A spec change shows in iRacing only after a render and Ctrl+R.'}],
+  'mistakes': [
+   {'symptom': 'You judge shine from the colour preview', 'cause': 'The colour view cannot show a mirror', 'fix': 'Look at R METAL, G ROUGH and B COAT.'},
+   {'symptom': 'You expect iRacing to match the preview exactly', 'cause': 'iRacing uses its own lighting', 'fix': 'Check the real result in iRacing with Ctrl+R after every render.'}],
+  'protips': ['Use Before After after every change you doubt. It makes small differences obvious.'],
+ },
+ 'preview_render.render_button': {
+  'level': 'beginner',
+  'deep': [
+   {'heading': 'What RENDER needs',
+    'body': 'The button stays off until the paint, your User ID and a car folder are ready. If it refuses, the message names the first missing thing (paint, User ID, zones or car folder).'},
+   {'heading': 'Size follows the template',
+    'body': 'Shokker renders at the size of the template you opened. iRacing car paints are 2048 by 2048 (or 1024 by 1024); iRacing silently shows paint-shop colours for any other size. Never resize the canvas.'},
+   {'heading': 'Speed',
+    'body': 'A render usually takes seconds to about a minute. The engine remembers finished zones, so re-rendering after changing one zone is faster than the first render. The green Saved bar has a Show my files button.'},
+   {'heading': 'Two Ctrl+R keys',
+    'body': 'In Shokker Ctrl+R starts a render; in iRacing it reloads car textures. Press each in its own window.'}],
+  'examples': [
+   {'title': 'A clean render', 'goal': 'Render without template lines',
+    'settings': {'Open': 'Template with PSD/XCF/ORA', 'User ID': 'Your Customer ID', 'Car folder': 'Your car', 'Layers': 'Mask, Wire, Car_Mandatory off', 'Press': 'RENDER'},
+    'result': 'A green Saved bar appears when the files are written.'},
+   {'title': 'RENDER will not switch on', 'goal': 'Find what is missing',
+    'settings': {'Check': 'Paint loaded, User ID filled, car folder picked'},
+    'result': 'The first missing item is named in the message.'}],
+  'faq': [
+   {'q': 'What size does it render?', 'a': 'The size of the template you opened, 2048 or 1024 square.'},
+   {'q': 'How long does a render take?', 'a': 'Seconds to about a minute. Re-renders after a small change are quicker.'},
+   {'q': 'Where do I check the files?', 'a': 'Press Show my files on the Saved bar.'},
+   {'q': 'Does Ctrl+R in Shokker reload iRacing?', 'a': 'No. It starts a render. Reload in iRacing with its own Ctrl+R.'}],
+  'mistakes': [
+   {'symptom': 'iRacing shows paint-shop colours', 'cause': 'The canvas was resized to a size iRacing ignores', 'fix': 'Open the original template and redo it at its own size.'},
+   {'symptom': 'Template lines on the car', 'cause': 'Mask, Wire or Car_Mandatory was on', 'fix': 'Turn them off and render again.'}],
+  'protips': ['After editing one zone, render again at once. The cache makes the second render much faster than the first.'],
+ },
+ 'preview_render.render_history_stats': {
+  'level': 'intermediate',
+  'deep': [
+   {'heading': 'Render history is not Undo',
+    'body': 'Render history remembers your recent renders as small pictures. Click one and the whole look comes back: zones, finishes and colours. Undo History steps back through single edits. They are separate.'},
+   {'heading': 'What stays on disk',
+    'body': 'Shokker keeps only the two newest renders in its own render folder and deletes older ones automatically. Anything you want to keep must be copied with Save to keep. Deploy Now works only for the two newest.'},
+   {'heading': 'Gallery, Recent and sharing',
+    'body': 'The RENDER HISTORY dropdown holds the last 20 thumbnails. Gallery in the footer shows all past renders larger. Recent holds the last 10 saved renders with their recipes, kept after a restart. Share Recipe makes a .shokkerrecipe file with a preview; Save Card PNG makes a picture; Copy Card puts the recipe picture on your clipboard.'}],
+  'examples': [
+   {'title': 'Bring back yesterday\'s look', 'goal': 'Restore a recent render',
+    'settings': {'Open': 'RENDER HISTORY on the top row', 'Click': 'The thumbnail you want'},
+    'result': 'The zones, finishes and colours of that render come back.'},
+   {'title': 'Keep a version before an experiment', 'goal': 'Make sure a good render survives',
+    'settings': {'Press': 'Save to keep on the recipe card'},
+    'result': 'The render is copied to its own folder and cannot be overwritten by the next render.'}],
+  'faq': [
+   {'q': 'How many renders does Shokker keep on disk?', 'a': 'The two newest.'},
+   {'q': 'Is render history the same as Undo?', 'a': 'No. Undo steps through single edits; history restores a whole render.'},
+   {'q': 'How do I share a look?', 'a': 'Use Share Recipe (a .shokkerrecipe file) or Save Card PNG.'},
+   {'q': 'Where are the files iRacing uses?', 'a': 'In your iRacing car folder, not the history.'}],
+  'mistakes': [
+   {'symptom': 'An old render is gone', 'cause': 'Shokker keeps only the two newest', 'fix': 'Press Save to keep before experimenting.'},
+   {'symptom': 'Deploy Now says Job not found', 'cause': 'The render is older than the two newest', 'fix': 'Render again, then deploy.'}],
+  'protips': ['Save to keep before an experiment, not after. By then the render may already be gone.'],
+ },
+ 'preview_render.render_slow': {
+  'level': 'intermediate',
+  'deep': [
+   {'heading': 'What a normal render looks like',
+    'body': 'Seconds to about a minute is normal; two minutes or more means something heavy. Shokker gives up waiting after 5 minutes.'},
+   {'heading': 'Where the time goes',
+    'body': 'Most time goes to zones and finishes. Every zone with its own painted area (a colour region, a layer or a part) uses memory, and about 16 of them is the limit before the preview or render fails with a memory message. Up to 50 zones are accepted. Stacked spec patterns, huge masks and heavy finishes add up, and the engine caches finished zones, so re-rendering after changing one zone is quicker.'},
+   {'heading': 'When it is stuck',
+    'body': 'Press Terminate when it appears and wait about a minute. Terminate only stops Shokker waiting; the engine still finishes and still copies into iRacing, and a new render during that time says render_busy. Pressing RENDER again and again makes it worse.'}],
+  'examples': [
+   {'title': 'Find the slow zone', 'goal': 'Test whether one finish is the cause',
+    'settings': {'Action': 'Hide a zone with its eye icon', 'Render': 'Time it again'},
+    'result': 'If the render speeds up, that zone\'s finish is the slow one.'},
+   {'title': 'Slim a heavy design', 'goal': 'Get under 16 painted areas',
+    'settings': {'Merge': 'Zones that share one look', 'Remove': 'Spec patterns you do not need'},
+    'result': 'The render finishes faster and the memory message disappears.'}],
+  'faq': [
+   {'q': 'How many zones can I use?', 'a': 'Up to 50 are accepted, but about 16 with their own painted area is the limit before failures.'},
+   {'q': 'The render says render_busy.', 'a': 'A previous render is still finishing. Wait about a minute.'},
+   {'q': 'Does Terminate cancel the render?', 'a': 'No. It only stops Shokker waiting.'},
+   {'q': 'One finish is far slower than the others.', 'a': 'Use Settings gear, Report a Problem so it can be fixed.'}],
+  'mistakes': [
+   {'symptom': 'The render gets slower each time you press RENDER', 'cause': 'You started several at once', 'fix': 'Wait, then render once.'},
+   {'symptom': 'Memory message in the preview', 'cause': 'Too many zones with their own painted areas', 'fix': 'Merge zones with the same look and use a good colour tolerance.'}],
+  'protips': ['Fewer zones with a good colour tolerance beat many tiny zones.'],
+ },
+ 'preview_render.output_files': {
+  'level': 'beginner',
+  'deep': [
+   {'heading': 'Two files that matter',
+    'body': 'The paint is car_num_ID.tga (Custom Number) or car_ID.tga (Sim-Stamped Number). The shine is car_spec_ID.tga. The ID is your iRacing Customer ID, not your car number. The spec file is red = metal, green = roughness, blue = clearcoat and alpha = lighting mask.'},
+   {'heading': 'Format',
+    'body': 'Paints are saved as 24-bit TGA, 2048 or 1024 square. Only cars with paintable glass need 32-bit with the template glass alpha filled. iRacing builds a .mip from the spec the first time it loads it.'},
+   {'heading': 'Extra files',
+    'body': 'You may also see spec_*.tga, paint_base.tga and ORIGINAL_* backups of files Shokker replaced. They are harmless. Do not rename the main files: iRacing loads only files with your own ID in the name.'}],
+  'examples': [
+   {'title': 'Check a render landed', 'goal': 'Confirm both files exist',
+    'settings': {'Press': 'Show my files on the Saved bar', 'Look for': 'car_num_ID.tga or car_ID.tga, plus car_spec_ID.tga'},
+    'result': 'You see both files with your ID in the name.'},
+   {'title': 'Both file names for both modes', 'goal': 'Cover either iRacing setting',
+    'settings': {'Render 1': 'Custom Number', 'Render 2': 'Sim-Stamped Number'},
+    'result': 'Both paint files stay in the folder and iRacing picks the one it needs.'}],
+  'faq': [
+   {'q': 'Is the ID my car number?', 'a': 'No. It is your iRacing Customer ID.'},
+   {'q': 'What is ORIGINAL_ in my folder?', 'a': 'A backup of a file Shokker replaced. It is harmless.'},
+   {'q': 'Can iRacing open my .spb project?', 'a': 'No. Only Shokker can.'},
+   {'q': 'What bit depth does the paint use?', 'a': '24-bit TGA.'}],
+  'mistakes': [
+   {'symptom': 'iRacing never loads your files', 'cause': 'The ID in the name is not your Customer ID', 'fix': 'Fix the ID in Shokker and render again.'},
+   {'symptom': 'You renamed the files', 'cause': 'iRacing only loads files with your own ID in the name', 'fix': 'Render again to restore the names.'}],
+  'protips': ['Look at the file names before blaming the paint. Most "nothing shows" cases are a naming mismatch.'],
+ },
+ 'preview_render.number_modes': {
+  'level': 'beginner',
+  'deep': [
+   {'heading': 'No car-number field',
+    'body': 'There is no place to type a car number in Shokker. The two switches next to your User ID only choose the file name, and iRacing decides which file it loads from its own Hide Car Numbers setting.'},
+   {'heading': 'The two modes',
+    'body': 'Custom Number writes car_num_ID.tga: your paint carries its own number, and iRacing loads this file only when Graphics > Hide Car Numbers is ON. Sim-Stamped Number writes car_ID.tga: iRacing stamps the number and sponsors on top, and this is what iRacing loads by default (Hide Car Numbers OFF). Shokker starts with Custom Number checked.'},
+   {'heading': 'They must agree',
+    'body': 'If they disagree, iRacing finds no file and quietly shows paint-shop colours. If you change Hide Car Numbers in iRacing, restart iRacing. iRacing updates can switch it back; if a paint that worked yesterday vanishes, check it first.'},
+   {'heading': 'Trading Paints names',
+    'body': 'Trading Paints calls car_ID files Sim-Stamped Number paints and car_num_ID files Custom Number paints.'}],
+  'examples': [
+   {'title': 'Make them agree', 'goal': 'Get your first paint to appear',
+    'settings': {'Shokker': 'Custom Number', 'iRacing Graphics': 'Hide Car Numbers ON', 'Then': 'Restart iRacing if you changed it, render, Ctrl+R'},
+    'result': 'iRacing loads car_num_ID.tga and shows your paint.'},
+   {'title': 'Not sure which iRacing wants', 'goal': 'Cover both cases',
+    'settings': {'Render in': 'Custom Number, then Sim-Stamped Number'},
+    'result': 'Both files stay in the folder; iRacing uses the one it needs.'}],
+  'faq': [
+   {'q': 'Where do I type my car number?', 'a': 'Nowhere in Shokker. The number comes from the template, or iRacing stamps it.'},
+   {'q': 'Why do I see the number twice?', 'a': 'A number-stamp layer of the template was left visible when you rendered.'},
+   {'q': 'Does Shokker know the iRacing setting?', 'a': 'No. It cannot read it. You have to look.'},
+   {'q': 'Do I need to restart iRacing?', 'a': 'Yes, after changing Hide Car Numbers.'}],
+  'mistakes': [
+   {'symptom': 'First paint does not appear', 'cause': 'Shokker starts on Custom Number but iRacing\'s Hide Car Numbers is OFF', 'fix': 'Switch Shokker to Sim-Stamped Number, or turn Hide Car Numbers ON and restart iRacing.'},
+   {'symptom': 'A working paint vanished after an iRacing update', 'cause': 'The update reset Hide Car Numbers', 'fix': 'Check the setting first.'}],
+  'protips': ['Custom Number paints need Trading Paints Pro for sharing. Sim-Stamped Number paints do not.'],
+ },
+ 'preview_render.where_files_go': {
+  'level': 'beginner',
+  'deep': [
+   {'heading': 'The folder iRacing reads',
+    'body': 'iRacing reads a paint from Documents/iRacing/paint/ followed by the car folder. The car folder name is the car path with a space instead of the slash, for example stockcars chevyss. Set iRacing Car Folder once in the top bar and every render lands there.'},
+   {'heading': 'Getting the folder to exist',
+    'body': 'Run the car once in an iRacing test session so iRacing creates its paint folder. The car menu in Shokker lists the folders iRacing made on this PC, newest first, but newest is not always yours: read the name.'},
+   {'heading': 'Traps with the path',
+    'body': 'If Windows keeps Documents in OneDrive, make sure the folder you pick is the one iRacing really uses; File Explorer can show a second, empty Documents folder. If you type a folder that does not exist but its parent does, Shokker may save into the parent and still say it worked. A paint for car A in the folder of car B is ignored.'}],
+  'examples': [
+   {'title': 'Set the folder', 'goal': 'Make renders land where iRacing looks',
+    'settings': {'Car menu': 'Pick your car', 'Or': 'Use the folder button to browse', 'Check': 'Render, then Show my files'},
+    'result': 'Your files are in the folder iRacing reads.'},
+   {'title': 'OneDrive Documents', 'goal': 'Avoid the wrong Documents folder',
+    'settings': {'Check': 'Which Documents folder iRacing really uses', 'Pick': 'That folder\'s paint subfolder'},
+    'result': 'Files land where iRacing looks.'}],
+  'faq': [
+   {'q': 'Why is my car not in the menu?', 'a': 'iRacing has not created its folder yet. Run the car once in a test session.'},
+   {'q': 'Can I paste a full file path?', 'a': 'Shokker sorts it out, but give it the folder.'},
+   {'q': 'What if the field is empty?', 'a': 'Renders are not copied anywhere iRacing can see, except the last car Shokker remembered when Auto-deploy is on.'},
+   {'q': 'My files are there but iRacing ignores them.', 'a': 'Check the ID, number mode and that the folder is the right car\'s.'}],
+  'mistakes': [
+   {'symptom': 'Shokker says Saved but nothing is in iRacing', 'cause': 'A typo in the last word of the folder sent files to the parent', 'fix': 'Pick the folder from the car menu or the folder button.'},
+   {'symptom': 'You picked the newest folder and it was the wrong car', 'cause': 'Newest is not always yours', 'fix': 'Read the folder name.'}],
+  'protips': ['Use Show my files after the first render. If File Explorer opens on the folder you expected, the setup is right.'],
+ },
+ 'preview_render.reload_in_iracing': {
+  'level': 'beginner',
+  'deep': [
+   {'heading': 'iRacing does not watch the folder',
+    'body': 'You tell iRacing to re-read the files with Ctrl+R in a session that has your car. It is iRacing\'s own key, not a Shokker key. The car flashes white and then shows the new files; no restart is needed.'},
+   {'heading': 'Replays and viewers',
+    'body': 'In a replay iRacing does not reload a car that sits in its pit stall, so scrub to a moment when your car is on track. The 3D Car Viewer in My Content reloads a saved paint by itself.'},
+   {'heading': 'When a restart is needed',
+    'body': 'Only after changing Hide Car Numbers or the 2048 paint textures graphics option.'},
+   {'heading': 'When reloading cannot help',
+    'body': 'No reload helps if iRacing never found a file. Check the User ID, the number switch and the car folder first.'}],
+  'examples': [
+   {'title': 'The tweak loop', 'goal': 'Iterate quickly',
+    'settings': {'1': 'Tweak in Shokker', '2': 'RENDER, wait for Saved', '3': 'Alt+Tab to iRacing', '4': 'Ctrl+R'},
+    'result': 'The car flashes white and shows the new look.'},
+   {'title': 'Reload in a replay', 'goal': 'See your paint in a replay',
+    'settings': {'Move to': 'A time when your car is not in the pit lane', 'Press': 'Ctrl+R'},
+    'result': 'The paint reloads.'}],
+  'faq': [
+   {'q': 'Why did Ctrl+R start a render?', 'a': 'You pressed it in Shokker. Press it in iRacing.'},
+   {'q': 'The shine still looks old.', 'a': 'See the .mip article: a stale car_spec_ID.mip can hold the old shine.'},
+   {'q': 'Do I need to restart iRacing?', 'a': 'Only after changing Hide Car Numbers or the 2048 paint textures option.'}],
+  'mistakes': [
+   {'symptom': 'Nothing changes after Ctrl+R', 'cause': 'iRacing never found a file', 'fix': 'Check the ID, number mode and car folder.'},
+   {'symptom': 'Replay does not reload', 'cause': 'Your car is in the pit stall', 'fix': 'Scrub to a time when it is on track.'}],
+  'protips': ['Alt+Tab quickly or keep iRacing windowed. The reload takes a couple of seconds.'],
+ },
+ 'preview_render.auto_deploy': {
+  'level': 'intermediate',
+  'deep': [
+   {'heading': 'What actually copies the files',
+    'body': 'With a car folder set, every render is copied into it. That is enough for normal use. Auto-deploy after render (Settings gear, off by default) is only a fallback: when the car folder is empty it copies into the last car Shokker remembered.'},
+   {'heading': 'Deploy to a different car',
+    'body': 'Under a finished render you will find Deploy to a different car on the recipe card. Pick the car in Deploy Car Select and press Deploy Now; the same render is also copied into that car\'s folder. Only the two newest renders are kept, so deploy right away. Same UV layout cars (the same template family) can share a paint; different templates will look wrong.'},
+   {'heading': 'What never writes',
+    'body': 'Only RENDER writes into iRacing. The live preview and auto-render never do.'}],
+  'examples': [
+   {'title': 'Share a paint with a twin car', 'goal': 'Put the same render on a second car',
+    'settings': {'Where': 'Recipe card, Deploy to a different car', 'Deploy Car Select': 'The other car in the same template family', 'Press': 'Deploy Now'},
+    'result': 'The render is copied into the second car\'s folder.'},
+   {'title': 'Normal use', 'goal': 'Keep things simple',
+    'settings': {'iRacing Car Folder': 'Set', 'Auto-deploy': 'Off'},
+    'result': 'Every render goes to your car folder.'}],
+  'faq': [
+   {'q': 'Do I need Auto-deploy?', 'a': 'No. Setting the car folder is enough.'},
+   {'q': 'Deploy Now says Job not found.', 'a': 'The render is older than the two newest. Render again, then deploy.'},
+   {'q': 'Can I deploy to a different template?', 'a': 'It will look wrong. Use cars in the same template family.'}],
+  'mistakes': [
+   {'symptom': 'A paint ended up in the wrong car', 'cause': 'Auto-deploy copied into the last remembered car', 'fix': 'Set the car folder, or turn Auto-deploy off.'},
+   {'symptom': 'The deployed paint looks wrong on the second car', 'cause': 'Different templates', 'fix': 'Only share between cars with the same UV layout.'}],
+  'protips': ['Leave Auto-deploy off unless you know you need it. It is a safety net for an empty folder, not a workflow.'],
+ },
+ 'preview_render.trading_paints_mip': {
+  'level': 'intermediate',
+  'deep': [
+   {'heading': 'How other drivers see your car',
+    'body': 'iRacing never sends textures between drivers. Other drivers see your paint only when your files sit in their own paint folder, which is what Trading Paints does. Upload the rendered paint (car_num_ID.tga or car_ID.tga, 2048 or 1024 square).'},
+   {'heading': 'The spec is a .mip',
+    'body': 'Trading Paints takes the spec only as a .mip, not as a .tga. Drive the car once in an iRacing test session: iRacing compiles car_spec_ID.tga into car_spec_ID.mip next to it. Upload that .mip as your spec.'},
+   {'heading': 'What not to upload',
+    'body': 'Never upload your saved .spb or .shokk project; Trading Paints will refuse it. Shokker has a Copy TP Desc button for the description text, but there is no automatic upload.'},
+   {'heading': 'Gotchas',
+    'body': 'Custom Number paints need Trading Paints Pro. The Trading Paints Downloader writes into the same folders with the same names, so while testing a local paint close it or turn off Update My Own Paints. Give your car a plain paint-shop colour scheme in iRacing so drivers without your files do not see a white car.'}],
+  'examples': [
+   {'title': 'Upload a paint with shine', 'goal': 'Let other drivers see your finish',
+    'settings': {'1': 'RENDER, Show my files', '2': 'Upload car_num_ID.tga or car_ID.tga as the paint', '3': 'Load the car once in iRacing so car_spec_ID.mip appears', '4': 'Upload the .mip as the spec'},
+    'result': 'Other drivers see your paint and shine.'},
+   {'title': 'Refresh a stale shine', 'goal': 'Force iRacing to rebuild the .mip',
+    'settings': {'Move out': 'car_spec_ID.mip from the folder', 'Press': 'Ctrl+R in iRacing'},
+    'result': 'iRacing rebuilds the shine from the current spec TGA.'}],
+  'faq': [
+   {'q': 'Can I upload the spec as a TGA?', 'a': 'No. Trading Paints takes the spec only as a .mip.'},
+   {'q': 'Where does the .mip come from?', 'a': 'iRacing builds it from car_spec_ID.tga the first time it loads the car.'},
+   {'q': 'Can I upload my project file?', 'a': 'No. Upload the rendered TGA.'},
+   {'q': 'Does Shokker upload for me?', 'a': 'No. Copy TP Desc only copies a description.'}],
+  'mistakes': [
+   {'symptom': 'Other drivers see a plain car', 'cause': 'No paint-shop scheme set and your files are not on their PC', 'fix': 'Upload through Trading Paints and set a paint-shop scheme.'},
+   {'symptom': 'Your local test paint is overwritten', 'cause': 'The Trading Paints Downloader writes the same file names', 'fix': 'Close it or turn off Update My Own Paints while testing.'}],
+  'protips': ['If the shine on the track looks like an old version, delete the .mip and reload. It is the commonest cause.'],
+ },
+ 'preview_render.export_psd_photoshop': {
+  'level': 'intermediate',
+  'deep': [
+   {'heading': 'Inputs versus outputs',
+    'body': 'PSD, XCF and ORA are inputs only. For output you have three extras. Export ZIP Package (Settings gear) bundles the paint TGA, spec TGA and a preview into one ZIP after each render. Export to Photoshop (Layers panel, Actions, Photoshop round-trip) writes named TGA exchange files to a folder for editing. Channel PNG Export writes the paint and the separated spec channels as PNG pictures for inspection.'},
+   {'heading': 'Downloading the ZIP',
+    'body': 'Turn on Export ZIP Package, render, then press Download ZIP Package under the render. Download it right away; it is not kept. Shokker keeps only the two newest renders, and the ZIP is not copied into iRacing.'},
+   {'heading': 'Coming back from Photoshop',
+    'body': 'Edit the exchange files in Photoshop and bring the TGA back into Shokker. Import TGA in the Settings gear brings in a spec map. Saving a flat TGA from another program does not update Shokker; re-open the file.'}],
+  'examples': [
+   {'title': 'Photoshop touch-up', 'goal': 'Edit a render by hand and bring it back',
+    'settings': {'Where': 'Layers panel, Actions, Photoshop round-trip', 'Type': 'A car file name', 'Pick': 'An export folder', 'Press': 'Export'},
+    'result': 'Named TGA exchange files you can edit in Photoshop.'},
+   {'title': 'Look at the shine channels', 'goal': 'See metal, roughness and clearcoat as pictures',
+    'settings': {'Where': 'ZONES, More, PNG Channels Export', 'Pick': 'A folder'},
+    'result': 'PNG pictures of each channel.'}],
+  'faq': [
+   {'q': 'Can Shokker write a PSD?', 'a': 'No. PSD, XCF and ORA are inputs only.'},
+   {'q': 'Where is the ZIP kept?', 'a': 'Download it right away; it is not kept.'},
+   {'q': 'Is Channel PNG Export for iRacing?', 'a': 'No. It is for inspection only.'},
+   {'q': 'Why does Shokker not see my Photoshop edit?', 'a': 'Re-open the file; saving from another program does not update it.'}],
+  'mistakes': [
+   {'symptom': 'The ZIP disappeared', 'cause': 'Only the two newest renders are kept', 'fix': 'Download it right after the render.'},
+   {'symptom': 'You exported PNG channels and iRacing shows nothing', 'cause': 'Channel PNGs are not iRacing files', 'fix': 'Use the rendered TGA files.'}],
+  'protips': ['Turn on Export ZIP Package for important projects. It is the closest thing to a one-click bundle.'],
+ },
+ 'preview_render.saving_projects': {
+  'level': 'beginner',
+  'deep': [
+   {'heading': 'Three kinds of file',
+    'body': 'A project (.spb, from Save / Open) holds the open paint including a PSD, every zone and all layer settings; only Shokker opens it. A recipe (.shokkerrecipe) stores the look (zones, finishes, colours) and can be imported on any car with Import Recipe. A SHOKK file (.shokk, ZONES > More > SAVE SHOKK) stores zones and finishes and, optionally, the paint.'},
+   {'heading': 'None of them is an iRacing file',
+    'body': 'Upload the rendered TGA, never the project. They are for you and for sharing.'},
+   {'heading': 'After loading',
+    'body': 'Check your iRacing User ID and car folder afterwards: loading someone else\'s file can overwrite them. Recipes are matched by zones; a very different car may need the colour regions picked again. If Shokker says Autosave is off for a big design, save an SPB project now.'}],
+  'examples': [
+   {'title': 'End-of-session save', 'goal': 'Keep a project you can reopen',
+    'settings': {'Press': 'Save / Open, choose save', 'Name': 'Car and look'},
+    'result': 'A .spb that keeps your layer pixels too.'},
+   {'title': 'Share a look', 'goal': 'Let a friend try your design',
+    'settings': {'Press': 'Share Recipe on the render card', 'Friend': 'Import Recipe'},
+    'result': 'The look appears on their car.'}],
+  'faq': [
+   {'q': 'Which file keeps my layers?', 'a': 'The project (.spb).'},
+   {'q': 'Can I open a .spb in iRacing?', 'a': 'No. Only Shokker can.'},
+   {'q': 'What is Autosave off for a big design?', 'a': 'The design is too large to autosave. Save a project yourself.'},
+   {'q': 'Can I use someone\'s recipe on another car?', 'a': 'Yes, but you may need to pick the colour regions again.'}],
+  'mistakes': [
+   {'symptom': 'You uploaded a .spb to Trading Paints', 'cause': 'It is a Shokker project, not a paint', 'fix': 'Upload the rendered TGA.'},
+   {'symptom': 'After loading a friend\'s file renders go nowhere', 'cause': 'It overwrote your ID and car folder', 'fix': 'Set them again.'}],
+  'protips': ['Save a project at the end of every session. It is the only file that keeps all your layer pixels.'],
+ },
+ 'preview_render.render_stats_overlay': {
+  'level': 'pro',
+  'deep': [
+   {'heading': 'What it would show',
+    'body': 'Total renders, the average and total render time, how often the cache answered, the graphics card in use, per-zone times and how long the session has run. It refreshes every three seconds while open.'},
+   {'heading': 'Why you cannot open it',
+    'body': 'No button in this build opens it, so it cannot be reached from the screen. Do not hunt for a chart icon in the top bar.'},
+   {'heading': 'What to do instead',
+    'body': 'Time the render yourself and read the article on why a render is slow. If you need numbers for a problem, send a problem report.'}],
+  'examples': [
+   {'title': 'Measure a render yourself', 'goal': 'Know if your render is slow',
+    'settings': {'Method': 'Time it from pressing RENDER to the Saved bar', 'Compare': 'Seconds to about a minute is normal'},
+    'result': 'You know if it needs trimming.'},
+   {'title': 'Report a slow finish', 'goal': 'Give support useful numbers',
+    'settings': {'Where': 'Settings gear, Report a Problem'},
+    'result': 'The report carries the details for a fix.'}],
+  'faq': [
+   {'q': 'Where is the Render Statistics button?', 'a': 'There is none in this build.'},
+   {'q': 'How can I judge speed?', 'a': 'Time the render and compare with the render-speed article.'},
+   {'q': 'Will it come back?', 'a': 'It exists in the page but nothing opens it in this build.'}],
+  'mistakes': [
+   {'symptom': 'You look for a chart icon', 'cause': 'There is none', 'fix': 'Time it yourself.'},
+   {'symptom': 'You think the app is missing a feature', 'cause': 'The overlay is not reachable in this build', 'fix': 'Send a problem report if you need numbers.'}],
+  'protips': ['If you report slowness, say how many zones you used. It is the number that matters most for render time.'],
+ },
+}

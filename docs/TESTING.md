@@ -28,7 +28,7 @@ We are explicitly **not** trying to achieve 100 % coverage. We target:
 pytest tests/
 
 # Specific file
-pytest tests/test_finish_registry.py
+pytest tests/test_runtime_finish_registry.py
 
 # With coverage
 pytest --cov=engine tests/
@@ -37,7 +37,7 @@ pytest --cov=engine tests/
 pytest -v tests/
 
 # Run a single failing test
-pytest tests/test_something.py::test_case_name -vv
+pytest tests/test_runtime_finish_registry.py::test_case_name -vv
 ```
 
 ---
@@ -48,7 +48,7 @@ pytest tests/test_something.py::test_case_name -vv
 tests/
 ├── README.md                   ← detailed testing info (if present)
 ├── conftest.py                 ← pytest fixtures
-├── test_finish_registry.py     ← registry consistency checks
+├── test_runtime_finish_registry.py  ← registry consistency checks
 ├── test_spec_patterns.py       ← spec pattern registration
 ├── test_render_smoke.py        ← end-to-end render smoke
 ├── test_color_shift.py         ← color-shift math
@@ -67,7 +67,7 @@ tests/
 Use `pytest` style, not `unittest`. Keep tests short and focused:
 
 ```python
-# tests/test_finish_registry.py
+# tests/test_runtime_finish_registry.py
 import pytest
 from engine.base_registry_data import FINISH_REGISTRY
 
@@ -104,7 +104,7 @@ def test_chrome_silverado_matches_golden():
 When you intentionally change a finish, update the golden:
 
 ```bash
-python tests/update_goldens.py --finish chrome
+python scripts/spb_golden_net.py --accept chrome --reason "<the declared change>"
 ```
 
 Review the git diff of the PNG before committing — make sure the change is what you expected.
@@ -139,7 +139,7 @@ Honest acknowledgements:
 - **Electron file dialogs** — painful to automate; manual only.
 - **PSD parsing edge cases** — we test common cases; the long tail is tested in production.
 - **License validation** — covered by manual QA on each release.
-- **Performance regressions across all finishes** — `benchmark_finishes.py` is available but not wired into CI.
+- **Performance regressions across all finishes** — `scripts/audit_render_perf.py` and `scripts/benchmark_paint_finish_render_times.py` are available but not wired into CI.
 - **Visual diffs for every finish** — we golden the top ~20 most-used.
 
 ---
@@ -153,7 +153,7 @@ When CI lands (tracked in PRIORITIES.md), expected pipeline:
 - pytest tests/
 - ruff check .
 - node electron-app/copy-server-assets.js --verify
-- python benchmark_finishes.py --compare-baseline
+- python scripts/spb_golden_net.py --check
 ```
 
 No CI currently runs on push. Tests are on the honor system for now.

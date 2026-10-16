@@ -1,13 +1,16 @@
-# What the copilot can and cannot do, and where things are in the app (AI knowledge card)
+# Helper capabilities and the app layout (AI knowledge card)
 
-## The copilot CAN (Pro mode)
-Read every zone; change any zone's region (paint colours, layers, a named part of the car (hood, roof, left / right side, trunk, bumpers, spoiler: known from the built-in car library or shown once by the buyer) with a portion or a band, catch-all), finish (it knows the whole ~4,800-look catalogue with measured colour, shine, metal and texture), colour/gradient, pattern, spec patterns, second base, strengths, hue/sat/brightness, spec channel shifts, name, mute, priority; add and duplicate zones; change PSD layer visibility / opacity / blend; look at the paint and at the live preview and spec map; offer several complete designs with live thumbnails to pick from; remember the buyer's taste and facts about the car; answer how-to questions; undo its own work as one step.
+## Offline and connected help
+Offline Helper offers built-in answers and supported local design steps without an AI subscription. A connected Claude or ChatGPT/Codex assistant uses the tools exposed by the current connection. Rendering, file operations and editing support depend on those tools and permissions; check them before promising an action.
 
-## The copilot CANNOT (say so plainly, then give the manual steps)
-- Delete zones, open or save files, import a paint/PSD, export or deploy to iRacing, change the car folder or user id, render the final full-resolution paint. It can tell the buyer exactly where to click.
-- Draw or paint by hand (brush, lasso, layer pixels), add text/logos, move or edit layer artwork. (Tools in the toolbar do those.)
-- See the buyer's screen beyond the paint canvas and the live preview it can capture.
-- Guarantee how iRacing lights the car on track; it can only set spec values.
+## Supported actions and verified results
+A preview writes no files and advice changes nothing. A supported, authorized render can write paint and spec output. Check the returned result for completed output and files saved to the intended folder. If that workflow is unavailable, use the manual RENDER button, then Ctrl+R in iRacing to reload saved textures. Do not render for an advice-only question. Use the available Undo controls for actual edits and verify the result. Advice creates no paint step. Do not assume exported files or every operation can be undone through the chat.
+
+## Target and artwork safety
+Exact car identity and reference knowledge do not establish a calibrated panel map. Use current verified artwork or a checked marked area for placement; do not invent UV positions from a car name. Protect numbers, sponsors and logos by checking the actual target layers or marked area and their coverage. A layer name or an assurance that artwork was kept is not proof. A flat colour selection may also include decals of the same colour; inspect before applying a whole-car change.
+
+## Provider context
+Offline Helper answers and local design logic do not require an online language model. A connected online assistant can send requested context and images returned by tools to its selected provider. This is not a guarantee that all app traffic stays local; use Offline Helper when you do not want online model processing.
 
 ## Where things are (Pro layout)
 - Left column: ZONES list (top = highest priority), + Add Zone, Reset All Zones. Each zone card: what pixels it covers (colour picker/eyedropper "PICK COLOR FROM CAR", tolerance, "Restrict to layers", box), APPLY AREA, BASE (base material picker, colour mode incl. gradient), patterns, spec patterns, second base, intensity.

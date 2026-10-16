@@ -183,6 +183,13 @@
         return canvas;
     }
 
+    function hasShownImportedChild(node) {
+        if (node.type === 'layer') {
+            return node.layer.visible === true && node.layer.importVisible === false && !!node.layer.img;
+        }
+        return node.children.some(hasShownImportedChild);
+    }
+
     function composeLayerStack(ctx, layers, options) {
         var opts = options || {};
         var inspection = inspectStack(layers);
@@ -204,7 +211,9 @@
                     return;
                 }
                 var group = node.descriptor;
-                if (group.visible === false || group.ownVisible === false) return;
+                // SPB-93 private59910: native show/Undo owns live leaf visibility.
+                // Preserve hidden siblings and group opacity/blend; never mutate import metadata.
+                if ((group.visible === false || group.ownVisible === false) && !hasShownImportedChild(node)) return;
                 if (group.mode === 'pass-through') {
                     drawn += drawChildren(target, node.children);
                     return;

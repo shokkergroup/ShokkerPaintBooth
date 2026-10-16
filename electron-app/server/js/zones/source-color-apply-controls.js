@@ -44,7 +44,8 @@
 
     function _getPsdLayersForZoneUi() {
       var layers = getPsdLayers();
-      return Array.isArray(layers) ? layers.filter(function(l) { return l && l.id && l.name; }) : [];
+      // [SPB-TLAY 2026-10-10 TL-16] adjustment layers own no pixels: a zone cannot be restricted to one
+      return Array.isArray(layers) ? layers.filter(function(l) { return l && l.id && l.name && !(l.pcAdj && global.SPB_TLAY_OFF !== true); }) : [];
     }
 
     function buildZoneReactToLayerHtml(zoneIndex, zone) {
@@ -294,7 +295,7 @@
       if (enabled) _syncFitIntoApplyAreaFlags(zone);
       renderZones();
       triggerPreviewRender();
-      if (enabled && zone.finish && !zone.base) showToast('Fit is for base+pattern zones only - ignored for monolithic finishes.', 'info');
+      if (enabled && zone.finish && !zone.base) showToast('Fit only works on base and pattern zones. It is ignored for monolithic finishes.', 'info');
     }
 
     function activateZoneApplyArea(index) {
@@ -366,7 +367,7 @@
         var hasColor = !!getZoneColorFilterRgb(zone);
         showToast(hasColor
           ? 'Apply area on ' + zone.name + ': box + zone color (yellow only inside box).'
-          : 'Apply area on ' + zone.name + ': entire box - set a COLOR above to limit to yellow etc.', 'info');
+          : 'Apply area on ' + zone.name + ': entire box - set a color above to limit to yellow etc.', 'info');
       }
       return true;
     }
@@ -382,7 +383,7 @@
       var headerHint = sum.active ? ' &middot; ON' : (sum.regionPx > 0 ? ' &middot; drawn' : '');
       return '<div class="section-collapsible' + (startCollapsed ? ' collapsed' : '') + '" id="sectionApplyArea' + i + '" style="margin:4px 0;">'
         + '<div class="section-header" onclick="event.stopPropagation(); this.parentElement.classList.toggle(\'collapsed\')">'
-        + '<span class="section-header-label">APPLY AREA<span style="font-size:8px;color:' + statusColor + ';text-transform:none;">' + headerHint + '</span></span>'
+        + '<span class="section-header-label">Apply area<span style="font-size:8px;color:' + statusColor + ';text-transform:none;">' + headerHint + '</span></span>'
         + '<span class="collapse-arrow section-header-arrow">&#9660;</span></div>'
         + '<div class="apply-area-panel" style="padding:5px 8px; border:1px solid rgba(93,255,176,0.22); border-radius:5px; background:rgba(8,24,18,0.4);">'
         + '<div style="font-size:9px; color:' + statusColor + '; line-height:1.3; margin-bottom:4px;">' + escapeHtml(sum.label) + '</div>'
@@ -393,7 +394,7 @@
         + '<button type="button" class="btn btn-sm" onclick="event.stopPropagation(); activateZoneApplyArea(' + i + ')" style="font-size:9px;padding:2px 8px;background:#1a4d3a;border-color:#5dffb0;color:#5dffb0;font-weight:bold;">Activate</button>'
         + '<button type="button" class="btn btn-sm" onclick="event.stopPropagation(); clearZoneApplyArea(' + i + ')" style="font-size:9px;padding:2px 7px;color:#ff8888;">Clear</button></div>'
         + '<label style="display:flex; align-items:center; gap:6px; font-size:9.5px; cursor:pointer; color:#c9d4e2;"'
-        + ' title="Scales the base+pattern swatch into the drawn box. Leave OFF for monolithic finishes (prevents mini-car-in-box); ON for tiled patterns on panels.">'
+        + ' title="Scales the base+pattern swatch into the drawn box. Leave off for monolithic finishes (prevents mini-car-in-box); ON for tiled patterns on panels.">'
         + '<input type="checkbox" ' + (fitChecked ? 'checked' : '') + ' onchange="setZoneFitIntoApplyArea(' + i + ', this.checked)">'
         + '<span>Fit pattern/base swatch into box <span style="color:#8a9bb0;">(base+pattern only)</span></span></label>'
         + '</div></div>';

@@ -18,6 +18,8 @@ const common = [
   ['Easy featured quality/uniqueness', process.execPath, ['scripts/spb_easy_featured_audit.js']],
   ['canonical release fixture', 'python', ['scripts/spb_release_fixture_audit.py']],
   ['runtime mirror sync', process.execPath, ['scripts/sync-runtime-copies.js', '--check']],
+  // [Claude BETA-READINESS 2026-10-13] bundled Claude Desktop connector: version == app, not stale, tools/list == manifest
+  ['Claude connector (.mcpb) gate', 'python', ['scripts/spb_mcpb_release_gate.py', `--mode=${mode === 'prebuild' || mode === 'status' ? 'prebuild' : 'prestage'}`]],
   ['file-budget gate', process.execPath, ['scripts/spb_file_budget.js', '--enforce']],
   ['generated-drift gate', process.execPath, ['scripts/spb_generated_drift_guard.js', '--enforce']],
 ].map(([name, exe, args]) => ({ name, exe, args, requiredFor: allPhases }));

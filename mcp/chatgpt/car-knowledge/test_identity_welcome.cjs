@@ -1,0 +1,30 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const K=require('./lookup.cjs'),data=K.load();assert.ok(data);
+const arca=data.cars.find(c=>c.id==='stockcars2-arcachevy25');
+let observed={source_paint_name:'ARCA Chevy SS.tga',recognized_layout:'NASCAR Cup Chevrolet SS (recognised by layout)'};
+const w={SpbCarKnowledge:K,SpbTemplateIdentity:{read:()=>observed},CAR:{library:()=>({name:'NASCAR Cup Chevrolet SS'})},esc:s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};w.window=w;vm.createContext(w);
+vm.runInContext(fs.readFileSync(path.join(__dirname,'offline-answer.js'),'utf8'),w);
+const source=fs.readFileSync(path.join(__dirname,'../candidates/spb-pro-ai.js'),'utf8'),start=source.indexOf('    function carLineHtml()'),end=source.indexOf('    function setupCard()',start);assert.ok(start>=0&&end>start);
+vm.runInContext(source.slice(start,end),w);
+assert.equal(w.SpbCarReferenceAnswer.welcome().status,'unavailable');
+w.SpbCarReferenceAnswer.index(JSON.parse(fs.readFileSync(path.join(__dirname,'build/cars.json'),'utf8')).articles);
+function check(expected){
+ const summary=w.SpbCarReferenceAnswer.welcome(),online=K.fromContext('Tell me about the Ferrari 296 GT3 template',null,{template_identity:observed},data).live_identity_summary;
+ assert.equal(summary.status,expected);assert.deepEqual(JSON.parse(JSON.stringify(summary)),online,'Explicit other-car question must not replace the open-car summary');
+ assert.equal(summary.can_target_panels,false);
+ const html=w.carLineHtml();assert.ok(html.includes(w.esc(summary.text)));assert.doesNotMatch(html,/I recognise your car|I know where its hood/);
+ return summary;
+}
+check('conflict');
+observed={...observed,source_reference:{schema:'spb-template-source/1',sha256:arca.template_metadata[0].sha256,source_name:'ARCA Chevy SS.psd'}};
+assert.match(check('verified-source').text,/ARCA Chevrolet SS/);assert.doesNotMatch(w.carLineHtml(),/NASCAR Cup/);
+observed={...observed,configured_paint_folder:'ferrari296gt3'};check('conflict');
+observed={...observed,configured_paint_folder:'',source_reference:{...observed.source_reference,sha256:'0'.repeat(64)}};check('conflict');
+observed={...observed,source_paint_name:'custom.tga'};check('unmatched-source');
+const shared=data.cars.flatMap(c=>c.template_metadata).find(m=>K.templateSource([{source_reference:{schema:'spb-template-source/1',sha256:m.sha256}}],data).template_match.exact_variant===false);
+assert.ok(shared);observed={source_reference:{schema:'spb-template-source/1',sha256:shared.sha256}};check('shared-template');
+observed={configured_paint_folder:'ferrari296gt3'};check('suggested-reference');
+observed={};check('unknown');
+w.SPB_CARKB_OFF=true;assert.match(w.carLineHtml(),/Suggested layout/);assert.doesNotMatch(w.carLineHtml(),/I know where/);
+console.log('PASS actual welcome function and common MCP identity: verified ARCA over broad Cup recognition, conflicts, unmatched/shared source, suggestions, unknown, cold index and disabled fallback; zero panel-location claims');

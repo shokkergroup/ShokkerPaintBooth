@@ -36,7 +36,7 @@
             if (zone.colorMode === 'none' || zone.color === null) return '<span style="color: #ff6644;">&#9888; No color or region set - use Pick Color, Draw Region, or buttons</span>';
             if (zone.colorMode === 'quick') return '&#10004; Matching all <strong>' + zone.color + '</strong> pixels';
             if (zone.colorMode === 'special') {
-                if (zone.color === 'everything') return '&#10004; Covers <strong>ALL</strong> pixels on the car';
+                if (zone.color === 'everything') return '&#10004; Covers <strong>all</strong> pixels on the car';
                 if (zone.color === 'remaining') return '&#10004; Catches anything <strong>not claimed</strong> by zones above';
                 return '&#10004; Special: <strong>' + zone.color + '</strong>';
             }

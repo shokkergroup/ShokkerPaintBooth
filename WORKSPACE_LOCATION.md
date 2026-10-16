@@ -22,7 +22,7 @@ Outstanding (any agent may pick these up):
 - [x] Git worktree pointers under `.git/worktrees/*/gitdir` still reference E:\ — either delete unused worktrees and `git worktree prune`, or rewrite the pointer files. *(Completed: Corrupt E: worktree deleted and pointers resolved by Antigravity on 2026-05-19)*
 - [x] 11 files contain hardcoded `E:\Koda\...` strings. Find-and-replace to `C:\DRIVE E BACKUP\...`:
   - `electron-app/server/_copy-manifest.json` (auto-regenerates on build — easiest fix is to rebuild)
-  - `assets/reference_textures/cultural/viva_mexico/manifest.json` (+ 2 mirror copies under `electron-app/server/` and `electron-app/server/pyserver/_internal/`)
+  - `assets/reference_textures/cultural/viva_mexico/manifest.json` (+ 1 mirror copy under `electron-app/server/`; the old third copy under `pyserver/_internal/` was deleted 2026-06-09)
   - `SPB_WIKI.html`
   - `SPB_GOAL_OPERATING_BRIEF.md`
   - `SPB_CANONICAL_WORKSPACE.md`

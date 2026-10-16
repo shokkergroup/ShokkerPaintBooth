@@ -1,6 +1,6 @@
 """
-Export canonical finish IDs from paint-booth-1-data.js into finish_ids_canonical.json.
-Single source of truth for thumbnails/registries: run after editing 1-data.js.
+Export canonical finish IDs from paint-booth-0-finish-data.js into finish_ids_canonical.json.
+Single source of truth for thumbnails/registries: run after editing 0-finish-data.js.
 
 Usage (from V5 folder):
   python scripts/export_finish_ids.py
@@ -10,10 +10,13 @@ Output: finish_ids_canonical.json with { "bases": [...], "patterns": [...], "spe
 import json
 import os
 import re
+import subprocess
 import sys
 
 V5_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_JS = os.path.join(V5_ROOT, "paint-booth-1-data.js")
+# SPB-105 NU-25-LIVE-1 (2026-08-27): the arrays moved to 0-finish-data.js
+# long ago; pointing at 1-data.js silently exported three empty collections.
+DATA_JS = os.path.join(V5_ROOT, "paint-booth-0-finish-data.js")
 OUT_JSON = os.path.join(V5_ROOT, "finish_ids_canonical.json")
 
 
@@ -86,11 +89,48 @@ def extract_ids_from_js(path):
     return {"bases": sorted(set(bases)), "patterns": sorted(set(patterns)), "specials": specials}
 
 
+def extract_ids_from_live_js(path):
+    """Evaluate the same finalized arrays the browser sees.
+
+    The legacy regex walker stopped at nested array literals and missed late
+    MONOLITHICS plus Object.assign group packs. Node/vm is already the catalog
+    truth mechanism used by regression tests, and fails closed on invalid JS.
+    """
+    script = r"""
+const fs = require('node:fs');
+const vm = require('node:vm');
+const src = fs.readFileSync(process.argv[1], 'utf8');
+const ctx = {
+  window: {},
+  console: { log() {}, warn() {}, error() {} },
+  setTimeout() {}, clearTimeout() {},
+};
+vm.createContext(ctx);
+vm.runInContext(src, ctx, { filename: process.argv[1], timeout: 10000 });
+const bases = vm.runInContext('BASES.map(x => x.id)', ctx);
+const patterns = vm.runInContext('PATTERNS.map(x => x.id)', ctx);
+const monolithics = vm.runInContext('MONOLITHICS.map(x => x.id)', ctx);
+const groups = vm.runInContext('SPECIAL_GROUPS', ctx);
+const specials = [...new Set(monolithics.concat(...Object.values(groups || {})))];
+process.stdout.write(JSON.stringify({ bases, patterns, specials }));
+"""
+    result = subprocess.run(
+        ["node", "-e", script, path],
+        cwd=V5_ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=True,
+    )
+    data = json.loads(result.stdout)
+    return {name: sorted(set(values)) for name, values in data.items()}
+
+
 def main():
     if not os.path.isfile(DATA_JS):
         print(f"Not found: {DATA_JS}", file=sys.stderr)
         sys.exit(1)
-    data = extract_ids_from_js(DATA_JS)
+    data = extract_ids_from_live_js(DATA_JS)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
     print(f"Wrote {OUT_JSON}: {len(data['bases'])} bases, {len(data['patterns'])} patterns, {len(data['specials'])} specials")

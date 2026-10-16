@@ -232,7 +232,7 @@ FL('layer', 'Layers', 'layer|layers|layer panel|layers panel|show layer|hide lay
    ['help:layers_vis', 'help:restrict_layer', 'doc:GETTING_STARTED.html#PSD vs TGA'], ['psd', 'zone', 'template_layers'])
 FL('template', 'Template', 'template|templates|car template|psd template|open template|load template|my template|template for|iracing template|which template|wrong template|source paint|open paint|load paint|load my paint|import paint|import my paint|open my paint|upload paint|start|begin|new paint|livery|paint file|blank canvas|new canvas|empty canvas',
    'The template is the flat sheet of your car that you paint on. Use the template for the SAME car you drive.',
-   ['Open it with the PSD/XCF/ORA button next to Source Paint, or drag a TGA or PSD into the centre.', 'Never resize the canvas: it must stay 2048 x 2048.'],
+   ['Open it with Open Paint... > Layered template next to Source Paint, or drag a TGA or PSD into the centre.', 'Never resize the canvas: it must stay 2048 x 2048.'],
    ['ask_choice|Open a layered PSD, or a flat TGA?', 'open_control|SOURCE PAINT box', 'tell|When it shows in the centre, the live preview fills in.'],
    ['help:load_paint', 'support:open_psd', 'control:paintFile', 'control:onboardingImportPsdBtn'], ['psd', 'paint_size'])
 FL('render', 'Render', 'render|rendering|rendered|re render|rerender|render it|build paint|final paint|make the paint|finalize|finalise|bake',

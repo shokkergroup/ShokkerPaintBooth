@@ -386,7 +386,7 @@ def test_zone_dropdown_picker_is_large_readable_and_favorites_ranked():
     assert "grid-template-columns: repeat(auto-fill, minmax(158px, 1fr))" in css
     assert ".swatch-rank-chip" in css
     assert ".swatch-fav-btn" in css
-    assert "Split swatch: left paint; right compiled spec (RGB = M / Roughness / Cc)" in html
+    assert "Split swatch: left is the paint; right is the spec map (red = metallic, green = roughness, blue = clearcoat)" in html
     assert "swatchPopupFilterButtons" in html
     assert "swatchPopupSortButtons" in html
     assert "swatchPopupReviewBtn" in html

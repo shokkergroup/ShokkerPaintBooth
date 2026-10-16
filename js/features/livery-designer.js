@@ -1,7 +1,7 @@
 /*
  * PROMPT-TO-LIVERY — MEGA FEATURE 1 (frontend panel)
  * --------------------------------------------------
- * A small "✨ Design It" panel: type a vibe ("menacing matte black with
+ * A small "Design It" panel: type a vibe ("menacing matte black with
  * toxic-green fracture and a carbon hood"), POST it to /api/design-from-prompt,
  * then show 1–3 complete looks as clickable OPTION CARDS (each with its own
  * palette + finishes). The first auto-applies so "it just works"; the painter
@@ -225,18 +225,18 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       }).then(function (r) { return r.json(); }).then(function (data) {
-        if (btn) { btn.disabled = false; btn.textContent = '✨ Design It'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Design It'; }
         if (!data || !data.ok) {
           var err = (data && data.error) || 'Design failed';
-          if (out) out.innerHTML = '<div class="spb-ld-err">⚠ ' + escapeHtml(err) + '</div>';
+          if (out) out.innerHTML = '<div class="spb-ld-err">' + escapeHtml(err) + '</div>';
           toast('Design failed: ' + err);
           return;
         }
         console.log('[LiveryDesigner] zones:', data.zones, 'meta:', data.meta);
         renderOptions(data);
       }).catch(function (e) {
-        if (btn) { btn.disabled = false; btn.textContent = '✨ Design It'; }
-        if (out) out.innerHTML = '<div class="spb-ld-err">⚠ ' + escapeHtml('' + e) + '</div>';
+        if (btn) { btn.disabled = false; btn.textContent = 'Design It'; }
+        if (out) out.innerHTML = '<div class="spb-ld-err">' + escapeHtml('' + e) + '</div>';
         toast('Design request error: ' + e);
       });
     });
@@ -279,7 +279,7 @@
              'box-shadow:0 10px 40px rgba(0,0,0,.55);padding:14px;font:13px/1.4 system-ui,Segoe UI,sans-serif;display:none;'
     });
     var head = el('div', { style: 'display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;' }, [
-      el('div', { text: '✨ Prompt-to-Livery', style: 'font-weight:700;font-size:14px;' }),
+      el('div', { text: 'Prompt-to-Livery', style: 'font-weight:700;font-size:14px;' }),
       el('button', { id: 'spbLDClose', title: 'Close', text: '✕',
         style: 'background:none;border:none;color:#9aa;cursor:pointer;font-size:16px;' })
     ]);
@@ -289,7 +289,7 @@
       style: 'width:100%;box-sizing:border-box;background:#0e1014;color:#e8e8ec;border:1px solid #2c2f38;' +
              'border-radius:8px;padding:8px;resize:vertical;font:13px/1.4 inherit;'
     });
-    var go = el('button', { id: 'spbLDGo', text: '✨ Design It',
+    var go = el('button', { id: 'spbLDGo', text: 'Design It',
       style: 'margin-top:8px;width:100%;padding:9px;border:none;border-radius:8px;cursor:pointer;' +
              'background:linear-gradient(90deg,#6c4cff,#b14bff);color:#fff;font-weight:700;font-size:13px;' });
     var out = el('div', { id: 'spbLDOutput',
@@ -314,7 +314,7 @@
   function close() { var p = document.getElementById(PANEL_ID); if (p) p.style.display = 'none'; }
   function toggle() { var p = document.getElementById(PANEL_ID); if (p && p.style.display === 'block') close(); else open(); }
 
-  // NOTE (2026-06-13): the floating bottom-right "✨ Design It" FAB has been
+  // NOTE (2026-06-13): the floating bottom-right "Design It" FAB has been
   // removed. The launchers live in the EXPERIMENTAL FEATURES toolbar dropdown,
   // so this module no longer self-injects a fixed-position button on load.
   // Open the panel via the public API instead:

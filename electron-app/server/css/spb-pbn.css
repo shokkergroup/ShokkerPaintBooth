@@ -1,0 +1,45 @@
+/* PBN 2026-10-08 owner: "paint by numbers" funnel docked in the AI copilot panel above the step builder (js/spb-pbn.js). Same dark look as spb-offline-builder.css. */
+.spb-pbn { flex: 0 0 auto; max-height: 62%; min-height: 0; overflow-y: auto; padding: 0 10px 6px; scrollbar-width: thin; border-top: 1px solid rgba(255,255,255,0.08); }
+.spb-pbn[hidden], .spb-pai.min .spb-pbn, .spb-pbn:empty { display: none; }
+.spb-pbn-mini { padding-top: 7px; }
+.spb-pbn-card { margin-top: 7px; border-radius: 12px; padding: 8px 9px; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,122,24,0.4); display: flex; flex-direction: column; gap: 6px; }
+.spb-pbn-hd { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #fff; } .spb-pbn-hd i { font-style: normal; font-size: 10.5px; color: #9aa0bd; flex: 1; }
+.spb-pbn-x { background: none; border: 0; color: #9aa0bd; font-size: 16px; line-height: 1; cursor: pointer; padding: 0 4px; } .spb-pbn-x:hover { color: #fff; }
+.spb-pbn-kw { display: flex; gap: 4px; }
+.spb-pbn-in { flex: 1; min-width: 0; box-sizing: border-box; padding: 5px 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18); background: rgba(0,0,0,0.3); color: #fff; font: inherit; font-size: 12px; }
+.spb-pbn-in:focus { outline: none; border-color: #1fc4e8; }
+.spb-pbn-clr { background: none; border: 0; color: #9aa0bd; cursor: pointer; font-size: 12px; }
+.spb-pbn-seen { font-size: 11.5px; color: #9aa0bd; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.spb-pbn-seen mark { background: rgba(31,196,232,0.2); color: #fff; border-bottom: 2px solid #1fc4e8; border-radius: 3px; padding: 0 5px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em; }
+.spb-pbn-seen mark.k-look { background: rgba(255,122,24,0.2); border-bottom-color: #ff7a18; } .spb-pbn-seen mark.k-colour { background: rgba(210,30,192,0.22); border-bottom-color: #d21ec0; } .spb-pbn-seen mark.k-topic { border-bottom-style: dotted; }
+.spb-pbn-crumbs { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; font-size: 11px; color: #7f86a6; }
+.spb-pbn-crumb { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); color: #dfe2f2; border-radius: 999px; padding: 1px 8px; font: inherit; font-size: 11px; cursor: pointer; } .spb-pbn-crumb:hover { border-color: #ff7a18; }
+.spb-pbn-q { font-size: 13.5px; font-weight: 800; color: #fff; margin-top: 2px; }
+.spb-pbn-hint { font-size: 11.5px; color: #9aa0bd; margin-top: -3px; }
+.spb-pbn-msg { font-size: 11.5px; color: #ffb36b; }
+.spb-pbn-grid { display: flex; flex-wrap: wrap; gap: 5px; align-items: stretch; }
+.spb-pbn-grp { width: 100%; font-size: 10.5px; color: #7f86a6; margin-top: 3px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; }
+.spb-pbn-opt { display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px; border-radius: 999px; cursor: pointer; font: inherit; font-size: 12px; font-weight: 600; color: #fff; border: 1px solid rgba(210,30,192,0.5); background: rgba(210,30,192,0.12); text-align: left; }
+.spb-pbn-opt:hover { background: rgba(210,30,192,0.3); border-color: #ff6ce8; } .spb-pbn-opt em { font-style: normal; font-weight: 400; color: #b9bdd6; font-size: 10.5px; }
+.spb-pbn-opt.th { flex-direction: column; align-items: stretch; width: 76px; padding: 3px; border-radius: 8px; border-color: rgba(255,255,255,0.14); background: rgba(255,255,255,0.05); gap: 2px; }
+.spb-pbn-opt.th:hover { border-color: #ff7a18; background: rgba(255,122,24,0.18); }
+.spb-pbn-opt.th img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 6px; background: #1a1d2e; display: block; }
+.spb-pbn-opt.th span { font-size: 10.5px; line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-align: center; } .spb-pbn-opt.th em { display: none; }
+.spb-pbn-plan { font-size: 12.5px; color: #fff; padding: 6px 9px; border-radius: 9px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); word-break: break-word; }
+.spb-pbn-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.spb-pbn-foot { display: flex; gap: 6px; justify-content: flex-end; }
+
+.spb-pbn-opt.th img { background: linear-gradient(110deg, #1a1d2e 30%, #2a2f48 50%, #1a1d2e 70%); background-size: 200% 100%; animation: spbPbnSh 1.2s linear infinite; }
+.spb-pbn-opt.th img.ok { animation: none; } .spb-pbn-opt.th img.bad { opacity: .3; animation: none; }
+@keyframes spbPbnSh { to { background-position: -200% 0; } }
+
+/* B2-PBN v2 2026-10-08: sentence-reader strip, "can't do that offline" card, how-to answers, escape row, plan tweak chips */
+.spb-pbn-read { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; color: #dfe2f2; padding: 6px 9px; border-radius: 9px; background: rgba(31,196,232,0.1); border: 1px solid rgba(31,196,232,0.5); }
+.spb-pbn-read b { color: #fff; font-weight: 700; word-break: break-word; }
+.spb-pbn-cant { font-size: 12.5px; color: #ffd9a8; padding: 7px 9px; border-radius: 9px; background: rgba(255,122,24,0.12); border: 1px solid rgba(255,122,24,0.55); line-height: 1.35; } .spb-pbn-cant b { color: #fff; }
+.spb-pbn-part { font-size: 12px; color: #dfe2f2; padding: 5px 9px; border-radius: 9px; background: rgba(255,255,255,0.06); border: 1px dashed rgba(255,255,255,0.25); } .spb-pbn-part span { color: #9aa0bd; margin-right: 4px; } .spb-pbn-part b { color: #fff; }
+.spb-pbn-qa { display: flex; flex-direction: column; gap: 5px; align-items: stretch; } .spb-pbn-qa .spb-pai-act { text-align: left; white-space: normal; }
+.spb-pbn-esc { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 11px; color: #7f86a6; border-top: 1px dashed rgba(255,255,255,0.12); padding-top: 5px; margin-top: 2px; }
+.spb-pbn-tw { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 11px; color: #9aa0bd; } .spb-pbn-tw > span { width: 40px; }
+.spb-pbn-chip { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.18); color: #fff; border-radius: 999px; padding: 2px 10px; font: inherit; font-size: 11px; cursor: pointer; } .spb-pbn-chip:hover { border-color: #ff7a18; } .spb-pbn-chip.on { background: rgba(255,122,24,0.3); border-color: #ff7a18; }
+.spb-pbn-chip.sw { width: 20px; height: 20px; padding: 0; background: var(--c, #888); border-radius: 50%; }

@@ -36,11 +36,13 @@
     /* ------------------------------------------------------------------ *
      * 1. TOOL SETTING PERSISTENCE
      * ------------------------------------------------------------------ */
-    var TOOL_IDS = [
-        'brushSize', 'brushHardness', 'brushOpacity',
-        'wandTolerance', 'wandSampleSize', 'wandContiguous', 'wandAntiAlias',
+    // [SPB-TFX1 2026-10-09 TA-007] brush size / hardness / opacity are now remembered PER TOOL by js/canvas/pc-tool-defaults.js (one place);
+    // they stay here only when the TFX1 kill switch is on.
+    var _tfx1Off = !!window.SPB_TFX1_OFF; try { if (localStorage.getItem('SPB_TFX1_OFF') === '1') _tfx1Off = true; } catch (_) {}
+    var TOOL_IDS = (_tfx1Off ? ['brushSize', 'brushHardness', 'brushOpacity'] : []).concat([
+        'wandTolerance', 'wandSampleSize', 'wandContiguous', 'wandAntiAlias', 'spbEyeSampleSize', 'spbEyeSampleSrc',   // [SPB-TFX1 2026-10-09 TA-029]
         'selectionFeather', 'selectionMode'
-    ];
+    ]);
 
     function readControl(el) {
         if (el.type === 'checkbox') return { c: !!el.checked };

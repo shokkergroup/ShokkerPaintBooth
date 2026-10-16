@@ -5,7 +5,7 @@ Each entry starts with a tag line: [id | mode | needs | ui ids]. "Pro" = the ful
 ## How do I load my paint file (a flat TGA, PNG or JPEG)?
 [hdi.load_flat | pro | needs: none | ui: paintFile, pro.header.tga_png_jpeg, pro.center.load_tga]
 Also asked as: where do i load my paint; how to import tga; my paint wont load; how do i start
-1. Top row, find SOURCE PAINT. Click the "TGA/PNG/JPEG" button beside it (or on the empty canvas click "Load TGA" / "Load Paint Image").
+1. Top row, click Open Paint... and choose Flat image (or on the empty canvas click "Load TGA" / "Load Paint Image").
 2. Pick your paint file in the window that opens, then confirm.
 3. Wait for the paint to appear in the SOURCE picture in the middle; the LIVE PREVIEW fills in next.
 4. You can also paste the full file path into the Source Paint box and press Enter.
@@ -14,10 +14,10 @@ A flat TGA has no layers. Dropping a picture onto the canvas also loads it as th
 ## How do I load a layered PSD template (so I get layers)?
 [hdi.load_psd | pro | needs: none | ui: pro.header.psd_xcf_ora, onboardingImportPsdBtn, pro.layers.open_layered]
 Also asked as: how do i open a psd; where do i load my paint; my paint wont load; wheres my layres
-1. Top row, SOURCE PAINT, click the "PSD/XCF/ORA" button (or "Import PSD" on the empty canvas, or the LAYERS tab > "Open Layered").
+1. Top row, click Open Paint... and choose Layered template (or "Import PSD" on the empty canvas, or the LAYERS tab > "Open Layered").
 2. Choose your PSD (XCF and ORA also work) and confirm.
 3. Wait while the layers load, then open the LAYERS tab on the right to see them.
-4. Before rendering, switch the template layers (Mask, Wire, Car_Mandatory) OFF with their eye icons.
+4. RENDER leaves the template layers (Mask, Wire, Car_Mandatory) out of the car paint for you. You can also switch them OFF with their eye icons.
 
 ## How do I start from a blank canvas with no paint file?
 [hdi.blank_canvas | pro | needs: none | ui: pro.center.blank_canvas]
@@ -261,7 +261,7 @@ Also asked as: i loaded my paint and nothing happened
 ## What do I do first? (a complete beginner)
 [hdi.what_now | any | needs: none | ui: spbGuideToggle, mode.easy, mode.chat]
 Also asked as: this is confusing; what now; help; i dont get it; how do i start; i hate this i cant figure it out
-1. Load your paint: top row, SOURCE PAINT, "TGA/PNG/JPEG" (flat) or "PSD/XCF/ORA" (layers).
+1. Load your paint: top row, Open Paint... > Flat image (flat) or Open Paint... > Layered template (layers).
 2. Make zones in PRO, or switch to CHAT to type what you want.
 3. Pick looks, check the LIVE PREVIEW.
 4. Set your iRacing customer ID and car folder at the top, then press RENDER.
@@ -279,8 +279,8 @@ Also asked as: how do i get a tutorial; this is confusing; i hate this i cant fi
 Also asked as: what are layers; wheres my layres
 1. A layered PSD keeps parts of the livery on separate sheets: Car Paint (body colours), Numbers, Sponsors, Tape, Decals.
 2. Layers let you change one thing (just the numbers) without touching the rest.
-3. Template layers (Mask, Wire, Car_Mandatory) only show the car outlines and must be OFF when you render.
-4. A flat TGA has no layers. Load a PSD ("PSD/XCF/ORA") to get them; see the LAYERS tab on the right.
+3. Template layers (Mask, Wire, Car_Mandatory) only show the car outlines; RENDER leaves them out of the car paint for you.
+4. A flat TGA has no layers. Load a PSD (Open Paint... > Layered template) to get them; see the LAYERS tab on the right.
 
 ## How do I turn a layer on or off?
 [hdi.layer_visibility | pro | needs: psd | ui: layer.eye]
@@ -293,12 +293,12 @@ Also asked as: how do i hide a layer
 Also asked as: there are lines all over my car; i see the wireframe on my paint; how do i turn off mask and wire
 1. LAYERS tab: click the eye on Car_Mandatory, Mask and Wire (the group "Turn Off Before Exporting TGA").
 2. In Easy click "Turn off" on the "Template guides are on" warning.
-3. Then render. If lines still show on the car, one of them was left on.
+3. RENDER leaves them out of the car paint for you. If lines still show on the car, update Shokker, hide them with the eye icons and render again.
 
 ## How do I add a logo or sponsor picture?
 [hdi.add_logo | pro | needs: paint | ui: pro.layers.layer, layer.rename]
 Also asked as: i dropped a picture on the canvas and it replaced everything; how do i add a logo; how do i add my sponsor
-1. Open the LAYERS tab and click "+ Layer".
+1. Open the LAYERS tab, open Actions and choose Place image...
 2. Choose a PNG / JPG / WebP / GIF (transparent PNG is best).
 3. Drag it with Move (V) in LAYER mode, or use Transform (Ctrl+T) to size it.
 Do not drop it onto the canvas: that REPLACES the whole paint.
@@ -307,7 +307,7 @@ Do not drop it onto the canvas: that REPLACES the whole paint.
 [hdi.move_logo | pro | needs: psd | ui: btnToolbarModeLayer, vtModeLayerMove, vtModeLayerTransform]
 Also asked as: how do i move a layer; how do i move the numbers; how do i resize a logo
 1. Click LAYER in the ZONE | LAYER switch (top toolbar).
-2. Pick Move (V), click the number / logo (it isolates it), drag.
+2. Pick Move (V), click the number / logo (it isolates it), drag. Coloured guide lines snap it to the sheet centre and to other layers (hold Ctrl to turn that off); the arrow keys nudge it 1 pixel, Shift+Arrow 10.
 3. Use Transform (Ctrl+T) for size and rotation; "Apply" confirms.
 
 ## How do I change a layer's opacity or blend mode?
@@ -367,7 +367,7 @@ Also asked as: i want to start over; i messed up
 [hdi.export_iracing | pro | needs: paint, car_folder | ui: iracingId, outputDir, btnRender]
 Also asked as: how do i export; how do i get it into iracing; where does the file go; where is the render button; how doo i exprot; how do i save
 1. Top row: enter your iRacing customer number (IRACING USER ID) and set IRACING CAR FOLDER (use the car list button or browse).
-2. Turn the template layers (Mask, Wire, Car_Mandatory) OFF.
+2. Switching the template layers (Mask, Wire, Car_Mandatory) OFF is optional: RENDER leaves them out anyway.
 3. Click RENDER (Ctrl+R). The paint and spec files are written to the car folder.
 4. In iRacing press Alt+Tab, then Ctrl+R to reload paints.
 Easy: SAVE TO iRACING does the same.
@@ -508,14 +508,14 @@ Also asked as: how do i draw a box; how do i use lasso
 ## How do I use the magic wand or lasso to select an area?
 [hdi.wand_select | pro | needs: paint | ui: vtModeWand, wandTolerance, useRegionBtn]
 Also asked as: how do i use the magic wand; how do i use lasso
-1. Pick Wand (W) in the top toolbar (or Lasso L / Rect O). Click or drag on the paint.
+1. Pick Wand (W) in the top toolbar (or Lasso L / Rect M). Click or drag on the paint.
 2. Shift adds, Alt subtracts; the Tolerance slider sets how similar colours must be.
 3. Select a zone in the left column and press "Use Region" to give it that selection.
 
 ## How do I select a number or logo as a whole?
 [hdi.grab_object | pro | needs: paint | ui: vtModeGrabObject, useRegionBtn]
 Also asked as: how do i select a logo
-1. Top toolbar > SELECT menu > "Grab Object" (G).
+1. Top toolbar > SELECT menu > "Grab Object" (Shift+W cycles to it).
 2. Click inside a solid part of the number; its outline is selected.
 3. Use "Use Region" on the zone you want.
 
@@ -544,8 +544,8 @@ Also asked as: how do i zoom
 ## How do I compare before and after?
 [hdi.before_after | pro | needs: render | ui: btnBeforeAfter, btnCompare, btnSplitView]
 Also asked as: how do i compare before and after
-1. Click "B/A" (or press B) to flip between the last preview and now.
-2. "Compare" gives a wipe slider; SPLIT shows source and preview side by side.
+1. After a render, click "Compare" and drag the divider to see your source paint against the preview.
+2. "SPLIT" (Shift+V) shows source and preview side by side.
 
 ## How do I see the car preview bigger?
 [hdi.preview_bigger | pro | needs: paint | ui: btnPreviewRefresh, btnSourceFocus, btnSplitView]
@@ -696,7 +696,7 @@ Also asked as: what are the keyboard shortcuts
 
 ## How do I move the finish library or panels out of the way?
 [hdi.collapse_panels | pro | needs: none | ui: leftCollapseBtn, rightCollapseBtn]
-1. Click the small arrow at the edge of the left or right column to collapse it. Press E to show / hide the zone editor.
+1. Click the small arrow at the edge of the left or right column to collapse it. Press Shift+E to show / hide the zone editor.
 
 ## How do I fix a stuck or blank preview?
 [hdi.fix_preview | pro | needs: paint | ui: btnPreviewRefresh]
@@ -721,13 +721,13 @@ Also asked as: the render button doesnt work; render wont start; nothing works
 ## How do I add text (lettering) to the paint?
 [hdi.add_text | pro | needs: psd | ui: pro.layers.layer, pro.layers.open_layered]
 Also asked as: can i put text on it
-1. There is no Text button in the main tool row. The easiest way: make the lettering as a transparent PNG (or in your PSD in Photoshop) and add it with LAYERS tab > "+ Layer".
+1. Use the Text tool (T): its text stays editable (double-click it to change it; RASTERIZE turns it into pixels). Or make the lettering as a transparent PNG (or in your PSD in Photoshop) and add it with LAYERS tab > Actions > Place image...
 2. Then move and size it with Move (V) and Transform (Ctrl+T) in LAYER mode.
 3. For a PSD, edit the text layer in Photoshop and re-open it with "Open Layered".
 
 ## How do I use the eyedropper to match a colour on the car?
 [hdi.eyedropper | pro | needs: zone, paint | ui: vtModeEyedropper, eyedropperAddColorBtn, eyedropperSetBtn]
-1. Pick Color (P) in the toolbar, choose the zone in the box that appears, click the colour on the SOURCE picture.
+1. Pick Color (I) in the toolbar, choose the zone in the box that appears, click the colour on the SOURCE picture.
 2. "+ Add Color" adds it to the zone; "Set" replaces the zone's colour.
 
 ## How do I make a car side different from the other side?
@@ -773,7 +773,7 @@ Also asked as: how do i get back to pro
 
 ## How do I use SPEC SCULPT?
 [hdi.spec_sculpt | pro | needs: paint | ui: pro.header.spec_sculpt]
-1. Click "SPEC SCULPT" in the top row for the guided look library of spec-only effects.
+1. Click "SPEC SCULPT" in the top row to open the Spec Sculpt panel with five spec looks for the whole car.
 2. After saving a Sculpt spec the main RENDER keeps that spec; clear the imported spec map in Settings to go back to zone shine.
 
 ## How do I import art or a pack (Shokk Drop)?
@@ -791,5 +791,5 @@ Also asked as: surprise me; randomize everything; give me ideas
 [hdi.not_in_shokker | any | needs: none | ui: btnRender, live_preview]
 Also asked as: can i make an animated paint; does it work with other sims; is there a mac version; can i sell my paints; can i paint in 3d; live photoshop sync; glow in the dark
 1. Honest answer: that is not available in Shokker today. Not in the app: animated or moving paints, glow-in-the-dark paint (iRacing has no emissive paint), other sims (Shokker writes iRacing paint + spec TGAs only), a 3D car view or painting on a 3D model, a shop or marketplace to sell paints, live sync with Photoshop while you edit, and a Mac version (Windows only).
-2. Nearest thing you can do: render, then look at the car in iRacing's own 3D paint viewer; for Photoshop, save your PSD and load it again with "PSD/XCF/ORA" (top row, SOURCE PAINT).
+2. Nearest thing you can do: render, then look at the car in iRacing's own 3D paint viewer; for Photoshop, save your PSD and load it again with Open Paint... > Layered template (top row).
 3. Everything else - colours, finishes, patterns, spec - is in Pro; ask "how do I ..." for the steps.

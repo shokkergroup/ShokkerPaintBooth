@@ -1859,7 +1859,8 @@ def _apply_hsb_adjustments(paint: np.ndarray,
 
 
 def generate_custom_gradient(shape: Tuple[int, int],
-                             gradient_config: Dict[str, Any]) -> np.ndarray:
+                             gradient_config: Dict[str, Any],
+                             coords=None) -> np.ndarray:
     """Generate a custom multi-stop gradient image.
 
     Args:
@@ -1903,6 +1904,43 @@ def generate_custom_gradient(shape: Tuple[int, int],
             colors = np.vstack([colors, colors])
         else:
             return np.zeros((H, W, 3), dtype=np.float32)
+
+    if coords is not None:
+        # [ENGINE_ZONE_COST 2026-10-05, OPTIMIZE / same pixels] Gathered-pixel mode for
+        # compose_paint_mod_gathered: coords = ((full_H, full_W), rows, cols). `shape` is the
+        # gathered (1, N) shape. Every branch below is the SAME float32 expression as the
+        # full-canvas branch, evaluated at the gathered (row, col) pairs instead of a
+        # broadcast grid, so each pixel's t is bit-identical (verified old-vs-new by
+        # scripts/spb_zone_cost_bench.py --check). angular / angle!=0 are not supported here
+        # (the caller rejects them before calling).
+        (FH, FW), _rows, _cols = coords
+        FH, FW = int(FH), int(FW)
+        if direction == "angular" or (angle_deg != 0 and direction != "radial"):
+            raise ValueError("generate_custom_gradient: gathered coords do not support angular/angle")
+        if direction == "vertical":
+            t = np.linspace(0, 1, FH, dtype=np.float32)[_rows]
+        elif direction == "diagonal_down":
+            yy = np.linspace(0, 1, FH, dtype=np.float32)[_rows]
+            xx = np.linspace(0, 1, FW, dtype=np.float32)[_cols]
+            t = np.clip((xx + yy) * 0.5, 0, 1).astype(np.float32)
+        elif direction == "diagonal_up":
+            yy = np.linspace(1, 0, FH, dtype=np.float32)[_rows]
+            xx = np.linspace(0, 1, FW, dtype=np.float32)[_cols]
+            t = np.clip((xx + yy) * 0.5, 0, 1).astype(np.float32)
+        elif direction == "radial":
+            cy, cx = FH / 2.0, FW / 2.0
+            yy = np.arange(FH, dtype=np.float32)[_rows] - cy
+            xx = np.arange(FW, dtype=np.float32)[_cols] - cx
+            dist = np.sqrt(xx * xx + yy * yy)
+            max_dist = np.sqrt(cy * cy + cx * cx)
+            t = np.clip(dist / max(max_dist, 1e-6), 0, 1).astype(np.float32)
+        else:  # horizontal (default)
+            t = np.linspace(0, 1, FW, dtype=np.float32)[_cols]
+        out = np.empty((H, W, 3), dtype=np.float32)
+        t_flat = t.ravel()
+        for ch in range(3):
+            out[:, :, ch] = np.interp(t_flat, positions, colors[:, ch]).reshape(H, W)
+        return np.clip(out, 0.0, 1.0)
 
     # Build the parametric coordinate t (0-1) for each pixel
     if direction == "vertical":
@@ -2218,7 +2256,8 @@ def _color_lab_blend(paint, src, hard_mask, depth, flip_deg, underglow, strength
 def _apply_base_color_override(paint, shape, hard_mask, seed, base_color_mode, base_color, base_color_source, base_color_strength, monolithic_registry, fit_to_bbox=False,
                                base_scale=1.0, base_offset_x=0.5, base_offset_y=0.5, base_rotation=0.0,
                                base_flip_h=False, base_flip_v=False,
-                               base_color_depth=None, base_color_flip=0.0, base_color_underglow=0.0):
+                               base_color_depth=None, base_color_flip=0.0, base_color_underglow=0.0,
+                               _color_src_coords=None):
     """Apply base color override to paint. Always operates on CPU (numpy) arrays.
     CuPy inputs are converted at the top. Returns a numpy array.
 
@@ -2245,6 +2284,13 @@ def _apply_base_color_override(paint, shape, hard_mask, seed, base_color_mode, b
     # During preview renders the paint is already downscaled but shape may still carry
     # the original file resolution, causing a size mismatch inside overlay paint_fns.
     actual_shape = (paint.shape[0], paint.shape[1])
+    # [ENGINE_ZONE_COST 2026-10-05] gathered mode + fit-to-bbox: the fitted source depends on
+    # the WHOLE canvas (cv2 resize of the full-size source into the mask bbox), so build the
+    # source at the full canvas shape exactly as the full path does, fit it with the full-canvas
+    # bbox, then sample it at the gathered pixels (end of the fit block).
+    _fit_full = _color_src_coords is not None and bool(fit_to_bbox) and hard_mask is not None
+    _src_shape = ((int(_color_src_coords[0][0]), int(_color_src_coords[0][1]))
+                  if _fit_full else actual_shape)
 
     src = None
     # SPB 2026-06-09 owner "Base Scale does nothing" fix: explicit tracking of
@@ -2413,7 +2459,10 @@ def _apply_base_color_override(paint, shape, hard_mask, seed, base_color_mode, b
         except (ValueError, TypeError, KeyError, IndexError):
             cr, cg, cb = 1.0, 1.0, 1.0
         tint_rgb = np.array([cr, cg, cb], dtype=np.float32)[np.newaxis, np.newaxis, :]
-        src = np.empty_like(np.clip(paint[:, :, :3], 0.0, 1.0), dtype=np.float32)
+        if _fit_full:
+            src = np.empty((_src_shape[0], _src_shape[1], 3), dtype=np.float32)
+        else:
+            src = np.empty_like(np.clip(paint[:, :, :3], 0.0, 1.0), dtype=np.float32)
         src[:, :, :] = np.clip(tint_rgb, 0.0, 1.0)
     elif mode == "gradient":
         # base_color is repurposed as gradient_config dict.
@@ -2429,7 +2478,10 @@ def _apply_base_color_override(paint, shape, hard_mask, seed, base_color_mode, b
         _grad_stops = base_color.get("stops") if isinstance(base_color, dict) else None
         if isinstance(_grad_stops, (list, tuple)) and len(_grad_stops) >= 2:
             try:
-                grad = generate_custom_gradient(actual_shape, base_color)
+                # [ENGINE_ZONE_COST 2026-10-05] _color_src_coords = gathered-pixel coordinates
+                # from compose_paint_mod_gathered (None = the unchanged full-canvas path).
+                grad = generate_custom_gradient(_src_shape, base_color,
+                                                coords=None if _fit_full else _color_src_coords)
                 src = np.clip(grad, 0.0, 1.0)
             except Exception as _ge:
                 print(f"[compose] WARNING: gradient generation failed: {_ge}")
@@ -2445,7 +2497,7 @@ def _apply_base_color_override(paint, shape, hard_mask, seed, base_color_mode, b
     # double-scale / hall-of-mirrors recurrence.
     if _src_needs_placement:
         src = _transform_base_color_source(
-            src, actual_shape,
+            src, _src_shape,
             scale=base_scale,
             offset_x=base_offset_x,
             offset_y=base_offset_y,
@@ -2462,13 +2514,21 @@ def _apply_base_color_override(paint, shape, hard_mask, seed, base_color_mode, b
         try:
             mask_bool = hard_mask > 0.05
             if mask_bool.any():
-                rows = np.any(mask_bool, axis=1)
-                cols = np.any(mask_bool, axis=0)
-                r_min, r_max = np.where(rows)[0][[0, -1]]
-                c_min, c_max = np.where(cols)[0][[0, -1]]
+                if _fit_full:
+                    # same bbox as the full-canvas mask: the gathered pixels ARE its support
+                    _g_on = mask_bool.reshape(-1)
+                    _g_rows = np.asarray(_color_src_coords[1])[_g_on]
+                    _g_cols = np.asarray(_color_src_coords[2])[_g_on]
+                    r_min, r_max = int(_g_rows.min()), int(_g_rows.max())
+                    c_min, c_max = int(_g_cols.min()), int(_g_cols.max())
+                else:
+                    rows = np.any(mask_bool, axis=1)
+                    cols = np.any(mask_bool, axis=0)
+                    r_min, r_max = np.where(rows)[0][[0, -1]]
+                    c_min, c_max = np.where(cols)[0][[0, -1]]
                 bh = int(r_max - r_min + 1)
                 bw = int(c_max - c_min + 1)
-                H, W = int(paint.shape[0]), int(paint.shape[1])
+                H, W = (int(_src_shape[0]), int(_src_shape[1])) if _fit_full else (int(paint.shape[0]), int(paint.shape[1]))
                 # Only resize if bbox is meaningfully smaller than full canvas
                 if bh > 1 and bw > 1 and (bh < H * 0.95 or bw < W * 0.95):
                     try:
@@ -2487,6 +2547,9 @@ def _apply_base_color_override(paint, shape, hard_mask, seed, base_color_mode, b
         except Exception as _fit_err:
             # Never break the render over a fit-zone failure
             print(f"[compose] fit-to-bbox failed: {_fit_err} — using full-canvas source")
+    if _fit_full:
+        src = src[np.asarray(_color_src_coords[1]), np.asarray(_color_src_coords[2])].reshape(
+            actual_shape[0], actual_shape[1], -1)
 
     if base_color_depth is not None:
         # [SPB COLOR LAB 2026-08-27] new pipeline — legacy crossfade below stays byte-identical
@@ -5079,7 +5142,8 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
                       pattern_offset_x=0.5, pattern_offset_y=0.5,
                       pattern_flip_h=False, pattern_flip_v=False,
                       pattern_fit_zone=False, pattern_paint_mode="legacy",
-                      pattern_hue_shift=0., pattern_saturation=0.):
+                      pattern_hue_shift=0., pattern_saturation=0.,
+                      _color_src_coords=None):
     """Apply base paint modifier then pattern paint modifier WITH spatial texture blending.
     pattern_intensity 0-1: 5%% = hint, 100%% = full (linear; avoids flip below 50%%).
     When second_base_color_source (etc.) is 'mono:xyz', the overlay color comes from that special's paint_fn (gradients, color shifts, etc.).
@@ -5239,6 +5303,7 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             base_rotation=base_rotation if base_color_rotation is None else base_color_rotation,
             base_flip_h=base_flip_h,
             base_flip_v=base_flip_v,
+            _color_src_coords=_color_src_coords,
         )
 
     # HSB adjustments (hue shift, saturation, brightness)
@@ -5879,6 +5944,142 @@ def compose_paint_mod(base_id, pattern_id, paint, shape, mask, seed, pm, bb, sca
             raise RuntimeError(f"5th base overlay paint renderer failed: {_e}") from _e
 
     return paint
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# [ENGINE_ZONE_COST 2026-10-05 — OPTIMIZE mode, same pixels]
+# Flames lane measured ~0.6 s per extra zone at 2048 whatever its size: a solid /
+# gradient base colour sent compose_paint_mod over the FULL canvas (paint copies,
+# full-size colour source, full-size blend) even for a 3% zone. On the per-pixel
+# path below every operation is elementwise, so running compose_paint_mod on just
+# the pixels the zone can change (hard_mask = mask > 0.1) and scattering them back
+# is bit-identical to the full-canvas call. Anything that is NOT provably per-pixel
+# (a base paint_fn, patterns, blend/overlay bases, placement transforms,
+# Color Lab depth, special/mono sources, angular/rotated gradients) is rejected
+# and the caller keeps the full path. Fit-to-zone colour sources are built at full
+# canvas size, fitted with the full-canvas bbox, then sampled (exact).
+# Kill switch: SPB_ZONE_BBOX=0.
+# Gate: scripts/spb_zone_cost_bench.py --check (old vs new, one verdict per payload).
+# ═══════════════════════════════════════════════════════════════════════════
+_GATHER_COLOR_MODES = ("", "source", "none", "solid", "gradient")
+
+
+def paint_mod_gather_reject_reason(base_id, pattern_id, paint, mask, kw):
+    """Return None when compose_paint_mod(..., **kw) is provably per-pixel for this zone."""
+    from engine.registry import BASE_REGISTRY, PATTERN_REGISTRY
+    kw = kw or {}
+    base = BASE_REGISTRY.get(base_id) if base_id else None
+    if base is None:
+        return "base is not in registry"
+    if base.get("paint_fn", paint_none) is not paint_none:
+        return "base paint_fn is not paint_none"
+    if _resolve_pattern_registry_entry(pattern_id, PATTERN_REGISTRY) is not None:
+        return "pattern is active"
+    _bl = kw.get("blend_base")
+    if _bl and _bl in BASE_REGISTRY and _bl != base_id:
+        return "blend base is active"
+    for _p in ("second", "third", "fourth", "fifth"):
+        try:
+            _st = float(kw.get(_p + "_base_strength", 0.0) or 0.0)
+        except (TypeError, ValueError):
+            return f"{_p} base strength unreadable"
+        if _st > 0.001 and (kw.get(_p + "_base") or kw.get(_p + "_base_color_source")
+                            or kw.get(_p + "_base_color") is not None):
+            return f"{_p} base overlay is active"
+    mode = str(kw.get("base_color_mode", "source") or "source").strip().lower()
+    if mode not in _GATHER_COLOR_MODES:
+        return f"base color mode '{mode}' is not per-pixel"
+    if kw.get("base_color_depth") is not None:
+        return "color lab depth is active"
+    try:
+        _bs = kw.get("base_scale", 1.0)
+        _ox = kw.get("base_offset_x", 0.5)
+        _oy = kw.get("base_offset_y", 0.5)
+        _rot = kw.get("base_rotation", 0.0)
+        _fh = kw.get("base_flip_h", False)
+        _fv = kw.get("base_flip_v", False)
+        _bcs = kw.get("base_color_scale", 1.0)
+        _bcr = kw.get("base_color_rotation", None)
+        if _base_placement_active(_bs, _ox, _oy, _rot, _fh, _fv):
+            return "base placement is active"
+        _eff = float(_bs if _bs is not None else 1.0) * float(_bcs if _bcs is not None else 1.0)
+        if _base_placement_active(_eff, _ox, _oy, _rot if _bcr is None else _bcr, _fh, _fv):
+            return "base color placement is active"
+        _boost = max(1.0, max(0.0, min(2.0, float(kw.get("base_strength", 1.0)))))
+        if _base_color_replaces_source_before_material(mode, kw.get("base_color_strength", 1.0), _boost):
+            return "base color preseed is active"
+    except (TypeError, ValueError):
+        return "placement values unreadable"
+    if mode == "gradient":
+        _bc = kw.get("base_color")
+        if isinstance(_bc, dict):
+            try:
+                _dir = str(_bc.get("direction", "horizontal")).strip().lower()
+                _ang = float(_bc.get("angle", 0))
+            except (TypeError, ValueError):
+                return "gradient config unreadable"
+            if _dir == "angular" or (_ang != 0 and _dir != "radial"):
+                return "angular / rotated gradient"
+    if not isinstance(paint, np.ndarray) or paint.ndim != 3 or paint.shape[2] != 3 or paint.dtype != np.float32:
+        return "paint is not (H, W, 3) float32"
+    if not paint.flags.c_contiguous:
+        return "paint is not contiguous"
+    if not isinstance(mask, np.ndarray) or mask.shape != paint.shape[:2]:
+        return "mask shape does not match paint"
+    return None
+
+
+def compose_paint_mod_gathered(base_id, pattern_id, paint, shape, mask, seed, pm, bb,
+                               max_coverage=0.6, **kw):
+    """Bit-exact, area-proportional compose_paint_mod for per-pixel zones.
+
+    Returns (paint, None) on success (``paint`` is modified IN PLACE and returned) or
+    (None, reason) when the zone is not eligible -- the caller then runs the full path.
+    """
+    reason = paint_mod_gather_reject_reason(base_id, pattern_id, paint, mask, kw)
+    if reason:
+        return None, reason
+    H, W = int(paint.shape[0]), int(paint.shape[1])
+    flat_mask = np.ascontiguousarray(mask).reshape(-1)
+    idx = np.flatnonzero(flat_mask > 0.1)
+    n = int(idx.size)
+    if n == 0:
+        # hard_mask is all zero -> the full path returns the paint unchanged.
+        return paint, None
+    if n > max_coverage * H * W:
+        return None, f"coverage {n / float(H * W):.0%} above gather limit"
+    # cv2's HSV conversion (HSB sliders) runs SIMD over the vector body and scalar code over
+    # the tail of a row, and the two can differ by 1 ulp. The full 2048 canvas has no tail
+    # (H*W is a multiple of the vector width), so pad the gathered strip to a multiple of 64
+    # with masked-out dummies: every real pixel then takes the SIMD body, like the full path.
+    # A canvas that is NOT a multiple of 64 has scalar tails in the full path -> full path.
+    try:
+        _hsb_on = any(abs(float(kw.get(_k, 0) or 0)) >= 0.5
+                      for _k in ("base_hue_offset", "base_saturation_adjust", "base_brightness_adjust"))
+    except (TypeError, ValueError):
+        return None, "HSB values unreadable"
+    if _hsb_on and ((H * W) % 64 or W % 64):
+        return None, "HSB on a canvas that is not a multiple of 64"
+    pad = (-n) % 64
+    flat_paint = paint.reshape(-1, 3)
+    rows = idx // W
+    cols = idx - rows * W
+    g_paint = flat_paint[idx]
+    g_mask = flat_mask[idx]
+    if pad:
+        g_paint = np.concatenate([g_paint, np.zeros((pad, 3), dtype=g_paint.dtype)])
+        g_mask = np.concatenate([g_mask, np.zeros(pad, dtype=g_mask.dtype)])
+        rows = np.concatenate([rows, np.full(pad, rows[-1], dtype=rows.dtype)])
+        cols = np.concatenate([cols, np.full(pad, cols[-1], dtype=cols.dtype)])
+    m_tot = n + pad
+    res = compose_paint_mod(base_id, pattern_id, g_paint.reshape(1, m_tot, 3), (1, m_tot),
+                            g_mask.reshape(1, m_tot), seed, pm, bb,
+                            _color_src_coords=((H, W), rows, cols), **kw)
+    res = np.asarray(res)
+    if res.shape != (1, m_tot, 3) or res.dtype != paint.dtype:
+        return None, f"gathered result shape/dtype {res.shape}/{res.dtype}"
+    flat_paint[idx] = res[0, :n]
+    return paint, None
 
 
 def compose_paint_mod_stacked(base_id, all_patterns, paint, shape, mask, seed, pm, bb, blend_base=None, blend_dir="horizontal", blend_amount=0.5,

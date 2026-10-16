@@ -97,12 +97,9 @@ def install_v5_entrypoint_security(
                 )
             )
         ):
-            target = os.path.join(
-                os.path.expanduser("~"),
-                "Documents",
-                "Shokker Paint Booth",
-                "SPB Projects",
-            )
+            # Resolve the same directory as project_routes, including private test hosts.
+            from server_routes.project_routes import _default_projects_dir
+            target = _default_projects_dir()
             operation = "project-storage"
         elif path.startswith("/api/user-imports"):
             get_write_exact = {

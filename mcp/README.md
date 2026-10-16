@@ -5,16 +5,23 @@ Claude drives Shokker Paint Booth through a local MCP server: it reads your car'
 searches the 4,800-finish catalogue, and looks at the live preview to check its own work. Every change shows up in the Shokker AI panel with an Undo button.
 
 ## Claude setup (once)
-1. In Shokker Paint Booth (Pro mode) open the **AI panel** → ⚙ settings → switch on **"Let an AI assistant (Claude or ChatGPT/Codex) control Shokker Paint Booth"**.
-2. Connect Claude:
-   * **Claude Desktop (easiest):** Settings → Extensions → Advanced settings → **Install Extension…** → choose `shokker-paint-booth.mcpb` from this folder. (Claude Desktop ships its own Node.js; nothing to install.)
-   * **Claude Desktop (manual):** add this to `claude_desktop_config.json` and restart Claude:
+<!-- [S22 2026-10-13 beta Claude setup] buyer steps rewritten: Claude Desktop only (the Claude website cannot use a local connector); the card in the AI panel does the work -->
+You need **Claude Desktop** (the free Claude app for Windows) and your own Claude plan. The Claude website in a browser cannot use this connector; Claude Desktop (or Claude Code) can.
+1. In Shokker Paint Booth (Pro mode) open the **AI panel** and pick **Claude**. Picking Claude also switches the AI connection on. The card shows what is still missing and gives one button for it:
+   * **No Claude Desktop yet:** press **Get Claude Desktop (free)**. Install it, sign in, come back to Shokker: the card updates by itself.
+   * **Claude Desktop is installed:** press **Add Shokker to Claude** (after a Shokker update it says **Update Shokker in Claude**). Claude Desktop asks you to confirm: press **Install**. The card turns green by itself.
+2. In Claude Desktop ask, for example: *"Paint my roof matte black."* If Shokker Paint Booth is closed, the connector starts the installed Shokker Paint Booth for you and waits for it to open (about a minute the first time).
+3. Want to type in Shokker's own chat box instead of in Claude? Say *"Listen to my Shokker chat"* to Claude once.
+
+**Doing it by hand instead of the card:**
+   * **Claude Desktop:** Settings → Extensions → Advanced settings → **Install Extension…** → choose `shokker-paint-booth.mcpb` from this folder. (Claude Desktop ships its own Node.js; nothing to install.) Then open Shokker's AI panel, pick Claude (or switch on **"Let an AI assistant (Claude or ChatGPT/Codex) control Shokker Paint Booth"** in the AI panel settings).
+   * **Claude Desktop (manual config):** add this to `claude_desktop_config.json` and restart Claude Desktop:
      ```json
      { "mcpServers": { "shokker-paint-booth": { "command": "node", "args": ["<this folder>/server/index.js"] } } }
      ```
    * **Claude Code:** `claude mcp add shokker-paint-booth -- node "<this folder>/server/index.js"`
-3. Keep Shokker Paint Booth open, then ask Claude: *"Using Shokker Paint Booth, give me an old-school Pepsi look with chrome trim over a flat finish."*
 
+After you update Shokker Paint Booth, Shokker checks the connector inside Claude Desktop at every start and offers a one-click **Update Shokker in Claude** if it is out of date.
 If Shokker runs on another port set `SPB_PORT` (the extension has a setting for it).
 
 ## ChatGPT / Codex setup (once)
@@ -46,6 +53,8 @@ While an external assistant owns editing, the in-app chat asks you to **Take ove
 Official OpenAI documentation: [MCP setup](https://learn.chatgpt.com/docs/extend/mcp), [ChatGPT authentication](https://learn.chatgpt.com/docs/auth), [model selection](https://learn.chatgpt.com/docs/models).
 
 ## What your assistant can do (tools)
+To use your ChatGPT-signed-in Codex assistant from SPB's own chat box, see [the subscription chat setup](chatgpt/README.md) and its session-start prompt. The local bridge has been checked; full Codex app-chat acceptance remains pending. Direct ChatGPT-plan sign-in inside commercial SPB requires the appropriate OpenAI access.
+
 `spb_status` (what car / which parts are known) · `spb_request_parts` (asks you to show the parts once) · `spb_design_recipes` + `spb_apply_scheme` (whole liveries on exact parts) ·
 `spb_add_zone` / `spb_edit_zone` / `spb_edit_layer` · `spb_preview` (live preview + spec map + parts map images) · `spb_get_zones` · `spb_undo` ·
 `spb_find_finishes` / `spb_finish_details` / `spb_browse_catalog` / `spb_find_patterns` / `spb_find_spec_patterns` / `spb_manual`.
@@ -57,7 +66,7 @@ Official OpenAI documentation: [MCP setup](https://learn.chatgpt.com/docs/extend
 
 ## For developers
 `server/index.js` is a dependency-free MCP implementation (JSON-RPC over stdio). `server/tools.json` is generated from the app: `python scripts/build_mcpb.py --tools` (app open, bridge on) refreshes it and packs `shokker-paint-booth.mcpb`.
-`node mcp/test/client.js smoke` runs a scripted conversation against a running app.
+`node mcp/test/client.js smoke` runs a scripted conversation against a running app. The connector starts the installed Shokker Paint Booth when it is not running (Windows, production port 59876 only, once per five minutes; kill switch `SPB_AUTOLAUNCH_OFF=1`; test: `node mcp/test/autolaunch.test.cjs`).
 The page side is `js/spb-mcp-bridge.js` + `spbProAI.mcpCall` in `js/spb-pro-ai.js`; the server side is `server_routes/mcp_bridge_routes.py`.
 
 `node mcp/test/client.js read` checks status, car map and image delivery without changing paint. `smoke` writes a scheme and undoes it: use a disposable test project. Both report nonzero exit status on tool failures.

@@ -1,0 +1,2122 @@
+{
+  "schema": "spb-runtime-knowledge-manifest/1",
+  "server_version": "11.0.0",
+  "roles": {
+    "entry": "mcp/server/index.js",
+    "app_knowledge": "mcp/server/app-knowledge.cjs",
+    "delivery": "mcp/chatgpt/fresh-install/delivery/review/fresh-knowledge-v2.cjs",
+    "context": "mcp/chatgpt/assistant-context.cjs",
+    "car_lookup": "mcp/chatgpt/car-knowledge/lookup.cjs",
+    "car_bundle": "mcp/chatgpt/car-knowledge/build/knowledge.json",
+    "encyclopedia": "data/encyclopedia/ai_copilot.json"
+  },
+  "expected": {
+    "knowledge_version": "sha256:fae8fe5837729f60242bfe28e42ffa68fcda6a14f68dd03242673ead3210dbb0",
+    "delivery_version": "spb-knowledge-delivery/2",
+    "cars": 192,
+    "facts": 303,
+    "encyclopedia_json_files": 384
+  },
+  "files": [
+    {
+      "path": "data/encyclopedia/_alias_overlay.json",
+      "sha256": "4bf22a8458030eec5dde1371e11fe7679ebee35dab1dc5cc6e99a42992266c98",
+      "bytes": 10640
+    },
+    {
+      "path": "data/encyclopedia/ai_copilot.json",
+      "sha256": "858f8ea581f6288bd1ab7cf078108ba3777c1a2c6827bc4bd22b6e4df8c8ce66",
+      "bytes": 98666
+    },
+    {
+      "path": "data/encyclopedia/car_pages.json",
+      "sha256": "ad9c7241b8b8cc9427351a138c3f7de5e2579c219bb71d6fa581d1cf5053c82f",
+      "bytes": 100496
+    },
+    {
+      "path": "data/encyclopedia/cars.json",
+      "sha256": "8e61acab81c824e6e777e338b9aa7e0c7539b62e6800c1eafcc06af597dc6ea2",
+      "bytes": 2896917
+    },
+    {
+      "path": "data/encyclopedia/concepts.json",
+      "sha256": "f0ff9b67b5d4523203f5fbc36179b23b1d14d8df7d54cb2547f8bb4704bcc5d0",
+      "bytes": 33205
+    },
+    {
+      "path": "data/encyclopedia/controls_pages.json",
+      "sha256": "a6508d3726f43b5d3e056997047c588fd8f01c2153b877d12fcd5f6907e07291",
+      "bytes": 4156
+    },
+    {
+      "path": "data/encyclopedia/figures.json",
+      "sha256": "b593dbed342423d185713ac9967d01a30cecc7f56f324f63045a4ddeb3159ce1",
+      "bytes": 32269
+    },
+    {
+      "path": "data/encyclopedia/finish_pages.json",
+      "sha256": "59c956484fdf635441720886be162b4ce8167cb798e0522b253d769073cd1b53",
+      "bytes": 66302
+    },
+    {
+      "path": "data/encyclopedia/finishes.json",
+      "sha256": "184f4df3ed032990c198715d2e18411f76be657b769d536d578c2d68a933f60e",
+      "bytes": 489612
+    },
+    {
+      "path": "data/encyclopedia/flame_licks.json",
+      "sha256": "33adfaf85708ebb84bda4323c3f7079d22425f2f9a8e028de66a221dc77a779e",
+      "bytes": 6875
+    },
+    {
+      "path": "data/encyclopedia/help_pages.json",
+      "sha256": "f88d8352785794497257b3ba08c484672bd20783faa69296ff453c5c57923111",
+      "bytes": 1825
+    },
+    {
+      "path": "data/encyclopedia/history.json",
+      "sha256": "cf119814715c17f3ad5fccf25912163389387a64f781b365e0d53b66034ffbfe",
+      "bytes": 7422
+    },
+    {
+      "path": "data/encyclopedia/ideas.json",
+      "sha256": "12e31418683871ab85314b0fbfd482c2dbd806b6ef5976a6600b255efe3b57fb",
+      "bytes": 387007
+    },
+    {
+      "path": "data/encyclopedia/layers.json",
+      "sha256": "8c19cafc725a70e9517facb9104808fc8a7a5be29fec1eb44c8725ed712a553c",
+      "bytes": 242922
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_ai_copilot_1.json",
+      "sha256": "67394b5f2c5191f0feb078e51d232b72245c52d27b552db94466e0400d7956b6",
+      "bytes": 8234
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_bases_1.json",
+      "sha256": "b79a1873ea02c8af2d1f1e34f70a685e6fed4849b73167ba55026f39211e2234",
+      "bytes": 39520
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_finishes_1.json",
+      "sha256": "c91ff09b6465875ce2fa3da38638301a6d33141befdbd022e534552c5c330a6e",
+      "bytes": 29709
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_history_1.json",
+      "sha256": "aba3a4541d2ab0868fdbf55e7fe71bf580630a86e8728fca1ecafa1bdc21fa90",
+      "bytes": 2088
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_layers_1.json",
+      "sha256": "e8a29fc8811a3d1a3da75bb2fedf081be68b7c0ac7e20be1b9bbe97263e8aaf0",
+      "bytes": 40493
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_layers_2.json",
+      "sha256": "b4726bbacffbed3c60ee762e6766f0584d867518cb35292590feb35bb6758d8c",
+      "bytes": 33100
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_patterns_1.json",
+      "sha256": "710d03273bf51d18b60d175aa096ff2391692d0fdf336bfae5eee3e08411177d",
+      "bytes": 23854
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_preview_render_1.json",
+      "sha256": "8a29ac8915f6393911f6f253c8698e00c2b8ebdbfaced65c977b38d50a523f09",
+      "bytes": 25464
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_settings_1.json",
+      "sha256": "cf65bd15d1fb72570ca526e375b771e51085027efd915b2a6fdebba00e1f6592",
+      "bytes": 9085
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_shokk_drop_1.json",
+      "sha256": "ade9686968d3c4e73680bdccb79938d7b45a217a6e3d7c01ea8c61ba2f276160",
+      "bytes": 43213
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_spec_1.json",
+      "sha256": "1cf506f92ed079d24a531efe2fb5b2630bf77d8dff5b34c7f5f423e604b46ec6",
+      "bytes": 29290
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_spec_sculpt_1.json",
+      "sha256": "c46d4effa195cee7a18cdd025617ee3bb07540e6ca9f0ea1604aed9abf88ff76",
+      "bytes": 42995
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_spec_sculpt_2.json",
+      "sha256": "e5ee24af89b77c72deef4301c95124e9fbe9bb1046263bb9931412d101a00946",
+      "bytes": 72255
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_spec_sculpt_3.json",
+      "sha256": "4941c54021af14aa9bc2d7270a1830d0de5aa4dc22608641feb29b1103a22891",
+      "bytes": 65264
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_tools_1.json",
+      "sha256": "ee6f706a80f7fed1fcc8399399b082f7c2afb542353d5ed87886900a5e0243fd",
+      "bytes": 42156
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_tools_2.json",
+      "sha256": "4e8c9d2348e4447fca19a1bbaec4acc7d8d706caf8f595a74318b79220ba190a",
+      "bytes": 46807
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_tools_3.json",
+      "sha256": "228b46cd1e47437adf4fa1a654e140ce2941bfd55c37f0e6dc5d5a6007d0cc07",
+      "bytes": 51451
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_tools_4.json",
+      "sha256": "c296eec6a0f73c3329d34ce5e26443652eb1589d27931da9b8c01d7baf944337",
+      "bytes": 14616
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_ui_shell_1.json",
+      "sha256": "38aee34ca2426085b37e8446d04e164c0bd4fb7ab90d7a381ed051846c1aaef8",
+      "bytes": 44861
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_ui_shell_2.json",
+      "sha256": "c6a7a2f33da0532fd2f1cadcc6059f7d603a7028fe56a514cba2689badc493a5",
+      "bytes": 65358
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_zones_1.json",
+      "sha256": "a0126b2b9ba886c1b3337bd7f437fac9cf3d391480b3d80d87e925faf0bfca54",
+      "bytes": 44483
+    },
+    {
+      "path": "data/encyclopedia/pages/controls_zones_2.json",
+      "sha256": "187c173960cb179334a0ed2e8531992605d148ccc1a6a6d0d6f34789939a0849",
+      "bytes": 13115
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_all_that_1.json",
+      "sha256": "3dc3ca0de3943047b86c105f484ce194e98abcbec08ad46791c7be8f1deb6321",
+      "bytes": 68283
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_all_that_2.json",
+      "sha256": "7ae753ef4a81435cbd29195597c3c38dd06faea6881298b8403feec149572e9c",
+      "bytes": 63832
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_all_that_3.json",
+      "sha256": "acba1f511cc26345876f6d0cf587283fa931109741e7d490c62e02073d057b2b",
+      "bytes": 64913
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_all_that_4.json",
+      "sha256": "1fbfb497897332a9e1be279beb71a8de18f39d8544a3eb35f0f5b96b8e8e68af",
+      "bytes": 78173
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_anime_inspired_1.json",
+      "sha256": "0ec6a1c6f14249aada4fd8f1a663861d0c239ad3464f4bad7b4c2a91bdc15fba",
+      "bytes": 72244
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_astra_1.json",
+      "sha256": "ed9b9907f2e095f619759cf3ae41ba3913f48575cb1ce9da857135522ab7e759",
+      "bytes": 77205
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_astra_2.json",
+      "sha256": "5f42ca51a0bfa6180301b89da0a384e33177c7d7ce005689c31efbb08afd18fe",
+      "bytes": 77227
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_astra_3.json",
+      "sha256": "a8ad1e6d8f3c3b1241ac9af4be44b0c8cb7c320b8a1127d474e98f0d7e86c205",
+      "bytes": 85131
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_bad_rad_1.json",
+      "sha256": "75ae1496c6bd69fe32b6b227461b88f79773d3c61d1f5910c4cbba91ae5b7eb8",
+      "bytes": 65651
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_bad_rad_2.json",
+      "sha256": "ffb27fa2f4a690fe25314593434088abadc46f5b4f448076a1ae35a285cbdb83",
+      "bytes": 65918
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_bad_rad_3.json",
+      "sha256": "5de770a107fd676846cc53e372a59865199ac68c8ca360193fb268470e83d0b1",
+      "bytes": 69248
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_bad_rad_4.json",
+      "sha256": "f91010cf77faf79d135cdf23592d5e3ba05c0edd316be4dc7e508831f052a961",
+      "bytes": 78862
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_color_clash_1.json",
+      "sha256": "ea52dde828878b44ea1ba97f581283454dceea78d9adfc32059635d519b4426d",
+      "bytes": 57001
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_color_clash_2.json",
+      "sha256": "615f62a0bc79a222554ebb955d42a32e5f9a26bc62c95499982e8135bb4a1d36",
+      "bytes": 61424
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_cyberpunk_1.json",
+      "sha256": "1bb3328db88fad662eba63175b854fac2e9f4ae2ebb61b1a2e85e519bede058c",
+      "bytes": 65687
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_cyberpunk_2.json",
+      "sha256": "ce37082dcdf3cc67078c101fde27609a8b71e6e487e6fda3f26a386035785a39",
+      "bytes": 69897
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_cyberpunk_3.json",
+      "sha256": "fc7114e4cae206437915f0d8f1a04cb5308a8aa6ed1ad25ae607643bbefccf33",
+      "bytes": 65999
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_cyberpunk_4.json",
+      "sha256": "bae909f46b08927aa6ad9cefecdf1193f56fe4604c7b3db743754f2de3b2580f",
+      "bytes": 79567
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_dark_city_1.json",
+      "sha256": "9a3b4b03a1d3b9c55f7b3533e656078041f3a977f204a5c38ce44a653a4781ba",
+      "bytes": 71902
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_dark_city_2.json",
+      "sha256": "f4d813cc366a8af07c1d2d9cc8bae69f1b297c0f08900adb5223195ba8d6ae38",
+      "bytes": 72777
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_dark_city_3.json",
+      "sha256": "ac7f858a6ea97f297d658830db80c529bb7d1da5e3d6adc4b6022a3b05873a55",
+      "bytes": 81359
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_depth_geometry_1.json",
+      "sha256": "df1de703b262b8d5891732f31ad57d2fd5a474a39a354edb7bdbfd20f5484a8c",
+      "bytes": 59820
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_depth_geometry_2.json",
+      "sha256": "2ac2621b3c6b1d98cad86175cbfb1fc562de00f21ec4d404f81b7375448796d1",
+      "bytes": 59886
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_depth_geometry_3.json",
+      "sha256": "ceac604dd1fea7f0889ddd0e4064bddaabb29752c8ff2b496158fad6dbac4c18",
+      "bytes": 72585
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fable_1.json",
+      "sha256": "87b184072c9baee1966d6b71e539463352ff09522b344ffcebe917ef512d6211",
+      "bytes": 71346
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fable_2.json",
+      "sha256": "207587654a9e3c63787d6151fdb72fdd90b5bd9ba7b088597a2b13da4db24fe2",
+      "bytes": 72384
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fable_3.json",
+      "sha256": "a48de59bf67d14d48565691fde06547bd2c83de17755c61ac7a61de5eae10a90",
+      "bytes": 81893
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_far_out_1.json",
+      "sha256": "1db3e21784cc9c8fbc853f4cf902ff6fef2c51a828587727f472650eae1976c5",
+      "bytes": 67411
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_far_out_2.json",
+      "sha256": "2368b281d74178ba71e5d679725b63e52b376ca9383a19613d37b16a4f89c872",
+      "bytes": 63393
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_far_out_3.json",
+      "sha256": "00c81781f4737c652bd7b413a97a378f7a69533ec9597cb1254115b93d6afbc8",
+      "bytes": 63693
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_far_out_4.json",
+      "sha256": "c8286ef0910e23f6645e2a93a7b6b7302dcb300fd3bd05badb90b00229f13c6d",
+      "bytes": 76756
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_flames_1.json",
+      "sha256": "ec1900eec0ad8d90ab6941e733b2dc919110dca3aab1b74c28d878cc577da090",
+      "bytes": 45205
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_flames_2.json",
+      "sha256": "8ac610016ad7d6c100f0b8bb5d49ae46386321b7a1dd6e42261425524d8e39ce",
+      "bytes": 45372
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_flaw_lab_1.json",
+      "sha256": "636832a1d4e235c26d9d67e36bb44db9930b7188aae7d8b1656af24fd938f667",
+      "bytes": 55844
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_flaw_lab_2.json",
+      "sha256": "f963fd4a8d40c0153a614f75f8947b6347184470dce2915abd6bfde042571316",
+      "bytes": 61144
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_forbidden_dragon_1.json",
+      "sha256": "6fac393fcf893bac869978d18536503155cd0dedc0a3b362d2c8c6c570b3cdb7",
+      "bytes": 47316
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_forbidden_dragon_2.json",
+      "sha256": "84c8dff8e8f85275f8e2b4fa699777973fdb84111093e2724ebf327fd42161e2",
+      "bytes": 47512
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_foundation_1.json",
+      "sha256": "cfe824d10b130c0c04e08344b6f9cb53e2cb19d3f7ea6516f51a6c74a8fb757e",
+      "bytes": 85420
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_foundation_2.json",
+      "sha256": "bdf45c389ad7e580c9bb6053f4f1c2024da13219357026baf910a884e69b22cd",
+      "bytes": 95821
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_foundation_efx_1.json",
+      "sha256": "1f1f232e2e698c32e70ee6ce319009aa11df9d757920942226b2233a54b77efa",
+      "bytes": 97678
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_foundation_efx_2.json",
+      "sha256": "84a955b54b87782f46c23fda2f0623f594d134d9c232d6a24aad76c801825236",
+      "bytes": 97673
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_foundation_efx_3.json",
+      "sha256": "60aa82cc9e0944a15704bdc36f549f7058f3bd24e75196d1aa90da4fd9bcf496",
+      "bytes": 104346
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_cosmos_1.json",
+      "sha256": "18f5d98b3172ab90509ef7f9f9e5fdb4a02a08fcd121eb4bdffe225a2338e6f7",
+      "bytes": 65043
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_cosmos_2.json",
+      "sha256": "3d1c05130e9edad7d2ae5bcbcfd4550d1848f2922edf5238d22ab9c10efdf9fc",
+      "bytes": 64980
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_cosmos_3.json",
+      "sha256": "4ca6917faaa961f339fac3ffa42f5a2d1de463a60cd3244b04dadeb1a17c78c6",
+      "bytes": 68359
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_cosmos_4.json",
+      "sha256": "4f45031af88c3274b306740c19a6ea71d37543462889650119dc81c3c7eb7f63",
+      "bytes": 77217
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_elements_1.json",
+      "sha256": "7e4ac2d3f6b36f98ccd5cbbe653997539945c1b3242647070afa9d37a5571364",
+      "bytes": 68209
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_elements_2.json",
+      "sha256": "ba580e939b6963b0ba2d8b817874e45e637b61b0e5c669a225280a40363164e5",
+      "bytes": 68572
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_elements_3.json",
+      "sha256": "85b23eaec9389b88ba00b653b0b6ddbdd8a90df6f0309d76f1eb33feeb0b195b",
+      "bytes": 68273
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_elements_4.json",
+      "sha256": "531d88535c56fa49ae199a3ce0d107b2f72b926fe4852445588fe959612c9ce7",
+      "bytes": 69220
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_flames_1.json",
+      "sha256": "78bd06c80f7997997742c069e10a8dc6dbbc965e4524aaeae05eadb994f59944",
+      "bytes": 83810
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_flames_2.json",
+      "sha256": "87045774a37c77ad9fa1d6863c832865e456f96ffd87388c7606ea8480ad1210",
+      "bytes": 84095
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_flames_3.json",
+      "sha256": "8c6db7e66f972e491bc751d7658f656fd897e1fead9ffb5b501a2a89f0b567e7",
+      "bytes": 84272
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_flames_4.json",
+      "sha256": "39328f722392e31ed028176d93ff9d1f4b65309e9b44af56e760e582ce16e80f",
+      "bytes": 89090
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_flames_5.json",
+      "sha256": "5ebc929eec24b479ecceb0ce0f2b5ce1c994282fbb30b3e68d1dd9eb263aa2e7",
+      "bytes": 9307
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_forge_1.json",
+      "sha256": "9cefb4ec426bcd9fc3836c72aac7eec7f9d1efcc4e636713f05194f48aec8c94",
+      "bytes": 80832
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_forge_2.json",
+      "sha256": "6cdd9642129c05f1d0d2a7c198f14512c8e83f34796205d71c065a5d9a4a07e7",
+      "bytes": 78514
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_forge_3.json",
+      "sha256": "ae506cf137afa0039b9b4724bd178e20aacb5109a3e24f350661fedaa6a0f6c2",
+      "bytes": 80846
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_forge_4.json",
+      "sha256": "1353e684462d07dff3ca9cb3dcb85f54d45ef342e7ce9a625dd4ab73846004e6",
+      "bytes": 79167
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_forge_5.json",
+      "sha256": "1e8680823705d0574191cc35d3d1ac62c30a141f3e43c7c1d6284fa6f8ab9f04",
+      "bytes": 89664
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_forge_6.json",
+      "sha256": "e367c781febb61b3ef1f9a69694f34b39e69d81e07f473b332fcb4b6aa497824",
+      "bytes": 4834
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_foundry_1.json",
+      "sha256": "32cb22cf57cad919defc1a652e1ef88f4097cde4c6d17f4ed39ff5f802b04ba8",
+      "bytes": 73492
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_foundry_2.json",
+      "sha256": "048e1645a08995330df73707770204c6f901d5a91903fe7cdb6ff88c7a7eadf4",
+      "bytes": 73266
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_foundry_3.json",
+      "sha256": "baec984d7790b586830440b5f41fd268de54e4ab7b07d7e0208015e6f71f484e",
+      "bytes": 82183
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_minds_1.json",
+      "sha256": "ff55e90f3152d3dcc467650f27bf993514dd145bae8b04320f3c96fb6b74e3aa",
+      "bytes": 86539
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_minds_2.json",
+      "sha256": "4da4ec0eef4365746c0a3f27faafbbacb690561cf027905bb07a032792e4bcc2",
+      "bytes": 86357
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_minds_3.json",
+      "sha256": "88e405faa537dd6626d056d99a2c1f891e02fde483968c7771384189d644ce47",
+      "bytes": 91103
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_nightshift_1.json",
+      "sha256": "4c170aab2bf1e77caee0bbc4ec57134d7cd122ef54f9f2c7850a7f2bb15a2685",
+      "bytes": 74558
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_nightshift_2.json",
+      "sha256": "1d09a24aeffa9a6febcaf776d5524ef6e5731613482aa8eb624ad98f74cb8ad6",
+      "bytes": 73293
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_nightshift_3.json",
+      "sha256": "5405337113a82918d7d6360d845ffeff7e6a8c7eb8850715d76dc9e2d6b323f7",
+      "bytes": 83373
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_opalfire_1.json",
+      "sha256": "26df4eff639fab86db54c3205c201a453a7e4152fa42001d93f9e1305695cdda",
+      "bytes": 77578
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_opalfire_2.json",
+      "sha256": "6bf225740493f2bad813e5b147c44207c06498de7a9377e84539d054ac9633f4",
+      "bytes": 78165
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_opalfire_3.json",
+      "sha256": "5fac14893e472858f6e2b954faee505653576dc610eeddcf316c9112b769ed13",
+      "bytes": 88235
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_relics_1.json",
+      "sha256": "833a9b39569969376d8d6ed192ec3f7f1f598f3a0384587f961f1c3b3900610a",
+      "bytes": 73820
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_relics_2.json",
+      "sha256": "196560bb036f8060c3e77343a3eb301c2485236e210f625f786c742bb2eea427",
+      "bytes": 74270
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_relics_3.json",
+      "sha256": "6d6d81945050b4546bafdee5eb6d8c771f1cb5424c9365c098a90ee505a5b5a2",
+      "bytes": 83273
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_shokk_1.json",
+      "sha256": "bb4a2def3df3f5726182b3210c423ab64a90a83aae93312a7d6c72120f540382",
+      "bytes": 43137
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_shokk_2.json",
+      "sha256": "9fdbadc493555586648ffc1a6d9f99dce7a22136afe7b99895bb6c3fa7805ef6",
+      "bytes": 52123
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_souls_1.json",
+      "sha256": "ffb905111c783e50c3c77b47b908c6edd5bc9c407f8e4cd6951bebe79bb897d0",
+      "bytes": 72358
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_souls_2.json",
+      "sha256": "6ec7658177f529e78c5bb773f5d8101fba7cb7f11af9bcd37a71a28c25ddb884",
+      "bytes": 73645
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_tessera_1.json",
+      "sha256": "9f0609d02f51fa639edd8c0134d17de190ea5cfe44546562cb67a6512e0740c8",
+      "bytes": 75199
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_tessera_2.json",
+      "sha256": "a40f08b268d1f1a000ad45e12a55285b3292e180f63fd0f04d292b6e21724462",
+      "bytes": 74108
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_tessera_3.json",
+      "sha256": "f68a07c5f1e9ec068ef573f5adcb79711dbc9416f0494c0ba4991e3bd277e503",
+      "bytes": 84362
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_wilds_1.json",
+      "sha256": "1c192e1104fa504e0196f9b089560c6215962078afc987af1eb3a8a4b7a6021f",
+      "bytes": 85246
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_wilds_2.json",
+      "sha256": "3a0c9f6940c10d2ab7d0dc81baa0d6aaa6f3fcbac9839e2265418890906ec87b",
+      "bytes": 86148
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_wilds_3.json",
+      "sha256": "29bfc23a16b53b1f0a14dec079c0e3eff7abfc877b0cca55e2e604f375f7bec0",
+      "bytes": 85638
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_wilds_4.json",
+      "sha256": "5de29109cb7d02af368f51ece48e3bc502fe3e531bfecdfbaa348a2f82b774f8",
+      "bytes": 86130
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_wilds_5.json",
+      "sha256": "37b30f490ddecaeca6c5c9c85018491701511dc821fd4b8635a4610a5ee16538",
+      "bytes": 84827
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_wilds_6.json",
+      "sha256": "b02f0824b9984c92a60771edf40f4e206e82cb955608ee336e9959d5b64c9c34",
+      "bytes": 89922
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_fractured_wilds_7.json",
+      "sha256": "92dfc210ccd6f5bf196a2a680b0dd6b69a5f6ab1d45d9a14fbab62dd6c103c01",
+      "bytes": 4780
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_glass_surface_1.json",
+      "sha256": "713b72ede851954e5a7772d88888c798126f732747435362105d670e4f1ae84b",
+      "bytes": 47413
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_gradient_directional_1.json",
+      "sha256": "d6dec4f29e288a3152bd37aa83faf519836c8c124aaad353c1eca692b3deeb54",
+      "bytes": 78927
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_gradient_directional_2.json",
+      "sha256": "9ef248dc7d78072079d940ed63df9e637105e01da081a356c3a2e0f34ea2d74c",
+      "bytes": 79788
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_gradient_extended_1.json",
+      "sha256": "cd0a69ad39e9f0b7646c78ad7e5357a69a14828717efad72b265bb915c0e3cb4",
+      "bytes": 75109
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_gradient_extended_2.json",
+      "sha256": "b6a5d8c633980a870b6e4f232b1383fd26526e187ed4e0c19d854db0035f0cc0",
+      "bytes": 76150
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_gradient_extended_3.json",
+      "sha256": "a48212290fd9996ce89f26e59dd5775b0d97a70ac665c0fbdacde01c1e6a729e",
+      "bytes": 79542
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_gradient_extended_4.json",
+      "sha256": "20285519de2c2c1d773c16eb93cafe6c02ae5e81f9c353e046ddc77a9d84ef79",
+      "bytes": 76239
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_gradient_extended_5.json",
+      "sha256": "0974618d0c1e671277ee1d097c82a1bd985c12226da985671490ab063bf4dad4",
+      "bytes": 75532
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_gradient_extended_6.json",
+      "sha256": "9056072790f44eef3f5d06fb5b2ed0999125a168dda348708ef44b24d5b97187",
+      "bytes": 90510
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_gradient_extended_7.json",
+      "sha256": "34556ac61153d535f631756dcc5a5be62b691495435fe19a0703ecf84abffcdf",
+      "bytes": 4895
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_gradients_1.json",
+      "sha256": "dd55b46a2494a7751795f515fd507c26d4042e8335a8b028c546bc24b8549693",
+      "bytes": 68582
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_gradients_2.json",
+      "sha256": "3c78f65a71dab1ebeed7d79bd236b4afe36c105bd9e0b8de58035ae41ed000d1",
+      "bytes": 67468
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_gradients_3.json",
+      "sha256": "296c92422482ac94928a765f4ba553daf564690936c5c9e8d576526fe77ebbdb",
+      "bytes": 72154
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_groovy_vibes_1.json",
+      "sha256": "c786e5bbdf6c249572a0c10473a5c827b8a02e8e363da0df547cf5f122c14ea7",
+      "bytes": 88399
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_grunge_fun_1.json",
+      "sha256": "6c2552d9f59f51a0ebc1dcd0c38b22d0bc43a507005166efc3f0106b49dd1db5",
+      "bytes": 74274
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_grunge_fun_2.json",
+      "sha256": "d9998554dbade0aa8edaadd5e68b9f52edcc3d00a91b0b4e684edfcbed1ce9a3",
+      "bytes": 79088
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_grunge_fun_3.json",
+      "sha256": "de382dc379c486edba83d2905020efc3edce223661c83d9e71b36f82765a1999",
+      "bytes": 83727
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_impossible_finishes_1.json",
+      "sha256": "5f619d04495c86ae51429a3c8a2a79003a8fe5575a6643b84ecd0dbc9bbf35ca",
+      "bytes": 48287
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_iridescent_insects_1.json",
+      "sha256": "27e6698927fe98170792c07100fa56c05d5dc51842298b96057c82086dd4e8ee",
+      "bytes": 75909
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_iridescent_insects_2.json",
+      "sha256": "8a4cbf021970a2b222d3855947cd0fba2ed486bbd6acb4025f7794fb642ea825",
+      "bytes": 75983
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_iridescent_insects_3.json",
+      "sha256": "64262cdd76371f4a97254eb5c58b3e73730d95159c9cdb91c1f6488aa48b5a9d",
+      "bytes": 85808
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_let_freedom_ring_1.json",
+      "sha256": "4eeef059f686054bf21d459220f359149eb05f9809b484143b2c9b953494cd59",
+      "bytes": 48144
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_light_optics_1.json",
+      "sha256": "3a47b81f6762506b71748461c5c02c2b6c68364075f04ac9142078ec6623572c",
+      "bytes": 65014
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_light_optics_2.json",
+      "sha256": "73575cbf02ede95de8a2a9519219d7a03756b217cfd9f291d1315546d382a4d0",
+      "bytes": 70875
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_materials_physics_1.json",
+      "sha256": "683eccf5e7add9632356c02f34dc8c0a7322457a88ff358bb280272d694b210b",
+      "bytes": 70805
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_materials_physics_2.json",
+      "sha256": "9161bf783af202b65f113a81c87486f3337f66f6634e242604adedd73d869fa5",
+      "bytes": 75207
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_money_shokk_1.json",
+      "sha256": "18546ac4d15b1c75c9aade14ffa0da8e0eaed126d10475ada90b5a91608760e3",
+      "bytes": 59472
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_money_shokk_2.json",
+      "sha256": "b7d6ca408a0666cf875fd040c26a44e3bca573519a0f2f9c76ff4c2cad599dea",
+      "bytes": 59500
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_money_shokk_3.json",
+      "sha256": "e4056b6960684fb04a8d2e1760bff6c922439ed798d965498cf9a997d1897aa8",
+      "bytes": 64248
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_1.json",
+      "sha256": "a5a2e5e465e292aec60c7f749cd755548f94f3a53441ee72122ccbff8bd1fcce",
+      "bytes": 85018
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_10.json",
+      "sha256": "6165c959f64a421e3e6f9041859c18ed8694d222c091f3b566232b36140c25ef",
+      "bytes": 82136
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_11.json",
+      "sha256": "5027262563b2f0bf6c5b9965da8e90718ce36d94ff8479000c697c3329f9132e",
+      "bytes": 82351
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_12.json",
+      "sha256": "7113d5688138ffb9b224dad50631c7a310a100b1f50abca6f8cdb3f7815b3b2b",
+      "bytes": 82467
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_13.json",
+      "sha256": "18e916ec857d17f25af44800b45417c223cf41f6e074a9c9e1d5a23642823854",
+      "bytes": 83964
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_14.json",
+      "sha256": "6d8b7ab6d27503894eac49772dded9db53805cc66fd44896dd757ed11f8656f5",
+      "bytes": 84569
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_15.json",
+      "sha256": "b37ae461a48367c2034f5a3d064f167e6d177d2c7a5c93e31b301e88ff01992b",
+      "bytes": 85051
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_16.json",
+      "sha256": "7749ffde47c40d4c74267b5830a1b698d8f33ecb60d3e8d785c66e2de5130c8e",
+      "bytes": 85593
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_17.json",
+      "sha256": "499e7678435d016f4fe61cc9ca355c8cedd3c6b67ced8647d0c624c43461a2fa",
+      "bytes": 83184
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_18.json",
+      "sha256": "7762c5fddb14c96de966d6676ddba802cfe4931da5b121974469b303ba4eddf9",
+      "bytes": 85268
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_19.json",
+      "sha256": "60dfe6e84160af6219486d95f3f8b294999cd936385d8ad13cfbdf24a3ea2ce1",
+      "bytes": 81476
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_2.json",
+      "sha256": "2db77a1315bad8f0be350b06fa50f228cb467d10fdc820de2689a08d84fea81c",
+      "bytes": 83014
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_20.json",
+      "sha256": "ad8b9b236a13af1d8217b7dac56d47ce0cff6b0a6c12bfe4765e6aa18c4d110d",
+      "bytes": 81501
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_21.json",
+      "sha256": "286ee80cbc745f89cb444f6a1d31374f00065ee9fc95ca044575010fbd5949fb",
+      "bytes": 82441
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_22.json",
+      "sha256": "b78a6637591fe7b4fef075dfac84fb9d53765b1d07c950fa22e78cac79cd3316",
+      "bytes": 83860
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_23.json",
+      "sha256": "ceb1f1a95b4452cdc4d991eb4782b9fdbc9f227cc3b8894d52897e9fbf7ef545",
+      "bytes": 82195
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_24.json",
+      "sha256": "fa39ddedc034ffb889cd7df55825a83390d20b6ecfdf3c1e50c7a30a06286ca7",
+      "bytes": 86018
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_25.json",
+      "sha256": "69609dd97d4f5568f221979998528779bf67f79ce4344c71ab369832239ae438",
+      "bytes": 63162
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_3.json",
+      "sha256": "4b7285b4580891e2239732f34724d8deb66ab8f26cbbdcaa0d66897fe9f43a74",
+      "bytes": 81611
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_4.json",
+      "sha256": "c4d2c7ce85e231d6d44f1f90464bf6dc6c279b867804bcd56088fcda656794e6",
+      "bytes": 82558
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_5.json",
+      "sha256": "d926cfc2bc0448e378463670f2b389bb5acd429edf94143bb27772e925385291",
+      "bytes": 82132
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_6.json",
+      "sha256": "58a81b9de910678b836c2273a11f95a6a5048aad611dea068bcd52c9f4a0ca4a",
+      "bytes": 84377
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_7.json",
+      "sha256": "065d3a50277690801b5aac217c06195a6767ba54de4cc1da15037a8158402ca7",
+      "bytes": 85708
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_8.json",
+      "sha256": "0d4c8ccf366a663cb58658b8dd3afbd113445710eecff35764be3f60be5ed61e",
+      "bytes": 84230
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_bases_9.json",
+      "sha256": "9c3b10cad55e366b0af895b1d44d5791f1810515253153bf15460b4d26520ade",
+      "bytes": 81378
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_1.json",
+      "sha256": "fd5fb2f51fe35badeafc4bfb95c512c2c663d2eddacf4a1709843dc7c1a81467",
+      "bytes": 87356
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_10.json",
+      "sha256": "20e957976f385225689a7f14a3f213356ae79ebc1b8065ec16be06819b9371c4",
+      "bytes": 87494
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_11.json",
+      "sha256": "1cebebce31de3648fa9a64495da59d90905f849fd0ae3e19ced2ae76ce2093c8",
+      "bytes": 86881
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_12.json",
+      "sha256": "c930b0f341a4ee2d7640cd69e81fe824de617f52bcd060c03c41ecfa19b45832",
+      "bytes": 86283
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_13.json",
+      "sha256": "de4c0e193d884f268d7eb9601ef6f7f934b4c152097134419b1a3395c04bd86a",
+      "bytes": 87316
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_14.json",
+      "sha256": "b58520b8cbd43fe7914362bc8335ffdadf4c39c0c1d82aaa5d3833d937cfb9e8",
+      "bytes": 84949
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_15.json",
+      "sha256": "027998d5ccfc8d1a138efdf2d88e976a7e7a0deb9e0d7af5111ff0f9e74e44f7",
+      "bytes": 88486
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_16.json",
+      "sha256": "f5a886a955fbf75a3c39d120dce293ba65451bff5030489efb2fa08f14affe13",
+      "bytes": 86699
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_17.json",
+      "sha256": "c88e1cbf463bcc9b5af64546d500fecdfe5c617f752739d0e14bef90f9d61d59",
+      "bytes": 85753
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_18.json",
+      "sha256": "fb919f1bf37ca7caef9efe46b6a968ebe038c7c5fe1b63bc08345eda3d8ed0a3",
+      "bytes": 85217
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_19.json",
+      "sha256": "92a5ea79432ce905b25719468f787ba95d033be5d2dd304ab7965a00097174fd",
+      "bytes": 85419
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_2.json",
+      "sha256": "91f0a75bad50c942f74e04966802a84226e2f5ef8a5b59479c12416242057f77",
+      "bytes": 88229
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_20.json",
+      "sha256": "32a68952a946d834b5c03b96d66f53d043c805a048459b80d8d4dc2b932c40fd",
+      "bytes": 85205
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_21.json",
+      "sha256": "98b5321550b22cf73952330d10e831e7c606801d04f5833db5c648585f387cb4",
+      "bytes": 88969
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_22.json",
+      "sha256": "120deec5c22bd9bc3d77f6bb2cd065088db489ff4db6a8e4c361ef17fe832173",
+      "bytes": 89268
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_23.json",
+      "sha256": "3289c6f132aa2db6f707589502182363b8c3d9e4054862d0d3493bc82e260d3a",
+      "bytes": 85025
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_24.json",
+      "sha256": "91a12cf997be755ea69e69dff346106ed7ea4b865ce5827f241822179a5dfb41",
+      "bytes": 87390
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_25.json",
+      "sha256": "c660b9bbcbfb164486c3561a6b8fe72930c7b64c54e874d112579333fe54e71b",
+      "bytes": 88138
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_26.json",
+      "sha256": "25f2e11f3cf7da5bf9c041dda5363411b305396dbab664a710dbb297209573c1",
+      "bytes": 90318
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_27.json",
+      "sha256": "aecd2017139dc9d3588f40f3bd9d6d29ae1f329381991ee1f6ff1b41f5a7edd8",
+      "bytes": 87819
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_28.json",
+      "sha256": "35c66d6f4ba34dc078c6e1b3b03d22bfa765d8b0065944b124b722fcacdf18bc",
+      "bytes": 88242
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_29.json",
+      "sha256": "421774e752cdbe2b2b413b80145745bc36f779c5aef87bb0082dd0e2046787a9",
+      "bytes": 89131
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_3.json",
+      "sha256": "8071219ba3bfdbfe4a5e0f553e88681ee909ba76056dcbe581cff95c1b305ff6",
+      "bytes": 86973
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_30.json",
+      "sha256": "8792635ae662267cc8959d3d79b630685433bb30f2bd201a073b6cfeea2d0f0d",
+      "bytes": 88964
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_31.json",
+      "sha256": "3dc0b44d6f01c89380eb1dbd6533a25e2d72ee19b9e6d41350aa4ae28be7384a",
+      "bytes": 88638
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_32.json",
+      "sha256": "2143849b6928a0b6d7113324c89f1cf62abcfa18d789d22d9bc3b3fc498acc66",
+      "bytes": 87331
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_33.json",
+      "sha256": "ad21dc01beb51bc0ef4dee6806595d3bb7e2b3530befcee7dceb28466abcbc50",
+      "bytes": 84898
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_34.json",
+      "sha256": "c3c795036aad738cda0989ac3eb54aa9f18b9bc3e596f791408560ca835fbf05",
+      "bytes": 89963
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_35.json",
+      "sha256": "a4d866755b63fc7c220a3c9a7e5297f043df53655ca0ce0c627e3c6773bc92ab",
+      "bytes": 85036
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_36.json",
+      "sha256": "494c4ebc8c00a1c0f5676cb54653426f06cf91c8327a622c939c388b97cbc728",
+      "bytes": 84591
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_37.json",
+      "sha256": "6753ab022dae20b265e6cde9f1b980a5c7af096bc07dd6462a6eb86bbde02670",
+      "bytes": 88093
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_38.json",
+      "sha256": "d1386b4d86d475eec7879ae9cd52b5feb58edfd34a26151ae0eb91365332b277",
+      "bytes": 84963
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_39.json",
+      "sha256": "1d0791bbdd268f6103d8f678773fbb73c2303e3c1b543bbadc69824ccf21eeee",
+      "bytes": 88277
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_4.json",
+      "sha256": "e8b354a94f39088ffd6aa12bfae76210d3e1db7e16dbd5f32300ecd58f9e94e5",
+      "bytes": 85279
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_40.json",
+      "sha256": "58c3379b83a25cd94abc417808f67840c93569cf91a6f571af93470a656f7b5b",
+      "bytes": 88343
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_41.json",
+      "sha256": "d27a049f38d1d8efc7d0781b0fa24939a2af9f3edf8fbf3970f3bed17c55d34f",
+      "bytes": 87408
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_42.json",
+      "sha256": "c3c82f38a169a067104ebb85a18afd1e69753589ed06e9f3f7101edbbddac542",
+      "bytes": 88205
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_43.json",
+      "sha256": "c3a1ffe9e0a0ee1be068c33b1dc821dd534911e1f950ea973323cd326e9618d1",
+      "bytes": 84671
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_44.json",
+      "sha256": "3b014b9e4526d33d45b29dd41dfe7ca2e4ad80671faabfaa5457472a24c57d40",
+      "bytes": 84415
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_45.json",
+      "sha256": "5faf503f80f5e1aca3d6479561d2cfa7d419a578d55008a53bc308d942dfa517",
+      "bytes": 88182
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_46.json",
+      "sha256": "1e7b4178a5a090549f56c23a84cfdd630d21d05480d6f079baceb7495d9c776c",
+      "bytes": 88643
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_47.json",
+      "sha256": "e3eb8088ae1952f1a270b4c6d61feeea379b9aaef471e8534fe5de10ac841419",
+      "bytes": 88407
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_48.json",
+      "sha256": "37784d278eb6c5cdbc7a8fbe7b1736e4958ac388b77f3fdd49f6c0c39340ff73",
+      "bytes": 88188
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_49.json",
+      "sha256": "90899e9f3630f59eb413f36337c2941928bc83d77934828058fe7b43c238d16c",
+      "bytes": 88222
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_5.json",
+      "sha256": "376c929f0f80acfc8a25f5d3e4e8deb97c892c10accf3fb3793690b9a6f65078",
+      "bytes": 86231
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_50.json",
+      "sha256": "2fa4d02f5ba6e69f03d4de9d24ab5dcf07786e2c92e6d73e874e811933813c9f",
+      "bytes": 87712
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_51.json",
+      "sha256": "2af8d10d75eee250b598b5a5869090cc4493a5ec4e2789b4afd0979b2d97de68",
+      "bytes": 87467
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_52.json",
+      "sha256": "41f6f799a0861e2e72b13d4dccf2abd9c14e8edd632adb3b140c8413f22bfa9d",
+      "bytes": 87386
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_53.json",
+      "sha256": "a27f379d4809928a5678b61633ae0a1f6b11868326bd89f9ae1e23a610c88b63",
+      "bytes": 87093
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_54.json",
+      "sha256": "966403e754941e30af620ffd630ffbdaf75e147c72e87c2aacdcf53f441ca946",
+      "bytes": 87276
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_55.json",
+      "sha256": "93b60157b49520f83fd3719d288bf608ac746c857363ec603b366681bafe6898",
+      "bytes": 87069
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_56.json",
+      "sha256": "bd32b91cee149647caf4a379b52c913a6e70f44ca614f79a5e329b17cdcdd6d1",
+      "bytes": 84799
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_57.json",
+      "sha256": "37376fa76974d5dd8f27e97ea2c8e3202a2c2c6f959f435596e68e78aa72a809",
+      "bytes": 84788
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_58.json",
+      "sha256": "c74121026f9b1a358c9cbdd8c988d38607f39cac96b2159244175144c773bde0",
+      "bytes": 85516
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_59.json",
+      "sha256": "1d923ac41758b3133bb296fd7b2921dc30683502801563506cd7253f466e3aeb",
+      "bytes": 85524
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_6.json",
+      "sha256": "90ecdea07981cb740ad61c506fd818640f9b450fd8deea628b03d586cf4a63b5",
+      "bytes": 87758
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_60.json",
+      "sha256": "ab25917bf1506ce6000ad8b7c008cd939f334feb8666181775a19f41ab6b53a8",
+      "bytes": 58280
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_7.json",
+      "sha256": "6c96f170c2aa79003e0c8180551a0b52275315d59399f82691256174bcf2e49e",
+      "bytes": 85556
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_8.json",
+      "sha256": "1e937c8e573f86d7c0ada85ba2e2d1cdfb8d7fabd733c360b95e30a0e35960e7",
+      "bytes": 87039
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_more_specials_9.json",
+      "sha256": "2421126c5b5d901c9c47a2320b9d5581d74abdc489f05f2ea2fdcea5f777a3f1",
+      "bytes": 86402
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_neon_underground_1.json",
+      "sha256": "fcff238ef9faf4a7c41637451c7bb852c9d4dc5129af68397fa12a3b11cc1e40",
+      "bytes": 57257
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_neon_underground_2.json",
+      "sha256": "5e281e499adcdf0783f33f96be5df94549f148a8b2994d9a309f389b30a9c1f0",
+      "bytes": 62736
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_paradigm_1.json",
+      "sha256": "2da8720ab4c03f3f1d92715113ffbb009701ed974063e751adda819d7f6e4710",
+      "bytes": 73307
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_paradigm_2.json",
+      "sha256": "bbbef73de5d9dc69f7ce72283bc4722ffc9e1c456e6748be16588757a7d37a38",
+      "bytes": 73317
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_paradigm_3.json",
+      "sha256": "d161db84a70a8bebce724512051a47d6aacd5d71cbbc0ce9c868b54ce5d07d35",
+      "bytes": 83086
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_prism_forge_1.json",
+      "sha256": "c84bce6abdb93ea956060983b0ab917f2e8452469bce491094b36e6729c58fe0",
+      "bytes": 76013
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_prism_forge_2.json",
+      "sha256": "081d64d03cbad39435bf175de5b36f7c5ed1a0232ae74f40bea4500816547514",
+      "bytes": 76922
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_prism_forge_3.json",
+      "sha256": "d410d6ce113877b47390979c25061da8c50f704f89cc5156e444ea28ba026a68",
+      "bytes": 86062
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_prizm_1.json",
+      "sha256": "c029c1637e61f2985ddd109c829565de3297b764771920205adf3f6db6177d77",
+      "bytes": 60563
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_prizm_2.json",
+      "sha256": "ed04bd8fbee5c9f4b5670b09a8cc65abc39702b23bbf628e8d90863ca864ace2",
+      "bytes": 60609
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_prizm_3.json",
+      "sha256": "2e5f78eed5681b019ffc1f76bfb60131dd22144149d381a10a68ce8aac15ddec",
+      "bytes": 64718
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_rising_sun_1.json",
+      "sha256": "588ca42a6c5810023f5d6849cd12cdbd6ea62736ae3bd458dceec118b049c201",
+      "bytes": 80615
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_rising_sun_2.json",
+      "sha256": "4162cf5a76d90a7bf6cc95f6e1d8687f1151c647b526eb55058101ffed9f833a",
+      "bytes": 80918
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_rising_sun_3.json",
+      "sha256": "98ef901f2f72167109e7932bd5cf181ec44552ae6551a8ccb701a4154e88fc9a",
+      "bytes": 85130
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_shokk_works_1.json",
+      "sha256": "b991f1b26b06d0dd834e58c86b47546025f47081dde29b316597c319896f768f",
+      "bytes": 79604
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_shokk_works_2.json",
+      "sha256": "5714119bb3bef273c6d82a60549ad1512c9fa3d1d9e7054fee916b9ecdff50f6",
+      "bytes": 79190
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_shokk_works_3.json",
+      "sha256": "16b74ef330cc5b64a9276d44f502d85b47d63d217ee16b5e72a6225161a63e2a",
+      "bytes": 79254
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_shokk_works_4.json",
+      "sha256": "ff92504115cad65d99a4a772fe1bae849fb1d147be579f8f7d388553edc4071e",
+      "bytes": 79003
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_shokk_works_5.json",
+      "sha256": "9875faef229b6dc422e2c77450c4beadd767fb74f3886d4c1d3b97ecb115aae5",
+      "bytes": 88994
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_shokk_works_6.json",
+      "sha256": "28e32020f82cac0030854aba87038a5e6a3acf1057599cebf6b3d6782e8d5b21",
+      "bytes": 9155
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_signal_1.json",
+      "sha256": "d12cb3d97ca7c48aca337772d6b993117a7be49801a1f55b57a4ab7ffa5bcda4",
+      "bytes": 54351
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_signal_2.json",
+      "sha256": "78b2e7d03974745e89475511c2b321b9a7ee50474982238ed3e100c56b0f47dd",
+      "bytes": 58740
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_sock_hop_1.json",
+      "sha256": "a091a57f8dd4ff50218817bd0d5148a6616f32c237e60a6e2565e519f044cbcb",
+      "bytes": 115561
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_source_pattern_plates_1.json",
+      "sha256": "c2b38fd632be50cb6bf54a3f3315b731eb84a85bb9452160addb7da08e152be4",
+      "bytes": 52614
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_source_pattern_plates_2.json",
+      "sha256": "4e635a7d854639415ca95cb2db46d2882f23ea525d73772d5cbf84489e2dab80",
+      "bytes": 61608
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_spectrum_shift_1.json",
+      "sha256": "ee22f32d2b244e8a6b833c545ea9a5582c1fb71062db223bd163a91511022bf5",
+      "bytes": 68040
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_spectrum_shift_2.json",
+      "sha256": "9dcf4ccd789e7a89a55b27d0a085295177d4789e0ee06b8689022814bf0b9dee",
+      "bytes": 67485
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_spectrum_shift_3.json",
+      "sha256": "b26d81f0414e646b04a3c74bc6b52a4bfe5f44f5101e62d1dfa23dc313c813a5",
+      "bytes": 72254
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_spectrum_shift_4.json",
+      "sha256": "a27e0495ca15a3f9c1873abb38a0976b9ad6cbe032e41230849457de08d65bec",
+      "bytes": 81158
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_surface_grain_1.json",
+      "sha256": "2291ead63ded405de646fb99bbcf7cdcf55d405dcce788df1d594acbb0ae3903",
+      "bytes": 75068
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_surface_grain_2.json",
+      "sha256": "6b1549e8a1d7cc615da4b0640c1463d26ee74bd4e91b0d1d01f744af228d11f3",
+      "bytes": 80435
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_tactical_field_1.json",
+      "sha256": "23bf3eac258a406c07540464408fba4cf6eeb5d79ab6896c98b0f139792f8f4d",
+      "bytes": 63907
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_tactical_field_2.json",
+      "sha256": "1acc0daad70b7e380cbe28cbbb96e49f3d3102ac44bf7ec8a53ebddd2d76b2b1",
+      "bytes": 68064
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_tactical_field_3.json",
+      "sha256": "f0d7efea30501e2e9d935bae73517fc981872e0b5586b8ab1481d65cbbb4b3be",
+      "bytes": 63944
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_tactical_field_4.json",
+      "sha256": "d71b3bb9194b5bfcdc3d677b6cc731efc55650c1f1d4e02a53857751489511cd",
+      "bytes": 77680
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_union_jacked_1.json",
+      "sha256": "77bce02e42ad13dfb4645eb50bf05318b0ca9ded1bd56c49c0f9d8b00cbcf088",
+      "bytes": 71733
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_union_jacked_2.json",
+      "sha256": "d6266c27c635fd14419382906901f02ee44428bf5e6d9a9405890acdd3d96989",
+      "bytes": 67770
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_union_jacked_3.json",
+      "sha256": "a77209e425f4ef4f494bf9cc44292bc402692775ab355bbfbe2201bdbf3f884e",
+      "bytes": 77989
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_viva_mexico_1.json",
+      "sha256": "e10837820ed234a1cd228aa9b0bd7d1f5dea843f3945abd1ead47e6e7d223205",
+      "bytes": 66987
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_viva_mexico_2.json",
+      "sha256": "304425c1ba757b4bd5fc114ee8774245cd226371db9cfa04dd8beec1c684ce78",
+      "bytes": 66736
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_viva_mexico_3.json",
+      "sha256": "07e3cd54e6780be934ed174e7b047d5863a9beba914332c1a20f0a346ac164ea",
+      "bytes": 67207
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_viva_mexico_4.json",
+      "sha256": "9741278b0a23d0d5c07f70ed28544a0fbde4886c124d7f47f8e8e062968433ca",
+      "bytes": 76767
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_wave_flow_1.json",
+      "sha256": "3ddc069281b14d04cdf4d93fab14934b1df788d0c4038f9ca52d4cbd5a3df05c",
+      "bytes": 47369
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_world_of_color_1.json",
+      "sha256": "277d6cf5c6aa391edea7e2a1bfaf4b60bd5d24bad2e7bfba901d5f4c21e82fda",
+      "bytes": 73639
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_world_of_color_2.json",
+      "sha256": "f56105c88f79fe0dda5737cc977635726ced16daf821ff57d1646fadfed373f8",
+      "bytes": 72474
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_world_of_color_3.json",
+      "sha256": "5bb6449f31136dab2659319c4ba4f53350e18e1c44653b49f019922db5dc4f87",
+      "bytes": 73366
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_world_of_color_4.json",
+      "sha256": "6610e48705b1ef1be90ba55e55aa72fc9c38a3e6ca58496d8ae9a564059ae6fd",
+      "bytes": 72961
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_world_of_color_5.json",
+      "sha256": "4f5f0f7e74ea0759586c2aaea3a0d12a2d4823e155f0bf71fa7018f759e7a39e",
+      "bytes": 73199
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_world_of_color_6.json",
+      "sha256": "881bbe85c35fff122b1401de9d746d30a62354391901a5abe95534eb55d575e3",
+      "bytes": 87541
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_world_of_color_7.json",
+      "sha256": "0400a2e5b1fbd3a1f3860d42a23d75a8ac93df3dc7630ae9bd9c60df6f439cc0",
+      "bytes": 4736
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_x_lab_1.json",
+      "sha256": "40c3f5ba42c2fb48e704af05efb06246e12f03c4c20dd89d44dd1898ab16dac9",
+      "bytes": 74805
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_x_lab_2.json",
+      "sha256": "f2b7e570a0cc8ba961c3281466125dfaadf1ba6b372b3423ff472b74d4dce0bf",
+      "bytes": 74024
+    },
+    {
+      "path": "data/encyclopedia/pages/finish_x_lab_3.json",
+      "sha256": "f56f242f1a58166644963a4b7140e164e85b7cc0405cefc875c015a56ae4cfce",
+      "bytes": 83467
+    },
+    {
+      "path": "data/encyclopedia/pages/help_guide_1.json",
+      "sha256": "22b7fd63d99582cb231f231f555a2a6f6109dcaf7aec039303d721fa063778be",
+      "bytes": 45497
+    },
+    {
+      "path": "data/encyclopedia/pages/help_howto_1.json",
+      "sha256": "462322ea2d582e53791bd92942e059459cee11d261c4ce4b8cf7f1b6cdceb657",
+      "bytes": 133949
+    },
+    {
+      "path": "data/encyclopedia/pages/help_howto_2.json",
+      "sha256": "3cfc699346dd76c383be22ca4a165026cb5fc612d66f3535f857d0d93cca8288",
+      "bytes": 132107
+    },
+    {
+      "path": "data/encyclopedia/pages/help_howto_3.json",
+      "sha256": "568adf55b3fcdbf2d7cdd96d31b83dc608b2c0ddd324611f21fbc5a93135ee17",
+      "bytes": 142357
+    },
+    {
+      "path": "data/encyclopedia/pages/help_howto_4.json",
+      "sha256": "a768909f20f73375acd8cc914688f5dbbd9de03347f00e81d19dc707c1e33fba",
+      "bytes": 21125
+    },
+    {
+      "path": "data/encyclopedia/pages/help_support_1.json",
+      "sha256": "7000862e290449739201b6b40f297d0d83f83df4f0a69c528314b47fc2cc51ee",
+      "bytes": 122609
+    },
+    {
+      "path": "data/encyclopedia/pages/help_topics_1.json",
+      "sha256": "9231438a732003057ef34c6ad5af13fe17faac1194de6f51ec3baaa1d84ac3d8",
+      "bytes": 82364
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_90s_skate_surf_1.json",
+      "sha256": "e7c03743b99978a2758123b5975f68239b3bd20557f8553af04e9bdef59d76df",
+      "bytes": 66114
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_90s_skate_surf_2.json",
+      "sha256": "758b6b8183b79734f5b9025c45fa8531f9e7845540bd8003f4cc08a0cb895525",
+      "bytes": 66779
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_abstract_fractal_paradigm_1.json",
+      "sha256": "cdc1c0f70288a05cce2950fd7cbc3cc4893387fad96ffb5d2fee3a15fa9f594b",
+      "bytes": 80061
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_abstract_fractal_paradigm_2.json",
+      "sha256": "96199b040af58acb7c52ad41593e2ca602db794d9508b405cb6c295831ea91e8",
+      "bytes": 85046
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_cultural_world_dark_1.json",
+      "sha256": "e86ba0abc8c20599ba8276e25cc71042c2513303ca5ec08729e4f60c91e7b784",
+      "bytes": 71173
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_cultural_world_dark_2.json",
+      "sha256": "e9ea3a478188921a8121a65546fcae65b9235918ae94dd0312308eb393ccda87",
+      "bytes": 74140
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_decades_50s_80s_1.json",
+      "sha256": "78ddbad1821605c0a97399e442f9e39b871058b3dcc82b56066620584912593c",
+      "bytes": 78490
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_decades_50s_80s_2.json",
+      "sha256": "5292bb4ea115acb6a99a36f5a7a6ad4ff1c55b85ed1fa1150e27fe8c9cecd90b",
+      "bytes": 86012
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_geometry_deco_op_art_1.json",
+      "sha256": "5f571e0bffa0dd572d03efdff35e292f99be28d75bc24901b15953ccaeb15b72",
+      "bytes": 78180
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_geometry_deco_op_art_2.json",
+      "sha256": "6af32fb22cbfc54df83c18d65b4391f4d6f6b20402d1b026ae0319cb90ff115d",
+      "bytes": 84004
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_let_freedom_ring_1.json",
+      "sha256": "f958830ca0a144ee9bbc530c036baa9b9664218f4085c4a9b7a2e5bfd1a57057",
+      "bytes": 38037
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_nature_animals_weather_1.json",
+      "sha256": "67b85d1b616c24db173240b377c39243f350e85b1d53973100a28193c9d9f480",
+      "bytes": 63685
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_nature_animals_weather_2.json",
+      "sha256": "32a429d2ac7c89fb4db3f32c51725032154cbb84f60f857a48c57e2f70a79a20",
+      "bytes": 69254
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_reactive_surface_accents_1.json",
+      "sha256": "212865677c3cab43d2d3f1baa0bd14e6ee4c43c912d1f8b85c1c961f95f91ff3",
+      "bytes": 67224
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_tech_carbon_industrial_1.json",
+      "sha256": "519d900b53f0fbd798cfa132b592630dda7ecefc050ef6c3f368093890c14b07",
+      "bytes": 82486
+    },
+    {
+      "path": "data/encyclopedia/pages/pattern_tech_carbon_industrial_2.json",
+      "sha256": "4f80cd47b50530770f3a073ad71663496ba2a8acfe6aae49203ec64cdefe9d69",
+      "bytes": 88601
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_artistic_abstract_1.json",
+      "sha256": "18c603b2451f9473846e7b949dd11caa124d5da46148beba217d3d10dd7e718d",
+      "bytes": 4058
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_carbon_composite_1.json",
+      "sha256": "d539f30ea791ae4d95d808fa9d46bc9a19aefa4fe00007ccaa640c422a297da3",
+      "bytes": 15790
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_carbon_composite_weave_1.json",
+      "sha256": "466c90fe387fe04e6d650f2d91f31b4aacd03dfa87f16a40db3c15570021a273",
+      "bytes": 32141
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_clearcoat_coating_1.json",
+      "sha256": "9fdd24fd6eeb43af7fa46007075f47f158e7dcd2e1cb2da7bcc945a3f4276f84",
+      "bytes": 15668
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_crack_weather_1.json",
+      "sha256": "816391643baa832967f6ec77bbb1c4841f33b3163c6bf591298a83e6551e9bcd",
+      "bytes": 4015
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_crystal_mineral_1.json",
+      "sha256": "4d10197ee1270f76513dc89dfaa133587793674cb5f7a4893adf7cbf168f51dc",
+      "bytes": 3965
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_cultural_inlay_1.json",
+      "sha256": "da2e1cc75c5807b70b7bca181f9398f1732b274aa52c5d370784b96da730c1ed",
+      "bytes": 4216
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_dangerous_animals_1.json",
+      "sha256": "a611d034ca6d30469491fb2c35021b43809e71b8e970e31898b357f3e83c5c9a",
+      "bytes": 40038
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_directional_metal_brush_1.json",
+      "sha256": "736594600a87509cfbd3ff3249fd5d07b9bedd311bce64289707596dc1969240",
+      "bytes": 11995
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_engine_turn_machined_1.json",
+      "sha256": "6e6c432e2971d11cdc9dc8b439cb160fe92fa912b8f2b563446fcecd0e07def0",
+      "bytes": 4116
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_engine_turn_optical_1.json",
+      "sha256": "5120b0c1a998e3d4f820e667fd27076631c1a576a664e311f9fe18930e9122d7",
+      "bytes": 15845
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_engraved_ornamental_1.json",
+      "sha256": "97e977a3a03f28f1fac1b29da1b44cdfc081ace4edc780cd588957f70ae323b5",
+      "bytes": 4330
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_exotic_kinetic_1.json",
+      "sha256": "7c39d65c99a410a1fb9cb57722f44f399dc179f14ecde103be55ee5c66639108",
+      "bytes": 12443
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_experimental_structures_1.json",
+      "sha256": "386f0413de1d920e1b24593d5d22061f47c46fe686b69db78e7461b0797a4e1a",
+      "bytes": 4042
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_fire_heat_1.json",
+      "sha256": "73037189d1c34df7d7a9b36dd63b86e1e17f4f130955b700f22574a3e7aef6a2",
+      "bytes": 3954
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_fire_heat_exhaust_1.json",
+      "sha256": "881cf6a4e79292e66dfa3410167cd3b4078e38b692cbab2eb097e9d76caec6ea",
+      "bytes": 15890
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_geometric_structural_1.json",
+      "sha256": "a0fcc5dc784ba09cb18f6164cf0daa789e5598b7fcb5fd6a81ebd4602dd3b2ae",
+      "bytes": 4024
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_gothic_horror_1.json",
+      "sha256": "4ccfea2505bf75c14ba0e56be317911a150ecb02c88cc060e440c0237c877cfc",
+      "bytes": 15758
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_holographic_color_shift_1.json",
+      "sha256": "584c96cbcd2cdfcabfe9bd2ff49d1f8d27db02ce15d998d5da1c9de7532c2d2d",
+      "bytes": 4321
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_let_freedom_ring_1.json",
+      "sha256": "adeb673536ba086bf3b7be3b80884cb0351bf71dec6e922691250a7e09d90ece",
+      "bytes": 40018
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_liquid_clearcoat_1.json",
+      "sha256": "e7da20de1b52bd93503a86aedab74968da9747ce862759372f371129209fd033",
+      "bytes": 7888
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_liquid_coating_1.json",
+      "sha256": "b4249655eb72ac2743df9f665111d5de2d180312f1bd070dfbb47e426f3ef739",
+      "bytes": 3990
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_machined_brushed_1.json",
+      "sha256": "c0d042a6e38b34f31c4b63f4e99ced4fca020ededfd122dde43ec44bf4117b44",
+      "bytes": 8192
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_machined_race_hardware_1.json",
+      "sha256": "d97f950e59baab56682284d74f51e10c84df4c2bad3f0dc7bf21bcac49e553b7",
+      "bytes": 24203
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_more_spec_patterns_1.json",
+      "sha256": "ea160e32894ac0ffd217c6cd74ddae3ba6ea064da309073697009d403616e7b8",
+      "bytes": 84521
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_more_spec_patterns_2.json",
+      "sha256": "8d7af23a3b2177614c319a7e51267c46fb022805d53ee5ea4ee7386ab27b55f6",
+      "bytes": 83841
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_more_spec_patterns_3.json",
+      "sha256": "082ae6e65d83a7bb565797af30a83b65cc1189cca0e02c716ca4048b8588b9f1",
+      "bytes": 85344
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_more_spec_patterns_4.json",
+      "sha256": "c50e16d4a583050969f152215f3929b103db2f1a79eae5475ed89d539758444d",
+      "bytes": 84424
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_more_spec_patterns_5.json",
+      "sha256": "54ea08b2ec12f74feda74e7a246e82ee86dbf25aa0a33b933c0283b9f114501d",
+      "bytes": 89633
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_more_spec_patterns_6.json",
+      "sha256": "69a9573f346cadddbfe3dce4e6a5730749a97f4468b9349b595bfbc0c3d46701",
+      "bytes": 8486
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_optical_interference_1.json",
+      "sha256": "ceccf6f54c3a192e4f6f6271b8ef01949159fbb77d4961abd753627aebf0e3bc",
+      "bytes": 36174
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_organic_natural_1.json",
+      "sha256": "4cca8e737f78a03541243de1f871b62f9dce3a428991a77ecb9bd8df61102c59",
+      "bytes": 15834
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_precision_guilloche_1.json",
+      "sha256": "6bf9cdd1e9a55291845cb931ce517f7b06deb3228120b31fa14abf780a220cfb",
+      "bytes": 19804
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_predator_animal_armor_1.json",
+      "sha256": "99a76c1b9cb08561513d914b91c3ecffae6cbf6d3bb1ad1e489f813fac706090",
+      "bytes": 16136
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_predator_skins_1.json",
+      "sha256": "f7583e9096b4a18cf4a0fa0df874c12f3bb71efe1bbdb9565a401532ab30ca54",
+      "bytes": 35778
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_race_track_materials_1.json",
+      "sha256": "8437e7b2922bbb379cb60d7c1de47283834c31edfc20fd19109263c27e7041a7",
+      "bytes": 15443
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_racing_livery_story_1.json",
+      "sha256": "94f7ec3f5c2a5fdd813a161be3238f15fee5e006f26c7bb68f65b8d9780216c2",
+      "bytes": 16032
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_rising_sun_spec_1.json",
+      "sha256": "70d134d5345c61eb0d7cf72549d604baac07b3abddd50413f8364de40abe6c53",
+      "bytes": 36635
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_skin_cellular_1.json",
+      "sha256": "1ae789a1b6bac8155e24a60b01ad77b5d9a7aac69ccbcdcb5757b7cd93092e26",
+      "bytes": 7965
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_source_pattern_plates_1.json",
+      "sha256": "b05aef9222a9802f38af1eb271ff93c983e2176aafafc68304562617711843e0",
+      "bytes": 47926
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_source_pattern_plates_2.json",
+      "sha256": "8afe65ec430d32fb163e0532c937a36d4c14163df972b7ab23297067eada365f",
+      "bytes": 48313
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_sparkle_micro_metal_1.json",
+      "sha256": "8a767c5314fb3b0b51b6d69269f5b1ac66166d1d1cfb45e71452036d6dcafa9a",
+      "bytes": 35852
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_structure_geometry_1.json",
+      "sha256": "3060a3a46f4335cce6e0d394094e230c1fc59fec3cc330d0a6b61cb4742a9aac",
+      "bytes": 35034
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_surface_spray_texture_1.json",
+      "sha256": "be71b8b1687c6e85009c6afe23320fc2c6ca691cab640d5257a909057f4fd0b9",
+      "bytes": 19982
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_track_motorsport_1.json",
+      "sha256": "45a4bfa142713617f4b0301ad344e5457d032ac3b33d2b21bad665024d8f65ea",
+      "bytes": 4205
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_voodoo_inspired_1.json",
+      "sha256": "1503144e616547b535d318a1f3e4d5eba32b7b557f04ab831cc65a0164a17a9e",
+      "bytes": 39042
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_weather_wear_track_1.json",
+      "sha256": "b88d33747c876848d4d6fd21cbab400c2bb08221d2b360aed039eee249dc65a6",
+      "bytes": 20084
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_weathered_physical_1.json",
+      "sha256": "18f6ee6e111caf6a8b6d458b84fc7262aa0f2d0873e87dc8459544e0ee926262",
+      "bytes": 15395
+    },
+    {
+      "path": "data/encyclopedia/pages/specpat_weave_composite_1.json",
+      "sha256": "6876821bb044772be49bffeb804e97fc1464d4996c60ca4fcf42a5e5b006325a",
+      "bytes": 4117
+    },
+    {
+      "path": "data/encyclopedia/pattern_pages.json",
+      "sha256": "4ad28592328f4e9d5867ced0ab632bc0f80410852119e68a7bd7549f32cbbf12",
+      "bytes": 4669
+    },
+    {
+      "path": "data/encyclopedia/patterns.json",
+      "sha256": "242fcf23d7323e18e86a57bd2d3d13d7eb2233bcbf98838df678f2e5d7692b4e",
+      "bytes": 102231
+    },
+    {
+      "path": "data/encyclopedia/playbook.json",
+      "sha256": "fcdbecfa4e73b848b75a5db03d9af7c3b9f6b188c59276fa60ee44d68cff01b5",
+      "bytes": 97872
+    },
+    {
+      "path": "data/encyclopedia/preview_render.json",
+      "sha256": "aa43e4380c16f48c0aa7c7e4777e26ce0f22f7385ec491d9f40748fe50899acf",
+      "bytes": 133119
+    },
+    {
+      "path": "data/encyclopedia/reader/paths.json",
+      "sha256": "96c69799ea127d21707963066de10183258dec2ff4c989317cee8d8bc5d1971f",
+      "bytes": 10050
+    },
+    {
+      "path": "data/encyclopedia/reader/spec_index.json",
+      "sha256": "a7173f20a5fa93a4608daa554391d78fca19f3dc3d9cd6038d611cceb6256e24",
+      "bytes": 533154
+    },
+    {
+      "path": "data/encyclopedia/recipes.json",
+      "sha256": "3475ff9d4310928e0248334aad1f93eb5545e8d243e671fca2ec73ce8ca213bc",
+      "bytes": 982053
+    },
+    {
+      "path": "data/encyclopedia/screens.json",
+      "sha256": "fac53ce02882e2470cd28eb1706290cc5c7739f8b7cf0eba0cd3a2c6f97d358c",
+      "bytes": 153014
+    },
+    {
+      "path": "data/encyclopedia/settings.json",
+      "sha256": "5aa40bbdbc299fdf267597cbe5a157778b7449f322816f024ffa26693f97a7cc",
+      "bytes": 30586
+    },
+    {
+      "path": "data/encyclopedia/shokk_drop.json",
+      "sha256": "2c0b1598f4d6111532876ce72e947479899a5eefc68e6f29a299c2ed49380b3c",
+      "bytes": 65748
+    },
+    {
+      "path": "data/encyclopedia/shortcuts.json",
+      "sha256": "1ce740056bdb97d2b99df329acf8ea1b782b4855108037e8e584f5e2393158dd",
+      "bytes": 93739
+    },
+    {
+      "path": "data/encyclopedia/spec.json",
+      "sha256": "50468fcb43c44fa2d3495ea56a44f3226453d9fa347181b2d0598570581dcad0",
+      "bytes": 321011
+    },
+    {
+      "path": "data/encyclopedia/spec_pattern_pages.json",
+      "sha256": "1717fae4923d3441bb308af253ed92ab3830e790f116e495fc16bcedf8412256",
+      "bytes": 13580
+    },
+    {
+      "path": "data/encyclopedia/spec_sculpt.json",
+      "sha256": "a643da9e61c3b854da401f41785d498c26feb5e27064ecea7d8c2665276a2ab6",
+      "bytes": 150101
+    },
+    {
+      "path": "data/encyclopedia/support.json",
+      "sha256": "8dcb2b13964b7940980992023e0b2134a1270f22dd2c8ef04339fd8a6085225d",
+      "bytes": 233340
+    },
+    {
+      "path": "data/encyclopedia/tools.json",
+      "sha256": "e824fbdd7f748bcfd825a7ab4500bde2a785bdeeb4766fea7ec5112ad23d5853",
+      "bytes": 370335
+    },
+    {
+      "path": "data/encyclopedia/ui_shell.json",
+      "sha256": "44a93056dfbb34a694aec10bb34d05312c4fd8b3748656b1848a3d7ad6ac1da8",
+      "bytes": 267592
+    },
+    {
+      "path": "data/encyclopedia/workflows.json",
+      "sha256": "8cabe4022d2798589451ff90d33dba8d44c7db7dfea7565cd251ae9c43107697",
+      "bytes": 115748
+    },
+    {
+      "path": "data/encyclopedia/zones.json",
+      "sha256": "f5f1ba9250d125eafffcd880823e4bf09117ed668aa0f865a6b335e76aef3046",
+      "bytes": 237348
+    },
+    {
+      "path": "js/spb-ai-knowledge.js",
+      "sha256": "a3c057eb9c0037fc10cfe5ba9eeb46daedad0d18b6a4b335b926389df4260716",
+      "bytes": 329567
+    },
+    {
+      "path": "js/spb-enc-qbank.js",
+      "sha256": "ccb9647d910fddc85e031a542324be95c9ffebe3cddb0dc3b64d9a98bf34d17d",
+      "bytes": 1060035
+    },
+    {
+      "path": "js/spb-enc-search.js",
+      "sha256": "3be8e0d052f4bcb8301342cacb710300c71a25e230cb48134585838cbaa51438",
+      "bytes": 105550
+    },
+    {
+      "path": "js/spb-encyclopedia-data.js",
+      "sha256": "6785d1153f3ea3e488eb148450f4c646110c892375fdf5accbbb6ecdc0957be3",
+      "bytes": 1119084
+    },
+    {
+      "path": "js/spb-intent-offline-frame.js",
+      "sha256": "4541ef73e7d7f8e593babe6ec72f34570ab62a38839b493aea98601e120354c2",
+      "bytes": 432061
+    },
+    {
+      "path": "js/spb-offline-answer.js",
+      "sha256": "a1b6163095c0652564db46f83ed086a3678cc5725741e5822acaf3305f375cb8",
+      "bytes": 1431164
+    },
+    {
+      "path": "js/spb-offline-fact-routes.js",
+      "sha256": "fca84a399e6fdae813fd8d794e57d373594a478125850ad84a699cf6512c3aed",
+      "bytes": 91951
+    },
+    {
+      "path": "js/spb-offline-retrieval.js",
+      "sha256": "e5961a3057242e587772ddf8c78c6175970033ed0df9c8402a59a1d261acb58c",
+      "bytes": 25836
+    },
+    {
+      "path": "js/spb-support-answers.js",
+      "sha256": "33e95be8a37f94ad105f469965f7f9d63f7c7be0b3a7ac7f25d432c002d8e34a",
+      "bytes": 51043
+    },
+    {
+      "path": "mcp/README.md",
+      "sha256": "2d37f50a9f7dcab186c75205e7f81304c3685cc04d1159acabc7c2f5c4e59d82",
+      "bytes": 8449
+    },
+    {
+      "path": "mcp/chatgpt/README.md",
+      "sha256": "5d80aa6b9f49ace9a4c764f5f72c98c21162c7b4a93f6fbc159503f287e71405",
+      "bytes": 10521
+    },
+    {
+      "path": "mcp/chatgpt/assistant-context.cjs",
+      "sha256": "15320f187a3b6afe9341dc01ff47d072be4447cd259ef0326194d00c7e8d7a36",
+      "bytes": 14850
+    },
+    {
+      "path": "mcp/chatgpt/car-knowledge/build/knowledge.json",
+      "sha256": "0fae4891c11c1a679a2fa54195edf4bc67e1b6942d382116925d46e37f616c1f",
+      "bytes": 1739886
+    },
+    {
+      "path": "mcp/chatgpt/car-knowledge/build/manifest.json",
+      "sha256": "8926915ef163903c1868e2fd570291013512472316d78e9148f582b14f076ddf",
+      "bytes": 33788
+    },
+    {
+      "path": "mcp/chatgpt/car-knowledge/core.js",
+      "sha256": "847b586985cd06b41054f8e31f62f667aaeff18e60b5243ee64c3c6f3ce5158a",
+      "bytes": 35799
+    },
+    {
+      "path": "mcp/chatgpt/car-knowledge/layer-reading.js",
+      "sha256": "bd73af30f5ac3d76e372da5a072e852fac669dcdd4bc3277097bdbfddbb42b44",
+      "bytes": 27865
+    },
+    {
+      "path": "mcp/chatgpt/car-knowledge/lookup.cjs",
+      "sha256": "b4f6bb86d7bee2f2f668acf6fd34e861b29888e42b8d2bdcc9b420ca400c973d",
+      "bytes": 717
+    },
+    {
+      "path": "mcp/chatgpt/design-intent.js",
+      "sha256": "19f2885f0dffc326036e4bda159b11c5db1198c2fe4ac8836a41a0e3d29ff384",
+      "bytes": 11620
+    },
+    {
+      "path": "mcp/chatgpt/fresh-install/delivery/review/fresh-knowledge-v2.cjs",
+      "sha256": "27839dd9a29a33f4931b592db8f007d68f315c025079fe90c9b503b6d7145336",
+      "bytes": 4310
+    },
+    {
+      "path": "mcp/chatgpt/geometry-authority.cjs",
+      "sha256": "e7202a721890a9ee9e1d08ca2d09b05efcd091437732bee719837fbf909a77c4",
+      "bytes": 4469
+    },
+    {
+      "path": "mcp/chatgpt/named-part-guard.cjs",
+      "sha256": "125e74a0898be70321f8e60bc0f048b089447e5e16af6b7b27b55bcf9ad835d2",
+      "bytes": 4294
+    },
+    {
+      "path": "mcp/chatgpt/native-layer-colour.js",
+      "sha256": "cc21c42e5ebb1707b9a4693408540f80eb0fbd2430d58b8b309f43dd30249719",
+      "bytes": 19646
+    },
+    {
+      "path": "mcp/chatgpt/source-bound-execution.cjs",
+      "sha256": "cd22af212caa624da1dbf7521ba787da7221910bb8fd04322ef33e9b42af0e22",
+      "bytes": 1456
+    },
+    {
+      "path": "mcp/server/app-knowledge.cjs",
+      "sha256": "b2d44d60b81f3637a3c1d4eaeccb73a70d49b4ec3e3c64d2f3c8bffc6320da1c",
+      "bytes": 33066
+    },
+    {
+      "path": "mcp/server/design-intent.cjs",
+      "sha256": "913af7272814e909cdc184d79156340710e4786d0372a518f936f93be0b35ae4",
+      "bytes": 7026
+    },
+    {
+      "path": "mcp/server/index.js",
+      "sha256": "020c77d0b28cc037ab38a1c105d2c4b29f4d1e28687ed96f41f8843e37c546a7",
+      "bytes": 129206
+    },
+    {
+      "path": "mcp/server/knowledge-health.cjs",
+      "sha256": "e414f50e1ff492c909c3e9c4e3566ada8024ec3ac6c8d46ebe62db0002533b9b",
+      "bytes": 6356
+    },
+    {
+      "path": "mcp/server/native-layer-colour.cjs",
+      "sha256": "aa1770c3753f3f01999b84b6a8157844c744fd7fefc0113e97ce007744d3a0ae",
+      "bytes": 5806
+    },
+    {
+      "path": "mcp/server/tools.json",
+      "sha256": "60450e4a8e0442a8ddf9c18f345c0e07330fb002c3dde636c323e5c8b84d359d",
+      "bytes": 49973
+    },
+    {
+      "path": "mcp/server/wait-inbox.js",
+      "sha256": "a42b688e754aae5070973a21691aec682eb398c368da8cf0164c46fa1aa91c7d",
+      "bytes": 3082
+    },
+    {
+      "path": "mcp/skill/shokker-paint-booth.zip",
+      "sha256": "9a207be9bf4eddb1110eddcc70e8a8690e676250a41672a00c3b39bf75475ce5",
+      "bytes": 68130
+    },
+    {
+      "path": "scripts/ai_atlas/enc_hidden_features.json",
+      "sha256": "04a0be9019a0220c4ba9c3d7a81985da484dfd7385433f40fac9ad4f28837e80",
+      "bytes": 1328
+    },
+    {
+      "path": "server_routes/codex_knowledge.py",
+      "sha256": "7ec29ed988a2d814ab75436fb94daed5c100f5cb8ecfcf0ea22f67cb26ea0605",
+      "bytes": 2371
+    },
+    {
+      "path": "server_routes/codex_runtime.py",
+      "sha256": "ac32e2051c14fd23e3aea9376492b774c89c192a7da753a74cc61a66d89aa7ff",
+      "bytes": 6353
+    },
+    {
+      "path": "server_routes/codex_setup.py",
+      "sha256": "820bbaa0a5d24dfaa38d67ec040410f0d75977e48db399db3da9134a0c737a39",
+      "bytes": 5041
+    },
+    {
+      "path": "server_routes/encyclopedia_routes.py",
+      "sha256": "ba8cb2d0edd8c8717c6aec6f852315dc8d0e21c14c42d3b3270cbe1c5ce00581",
+      "bytes": 59427
+    }
+  ]
+}

@@ -144,15 +144,65 @@ def _clear_pycache() -> int:
     """
     _root = os.path.dirname(os.path.abspath(__file__))
     _cleared = 0
+    # [SPB-PERF1 2026-10-09 PERF-BOOT] This walk used to descend the WHOLE project tree (104,546 directories incl. _easy_claude_work,
+    # tests, _archive, node_modules, electron-app, .git ...) just to look for __pycache__ dirs the server never imports from:
+    # 54.7 s of the 88 s server import (cProfile, _easy_claude_work/perf_boot/startup_top.txt). Pruned: only code dirs are walked
+    # (engine/, server_routes/, scripts/, mcp/, _staging/ ... ~0.2 s). Kill switch: env SPB_PERF1_OFF=1 -> the old full walk.
+    _perf1_on = os.environ.get('SPB_PERF1_OFF', '').strip().lower() not in ('1', 'true', 'yes', 'on')
+    _skip_exact = {'node_modules', '.git', '.claude', 'tests', 'tests_v2', 'electron-app', 'electron-demo', 'output', 'paint-booth-site',
+                   'shokk-forge-academy', '_archive', '_gpuenv', 'docs', 'assets', 'thumbnails', 'dist', 'build', 'venv', '.venv',
+                   '_easy_claude_work', 'data', 'css', 'js', 'fonts', 'images', 'marketing', '_clipenv', '_release_evidence',
+                   'site-packages'}
+    _pyc_dirs = []
+    _fp = None
+    if _perf1_on:
+        import hashlib
+        _fp = hashlib.sha1()
     for dirpath, dirnames, _filenames in os.walk(_root):
         if '__pycache__' in dirnames:
-            _cache_dir = os.path.join(dirpath, '__pycache__')
-            try:
-                shutil.rmtree(_cache_dir)
-                _cleared += 1
-            except OSError:
-                # Directory locked by a concurrent process -- not fatal.
-                pass
+            _pyc_dirs.append(os.path.join(dirpath, '__pycache__'))
+        if _perf1_on:
+            dirnames[:] = [d for d in dirnames if d not in _skip_exact and not d.endswith('_work') and d != '__pycache__']
+            for _fn in _filenames:
+                if _fn.endswith('.py'):
+                    try:
+                        _st = os.stat(os.path.join(dirpath, _fn))
+                        _fp.update(f"{dirpath}|{_fn}|{_st.st_mtime_ns}|{_st.st_size}\n".encode('utf-8', 'replace'))
+                    except OSError:
+                        pass
+    # [SPB-PERF1] Unchanged-source shortcut: when no .py under the code dirs changed since the last start, the bytecode the last
+    # start wrote is valid (Python itself re-checks every .pyc against the source mtime+size), so clearing it only forces a ~17 s
+    # recompile of the engine. After ANY .py change the fingerprint differs and everything is cleared exactly as before.
+    _fp_file = None
+    if _perf1_on:
+        try:
+            _base = os.environ.get('LOCALAPPDATA') or os.environ.get('APPDATA') or os.path.expanduser('~')
+            _fp_file = os.path.join(_base, 'ShokkerPaintBooth', 'pyc_fp_' + hashlib.sha1(_root.lower().encode('utf-8', 'replace')).hexdigest()[:10] + '.txt')
+            _prev = ''
+            if os.path.isfile(_fp_file):
+                with open(_fp_file, 'r', encoding='utf-8') as _ff:
+                    _prev = _ff.read().strip()
+            if _pyc_dirs and _prev == _fp.hexdigest():
+                print(f"[Startup] .py sources unchanged since the last start: kept {len(_pyc_dirs)} __pycache__ directories (SPB-PERF1)")
+                return 0
+        except Exception:
+            _fp_file = None
+    for _cache_dir in _pyc_dirs:
+        try:
+            shutil.rmtree(_cache_dir)
+            _cleared += 1
+        except OSError:
+            # Directory locked by a concurrent process -- not fatal.
+            pass
+    if _perf1_on and _fp_file:
+        try:
+            os.makedirs(os.path.dirname(_fp_file), exist_ok=True)
+            _tmp = _fp_file + '.tmp%d' % os.getpid()
+            with open(_tmp, 'w', encoding='utf-8') as _ff:
+                _ff.write(_fp.hexdigest())
+            os.replace(_tmp, _fp_file)
+        except Exception:
+            pass
     if _cleared:
         print(f"[Startup] Cleared {_cleared} __pycache__ directories")
     return _cleared
@@ -264,6 +314,19 @@ logging.basicConfig(
     handlers=handlers
 )
 logger = logging.getLogger('shokker_v5')
+
+# [SPB-PERF1 2026-10-09] load-path speed-ups (content-stamped immutable asset cache, quiet static access log).
+# Kill switch: env SPB_PERF1_OFF=1 (client half: window.SPB_PERF1_OFF / localStorage SPB_PERF1_OFF='1'). Cannot change any render.
+try:
+    from server_routes import perf_boot as _perf1
+    _perf1.install_quiet_static_log()
+except Exception as _perf1_e:          # never let an optimisation stop the server
+    logger.warning(f"perf_boot not available: {_perf1_e}")
+    class _perf1:                       # no-op stand-in
+        @staticmethod
+        def stamp_html(h, d): return h
+        @staticmethod
+        def long_cache_header(f, a): return None
 
 # V5 owns a distinct Flask app, so its request guards cannot be inherited with
 # URL rules from server.py. Security installation is explicit and fail-closed:
@@ -513,7 +576,10 @@ def serve_static_assets(filename):
             if os.path.exists(fpath):
                 resp = send_file(fpath, conditional=True)
                 if filename.endswith(('.js', '.css')):
-                    resp.headers['Cache-Control'] = 'no-cache'
+                    # [SPB-PERF1 2026-10-09] a URL carrying the content stamp the HTML route added (&_p=<mtime>-<size>) changes
+                    # whenever the file does, so it is safe to cache for a year: ~250 conditional GETs per boot (~20 ms each on
+                    # Werkzeug, 4.2 s of the 6.6 s DOMContentLoaded) become 0. Un-stamped URLs keep no-cache. env SPB_PERF1_OFF=1 = old.
+                    resp.headers['Cache-Control'] = _perf1.long_cache_header(filename, request.args) or 'no-cache'
                 return resp
     return jsonify({"error": "not_found", "path": request.path}), 404
 
@@ -532,6 +598,7 @@ def serve_paint_booth():
                     f'<!-- V5-SERVED PID={os.getpid()} TIME={time.strftime("%H:%M:%S")} -->\n</head>',
                     1
                 )
+                html_content = _perf1.stamp_html(html_content, [SERVER_DIR, BUNDLE_DIR])   # [SPB-PERF1 2026-10-09] content-stamp local .js/.css URLs (see server_routes/perf_boot.py)
                 return Response(html_content, mimetype='text/html',
                     headers={'Cache-Control': 'no-cache, no-store, must-revalidate'})
             except Exception:

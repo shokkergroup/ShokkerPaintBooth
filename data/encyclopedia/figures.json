@@ -7,7 +7,7 @@
   "kind": "svg",
   "sources": [
    "engine/SPEC_MAP_REFERENCE.md:13",
-   "scripts/ai_atlas/ui_map.json:5845",
+   "scripts/ai_atlas/ui_map.json:6309",
    "shokker_engine_v2.py:20",
    "shokker_engine_v2.py:24",
    "shokker_engine_v2.py:26",
@@ -76,10 +76,10 @@
   "file": "figures/g05_zone_priority.svg",
   "kind": "svg",
   "sources": [
-   "mcp/server/index.js:38",
-   "scripts/ai_atlas/ui_map.json:11000",
-   "scripts/ai_atlas/ui_map.json:11022",
-   "scripts/ai_atlas/ui_map.json:9779"
+   "mcp/server/index.js:65",
+   "scripts/ai_atlas/ui_map.json:11504",
+   "scripts/ai_atlas/ui_map.json:11526",
+   "scripts/ai_atlas/ui_map.json:10283"
   ],
   "alt": "A stack of Zone 1, Zone 2 and Everything Else with a priority arrow. Two overlapping boxes show the overlap taking the colour of the higher zone, and the colour flips when the zones are swapped."
  },
@@ -90,13 +90,13 @@
   "file": "figures/g06_zone_selectors.svg",
   "kind": "svg",
   "sources": [
-   "mcp/server/index.js:37",
-   "scripts/ai_atlas/ui_map.json:9729",
-   "scripts/ai_atlas/ui_map.json:9754",
-   "scripts/ai_atlas/ui_map.json:9779",
-   "scripts/ai_atlas/ui_map.json:9825",
-   "scripts/ai_atlas/ui_map.json:9897",
-   "scripts/ai_atlas/ui_map.json:9921"
+   "mcp/server/index.js:65",
+   "scripts/ai_atlas/ui_map.json:10233",
+   "scripts/ai_atlas/ui_map.json:10258",
+   "scripts/ai_atlas/ui_map.json:10283",
+   "scripts/ai_atlas/ui_map.json:10329",
+   "scripts/ai_atlas/ui_map.json:10401",
+   "scripts/ai_atlas/ui_map.json:10425"
   ],
   "alt": "Four rows with small pictures: by colour with colour chips, by layer with stacked layers, by drawn area with a dashed box, and everything else as the catch-all, plus a note about named parts."
  },
@@ -107,10 +107,10 @@
   "file": "figures/g07_layer_stack_roles.svg",
   "kind": "svg",
   "sources": [
-   "js/spb-pro-carmap.js:146",
+   "js/spb-pro-carmap.js:153",
    "js/spb-support-answers.js:16",
-   "scripts/ai_atlas/ui_map.json:11112",
-   "scripts/ai_atlas/ui_map.json:9729"
+   "scripts/ai_atlas/ui_map.json:11616",
+   "scripts/ai_atlas/ui_map.json:10233"
   ],
   "alt": "A layer list. The group Turn Off Before Exporting TGA holds Wire, Mask and Car_Mandatory, all with the eye off. Numbers, Sponsors and Car Paint have the eye on. Notes explain guides off, art on."
  },
@@ -121,8 +121,8 @@
   "file": "figures/g08_uv_sheet_parts.svg",
   "kind": "svg",
   "sources": [
-   "js/spb-pro-carmap.js:146",
-   "mcp/server/index.js:53",
+   "js/spb-pro-carmap.js:153",
+   "mcp/server/index.js:153",
    "scripts/ai_atlas/car_atlas_clusters.json:490"
   ],
   "alt": "A square sheet with eight labelled boxes: front bumper, rear bumper, spoiler, right side, left side, hood, roof and trunk, with arrows showing which way the front faces.",
@@ -140,7 +140,7 @@
    "js/spb-support-answers.js:16",
    "js/spb-support-answers.js:19",
    "js/spb-support-answers.js:22",
-   "server.py:5634"
+   "server.py:5814"
   ],
   "alt": "Five stacked steps: press Render, two TGA files are written, they are copied to the iRacing paint folder, Alt+Tab to iRacing, press Ctrl+R."
  },
@@ -152,8 +152,8 @@
   "kind": "svg",
   "sources": [
    "js/spb-support-answers.js:28",
-   "server.py:5625",
-   "server.py:5634"
+   "server.py:5774",
+   "server.py:5814"
   ],
   "alt": "Two cards. Custom Number writes car_num_ID.tga and needs Hide Car Numbers ON. Sim-Stamped Number writes car_ID.tga, the default. Both also write car_spec_ID.tga."
  },
@@ -166,7 +166,7 @@
   "sources": [
    "js/spb-support-answers.js:34",
    "js/spb-support-answers.js:45",
-   "server.py:6850"
+   "server.py:7062"
   ],
   "alt": "Three columns. Shokker writes car_num or car TGA for paint and car_spec TGA. iRacing makes car_spec MIP. Trading Paints takes the paint TGA or PNG and only the spec MIP. A warning not to upload the project file."
  },
@@ -180,16 +180,16 @@
    "scripts/ai_atlas/ui_map.json:135",
    "scripts/ai_atlas/ui_map.json:167",
    "scripts/ai_atlas/ui_map.json:184",
-   "scripts/ai_atlas/ui_map.json:265",
-   "scripts/ai_atlas/ui_map.json:288",
-   "scripts/ai_atlas/ui_map.json:340",
-   "scripts/ai_atlas/ui_map.json:416",
-   "scripts/ai_atlas/ui_map.json:448",
-   "scripts/ai_atlas/ui_map.json:527",
-   "scripts/ai_atlas/ui_map.json:559",
-   "scripts/ai_atlas/ui_map.json:591",
-   "scripts/ai_atlas/ui_map.json:615",
-   "scripts/ai_atlas/ui_map.json:866"
+   "scripts/ai_atlas/ui_map.json:276",
+   "scripts/ai_atlas/ui_map.json:299",
+   "scripts/ai_atlas/ui_map.json:351",
+   "scripts/ai_atlas/ui_map.json:427",
+   "scripts/ai_atlas/ui_map.json:459",
+   "scripts/ai_atlas/ui_map.json:549",
+   "scripts/ai_atlas/ui_map.json:581",
+   "scripts/ai_atlas/ui_map.json:613",
+   "scripts/ai_atlas/ui_map.json:637",
+   "scripts/ai_atlas/ui_map.json:890"
   ],
   "alt": "A simplified wireframe of the Pro window with fourteen numbered areas and a legend: header rows, mode switch, toolbar, settings, zones list, zone editor, source, live preview, tool options, selection bar, spec channel strip, render button, finishes and layers tabs, and the AI button."
  },
@@ -202,9 +202,9 @@
   "sources": [
    "docs/ai_knowledge/02_spec_and_finishes.md:10",
    "docs/ai_knowledge/02_spec_and_finishes.md:6",
-   "scripts/ai_atlas/ui_map.json:10665",
-   "scripts/ai_atlas/ui_map.json:10844",
-   "scripts/ai_atlas/ui_map.json:10956"
+   "scripts/ai_atlas/ui_map.json:11169",
+   "scripts/ai_atlas/ui_map.json:11348",
+   "scripts/ai_atlas/ui_map.json:11460"
   ],
   "alt": "Four cards. Base changes colour and shine. Monolithic changes both. Pattern changes colour and shine only a little. Spec pattern changes shine only. A note about second to fifth base overlays."
  },
@@ -216,9 +216,9 @@
   "kind": "svg",
   "sources": [
    "scripts/ai_atlas/app_controls.json:32",
-   "scripts/ai_atlas/ui_map.json:10104",
-   "scripts/ai_atlas/ui_map.json:10128",
-   "scripts/ai_atlas/ui_map.json:10150"
+   "scripts/ai_atlas/ui_map.json:10608",
+   "scripts/ai_atlas/ui_map.json:10632",
+   "scripts/ai_atlas/ui_map.json:10654"
   ],
   "alt": "Five rows with small colour tiles: finish's own colour, source paint, solid colour, from special, custom gradient, each with a one-line meaning."
  },
@@ -254,7 +254,7 @@
    "engine/base_registry_data.py:422",
    "engine/base_registry_data.py:425",
    "engine/base_registry_data.py:426",
-   "mcp/server/index.js:56"
+   "mcp/server/index.js:65"
   ],
   "alt": "Three columns with an identical blue striped paint swatch. Below each, three bars for metal, roughness and clearcoat: chrome 255, 2, 16; satin chrome 250, 45, 40; soft matte 0, 200, 165."
  },
@@ -309,8 +309,8 @@
   "file": "figures/g20_selection_modes.svg",
   "kind": "svg",
   "sources": [
-   "scripts/ai_atlas/ui_map.json:1655",
-   "scripts/ai_atlas/ui_map.json:3512"
+   "scripts/ai_atlas/ui_map.json:1679",
+   "scripts/ai_atlas/ui_map.json:3756"
   ],
   "alt": "Three cards each with a before and after picture of two overlapping circles. Add shows both, Replace shows only the new, Subtract shows the old with the new cut out."
  },
@@ -322,7 +322,7 @@
   "kind": "render",
   "sources": [
    "scripts/ai_atlas/enc_figs_shade.py:82",
-   "shokker_engine_v2.py:20898",
+   "shokker_engine_v2.py:21218",
    "shokker_engine_v2.py:270",
    "shokker_engine_v2.py:394"
   ],
@@ -339,7 +339,7 @@
   "file": "figures/r02_clearcoat_sweep.webp",
   "kind": "render",
   "sources": [
-   "shokker_engine_v2.py:20898",
+   "shokker_engine_v2.py:21218",
    "shokker_engine_v2.py:26",
    "shokker_engine_v2.py:301"
   ],
@@ -356,7 +356,7 @@
   "kind": "render",
   "sources": [
    "engine/SPEC_MAP_REFERENCE.md:10",
-   "shokker_engine_v2.py:20898",
+   "shokker_engine_v2.py:21218",
    "shokker_engine_v2.py:270"
   ],
   "alt": "Two rows of eight lit balls. The top row is metal and the bottom row is paint; roughness grows left to right, so the reflections go from sharp to a soft glow.",
@@ -374,8 +374,8 @@
    "engine/base_registry_data.py:422",
    "engine/base_registry_data.py:425",
    "engine/base_registry_data.py:426",
-   "mcp/server/index.js:56",
-   "shokker_engine_v2.py:20898"
+   "mcp/server/index.js:65",
+   "shokker_engine_v2.py:21218"
   ],
   "alt": "Three copies of the same blue striped car sheet above three balls wearing the same stripes, one chrome, one satin chrome and one matte.",
   "meta": {
@@ -597,16 +597,6 @@
      "name": "Vault: Deposit Brass"
     },
     {
-     "shelf": "More Bases",
-     "finish": "base::neon_red_alert",
-     "name": "Redline Rush"
-    },
-    {
-     "shelf": "More Specials",
-     "finish": "monolithic::ns2_singularity",
-     "name": "Ns2 Singularity"
-    },
-    {
      "shelf": "Neon Underground",
      "finish": "monolithic::neon2_laser_web",
      "name": "Laser Lane"
@@ -702,7 +692,7 @@
   "kind": "render",
   "sources": [
    "scripts/ai_atlas/app_controls.json:484",
-   "shokker_engine_v2.py:20898"
+   "shokker_engine_v2.py:21218"
   ],
   "alt": "Three square tiles of a zig-zag chevron pattern: very fine at 0.25x, medium at 1x and large at 4x."
  },
@@ -714,7 +704,7 @@
   "kind": "render",
   "sources": [
    "scripts/ai_atlas/app_controls.json:509",
-   "shokker_engine_v2.py:20898"
+   "shokker_engine_v2.py:21218"
   ],
   "alt": "Three square tiles of the chevron pattern turned 0, 45 and 90 degrees."
  },
@@ -726,8 +716,8 @@
   "kind": "render",
   "sources": [
    "scripts/ai_atlas/app_controls.json:531",
-   "scripts/ai_atlas/ui_map.json:10844",
-   "shokker_engine_v2.py:20898"
+   "scripts/ai_atlas/ui_map.json:11348",
+   "shokker_engine_v2.py:21218"
   ],
   "alt": "Top row: the chevron fading from full to faint. Bottom row: the roughness channel, flat at 0 spec amount and showing the pattern at 50 and 100 percent."
  },
@@ -751,8 +741,8 @@
   "kind": "render",
   "sources": [
    "scripts/ai_atlas/app_controls.json:32",
-   "scripts/ai_atlas/ui_map.json:10104",
-   "shokker_engine_v2.py:20898"
+   "scripts/ai_atlas/ui_map.json:10608",
+   "shokker_engine_v2.py:21218"
   ],
   "alt": "Five car sheets in a row, each coloured a different way: green candy, the original blue livery, solid red, gold, and a red-orange-green gradient."
  },
@@ -763,8 +753,8 @@
   "file": "figures/r11_colour_tolerance.webp",
   "kind": "render",
   "sources": [
-   "scripts/ai_atlas/ui_map.json:9754",
-   "scripts/ai_atlas/ui_map.json:9825"
+   "scripts/ai_atlas/ui_map.json:10258",
+   "scripts/ai_atlas/ui_map.json:10329"
   ],
   "alt": "Three car sheets where the pink area grows with tolerance: small patches at 6, most of the blue at 30, nearly everything blue at 100."
  },
@@ -775,8 +765,8 @@
   "file": "figures/r12_zone_priority_demo.webp",
   "kind": "render",
   "sources": [
-   "mcp/server/index.js:38",
-   "scripts/ai_atlas/ui_map.json:11000"
+   "mcp/server/index.js:65",
+   "scripts/ai_atlas/ui_map.json:11504"
   ],
   "alt": "Two car sheets. With zone A above B the body is green; with B above A it is orange."
  },
@@ -787,11 +777,11 @@
   "file": "figures/r13_spec_channel_views.webp",
   "kind": "render",
   "sources": [
-   "scripts/ai_atlas/ui_map.json:5632",
-   "scripts/ai_atlas/ui_map.json:5654",
-   "scripts/ai_atlas/ui_map.json:5676",
-   "scripts/ai_atlas/ui_map.json:5844",
-   "shokker_engine_v2.py:20898"
+   "scripts/ai_atlas/ui_map.json:6096",
+   "scripts/ai_atlas/ui_map.json:6118",
+   "scripts/ai_atlas/ui_map.json:6140",
+   "scripts/ai_atlas/ui_map.json:6308",
+   "shokker_engine_v2.py:21218"
   ],
   "alt": "Five tiles: the paint, then greyscale R metal, G rough, B coat and A mask views. Chrome stripes are bright in metal and dark in rough; matte stripes the reverse."
  },

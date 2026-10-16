@@ -1,0 +1,48 @@
+    // FROZEN fades. The car model (js/rev/symmetry) is rebuilt from the re-opened document, and its part outlines can move by tens of pixels at a border (the template mask
+    // is read from the PSD file in a fresh session but from the restored Mask layer after a project open), so a fade recomputed on the new model would not render the same bytes.
+    // A saved fade therefore also carries the exact t-field + coverage it was rendered with (`fz`, before the decal weighting, which is always applied live to the CURRENT layers,
+    // so a decal added after the re-open is protected too). A re-opened fade uses them as they are - drawn by previewField, sent to the engine by encodeFrozen - until it is
+    // edited: "Update Fade" re-measures the car like a new fade. Kill switch: SPB_REV_FADE_NOFREEZE = true saves no `fz` (the fade is then recomputed on re-open).
+    const FZC = new WeakMap();
+    function tPngOf(f) { return pngOf(f.tw, f.th, d => { for (let i = 0, o = 0; i < f.t16.length; i++, o += 4) { const v = f.t16[i]; d[o] = v >> 8; d[o + 1] = v & 255; d[o + 2] = 0; d[o + 3] = 255; } }); }
+    function covPngOf(f) { return pngOf(f.bbox[2], f.bbox[3], d => { for (let i = 0, o = 0; i < f.cov.length; i++, o += 4) { const v = f.cov[i]; d[o] = v; d[o + 1] = v; d[o + 2] = v; d[o + 3] = 255; } }); }
+    function frozenOf(rec, sp) {
+        if (root.SPB_REV_FADE_NOFREEZE) return undefined;
+        const z = rec.frozen;
+        if (z) return z.empty ? { size: z.size.slice(), plist: z.plist || '', empty: true } : { size: z.size.slice(), plist: z.plist || '', bbox: z.bbox.slice(), ts: z.ts, tw: z.tw, th: z.th, t: z.tUrl, cov: z.covUrl };
+        if (!sp || (rec.key && rec.key !== sp.key)) return undefined;
+        const hit = FZC.get(rec); if (hit && hit.key === sp.key) return hit.out;
+        const f = RF().field(sp, rec.dir, partsOf(rec, sp), rec.clip || null, { ts: 4 });
+        const out = f ? { size: [sp.W, sp.H], plist: plistOf(sp.key), bbox: f.bbox.slice(), ts: f.ts, tw: f.tw, th: f.th, t: tPngOf(f), cov: covPngOf(f) } : { size: [sp.W, sp.H], plist: plistOf(sp.key), empty: true };
+        FZC.set(rec, { key: sp.key, out }); return out;
+    }
+    async function decodeFrozen(fz, W, H) {
+        if (!fz || !Array.isArray(fz.size) || fz.size[0] !== W || fz.size[1] !== H) return null;
+        if (fz.empty) return { size: [W, H], plist: fz.plist || '', empty: true };
+        const bb = fz.bbox; if (!Array.isArray(bb) || bb.length !== 4 || bb[0] < 0 || bb[1] < 0 || bb[0] + bb[2] > W || bb[1] + bb[3] > H || !(fz.ts > 0) || !fz.t || !fz.cov) return null;
+        const [ti, ci] = await Promise.all([decodeImage(fz.t), decodeImage(fz.cov)]);
+        if (ti.width !== fz.tw || ti.height !== fz.th || ci.width !== bb[2] || ci.height !== bb[3]) return null;
+        const px = (im) => { const cv = doc.createElement('canvas'); cv.width = im.width; cv.height = im.height; const x = cv.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0); return x.getImageData(0, 0, im.width, im.height).data; };
+        const td = px(ti), cd = px(ci), t16 = new Uint16Array(fz.tw * fz.th), cov = new Uint8Array(bb[2] * bb[3]);
+        for (let i = 0, o = 0; i < t16.length; i++, o += 4) t16[i] = (td[o] << 8) | td[o + 1];
+        for (let i = 0, o = 0; i < cov.length; i++, o += 4) cov[i] = cd[o];
+        return { size: [W, H], plist: fz.plist || '', bbox: bb.slice(), ts: fz.ts, tw: fz.tw, th: fz.th, t16, cov, tUrl: fz.t, covUrl: fz.cov };
+    }
+    // coverage of a frozen fade = its saved coverage x outside-the-decals, with the same arithmetic as effClip (an unchanged document gives the bytes it gave before the save)
+    function encodeFrozen(rec, sp) {
+        const fz = rec.frozen; if (!fz || fz.empty) return null;
+        const bx = fz.bbox[0], by = fz.bbox[1], bw = fz.bbox[2], bh = fz.bbox[3], dm = rec.keepDecals === false ? null : decalMask(sp);
+        let covUrl = fz.covUrl;
+        if (dm) {
+            const W = sp.W; let any = false;
+            covUrl = pngOf(bw, bh, d => {
+                for (let y = 0; y < bh; y++) for (let x = 0, i = y * bw, o = i * 4; x < bw; x++, i++, o += 4) {
+                    const b = fz.cov[i]; let v = 0;
+                    if (b) { const m = dm[(y + by) * W + x + bx]; v = b === 255 ? m : ((b * m + 127) / 255) | 0; }
+                    if (v) any = true; d[o] = v; d[o + 1] = v; d[o + 2] = v; d[o + 3] = 255;
+                }
+            });
+            if (!any) return null;
+        }
+        return { bbox: fz.bbox.slice(), ts: fz.ts, t: fz.tUrl, cov: covUrl };
+    }

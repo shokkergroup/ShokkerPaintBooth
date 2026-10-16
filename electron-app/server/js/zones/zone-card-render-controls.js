@@ -133,7 +133,7 @@
                 + '<button class="zone-move-btn" onclick="event.stopPropagation(); promptLinkZone(' + i + ')" title="' + (zone.linkGroup ? 'Linked (click to unlink)' : 'Link this zone to another') + '" style="font-size:11px; padding:1px 4px;' + (zone.linkGroup ? ' color:var(--accent-gold); border-color:var(--accent-gold);' : '') + '">' + (zone.linkGroup ? '&#128279;' : '&#9741;') + '</button>'
                 + '<button class="zone-delete-btn" onclick="event.stopPropagation(); deleteZone(' + i + ')" title="Delete zone">&times;</button>'
                 + '</div></div>'
-                + (zone.linkGroup ? '<div style="font-size:8px; color:var(--accent-gold); padding:0 8px 2px; letter-spacing:0.5px;">&#128279; LINKED: ' + escapeHtml(linkedNames) + '</div>' : '')
+                + (zone.linkGroup ? '<div style="font-size:8px; color:var(--accent-gold); padding:0 8px 2px; letter-spacing:0.5px;">Linked: ' + escapeHtml(linkedNames) + '</div>' : '')
                 + '<div class="zone-visual"><div class="zone-swatch-strip">' + swatchStripHtml(zone, dot.color) + '</div>'
                 + '<div class="zone-mini-ekg ' + (energy > 5 ? 'high-energy' : energy > 2 ? '' : 'low-energy') + '"></div></div>'
                 + '</div>';

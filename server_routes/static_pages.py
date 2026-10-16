@@ -56,6 +56,15 @@ def register_static_page_routes(app, *, server_dir: str, bundle_dir: str) -> Non
                         f'<!-- FLASK-SERVED-BUILD-27 PID={os.getpid()} TIME={time.strftime("%H:%M:%S")} -->\n</head>',
                         1,
                     )
+                    # [SPB-PERF1 2026-10-09] same content-stamping as server_v5's '/' (kill switch env SPB_PERF1_OFF=1).
+                    try:
+                        from server_routes import perf_boot as _perf1
+                        if not _perf1.PERF1_OFF:
+                            html_content = _perf1.stamp_html(html_content, [server_dir, bundle_dir])
+                            return Response(html_content, mimetype='text/html',
+                                            headers={'Cache-Control': 'no-cache, no-store, must-revalidate'})
+                    except Exception:
+                        pass
                     return Response(html_content, mimetype='text/html')
                 except Exception:
                     return send_file(os.path.abspath(candidate), mimetype='text/html')
@@ -125,6 +134,11 @@ def register_static_page_routes(app, *, server_dir: str, bundle_dir: str) -> Non
     def serve_shokk_forge():
         """Guided SHOKK FORGE intake/reconstruction page."""
         return _serve_html_page('forge-page.html', 'SHOKK FORGE HTML')
+
+    @app.route('/GETTING_STARTED.html')          # [S22 2026-10-13 beta Claude setup] the encyclopedia's "Guide: ..." links (doc:GETTING_STARTED.html#...) open this page; it was never served (404) and not shipped
+    def serve_getting_started():
+        """Getting Started guide (static, self-contained)."""
+        return _serve_html_page('GETTING_STARTED.html', 'Getting Started guide')
 
     @app.route('/SHOKK_DROP_BIBLE.html')
     def serve_shokk_drop_bible():

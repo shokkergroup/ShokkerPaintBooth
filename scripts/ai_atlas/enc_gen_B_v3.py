@@ -54,10 +54,10 @@ def _band(v, edges, words):
 
 M_W = [(15, 'non-metal paint'), (63, 'low metal, like carbon or subtle flake'), (127, 'pearl-level metal'), (175, 'strong pearl or anodized metal'),
        (239, 'true metallic'), (255, 'chrome or mirror tier')]
-R_W = [(14, 'razor or mirror smooth'), (29, 'wet mirror gloss'), (59, 'high gloss'), (99, 'satin gloss'), (129, 'satin or eggshell'),
-       (159, 'semi-matte'), (199, 'matte or blasted'), (229, 'flat'), (255, 'dead flat or porous')]
-C_W = [(15, 'no clearcoat'), (16, 'maximum clearcoat'), (31, 'very strong clearcoat'), (63, 'strong-to-medium clearcoat'), (127, 'satin or weak clearcoat'),
-       (191, 'dull or trace clearcoat'), (254, 'almost no clearcoat'), (255, 'no clearcoat shine')]
+# ENC-GEN 2026-10-10: roughness + clearcoat word bands now live in enc_gen_B_text.py (one source for the Shine label and the spec line).
+# Clearcoat: 0-15 = none, 16 = max, rising toward 255 = duller; 'dull' is used only near 255 (128-191 used to say 'dull or trace' -- wrong).
+import enc_gen_B_text as T
+R_W, C_W = T.R_W, T.C_W
 
 
 def w(v, table):
@@ -72,16 +72,17 @@ def spec_character(it):
     m, r, c = int(round(M[0])), int(round(R[0])), int(round(C[0]))
     s = 'Average spec: metal %d (%s), roughness %d (%s), clearcoat %d (%s).' % (m, w(m, M_W), r, w(r, R_W), c, w(c, C_W))
     wide = [n for n, v in (('metal', M), ('roughness', R), ('clearcoat', C)) if len(v) > 1 and v[1] is not None and v[1] >= 20]
-    if wide: s += ' The spec is textured, not flat: %s vary by 20 or more across the surface.' % ' and '.join(wide)
+    if wide: s += ' The spec is textured, not flat: %s %s by 20 or more across the surface.' % (' and '.join(wide), 'varies' if len(wide) == 1 else 'vary')
     elif len(M) > 1 and all(len(v) > 1 and (v[1] or 0) < 5 for v in (M, R, C)): s += ' The spec is almost perfectly flat, one smooth material.'
     return s
 
 
 def paint_advice(it, c, own):
     M, R = (it.get('M') or [None])[0], (it.get('R') or [None])[0]
+    C = (it.get('C') or [None])[0]
     if M is None: return ''
     if own:
-        s = 'It brings its own colours, so leave BASE COLOR on the finish\'s own colour. Put it next to a plain zone of the opposite sheen (matte beside gloss, warm beside cool) so the colours have a calm neighbour.'
+        s = "It brings its own colours, so leave BASE COLOR on the finish's own colour. Put it next to a plain zone of the opposite sheen (matte beside gloss, warm beside cool) so the colours have a calm neighbour."
     elif M >= 240:
         s = 'Reflection inherits the paint colour: near-white paint gives silver, a coloured paint gives tinted chrome, and a dark paint stays dark.'
     elif M >= 176:
@@ -91,7 +92,15 @@ def paint_advice(it, c, own):
     elif R >= 160:
         s = 'Matte reads as flat colour, so a clean saturated colour looks richer than a muddy mid-grey; pair it with a gloss or metal neighbour for contrast.'
     else:
-        s = 'Gloss shows the paint colour as it is, so any colour works; pick the colour for contrast with the neighbouring zones, not for the finish.'
+        # ENC-GEN 2026-10-10 (E9-02): this branch used to say "Gloss shows the paint colour" for every non-metal finish up to roughness 159 and any clearcoat.
+        # Now it follows the same Shine word as the page (roughness + clearcoat), so a satin or dull-coat finish is not called gloss.
+        sh = T.shine_label(M, R, C)[0]
+        if sh in ('mirror', 'high gloss', 'gloss'):
+            s = 'Gloss shows the paint colour as it is, so any colour works; pick the colour for contrast with the neighbouring zones, not for the finish.'
+        elif sh == 'semi-matte':
+            s = 'A semi-matte surface mutes the paint colour a little, so a clean saturated colour looks best; pair it with a gloss or metal neighbour for contrast.'
+        else:
+            s = 'A satin or soft sheen shows the paint colour quietly, so most colours work; pick the colour for contrast with the neighbouring zones, not for the finish.'
     av = [x for x in (c.get('avoid') or []) if x][:3]
     if av: s += ' Avoid: %s.' % ', '.join(av)
     return s
@@ -170,15 +179,16 @@ def finish_extras(it, c, ident, shelf, nm, own, kind):
     pa = paint_advice(it, c, own)
     if pa: ex['paint_advice'] = pa
     ex['combos'] = combos_for(c, 'finish')
-    settings = {'Zone section': 'BASE MATERIAL', 'Base': nm}
+    # ENC-GEN 2026-10-10: 'Zone section' is not a label on screen; the real label is Base Material (BASE section of the zone card).
+    settings = {'Base Material': nm}
     if shelf and re.sub(r'^[^A-Za-z0-9]+', '', shelf).lower().startswith('foundation') and not str(shelf).lower().endswith('efx'):
-        settings['BASE COLOR'] = 'Source paint (keeps your colours)'
+        settings['BASE COLOR'] = 'Use source paint (spec only)'   # real dropdown option (paint-booth-2-state-zones.js:1920)
         res = 'Only the shine changes; your livery colours stay exactly as painted.'
     elif own:
         settings['BASE COLOR'] = "Use finish's own color"
         res = 'The finish shows its own colours and spec together.'
     else:
-        settings['BASE COLOR'] = 'Pick the colour you want'
+        settings['BASE COLOR'] = 'Use solid color'   # real dropdown option (paint-booth-2-state-zones.js:1921), then pick the colour
         res = 'The finish takes your colour and adds its own shine.'
     ex['examples'] = [{'title': 'Put it on a zone', 'goal': 'See %s on the car.' % nm, 'settings': settings, 'result': res}]
     scr = screens_for(ident, shelf)
@@ -200,7 +210,7 @@ def pattern_extras(it, c, ident, g, nm):
     ex['paint_advice'] = ' '.join(bits)
     ex['combos'] = [x for x in combos_for(c, 'pattern') if x['with'] != 'patterns.layers_and_stacking'][:3] + [{'with': 'patterns.paint_mode', 'why': 'Blend keeps your paint colour; Overlay hides it under the pattern colours.'}]
     ex['examples'] = [{'title': 'Fine pattern on a zone', 'goal': 'Get %s to read at car scale.' % nm,
-                       'settings': {'Zone section': 'PATTERN', 'Pattern 1': nm, 'Paint mode': 'Blend', 'Scale': 'Below 1.00'},
+                       'settings': {'Pattern 1': nm, 'Paint mode': 'Blend', 'Scale': 'Below 1.00'},
                        'result': 'The pattern repeats finely across the zone and keeps your paint colour.'}]
     ex['screens'] = screens_for(ident)
     ex['_src'] = [WIKI_SPEC]
@@ -215,7 +225,7 @@ def spec_extras(it, c, ident, g, nm, chs):
                     {'with': 'spec.blend_modes', 'why': 'The blend mode decides how this overlay meets the base shine. Normal is the safe start.'},
                     {'with': 'spec.iron_rules', 'why': 'Coat values 1 to 15 and roughness under 15 on non-chrome pixels are raised to safe values on export.'}]
     ex['examples'] = [{'title': 'Add it as an overlay', 'goal': 'Layer %s over a base finish.' % nm,
-                       'settings': {'Zone section': 'SPEC OVERLAYS', 'Overlay': nm, 'Strength': '50% (default)', 'Boxes ticked': chs},
+                       'settings': {'Overlay': nm, 'Strength': '50% (default)', 'Boxes ticked': chs},
                        'result': 'The shine of the zone gets this texture while the colours stay put.'}]
     ex['screens'] = screens_for(ident)
     ex['_src'] = [WIKI_SPEC]

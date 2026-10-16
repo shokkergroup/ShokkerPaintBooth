@@ -1,6 +1,20 @@
 (function () {
     'use strict';
 
+    // PORT-W1 (2026-10-09, owner: "our tools basically SUCK"): Fill Bucket now
+    // shares the Magic Wand's region maths - SPBPcSelection.wandRegion, ported
+    // from PhotoCraft crates/algo/src/selection.rs (span flood fill, Chebyshev
+    // R,G,B,A <= tolerance, 4-connected) - so the same click + tolerance picks
+    // the same pixels in both tools (the old bucket used a Euclidean-RGB radius of
+    // tolerance*sqrt3 and ignored alpha differences). The wand's 3x3 geometric edge
+    // anti-alias (honouring the shared Anti-alias checkbox, default on) softens the
+    // fill rim. window.SPB_PC_W1_OFF = true restores the legacy Euclidean flood.
+    const pcAA = new WeakMap(); // matches array -> { mask, box } coverage of the fill
+    function pcCore() {
+        if (window.SPB_PC_W1_OFF) return null;
+        return window.SPBPcSelection || null;
+    }
+
     function emptyResult(pixelCount) {
         return {
             matches: new Uint8Array(Math.max(0, pixelCount || 0)),
@@ -20,6 +34,28 @@
         const seedX = Math.floor(startX);
         const seedY = Math.floor(startY);
         if (seedX < 0 || seedX >= width || seedY < 0 || seedY >= height) return result;
+
+        const pc = pcCore();
+        if (pc) {
+            const aaBox = document.getElementById('wandAntiAlias');
+            const region = pc.wandRegion(data, width, height, seedX, seedY, {
+                tolerance: Number.isFinite(Number(tolerance)) ? Number(tolerance) : 0,
+                contiguous: contiguous !== false,
+                antiAlias: aaBox ? aaBox.checked !== false : true,
+            });
+            if (region.coreBox) {
+                const cb = region.coreBox;
+                for (let y = cb.y0; y < cb.y1; y++) {
+                    const row = y * width;
+                    for (let x = cb.x0; x < cb.x1; x++) {
+                        if (region.core[row + x]) { result.matches[row + x] = 2; result.count++; }
+                    }
+                }
+                result.minX = cb.x0; result.minY = cb.y0; result.maxX = cb.x1 - 1; result.maxY = cb.y1 - 1;
+                if (region.mask !== region.core) pcAA.set(result.matches, { mask: region.mask, box: region.bbox, rowWidth: width });
+            }
+            return result;
+        }
 
         const seedPixel = seedY * width + seedX;
         const seedOffset = seedPixel * 4;
@@ -121,6 +157,22 @@
         const sourceOverPixel = window.SPBRgbaBlend?.sourceOverPixel;
         if (typeof sourceOverPixel !== 'function') return false;
         let changed = false;
+        const aa = pcAA.get(matches);
+        if (aa) {
+            // Wand-consistent fill: core + 3x3 anti-aliased rim (coverage scales the opacity).
+            const box = aa.box;
+            const rowWidth = aa.rowWidth;
+            for (let y = box.y0; y < box.y1; y++) {
+                for (let x = box.x0; x < box.x1; x++) {
+                    const pixelIndex = y * rowWidth + x;
+                    const coverage = aa.mask[pixelIndex];
+                    if (!coverage) continue;
+                    const offset = pixelIndex * 4;
+                    if (sourceOverPixel(data, offset, fillR, fillG, fillB, 255, amount * coverage / 255, apply)) changed = true;
+                }
+            }
+            return changed;
+        }
         for (let pixelIndex = 0; pixelIndex < matches.length; pixelIndex++) {
             if (matches[pixelIndex] !== 2) continue;
             const offset = pixelIndex * 4;

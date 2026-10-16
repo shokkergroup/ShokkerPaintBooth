@@ -6,6 +6,7 @@
     "trucks silverado2019": "C:/Users/Ricky's PC/Documents/iRacing/paint/trucks silverado2019"
   },
   "active_car": "protrucks pro2lite",
-  "live_link_enabled": true,
-  "use_custom_number": true
+  "live_link_enabled": false,
+  "use_custom_number": true,
+  "imported_spec_path": null
 }

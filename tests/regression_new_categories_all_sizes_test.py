@@ -45,6 +45,10 @@ PREFIXES = {
     # prefixes go in the same net.
     "nsx_": "engine/expansions/fractured_nightshift_2026.py",
     "cos_": "engine/expansions/fractured_cosmos_2026.py",
+    # [S19 2026-10-12 owner: Fractured Cosmos rebuild] R2 ids (cz_, NOT cx_ = COLORSHOXX)
+    "cz_": "engine/expansions/fractured_cosmos_r2/",
+    # [2026-10-13 beta readiness] Fractured Wilds R2 (owner rebuild 2026-10-12)
+    "wx_": "engine/expansions/fractured_wilds_r2/",
     "elm_": "engine/expansions/fractured_elements_2026.py",
     "pdg_": "engine/expansions/paradigm_2026.py",
 }

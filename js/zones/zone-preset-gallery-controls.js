@@ -93,7 +93,7 @@
       setZones(nextZones);
       setSelectedZoneIndex(0);
       renderZones();
-      showToast('Loaded preset: ' + (preset.name || presetId) + ' - set colors using the eyedropper!');
+      showToast('Loaded preset: ' + (preset.name || presetId) + ' - set colors using the eyedropper');
       return preset;
     }
 

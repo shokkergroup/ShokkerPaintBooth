@@ -1,0 +1,2345 @@
+{
+  "domain": "finish_sock_hop_1",
+  "version": 1,
+  "articles": [
+    {
+      "id": "finish_sock_hop_1.base.argyle_pastel",
+      "title": "Pastel Argyle",
+      "domain": "finish_sock_hop_1",
+      "summary": "Pastel Argyle builds a cream ground with pink, blue, mint and lilac diamonds, crossing dark ribbons and yellow stitch accents.",
+      "what": "The current paint and spec functions share diamond, edge, ribbon, stitch and group fields. Material channels vary spatially with these fields; an old card average is not a constant output value. The source header describes an older felt/poodle construction and is not the authority for the current function. Use source paint skips this paint function in the reviewed ordinary primary-base paths. Finish-colour mode permits its palette. Other bases, patterns, HSB and target masks can still affect the document.",
+      "when": [
+        "Consider this construction only when it matches the intended design; inspect the actual result before choosing it for a car."
+      ],
+      "how": [
+        "Find the exact current picker name and finish ID.",
+        "Choose Use source paint for primary material-only work, or the finish’s own colour when its palette belongs in the scheme.",
+        "Confirm the affected target and check paint and material output separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose paint colour mode and material detail independently."
+      ],
+      "pitfalls": [
+        "Do not infer current construction from the finish name or stale card averages.",
+        "Source review does not establish car-specific suitability or native appearance."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.coral_stripe",
+        "finish_sock_hop_1.base.mint_stripe",
+        "finish_sock_hop_1.base.formica_boomerang",
+        "finish_sock_hop_1.base.harlequin"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::argyle_pastel"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/registry.py:1069-1070",
+        "engine/expansions/sock_vinyl_record_press_i2_2026.py:16-81",
+        "engine/paint_v2/sock_hop_2026.py:979-1037",
+        "engine/paint_v2/sock_hop_2026.py:1371-1385",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::argyle_pastel",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 43,
+      "rough": 219,
+      "coat": 35,
+      "palette": [
+        "#f1e4c9",
+        "#696b73",
+        "#989591"
+      ],
+      "own_colours": true,
+      "loud": 2,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 2,
+        "body": 2,
+        "accent": 3,
+        "hero": 2,
+        "risk": 4
+      },
+      "mood": [
+        "elegant",
+        "retro",
+        "clean"
+      ],
+      "era": [
+        "50s-60s"
+      ],
+      "use": [
+        "body",
+        "roof",
+        "sides"
+      ],
+      "tags": [
+        "geometric",
+        "luxury",
+        "light",
+        "rainbow"
+      ],
+      "level": "pro",
+      "spec_character": "The final registered material function is spatially varying. Existing numeric card averages and ratings are inherited catalog metadata, not newly verified channel measurements or suitability evidence.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the generated palette; primary source-paint mode skips this paint pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/argyle_pastel.png",
+      "swatch": "/api/swatch/base/argyle_pastel",
+      "deep": {
+        "title": "Current construction and colour mode",
+        "body": "The current paint and spec functions share diamond, edge, ribbon, stitch and group fields. Material channels vary spatially with these fields; an old card average is not a constant output value. The source header describes an older felt/poodle construction and is not the authority for the current function. Use source paint skips this paint function in the reviewed ordinary primary-base paths. Finish-colour mode permits its palette. Other bases, patterns, HSB and target masks can still affect the document."
+      },
+      "faq": [
+        {
+          "q": "What does Pastel Argyle actually draw?",
+          "a": "Pastel Argyle builds a cream ground with pink, blue, mint and lilac diamonds, crossing dark ribbons and yellow stitch accents."
+        },
+        {
+          "q": "Does Pastel Argyle preserve my existing colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Finish-colour mode permits the palette. This does not guarantee that other paint contributors leave the entire document unchanged."
+        }
+      ],
+      "mistakes": [
+        "Do not infer current construction from the finish name or stale card averages.",
+        "Source review does not establish car-specific suitability or native appearance."
+      ],
+      "protips": [
+        "Choose paint colour mode and material detail independently."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.atomic_charcoal",
+      "title": "Atomic Charcoal",
+      "domain": "finish_sock_hop_1",
+      "summary": "Atomic Charcoal places seeded red, gold and teal amoeba/boomerang shapes over charcoal, with spatial material fields. It is not a plain charcoal material. Own-colour mode includes these pigments; Use source paint skips the ordinary primary paint pass.",
+      "what": "A seeded generator places rotated bent-ellipse shapes on a work field capped at 600, then resizes shape and palette fields. Paint includes grain. Spec combines shapes/palette, grain and low-frequency modulation, then calls the shared territory compositor. Seed varies construction; no physical size or rendered uniqueness has been accepted. Final registered paint/spec callables use the shared work wrapper capped at1024 on the longest side; large paint requests also add seeded full-resolution grain. Source coordinates and historical timings are not measured native appearance, physical car size or suitability. Use source paint skips the ordinary primary paint function; other contributors and target masks are separate.",
+      "when": [
+        "Consider the described construction, colour mode and intended target; inspect actual output and artwork readability."
+      ],
+      "how": [
+        "Find the exact picker name and finish ID base::atomic_charcoal.",
+        "Use the finish’s own colour when its palette belongs in the scheme, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target and inspect paint and material contributions separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target before assessing suitability."
+      ],
+      "pitfalls": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.jukebox_neon",
+        "finish_sock_hop_1.base.vinyl_groove",
+        "finish_sock_hop_1.base.terrazzo_cream",
+        "finish_sock_hop_1.base.atomic_starburst"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::atomic_charcoal"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/sock_hop_2026.py:779-839",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::atomic_charcoal",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 146,
+      "rough": 152,
+      "coat": 115,
+      "palette": [
+        "#1c1c21",
+        "#e87a38",
+        "#339da2"
+      ],
+      "own_colours": true,
+      "loud": 4,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 4,
+        "body": 3,
+        "accent": 4,
+        "hero": 5,
+        "risk": 2
+      },
+      "mood": [
+        "retro",
+        "playful",
+        "wild"
+      ],
+      "era": [
+        "50s-60s"
+      ],
+      "use": [
+        "body",
+        "sides",
+        "hood"
+      ],
+      "level": "pro",
+      "spec_character": "Material construction is source-reviewed. Existing numeric card averages, palettes and ratings are inherited metadata, not newly measured output or verified car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the registered paint function; ordinary primary source-paint mode skips it.",
+      "combos": [],
+      "examples": [],
+      "screens": [
+        "cat_sock_hop"
+      ],
+      "thumb": "thumbnails/base/atomic_charcoal.png",
+      "swatch": "/api/swatch/base/atomic_charcoal",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "A seeded generator places rotated bent-ellipse shapes on a work field capped at 600, then resizes shape and palette fields. Paint includes grain. Spec combines shapes/palette, grain and low-frequency modulation, then calls the shared territory compositor. Seed varies construction; no physical size or rendered uniqueness has been accepted. Final registered paint/spec callables use the shared work wrapper capped at1024 on the longest side; large paint requests also add seeded full-resolution grain. Source coordinates and historical timings are not measured native appearance, physical car size or suitability. Use source paint skips the ordinary primary paint function; other contributors and target masks are separate."
+      },
+      "faq": [
+        {
+          "q": "Is Atomic Charcoal a plain uniform charcoal finish?",
+          "a": "Atomic Charcoal places seeded red, gold and teal amoeba/boomerang shapes over charcoal, with spatial material fields. It is not a plain charcoal material. Own-colour mode includes these pigments; Use source paint skips the ordinary primary paint pass."
+        },
+        {
+          "q": "Can Atomic Charcoal retain my source artwork colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material detail can remain. Additional bases, patterns, colour adjustments and target masks are separate checks; material changes can alter the lit impression."
+        }
+      ],
+      "mistakes": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.atomic_starburst",
+      "title": "Atomic Starburst",
+      "domain": "finish_sock_hop_1",
+      "summary": "Atomic Starburst uses a navy/teal field with red cores, six finite rays, two elliptical orbit fields, orange satellites, glints and a printed halo. Four coordinate-cell states vary orientation, satellite positions and ray palette; the atoms are not all identical.",
+      "what": "The final registered cocktail I4 builder uses a work grid capped at 1024, maps it back to requested-space coordinates and creates 64-coordinate-unit stations. State controls a small rotation, satellite shift and mustard/orange ray colour. Core, rays, orbit1, orbit2, satellite, glint and halo fields feed both paint and metal/roughness/clearcoat. A station repeat is not the size of each primitive or a calibrated physical size on a car. Requested output is interpolated when the work grid is smaller. The direct spec function ignores sm/base_m/base_r; later composition has separate strength processing. Source review does not certify visual uniqueness, native readability or simulator angle-dependent effects.",
+      "when": [
+        "Consider the described construction, colour mode and intended target; inspect actual output and artwork readability."
+      ],
+      "how": [
+        "Find the exact picker name and finish ID base::atomic_starburst.",
+        "Use the finish’s own colour when its palette belongs in the scheme, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target and inspect paint and material contributions separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target before assessing suitability."
+      ],
+      "pitfalls": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.googie_orbit",
+        "finish_sock_hop_1.base.vinyl_groove",
+        "finish_sock_hop_1.base.jukebox_neon",
+        "finish_sock_hop_1.base.atomic_charcoal"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::atomic_starburst"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/expansions/sock_atomic_cocktail_i4_2026.py:20-94",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::atomic_starburst",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 58,
+      "rough": 186,
+      "coat": 64,
+      "palette": [
+        "#0d2226",
+        "#966125",
+        "#5d8469"
+      ],
+      "own_colours": true,
+      "loud": 3,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 2,
+        "body": 2,
+        "accent": 2,
+        "hero": 2,
+        "risk": 4
+      },
+      "mood": [
+        "retro",
+        "playful"
+      ],
+      "era": [
+        "50s-60s"
+      ],
+      "use": [
+        "body",
+        "roof",
+        "sides"
+      ],
+      "level": "pro",
+      "spec_character": "Material construction is source-reviewed. Existing numeric card averages, palettes and ratings are inherited metadata, not newly measured output or verified car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the registered paint function; ordinary primary source-paint mode skips it.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/atomic_starburst.png",
+      "swatch": "/api/swatch/base/atomic_starburst",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "The final registered cocktail I4 builder uses a work grid capped at 1024, maps it back to requested-space coordinates and creates 64-coordinate-unit stations. State controls a small rotation, satellite shift and mustard/orange ray colour. Core, rays, orbit1, orbit2, satellite, glint and halo fields feed both paint and metal/roughness/clearcoat. A station repeat is not the size of each primitive or a calibrated physical size on a car. Requested output is interpolated when the work grid is smaller. The direct spec function ignores sm/base_m/base_r; later composition has separate strength processing. Source review does not certify visual uniqueness, native readability or simulator angle-dependent effects."
+      },
+      "faq": [
+        {
+          "q": "Are all Atomic Starburst atoms identical?",
+          "a": "Atomic Starburst uses a navy/teal field with red cores, six finite rays, two elliptical orbit fields, orange satellites, glints and a printed halo. Four coordinate-cell states vary orientation, satellite positions and ray palette; the atoms are not all identical."
+        },
+        {
+          "q": "Can Atomic Starburst retain my source artwork colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material detail can remain. Additional bases, patterns, colour adjustments and target masks are separate checks; material changes can alter the lit impression."
+        }
+      ],
+      "mistakes": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.bubblegum_dot",
+      "title": "Bubblegum Dots",
+      "domain": "finish_sock_hop_1",
+      "summary": "Bubblegum Dot builds staggered candy balls with rims, inner shading, highlights, sugar crosses and molding seams on a pale pink ground. Seed changes flavour assignments, not the ball centres. It is not an optical transparency layer or random overlapping bubbles.",
+      "what": "Coordinates rotate -12 degrees and use max(height,width)/15 repeat stations. Row parity offsets the balls; seed enters modulo-three flavour assignment. Pink, rose and coral colours plus rim/highlight/seam accents feed paint; the same flavour and candy fields feed material expressions. Direct sm multiplies a metal-detail term, not the core roughness/clearcoat expressions. Final registered paint/spec callables use the shared work wrapper capped at1024 on the longest side; large paint requests also add seeded full-resolution grain. Source coordinates and historical timings are not measured native appearance, physical car size or suitability. Use source paint skips the ordinary primary paint function; other contributors and target masks are separate.",
+      "when": [
+        "Consider the described construction, colour mode and intended target; inspect actual output and artwork readability."
+      ],
+      "how": [
+        "Find the exact picker name and finish ID base::bubblegum_dot.",
+        "Use the finish’s own colour when its palette belongs in the scheme, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target and inspect paint and material contributions separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target before assessing suitability."
+      ],
+      "pitfalls": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.lemon_polka",
+        "finish_sock_hop_1.base.mint_stripe",
+        "finish_sock_hop_1.base.formica_boomerang",
+        "finish_sock_hop_1.base.gingham_red"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::bubblegum_dot"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/sock_hop_2026.py:514-571",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::bubblegum_dot",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 52,
+      "rough": 224,
+      "coat": 25,
+      "palette": [
+        "#f5d1c7",
+        "#c9355a",
+        "#ee82a1"
+      ],
+      "own_colours": true,
+      "loud": 3,
+      "busy": 3,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 3,
+        "accent": 2,
+        "hero": 3,
+        "risk": 3
+      },
+      "mood": [
+        "playful",
+        "retro",
+        "clean"
+      ],
+      "era": [
+        "50s-60s"
+      ],
+      "use": [
+        "body",
+        "roof",
+        "sides"
+      ],
+      "tags": [
+        "retro"
+      ],
+      "level": "intermediate",
+      "spec_character": "Material construction is source-reviewed. Existing numeric card averages, palettes and ratings are inherited metadata, not newly measured output or verified car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the registered paint function; ordinary primary source-paint mode skips it.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/bubblegum_dot.png",
+      "swatch": "/api/swatch/base/bubblegum_dot",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "Coordinates rotate -12 degrees and use max(height,width)/15 repeat stations. Row parity offsets the balls; seed enters modulo-three flavour assignment. Pink, rose and coral colours plus rim/highlight/seam accents feed paint; the same flavour and candy fields feed material expressions. Direct sm multiplies a metal-detail term, not the core roughness/clearcoat expressions. Final registered paint/spec callables use the shared work wrapper capped at1024 on the longest side; large paint requests also add seeded full-resolution grain. Source coordinates and historical timings are not measured native appearance, physical car size or suitability. Use source paint skips the ordinary primary paint function; other contributors and target masks are separate."
+      },
+      "faq": [
+        {
+          "q": "Does Bubblegum Dot create randomly overlapping transparent bubbles?",
+          "a": "Bubblegum Dot builds staggered candy balls with rims, inner shading, highlights, sugar crosses and molding seams on a pale pink ground. Seed changes flavour assignments, not the ball centres. It is not an optical transparency layer or random overlapping bubbles."
+        },
+        {
+          "q": "Can Bubblegum Dots retain my source artwork colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material detail can remain. Additional bases, patterns, colour adjustments and target masks are separate checks; material changes can alter the lit impression."
+        }
+      ],
+      "mistakes": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.cherry_polka",
+      "title": "Cherry Polka",
+      "domain": "finish_sock_hop_1",
+      "summary": "Cherry Polka currently builds cherry-cola liquid fields with foam, carbonation rings, syrup depth, dark troughs and glints, rather than a regular white-dot grid.",
+      "what": "The current liquid carrier comes from warped coordinates and combined sine fields. Foam and ring bands are thresholds of that connected liquid field; syrup, trough, glint and slower depth fields affect the paint palette and material channels. Paint combines cola, cherry, wine, cream and chrome-toned contributions. The registered implementation does not use the older shared Cherry Polka dot function. Metal, roughness and clearcoat vary with these named fields, rather than remaining a single constant. The direct spec function ignores sm/base_m/base_r arguments; later composition has separate processing, so this does not establish that app-wide Spec Strength is ineffective.",
+      "when": [
+        "Consider the declared construction and colour mode when choosing an accent; inspect the actual result and artwork readability."
+      ],
+      "how": [
+        "Find the current exact picker name and ID base::cherry_polka.",
+        "Choose the finish’s own colour for its authored palette, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target; compare paint and material detail separately before choosing it for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target deliberately."
+      ],
+      "pitfalls": [
+        "A finish name or catalog rating does not establish native appearance or car-specific suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.soda_check",
+        "finish_sock_hop_1.base.lemon_polka",
+        "finish_sock_hop_1.base.turquoise_fleck",
+        "finish_sock_hop_1.base.googie_orbit"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::cherry_polka"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/expansions/sock_cherry_cola_fizz_i1_2026.py:16-80",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::cherry_polka",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 59,
+      "rough": 204,
+      "coat": 62,
+      "palette": [
+        "#4b0608",
+        "#7b281e"
+      ],
+      "own_colours": true,
+      "loud": 3,
+      "busy": 3,
+      "ratings": {
+        "visible": 1,
+        "appeal": 2,
+        "body": 2,
+        "accent": 2,
+        "hero": 2,
+        "risk": 4
+      },
+      "mood": [
+        "retro",
+        "playful",
+        "elegant"
+      ],
+      "era": [
+        "50s-60s"
+      ],
+      "use": [
+        "body",
+        "sides",
+        "roof"
+      ],
+      "tags": [
+        "light"
+      ],
+      "level": "pro",
+      "spec_character": "Spatial construction is source-verified. Existing numeric card averages, ratings and palettes are inherited metadata, not newly measured material output or car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the authored palette; ordinary primary source-paint mode skips that paint pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/cherry_polka.png",
+      "swatch": "/api/swatch/base/cherry_polka",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "The current liquid carrier comes from warped coordinates and combined sine fields. Foam and ring bands are thresholds of that connected liquid field; syrup, trough, glint and slower depth fields affect the paint palette and material channels. Paint combines cola, cherry, wine, cream and chrome-toned contributions. The registered implementation does not use the older shared Cherry Polka dot function. Metal, roughness and clearcoat vary with these named fields, rather than remaining a single constant. The direct spec function ignores sm/base_m/base_r arguments; later composition has separate processing, so this does not establish that app-wide Spec Strength is ineffective."
+      },
+      "faq": [
+        {
+          "q": "Does Cherry Polka generate a regular grid of white dots?",
+          "a": "Cherry Polka currently builds cherry-cola liquid fields with foam, carbonation rings, syrup depth, dark troughs and glints, rather than a regular white-dot grid."
+        },
+        {
+          "q": "Can Cherry Polka retain my original livery colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material texture can remain. Additional bases, patterns, colour adjustments and target masks still matter; changed material response can change the lit impression."
+        }
+      ],
+      "mistakes": [
+        "A finish name or catalog rating does not establish native appearance or car-specific suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target deliberately."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.chrome_diner",
+      "title": "Diner Chrome",
+      "domain": "finish_sock_hop_1",
+      "summary": "Chrome Diner combines directional brushed/satin passes, interrupted scratches and restrained steel-toned colour drift with spatial metal, roughness and clearcoat fields. It is not the uniform Foundation Chrome preset or an actual captured environment reflection.",
+      "what": "Seed drives phase in 18-degree directional fields: fine/satin waves, a scratch gate and reflection-like drift. Spec adds separate seeded tarnish, sky and matte low-frequency fields; the sky label denotes an authored field, not sampled environment pixels. _pack_spec scales around local channel pivots128/15/110 before later composition, so this direct helper is not the global app-strength contract. Final registered paint/spec callables use the shared work wrapper capped at1024 on the longest side; large paint requests also add seeded full-resolution grain. Source coordinates and historical timings are not measured native appearance, physical car size or suitability. Use source paint skips the ordinary primary paint function; other contributors and target masks are separate.",
+      "when": [
+        "Consider the described construction, colour mode and intended target; inspect actual output and artwork readability."
+      ],
+      "how": [
+        "Find the exact picker name and finish ID base::chrome_diner.",
+        "Use the finish’s own colour when its palette belongs in the scheme, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target and inspect paint and material contributions separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target before assessing suitability."
+      ],
+      "pitfalls": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.terrazzo_cream",
+        "finish_sock_hop_1.base.harlequin",
+        "finish_sock_hop_1.base.diner_checker",
+        "finish_sock_hop_1.base.formica_boomerang"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::chrome_diner"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/sock_hop_2026.py:1253-1308",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::chrome_diner",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 138,
+      "rough": 83,
+      "coat": 126,
+      "palette": [
+        "#a5aab5"
+      ],
+      "own_colours": true,
+      "loud": 2,
+      "busy": 3,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 3,
+        "accent": 3,
+        "hero": 3,
+        "risk": 3
+      },
+      "mood": [
+        "clean",
+        "luxury",
+        "techy"
+      ],
+      "era": [
+        "50s-60s",
+        "timeless"
+      ],
+      "use": [
+        "trim",
+        "bumpers",
+        "body"
+      ],
+      "tags": [
+        "chrome",
+        "retro",
+        "streaks-v"
+      ],
+      "level": "intermediate",
+      "spec_character": "Material construction is source-reviewed. Existing numeric card averages, palettes and ratings are inherited metadata, not newly measured output or verified car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the registered paint function; ordinary primary source-paint mode skips it.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/chrome_diner.png",
+      "swatch": "/api/swatch/base/chrome_diner",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "Seed drives phase in 18-degree directional fields: fine/satin waves, a scratch gate and reflection-like drift. Spec adds separate seeded tarnish, sky and matte low-frequency fields; the sky label denotes an authored field, not sampled environment pixels. _pack_spec scales around local channel pivots128/15/110 before later composition, so this direct helper is not the global app-strength contract. Final registered paint/spec callables use the shared work wrapper capped at1024 on the longest side; large paint requests also add seeded full-resolution grain. Source coordinates and historical timings are not measured native appearance, physical car size or suitability. Use source paint skips the ordinary primary paint function; other contributors and target masks are separate."
+      },
+      "faq": [
+        {
+          "q": "Is Chrome Diner the same constant material as Foundation Chrome?",
+          "a": "Chrome Diner combines directional brushed/satin passes, interrupted scratches and restrained steel-toned colour drift with spatial metal, roughness and clearcoat fields. It is not the uniform Foundation Chrome preset or an actual captured environment reflection."
+        },
+        {
+          "q": "Can Diner Chrome retain my source artwork colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material detail can remain. Additional bases, patterns, colour adjustments and target masks are separate checks; material changes can alter the lit impression."
+        }
+      ],
+      "mistakes": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.coral_stripe",
+      "title": "Coral Stripe",
+      "domain": "finish_sock_hop_1",
+      "summary": "Coral Stripe has cream ground, coral and dark-coral lines, teal piping, pink accents and small atomic stitch fields. Its current construction replaces the old broad brush ribbons.",
+      "what": "The current core rotates coordinates 58 degrees, uses max(height,width)/25 stripe stations with two wobble terms, and anchors atomic stitch fields in open cream ground. Core field requests below 512 evaluate larger then resize. Coral, coral-dark, teal, pink, star and cream states feed separate metal/roughness/clearcoat formulas; the repeat station is not an individual primitive size. Current registry callables retain the module’s work-resolution wrappers: requests above 1024 along the longest side evaluate the core at a capped work size and resize; the paint wrapper adds seeded full-resolution fine grain. The stripe fields themselves do not use seed, so grain variation is not a new stripe layout. Seeded paint grain is also skipped when the ordinary primary paint function is skipped by Use source paint. Direct core spec formulas scale a metal-detail term with sm but not their roughness/clearcoat expressions; later composition still controls app-wide strength. Source coordinates are not physical car calibration; historical comment timings and visual claims were not remeasured.",
+      "when": [
+        "Consider the described construction, colour mode and intended target; inspect actual output and artwork readability."
+      ],
+      "how": [
+        "Find the exact picker name and finish ID base::coral_stripe.",
+        "Use the finish’s own colour when its palette belongs in the scheme, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target and inspect paint and material contributions separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target before assessing suitability."
+      ],
+      "pitfalls": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.formica_boomerang",
+        "finish_sock_hop_1.base.mint_stripe",
+        "finish_sock_hop_1.base.argyle_pastel",
+        "finish_sock_hop_1.base.harlequin"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::coral_stripe"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/sock_hop_2026.py:629-695;1332-1385",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::coral_stripe",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 55,
+      "rough": 182,
+      "coat": 64,
+      "palette": [
+        "#e7c5b3",
+        "#e05757",
+        "#30979c"
+      ],
+      "own_colours": true,
+      "loud": 3,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 2,
+        "accent": 3,
+        "hero": 3,
+        "risk": 4
+      },
+      "mood": [
+        "retro",
+        "playful",
+        "clean"
+      ],
+      "era": [
+        "50s-60s",
+        "timeless"
+      ],
+      "use": [
+        "body",
+        "sides",
+        "roof"
+      ],
+      "tags": [
+        "stripes",
+        "organic",
+        "light",
+        "rainbow"
+      ],
+      "level": "pro",
+      "spec_character": "Material construction is source-reviewed. Existing numeric card averages, palettes and ratings are inherited metadata, not newly measured output or verified car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the registered paint function; ordinary primary source-paint mode skips it.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/coral_stripe.png",
+      "swatch": "/api/swatch/base/coral_stripe",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "The current core rotates coordinates 58 degrees, uses max(height,width)/25 stripe stations with two wobble terms, and anchors atomic stitch fields in open cream ground. Core field requests below 512 evaluate larger then resize. Coral, coral-dark, teal, pink, star and cream states feed separate metal/roughness/clearcoat formulas; the repeat station is not an individual primitive size. Current registry callables retain the module’s work-resolution wrappers: requests above 1024 along the longest side evaluate the core at a capped work size and resize; the paint wrapper adds seeded full-resolution fine grain. The stripe fields themselves do not use seed, so grain variation is not a new stripe layout. Seeded paint grain is also skipped when the ordinary primary paint function is skipped by Use source paint. Direct core spec formulas scale a metal-detail term with sm but not their roughness/clearcoat expressions; later composition still controls app-wide strength. Source coordinates are not physical car calibration; historical comment timings and visual claims were not remeasured."
+      },
+      "faq": [
+        {
+          "q": "Is Coral Stripe just wide coral brush ribbons?",
+          "a": "Coral Stripe has cream ground, coral and dark-coral lines, teal piping, pink accents and small atomic stitch fields. Its current construction replaces the old broad brush ribbons."
+        },
+        {
+          "q": "Can Coral Stripe retain my source artwork colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material detail can remain. Additional bases, patterns, colour adjustments and target masks are separate checks; material changes can alter the lit impression."
+        }
+      ],
+      "mistakes": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.diner_checker",
+      "title": "Diner Checkerboard",
+      "domain": "finish_sock_hop_1",
+      "summary": "Diner Checkerboard uses cream and coral tile parity with chrome-toned grout, per-tile glaze states, inset/pin details and selected mint/pearl glass glints. It is not a plain black-and-white checker or a woven gingham function.",
+      "what": "The final registered enamel-checker builder works at up to 1024 pixels before interpolation to the requested dimensions. Its working coordinates divide by the work-scale factor, then create 16-coordinate-unit tile fields and eight per-tile glaze states. Paint and material channels share parity, state, glass, diagonal, pin and grout fields. This declares a tile construction, not physical porcelain geometry or a calibrated on-car tile size. Its local spec clips channels to 0–255; ordinary final composition has additional channel constraints. The direct spec callable ignores sm/base_m/base_r, which does not establish that the app-wide Spec Strength control is ineffective.",
+      "when": [
+        "Consider the described construction, colour mode and intended target; inspect actual output and artwork readability."
+      ],
+      "how": [
+        "Find the exact picker name and finish ID base::diner_checker.",
+        "Use the finish’s own colour when its palette belongs in the scheme, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target and inspect paint and material contributions separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target before assessing suitability."
+      ],
+      "pitfalls": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.harlequin",
+        "finish_sock_hop_1.base.terrazzo_cream",
+        "finish_sock_hop_1.base.chrome_diner",
+        "finish_sock_hop_1.base.formica_boomerang"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::diner_checker"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/expansions/sock_diner_enamel_checker_i1_2026.py:25-96",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::diner_checker",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 128,
+      "rough": 85,
+      "coat": 142,
+      "palette": [
+        "#e9d29d",
+        "#c3212b",
+        "#999196"
+      ],
+      "own_colours": true,
+      "loud": 3,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 2,
+        "accent": 3,
+        "hero": 3,
+        "risk": 4
+      },
+      "mood": [
+        "retro",
+        "playful",
+        "clean"
+      ],
+      "era": [
+        "50s-60s"
+      ],
+      "use": [
+        "roof",
+        "sides",
+        "body"
+      ],
+      "tags": [
+        "retro",
+        "dark",
+        "light"
+      ],
+      "level": "pro",
+      "spec_character": "Material construction is source-reviewed. Existing numeric card averages, palettes and ratings are inherited metadata, not newly measured output or verified car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the registered paint function; ordinary primary source-paint mode skips it.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/diner_checker.png",
+      "swatch": "/api/swatch/base/diner_checker",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "The final registered enamel-checker builder works at up to 1024 pixels before interpolation to the requested dimensions. Its working coordinates divide by the work-scale factor, then create 16-coordinate-unit tile fields and eight per-tile glaze states. Paint and material channels share parity, state, glass, diagonal, pin and grout fields. This declares a tile construction, not physical porcelain geometry or a calibrated on-car tile size. Its local spec clips channels to 0–255; ordinary final composition has additional channel constraints. The direct spec callable ignores sm/base_m/base_r, which does not establish that the app-wide Spec Strength control is ineffective."
+      },
+      "faq": [
+        {
+          "q": "Is Diner Checkerboard a plain black-and-white checker?",
+          "a": "Diner Checkerboard uses cream and coral tile parity with chrome-toned grout, per-tile glaze states, inset/pin details and selected mint/pearl glass glints. It is not a plain black-and-white checker or a woven gingham function."
+        },
+        {
+          "q": "Can Diner Checkerboard retain my source artwork colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material detail can remain. Additional bases, patterns, colour adjustments and target masks are separate checks; material changes can alter the lit impression."
+        }
+      ],
+      "mistakes": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.formica_boomerang",
+      "title": "Formica Boomerang",
+      "domain": "finish_sock_hop_1",
+      "summary": "Formica Boomerang uses a cream/parchment ground with black, aqua, coral and brass-coloured curved inlays, pearl terminals and hairline detail. Alternating station parity rotates the motif; it does not create a checkerboard-coloured background.",
+      "what": "The final registered compact-boomerang I4 builder works at up to 1024 then interpolates when needed. Requested-space coordinates form 52-coordinate-unit stations; parity changes local orientation and a seeded five-state shift changes arcs. Black, teal, coral, brass, terminal, hair and slower laminate-lot fields feed paint and metal/roughness/clearcoat. The paint starts from cream/parchment before inlays; the older green-ground description is stale. Local channel clipping is not the complete final-composition contract. Station pitch is not a measured on-car primitive size or a claim that source-only review passes the finish identity gate.",
+      "when": [
+        "Consider the described construction, colour mode and intended target; inspect actual output and artwork readability."
+      ],
+      "how": [
+        "Find the exact picker name and finish ID base::formica_boomerang.",
+        "Use the finish’s own colour when its palette belongs in the scheme, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target and inspect paint and material contributions separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target before assessing suitability."
+      ],
+      "pitfalls": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.mint_stripe",
+        "finish_sock_hop_1.base.coral_stripe",
+        "finish_sock_hop_1.base.harlequin",
+        "finish_sock_hop_1.base.argyle_pastel"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::formica_boomerang"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/expansions/sock_formica_compact_boomerang_i4_2026.py:17-78",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::formica_boomerang",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 79,
+      "rough": 166,
+      "coat": 75,
+      "palette": [
+        "#d9c6a0",
+        "#284f51",
+        "#d66f3d"
+      ],
+      "own_colours": true,
+      "loud": 2,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 3,
+        "accent": 2,
+        "hero": 3,
+        "risk": 3
+      },
+      "mood": [
+        "retro",
+        "natural",
+        "clean"
+      ],
+      "era": [
+        "50s-60s",
+        "70s"
+      ],
+      "use": [
+        "body",
+        "sides",
+        "roof"
+      ],
+      "level": "intermediate",
+      "spec_character": "Material construction is source-reviewed. Existing numeric card averages, palettes and ratings are inherited metadata, not newly measured output or verified car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the registered paint function; ordinary primary source-paint mode skips it.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/formica_boomerang.png",
+      "swatch": "/api/swatch/base/formica_boomerang",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "The final registered compact-boomerang I4 builder works at up to 1024 then interpolates when needed. Requested-space coordinates form 52-coordinate-unit stations; parity changes local orientation and a seeded five-state shift changes arcs. Black, teal, coral, brass, terminal, hair and slower laminate-lot fields feed paint and metal/roughness/clearcoat. The paint starts from cream/parchment before inlays; the older green-ground description is stale. Local channel clipping is not the complete final-composition contract. Station pitch is not a measured on-car primitive size or a claim that source-only review passes the finish identity gate."
+      },
+      "faq": [
+        {
+          "q": "Does Formica Boomerang have a green checkerboard background?",
+          "a": "Formica Boomerang uses a cream/parchment ground with black, aqua, coral and brass-coloured curved inlays, pearl terminals and hairline detail. Alternating station parity rotates the motif; it does not create a checkerboard-coloured background."
+        },
+        {
+          "q": "Can Formica Boomerang retain my source artwork colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material detail can remain. Additional bases, patterns, colour adjustments and target masks are separate checks; material changes can alter the lit impression."
+        }
+      ],
+      "mistakes": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.gingham_red",
+      "title": "Red Gingham",
+      "domain": "finish_sock_hop_1",
+      "summary": "Red Gingham combines red and cream crossing yarn bands, fine thread ribs, seam shading and small lint accents. It supplies paint and spatially varying material channels; choose the colour mode and target deliberately.",
+      "what": "The final registered implementation is sock_gingham_woven_i2_2026, rather than the older shared Sock Hop function. Its array builder uses a 24-pixel coordinate repeat with two 12-pixel colour bands on each axis, perturbed coordinates, thread ribs, crossings, seam, grain, lint and slower dye-uptake fields. The paint palette uses red and cream; metal, roughness and clearcoat derive from these named fields. This repeat is a source-coordinate fact, not a measured on-car feature size after app scale, resampling or UV mapping. The direct spec callable ignores sm/base_m/base_r, while later composition has separate strength processing.",
+      "when": [
+        "Consider this woven-check construction when red and cream crossing bands fit the scheme; verify readability at the intended size."
+      ],
+      "how": [
+        "Find Red Gingham, ID base::gingham_red.",
+        "Choose the finish’s own colour for red/cream artwork, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target; avoid applying busy texture across number and sponsor artwork unless that is intentional."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode before assessing suitability."
+      ],
+      "pitfalls": [
+        "A catalog rating does not prove readability or finish suitability for a specific car."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.lemon_polka",
+        "finish_sock_hop_1.base.diner_checker",
+        "finish_sock_hop_1.base.turquoise_fleck",
+        "finish_sock_hop_1.base.formica_boomerang"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::gingham_red"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/expansions/sock_gingham_woven_i2_2026.py:16-70",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::gingham_red",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 127,
+      "rough": 163,
+      "coat": 113,
+      "palette": [
+        "#e06f5c",
+        "#e10b18",
+        "#fae1ac"
+      ],
+      "own_colours": true,
+      "loud": 3,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 2,
+        "body": 2,
+        "accent": 3,
+        "hero": 2,
+        "risk": 4
+      },
+      "mood": [
+        "retro",
+        "playful",
+        "natural"
+      ],
+      "era": [
+        "50s-60s"
+      ],
+      "use": [
+        "body",
+        "roof",
+        "sides"
+      ],
+      "tags": [
+        "light"
+      ],
+      "level": "pro",
+      "spec_character": "Spatial material construction is source-verified. Existing numeric card averages and ratings remain inherited metadata, not newly measured material output or verified suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "It brings its own colours, so leave BASE COLOR on the finish's own colour. Put it next to a plain zone of the opposite sheen (matte beside gloss, warm beside cool) so the colours have a calm neighbour. Avoid: numbers over the checks, next to other busy patterns.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/gingham_red.png",
+      "swatch": "/api/swatch/base/gingham_red",
+      "faq": [
+        {
+          "q": "Does Red Gingham always replace my artwork with red checks?",
+          "a": "Own-colour mode permits its red/cream paint function. Use source paint skips that ordinary primary-base paint function while material texture can remain. Other contributors and target masks still matter."
+        },
+        {
+          "q": "Are Red Gingham checks always 12 pixels on my car?",
+          "a": "No. The source has 12-pixel colour bands in a 24-pixel coordinate repeat. App scale, resizing and the car template affect the final appearance; no native car size was measured here."
+        }
+      ],
+      "mistakes": [
+        "A catalog rating does not prove readability or finish suitability for a specific car."
+      ],
+      "protips": [
+        "Choose the colour mode before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.googie_orbit",
+      "title": "Googie Orbit",
+      "domain": "finish_sock_hop_1",
+      "summary": "Googie Orbit builds two elliptical rails, a pinwheel, hub, red/gold pins, dial and plate on navy print states. Alternating station parity changes orientation and material response; it is not a grid of identical tiny orbit marks. Its field depends on image shape rather than seed.",
+      "what": "The final registered I3 field uses station period max(height,width)/16.25, parity rotation, two ellipse-rail fields and additional pinwheel/hub/pin/dial/plate fields. Paint uses teal and pink rails with gold/red/cyan details on two subtle navy states. Material channels derive from those fields and parity. The field depends on shape, not seed; seed alone does not vary the source construction. In its direct spec formula sm scales a metal-detail term but not the roughness/clearcoat expressions; this is not the complete app-wide strength contract. The normalized station period is not a fixed 32-pixel tile or a physical car calibration. Source review does not certify optical motion, unique designs or native appearance.",
+      "when": [
+        "Consider the described construction, colour mode and intended target; inspect actual output and artwork readability."
+      ],
+      "how": [
+        "Find the exact picker name and finish ID base::googie_orbit.",
+        "Use the finish’s own colour when its palette belongs in the scheme, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target and inspect paint and material contributions separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target before assessing suitability."
+      ],
+      "pitfalls": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.atomic_starburst",
+        "finish_sock_hop_1.base.vinyl_groove",
+        "finish_sock_hop_1.base.turquoise_fleck",
+        "finish_sock_hop_1.base.jukebox_neon"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::googie_orbit"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/expansions/sock_hop_googie_orbit_i3_2026.py:12-82",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::googie_orbit",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 57,
+      "rough": 193,
+      "coat": 48,
+      "palette": [
+        "#131d29",
+        "#20b3ba",
+        "#ae668d"
+      ],
+      "own_colours": true,
+      "loud": 2,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 2,
+        "body": 2,
+        "accent": 2,
+        "hero": 2,
+        "risk": 4
+      },
+      "mood": [
+        "retro",
+        "playful",
+        "clean"
+      ],
+      "era": [
+        "50s-60s"
+      ],
+      "use": [
+        "body",
+        "sides",
+        "roof"
+      ],
+      "level": "pro",
+      "spec_character": "Material construction is source-reviewed. Existing numeric card averages, palettes and ratings are inherited metadata, not newly measured output or verified car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the registered paint function; ordinary primary source-paint mode skips it.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/googie_orbit.png",
+      "swatch": "/api/swatch/base/googie_orbit",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "The final registered I3 field uses station period max(height,width)/16.25, parity rotation, two ellipse-rail fields and additional pinwheel/hub/pin/dial/plate fields. Paint uses teal and pink rails with gold/red/cyan details on two subtle navy states. Material channels derive from those fields and parity. The field depends on shape, not seed; seed alone does not vary the source construction. In its direct spec formula sm scales a metal-detail term but not the roughness/clearcoat expressions; this is not the complete app-wide strength contract. The normalized station period is not a fixed 32-pixel tile or a physical car calibration. Source review does not certify optical motion, unique designs or native appearance."
+      },
+      "faq": [
+        {
+          "q": "Does Googie Orbit use identical fixed 32-pixel tiles?",
+          "a": "Googie Orbit builds two elliptical rails, a pinwheel, hub, red/gold pins, dial and plate on navy print states. Alternating station parity changes orientation and material response; it is not a grid of identical tiny orbit marks."
+        },
+        {
+          "q": "Can Googie Orbit retain my source artwork colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material detail can remain. Additional bases, patterns, colour adjustments and target masks are separate checks; material changes can alter the lit impression."
+        }
+      ],
+      "mistakes": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.harlequin",
+      "title": "Harlequin",
+      "domain": "finish_sock_hop_1",
+      "summary": "Harlequin has diagonal cream, wine and navy diamonds, gold stitch lines and woven detail. Its core diamond layout ignores seed, but seeded shared spec territories and wrapper paint grain can vary the result. It is not identical to Pastel Argyle’s crossing ribbons.",
+      "what": "Coordinates rotate 45 degrees with max(height,width)/46 repeat stations. Parity, three cell states, diagonal stitch and sine weave fields feed paint and material motifs. Shared _spec3 adds seeded low-frequency territories independently of the diamond geometry; do not claim every material edge follows a diamond. Final registered paint/spec callables use the shared work wrapper capped at1024 on the longest side; large paint requests also add seeded full-resolution grain. Source coordinates and historical timings are not measured native appearance, physical car size or suitability. Use source paint skips the ordinary primary paint function; other contributors and target masks are separate.",
+      "when": [
+        "Consider the described construction, colour mode and intended target; inspect actual output and artwork readability."
+      ],
+      "how": [
+        "Find the exact picker name and finish ID base::harlequin.",
+        "Use the finish’s own colour when its palette belongs in the scheme, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target and inspect paint and material contributions separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target before assessing suitability."
+      ],
+      "pitfalls": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.formica_boomerang",
+        "finish_sock_hop_1.base.terrazzo_cream",
+        "finish_sock_hop_1.base.mint_stripe",
+        "finish_sock_hop_1.base.chrome_diner"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::harlequin"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/sock_hop_2026.py:933-977",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::harlequin",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 122,
+      "rough": 139,
+      "coat": 110,
+      "palette": [
+        "#eddfc1",
+        "#9f2a3d",
+        "#202f64"
+      ],
+      "own_colours": true,
+      "loud": 3,
+      "busy": 4,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 3,
+        "accent": 4,
+        "hero": 3,
+        "risk": 3
+      },
+      "mood": [
+        "retro",
+        "luxury",
+        "playful"
+      ],
+      "era": [
+        "50s-60s",
+        "timeless"
+      ],
+      "use": [
+        "body",
+        "sides",
+        "roof"
+      ],
+      "tags": [
+        "geometric",
+        "retro",
+        "luxury"
+      ],
+      "level": "intermediate",
+      "spec_character": "Material construction is source-reviewed. Existing numeric card averages, palettes and ratings are inherited metadata, not newly measured output or verified car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the registered paint function; ordinary primary source-paint mode skips it.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/harlequin.png",
+      "swatch": "/api/swatch/base/harlequin",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "Coordinates rotate 45 degrees with max(height,width)/46 repeat stations. Parity, three cell states, diagonal stitch and sine weave fields feed paint and material motifs. Shared _spec3 adds seeded low-frequency territories independently of the diamond geometry; do not claim every material edge follows a diamond. Final registered paint/spec callables use the shared work wrapper capped at1024 on the longest side; large paint requests also add seeded full-resolution grain. Source coordinates and historical timings are not measured native appearance, physical car size or suitability. Use source paint skips the ordinary primary paint function; other contributors and target masks are separate."
+      },
+      "faq": [
+        {
+          "q": "Does Harlequin use exactly the same fields as Pastel Argyle?",
+          "a": "Harlequin has diagonal cream, wine and navy diamonds, gold stitch lines and woven detail. Its core diamond layout ignores seed, but seeded shared spec territories and wrapper paint grain can vary the result. It is not identical to Pastel Argyle’s crossing ribbons."
+        },
+        {
+          "q": "Can Harlequin retain my source artwork colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material detail can remain. Additional bases, patterns, colour adjustments and target masks are separate checks; material changes can alter the lit impression."
+        }
+      ],
+      "mistakes": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.jukebox_neon",
+      "title": "Jukebox Neon",
+      "domain": "finish_sock_hop_1",
+      "summary": "Jukebox Neon builds curved coral, cyan and warm ivory rails over a dark glass-toned field, with gleam and lip accents. It outputs paint RGB and spatial metal/roughness/clearcoat fields, not an emission field or a promise of self-lit night glow. Seed alone does not change the reviewed rail-field construction.",
+      "what": "The final registered builder combines distances to three fixed off-canvas centres and curved flow terms, then derives three rail fields, gleam, lip and glass states. Those same fields feed paint and material channels. It works at up to 1024 then interpolates to the requested output; source rail periods are not calibrated on-car sizes. The array generator uses seed only in its cache key; its actual field expressions contain no seed-dependent variation. Its direct spec function ignores sm/base_m/base_r, while later composition has separate strength processing. This source review establishes declared construction and data channels, not emissive simulator behavior or native light-trail appearance.",
+      "when": [
+        "Consider the described construction, colour mode and intended target; inspect actual output and artwork readability."
+      ],
+      "how": [
+        "Find the exact picker name and finish ID base::jukebox_neon.",
+        "Use the finish’s own colour when its palette belongs in the scheme, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target and inspect paint and material contributions separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target before assessing suitability."
+      ],
+      "pitfalls": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.atomic_charcoal",
+        "finish_sock_hop_1.base.vinyl_groove",
+        "finish_sock_hop_1.base.terrazzo_cream",
+        "finish_sock_hop_1.base.atomic_starburst"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::jukebox_neon"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/expansions/sock_jukebox_neon_i1_2026.py:20-75",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::jukebox_neon",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 127,
+      "rough": 140,
+      "coat": 126,
+      "palette": [
+        "#17152b",
+        "#903631",
+        "#578582"
+      ],
+      "own_colours": true,
+      "loud": 4,
+      "busy": 3,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 3,
+        "accent": 4,
+        "hero": 4,
+        "risk": 3
+      },
+      "mood": [
+        "retro",
+        "techy",
+        "luxury"
+      ],
+      "era": [
+        "50s-60s"
+      ],
+      "use": [
+        "body",
+        "sides",
+        "stripes"
+      ],
+      "tags": [
+        "chrome",
+        "neon",
+        "dark",
+        "streaks-h"
+      ],
+      "level": "intermediate",
+      "spec_character": "Material construction is source-reviewed. Existing numeric card averages, palettes and ratings are inherited metadata, not newly measured output or verified car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the registered paint function; ordinary primary source-paint mode skips it.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/jukebox_neon.png",
+      "swatch": "/api/swatch/base/jukebox_neon",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "The final registered builder combines distances to three fixed off-canvas centres and curved flow terms, then derives three rail fields, gleam, lip and glass states. Those same fields feed paint and material channels. It works at up to 1024 then interpolates to the requested output; source rail periods are not calibrated on-car sizes. The array generator uses seed only in its cache key; its actual field expressions contain no seed-dependent variation. Its direct spec function ignores sm/base_m/base_r, while later composition has separate strength processing. This source review establishes declared construction and data channels, not emissive simulator behavior or native light-trail appearance."
+      },
+      "faq": [
+        {
+          "q": "Does Jukebox Neon generate a self-lit emission channel?",
+          "a": "Jukebox Neon builds curved coral, cyan and warm ivory rails over a dark glass-toned field, with gleam and lip accents. It outputs paint RGB and spatial metal/roughness/clearcoat fields, not an emission field or a promise of self-lit night glow."
+        },
+        {
+          "q": "Can Jukebox Neon retain my source artwork colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material detail can remain. Additional bases, patterns, colour adjustments and target masks are separate checks; material changes can alter the lit impression."
+        }
+      ],
+      "mistakes": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.lemon_polka",
+      "title": "Lemon Polka",
+      "domain": "finish_sock_hop_1",
+      "summary": "Lemon Polka uses a staggered lemon-and-cream/pearl pastille print with halo, rim, inset heart and pin-line fields; its material map is spatially varying.",
+      "what": "The final registered builder uses a 30-pixel coordinate pitch with alternate rows offset by half a pitch and mildly warped coordinates. Per-cell codes vary face states; dot, halo, rim, heart, pin and paper fields affect paint and material channels. Paint uses lemon, custard, cream, pearl, chrome-toned and amber contributions. The coordinate pitch does not prove a fixed physical dot size on every car after scaling, resampling or template mapping. Metal, roughness and clearcoat vary with these named fields, rather than remaining a single constant. The direct spec function ignores sm/base_m/base_r arguments; later composition has separate processing, so this does not establish that app-wide Spec Strength is ineffective.",
+      "when": [
+        "Consider the declared construction and colour mode when choosing an accent; inspect the actual result and artwork readability."
+      ],
+      "how": [
+        "Find the current exact picker name and ID base::lemon_polka.",
+        "Choose the finish’s own colour for its authored palette, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target; compare paint and material detail separately before choosing it for the scheme."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target deliberately."
+      ],
+      "pitfalls": [
+        "A finish name or catalog rating does not establish native appearance or car-specific suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.soda_check",
+        "finish_sock_hop_1.base.gingham_red",
+        "finish_sock_hop_1.base.formica_boomerang",
+        "finish_sock_hop_1.base.cherry_polka"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::lemon_polka"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/expansions/sock_lemon_polka_pastille_i2_2026.py:16-80",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::lemon_polka",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 67,
+      "rough": 193,
+      "coat": 78,
+      "palette": [
+        "#c38c10",
+        "#d3d2ac",
+        "#c9a759"
+      ],
+      "own_colours": true,
+      "loud": 3,
+      "busy": 2,
+      "ratings": {
+        "visible": 1,
+        "appeal": 2,
+        "body": 2,
+        "accent": 2,
+        "hero": 2,
+        "risk": 4
+      },
+      "mood": [
+        "playful",
+        "retro",
+        "clean"
+      ],
+      "era": [
+        "50s-60s"
+      ],
+      "use": [
+        "body",
+        "roof",
+        "hood"
+      ],
+      "tags": [
+        "light"
+      ],
+      "level": "pro",
+      "spec_character": "Spatial construction is source-verified. Existing numeric card averages, ratings and palettes are inherited metadata, not newly measured material output or car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the authored palette; ordinary primary source-paint mode skips that paint pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/lemon_polka.png",
+      "swatch": "/api/swatch/base/lemon_polka",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "The final registered builder uses a 30-pixel coordinate pitch with alternate rows offset by half a pitch and mildly warped coordinates. Per-cell codes vary face states; dot, halo, rim, heart, pin and paper fields affect paint and material channels. Paint uses lemon, custard, cream, pearl, chrome-toned and amber contributions. The coordinate pitch does not prove a fixed physical dot size on every car after scaling, resampling or template mapping. Metal, roughness and clearcoat vary with these named fields, rather than remaining a single constant. The direct spec function ignores sm/base_m/base_r arguments; later composition has separate processing, so this does not establish that app-wide Spec Strength is ineffective."
+      },
+      "faq": [
+        {
+          "q": "Does Lemon Polka use straight rows and one flat material value?",
+          "a": "Lemon Polka uses a staggered lemon-and-cream/pearl pastille print with halo, rim, inset heart and pin-line fields; its material map is spatially varying."
+        },
+        {
+          "q": "Can Lemon Polka retain my original livery colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material texture can remain. Additional bases, patterns, colour adjustments and target masks still matter; changed material response can change the lit impression."
+        }
+      ],
+      "mistakes": [
+        "A finish name or catalog rating does not establish native appearance or car-specific suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target deliberately."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.mint_stripe",
+      "title": "Mint Candy Stripe",
+      "domain": "finish_sock_hop_1",
+      "summary": "Mint Stripe has diagonal mint and ivory upholstery bands, chrome-toned piping, short stitch marks and mint shading. Its current stripe field is not the old radial barber-pole swirl.",
+      "what": "The current core uses coordinates rotated 27 degrees and a repeat period max(height,width)/26. Mint/ivory bands, two piping fields, stitches along the ivory lane and shading feed its RGB and metal/roughness/clearcoat expressions. Mint, ivory, dark green and grey-green colours are authored into the own-colour paint pass. Current registry callables retain the module’s work-resolution wrappers: requests above 1024 along the longest side evaluate the core at a capped work size and resize; the paint wrapper adds seeded full-resolution fine grain. The stripe fields themselves do not use seed, so grain variation is not a new stripe layout. Seeded paint grain is also skipped when the ordinary primary paint function is skipped by Use source paint. Direct core spec formulas scale a metal-detail term with sm but not their roughness/clearcoat expressions; later composition still controls app-wide strength. Source coordinates are not physical car calibration; historical comment timings and visual claims were not remeasured.",
+      "when": [
+        "Consider the described construction, colour mode and intended target; inspect actual output and artwork readability."
+      ],
+      "how": [
+        "Find the exact picker name and finish ID base::mint_stripe.",
+        "Use the finish’s own colour when its palette belongs in the scheme, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target and inspect paint and material contributions separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target before assessing suitability."
+      ],
+      "pitfalls": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.formica_boomerang",
+        "finish_sock_hop_1.base.coral_stripe",
+        "finish_sock_hop_1.base.harlequin",
+        "finish_sock_hop_1.base.argyle_pastel"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::mint_stripe"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/sock_hop_2026.py:576-622;1332-1385",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::mint_stripe",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 76,
+      "rough": 186,
+      "coat": 87,
+      "palette": [
+        "#8bd1b5",
+        "#f9f1d1",
+        "#398072"
+      ],
+      "own_colours": true,
+      "loud": 3,
+      "busy": 3,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 3,
+        "accent": 4,
+        "hero": 3,
+        "risk": 3
+      },
+      "mood": [
+        "retro",
+        "clean",
+        "playful"
+      ],
+      "era": [
+        "50s-60s"
+      ],
+      "use": [
+        "body",
+        "roof",
+        "sides"
+      ],
+      "tags": [
+        "candy",
+        "stripes",
+        "light",
+        "sparkle"
+      ],
+      "level": "intermediate",
+      "spec_character": "Material construction is source-reviewed. Existing numeric card averages, palettes and ratings are inherited metadata, not newly measured output or verified car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the registered paint function; ordinary primary source-paint mode skips it.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/mint_stripe.png",
+      "swatch": "/api/swatch/base/mint_stripe",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "The current core uses coordinates rotated 27 degrees and a repeat period max(height,width)/26. Mint/ivory bands, two piping fields, stitches along the ivory lane and shading feed its RGB and metal/roughness/clearcoat expressions. Mint, ivory, dark green and grey-green colours are authored into the own-colour paint pass. Current registry callables retain the module’s work-resolution wrappers: requests above 1024 along the longest side evaluate the core at a capped work size and resize; the paint wrapper adds seeded full-resolution fine grain. The stripe fields themselves do not use seed, so grain variation is not a new stripe layout. Seeded paint grain is also skipped when the ordinary primary paint function is skipped by Use source paint. Direct core spec formulas scale a metal-detail term with sm but not their roughness/clearcoat expressions; later composition still controls app-wide strength. Source coordinates are not physical car calibration; historical comment timings and visual claims were not remeasured."
+      },
+      "faq": [
+        {
+          "q": "Is Mint Stripe a radial barber-pole swirl?",
+          "a": "Mint Stripe has diagonal mint and ivory upholstery bands, chrome-toned piping, short stitch marks and mint shading. Its current stripe field is not the old radial barber-pole swirl."
+        },
+        {
+          "q": "Can Mint Candy Stripe retain my source artwork colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material detail can remain. Additional bases, patterns, colour adjustments and target masks are separate checks; material changes can alter the lit impression."
+        }
+      ],
+      "mistakes": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.pink_fleck",
+      "title": "Pink Metalflake",
+      "domain": "finish_sock_hop_1",
+      "summary": "Pink Fleck uses hot-pink candy, smoked-chrome, pearl-mica and wine states with cell rims and mica detail. Its current shattercoat construction differs from Turquoise Metalflake’s three platelet beds.",
+      "what": "The final registered I3 builder makes seeded jittered centres, cell states, spray families, rim and mica fields on a work grid capped at 512 along the longest side. Paint uses cubic enlargement and spec uses nearest-neighbour enlargement. The source comments describe an intended 2048-scale cell size, not calibrated car geometry or a promise for every resolution and placement. Seed enters the centre jitter, state selection and spray phase. RGB and metal/roughness/clearcoat share these fields. The direct paint function blends authored colour with source using mask coverage times paint strength; the direct spec function ignores sm/base_m/base_r, with separate later composition controls. Source review does not establish visual uniqueness or native suitability.",
+      "when": [
+        "Consider the described construction, colour mode and intended target; inspect actual output and artwork readability."
+      ],
+      "how": [
+        "Find the exact picker name and finish ID base::pink_fleck.",
+        "Use the finish’s own colour when its palette belongs in the scheme, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target and inspect paint and material contributions separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target before assessing suitability."
+      ],
+      "pitfalls": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.turquoise_fleck",
+        "finish_sock_hop_1.base.diner_checker",
+        "finish_sock_hop_1.base.jukebox_neon",
+        "finish_sock_hop_1.base.atomic_charcoal"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::pink_fleck"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/expansions/sock_pink_fleck_shattercoat_i3_2026.py:17-88",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::pink_fleck",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 199,
+      "rough": 80,
+      "coat": 222,
+      "palette": [
+        "#5c2745",
+        "#39152a",
+        "#811752"
+      ],
+      "own_colours": true,
+      "loud": 3,
+      "busy": 2,
+      "ratings": {
+        "visible": 1,
+        "appeal": 4,
+        "body": 4,
+        "accent": 3,
+        "hero": 4,
+        "risk": 2
+      },
+      "mood": [
+        "luxury",
+        "retro",
+        "wild"
+      ],
+      "era": [
+        "50s-60s",
+        "70s"
+      ],
+      "use": [
+        "body",
+        "hero panel",
+        "roof"
+      ],
+      "tags": [
+        "metallic",
+        "glitter"
+      ],
+      "level": "beginner",
+      "spec_character": "Material construction is source-reviewed. Existing numeric card averages, palettes and ratings are inherited metadata, not newly measured output or verified car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the registered paint function; ordinary primary source-paint mode skips it.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/pink_fleck.png",
+      "swatch": "/api/swatch/base/pink_fleck",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "The final registered I3 builder makes seeded jittered centres, cell states, spray families, rim and mica fields on a work grid capped at 512 along the longest side. Paint uses cubic enlargement and spec uses nearest-neighbour enlargement. The source comments describe an intended 2048-scale cell size, not calibrated car geometry or a promise for every resolution and placement. Seed enters the centre jitter, state selection and spray phase. RGB and metal/roughness/clearcoat share these fields. The direct paint function blends authored colour with source using mask coverage times paint strength; the direct spec function ignores sm/base_m/base_r, with separate later composition controls. Source review does not establish visual uniqueness or native suitability."
+      },
+      "faq": [
+        {
+          "q": "Is Pink Fleck just a pink version of Turquoise Metalflake?",
+          "a": "Pink Fleck uses hot-pink candy, smoked-chrome, pearl-mica and wine states with cell rims and mica detail. Its current shattercoat construction differs from Turquoise Metalflake’s three platelet beds."
+        },
+        {
+          "q": "Can Pink Metalflake retain my source artwork colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material detail can remain. Additional bases, patterns, colour adjustments and target masks are separate checks; material changes can alter the lit impression."
+        }
+      ],
+      "mistakes": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.soda_check",
+      "title": "Soda Fountain Check",
+      "domain": "finish_sock_hop_1",
+      "summary": "Soda Fountain Check currently uses an aqua/cyan glass-like liquid field with froth, core, lip, hollow, split, fizz, cherry and cream states. It is not a uniform purple or mint/pink checker grid.",
+      "what": "The final registered soda-glass builder derives connected froth and core/lip/hollow fields from warped sine coordinates. A slower bath field selects cherry and cream contributions; paint combines glass, cyan, mint, cream, syrup and chrome-toned accents. Metal, roughness and clearcoat vary with those named fields. The code does not implement optical transparency or refraction through the car; glass-like is the material concept, not a verified transparent surface. The direct spec callable ignores sm/base_m/base_r while later composition has separate processing. Source review does not certify native appearance or fixed on-car feature sizes.",
+      "when": [
+        "Consider the described construction, colour mode and intended target; inspect actual output and artwork readability."
+      ],
+      "how": [
+        "Find the exact picker name and finish ID base::soda_check.",
+        "Use the finish’s own colour when its palette belongs in the scheme, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target and inspect paint and material contributions separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target before assessing suitability."
+      ],
+      "pitfalls": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.cherry_polka",
+        "finish_sock_hop_1.base.lemon_polka",
+        "finish_sock_hop_1.base.turquoise_fleck",
+        "finish_sock_hop_1.base.googie_orbit"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::soda_check"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/expansions/sock_soda_fountain_glass_i1_2026.py:18-95",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::soda_check",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 63,
+      "rough": 192,
+      "coat": 65,
+      "palette": [
+        "#0c5d69",
+        "#1d7381"
+      ],
+      "own_colours": true,
+      "loud": 2,
+      "busy": 3,
+      "ratings": {
+        "visible": 1,
+        "appeal": 2,
+        "body": 2,
+        "accent": 2,
+        "hero": 2,
+        "risk": 4
+      },
+      "mood": [
+        "retro",
+        "clean",
+        "natural"
+      ],
+      "era": [
+        "50s-60s"
+      ],
+      "use": [
+        "body",
+        "roof",
+        "sides"
+      ],
+      "tags": [
+        "light"
+      ],
+      "level": "pro",
+      "spec_character": "Material construction is source-reviewed. Existing numeric card averages, palettes and ratings are inherited metadata, not newly measured output or verified car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the registered paint function; ordinary primary source-paint mode skips it.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/soda_check.png",
+      "swatch": "/api/swatch/base/soda_check",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "The final registered soda-glass builder derives connected froth and core/lip/hollow fields from warped sine coordinates. A slower bath field selects cherry and cream contributions; paint combines glass, cyan, mint, cream, syrup and chrome-toned accents. Metal, roughness and clearcoat vary with those named fields. The code does not implement optical transparency or refraction through the car; glass-like is the material concept, not a verified transparent surface. The direct spec callable ignores sm/base_m/base_r while later composition has separate processing. Source review does not certify native appearance or fixed on-car feature sizes."
+      },
+      "faq": [
+        {
+          "q": "Is Soda Fountain Check a regular pastel checker pattern?",
+          "a": "Soda Fountain Check currently uses an aqua/cyan glass-like liquid field with froth, core, lip, hollow, split, fizz, cherry and cream states. It is not a uniform purple or mint/pink checker grid."
+        },
+        {
+          "q": "Can Soda Fountain Check retain my source artwork colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material detail can remain. Additional bases, patterns, colour adjustments and target masks are separate checks; material changes can alter the lit impression."
+        }
+      ],
+      "mistakes": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.terrazzo_cream",
+      "title": "Terrazzo",
+      "domain": "finish_sock_hop_1",
+      "summary": "Terrazzo Cream uses seeded nearest-point chip palette and boundary-distance fields, with cream-toned cement mixing. The current chip and boundary helpers use different random point sets, so exact alignment of cement seams to coloured chips is not established.",
+      "what": "Both helpers request 700 points with work size 620 and salt2, but _voronoi_id seeds with XOR0xB17 while _voronoi_dist uses XOR0xC0FF. Their point sets therefore differ. Five chip pigments, cement blending and grain feed RGB; chip-ID and edge fields plus grain/territories feed spec. This code discrepancy is documented rather than claiming a physically aligned aggregate surface; no native seam inspection or correction performed. Final registered paint/spec callables use the shared work wrapper capped at1024 on the longest side; large paint requests also add seeded full-resolution grain. Source coordinates and historical timings are not measured native appearance, physical car size or suitability. Use source paint skips the ordinary primary paint function; other contributors and target masks are separate.",
+      "when": [
+        "Consider the described construction, colour mode and intended target; inspect actual output and artwork readability."
+      ],
+      "how": [
+        "Find the exact picker name and finish ID base::terrazzo_cream.",
+        "Use the finish’s own colour when its palette belongs in the scheme, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target and inspect paint and material contributions separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target before assessing suitability."
+      ],
+      "pitfalls": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.chrome_diner",
+        "finish_sock_hop_1.base.harlequin",
+        "finish_sock_hop_1.base.atomic_charcoal",
+        "finish_sock_hop_1.base.jukebox_neon"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::terrazzo_cream"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/paint_v2/sock_hop_2026.py:183-220;1038-1070",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::terrazzo_cream",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 142,
+      "rough": 117,
+      "coat": 137,
+      "palette": [
+        "#de975e",
+        "#4c4362",
+        "#5197a1"
+      ],
+      "own_colours": true,
+      "loud": 4,
+      "busy": 5,
+      "ratings": {
+        "visible": 1,
+        "appeal": 2,
+        "body": 1,
+        "accent": 2,
+        "hero": 2,
+        "risk": 5
+      },
+      "mood": [
+        "playful",
+        "retro",
+        "wild"
+      ],
+      "era": [
+        "50s-60s"
+      ],
+      "use": [
+        "body",
+        "roof",
+        "hero panel"
+      ],
+      "tags": [
+        "glitter",
+        "stone",
+        "light",
+        "rainbow"
+      ],
+      "level": "pro",
+      "spec_character": "Material construction is source-reviewed. Existing numeric card averages, palettes and ratings are inherited metadata, not newly measured output or verified car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the registered paint function; ordinary primary source-paint mode skips it.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/terrazzo_cream.png",
+      "swatch": "/api/swatch/base/terrazzo_cream",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "Both helpers request 700 points with work size 620 and salt2, but _voronoi_id seeds with XOR0xB17 while _voronoi_dist uses XOR0xC0FF. Their point sets therefore differ. Five chip pigments, cement blending and grain feed RGB; chip-ID and edge fields plus grain/territories feed spec. This code discrepancy is documented rather than claiming a physically aligned aggregate surface; no native seam inspection or correction performed. Final registered paint/spec callables use the shared work wrapper capped at1024 on the longest side; large paint requests also add seeded full-resolution grain. Source coordinates and historical timings are not measured native appearance, physical car size or suitability. Use source paint skips the ordinary primary paint function; other contributors and target masks are separate."
+      },
+      "faq": [
+        {
+          "q": "Do Terrazzo Cream cement borders exactly follow its coloured chip boundaries?",
+          "a": "Terrazzo Cream uses seeded nearest-point chip palette and boundary-distance fields, with cream-toned cement mixing. The current chip and boundary helpers use different random point sets, so exact alignment of cement seams to coloured chips is not established."
+        },
+        {
+          "q": "Can Terrazzo retain my source artwork colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material detail can remain. Additional bases, patterns, colour adjustments and target masks are separate checks; material changes can alter the lit impression."
+        }
+      ],
+      "mistakes": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.turquoise_fleck",
+      "title": "Turquoise Metalflake",
+      "domain": "finish_sock_hop_1",
+      "summary": "Turquoise Metalflake combines three differently spaced platelet beds with face, rim, tier, depth, enamel and trough fields. Aqua, blue, silver and pearl accents sit in a deep turquoise palette; this is a different declared construction from Pink Fleck.",
+      "what": "The final registered I2 builder computes at the requested array size. Three hashed, jittered and rotated platelet beds use coordinate pitches 12.7, 18.4 and 25.1, with bodies, rims and orientation-dependent faces. Seed affects the bath distortion and bed hashes through a masked phase. Plate, rim, face, tier, depth, enamel and trough fields feed both RGB and metal/roughness/clearcoat. The source’s intended fine platelet dimensions are not physical on-car calibration, a native appearance acceptance, or proof of all-angle appearance. The direct paint function uses mask coverage times paint strength; direct spec ignores sm/base_m/base_r, so app-wide strength behavior requires the later compositor.",
+      "when": [
+        "Consider the described construction, colour mode and intended target; inspect actual output and artwork readability."
+      ],
+      "how": [
+        "Find the exact picker name and finish ID base::turquoise_fleck.",
+        "Use the finish’s own colour when its palette belongs in the scheme, or Use source paint for material-only work in the reviewed ordinary primary-base path.",
+        "Confirm the target and inspect paint and material contributions separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose the colour mode and target before assessing suitability."
+      ],
+      "pitfalls": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.soda_check",
+        "finish_sock_hop_1.base.lemon_polka",
+        "finish_sock_hop_1.base.googie_orbit",
+        "finish_sock_hop_1.base.vinyl_groove"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::turquoise_fleck"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/expansions/sock_turquoise_metalflake_i2_2026.py:19-89",
+        "engine/registry.py",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::turquoise_fleck",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 115,
+      "rough": 159,
+      "coat": 127,
+      "palette": [
+        "#022d36",
+        "#286572",
+        "#508c93"
+      ],
+      "own_colours": true,
+      "loud": 3,
+      "busy": 2,
+      "ratings": {
+        "visible": 1,
+        "appeal": 4,
+        "body": 4,
+        "accent": 3,
+        "hero": 4,
+        "risk": 2
+      },
+      "mood": [
+        "retro",
+        "dreamy",
+        "luxury"
+      ],
+      "era": [
+        "50s-60s"
+      ],
+      "use": [
+        "body",
+        "roof",
+        "sides"
+      ],
+      "tags": [
+        "metallic",
+        "glitter",
+        "sparkle"
+      ],
+      "level": "beginner",
+      "spec_character": "Material construction is source-reviewed. Existing numeric card averages, palettes and ratings are inherited metadata, not newly measured output or verified car suitability.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the registered paint function; ordinary primary source-paint mode skips it.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/turquoise_fleck.png",
+      "swatch": "/api/swatch/base/turquoise_fleck",
+      "deep": {
+        "title": "Current registered construction",
+        "body": "The final registered I2 builder computes at the requested array size. Three hashed, jittered and rotated platelet beds use coordinate pitches 12.7, 18.4 and 25.1, with bodies, rims and orientation-dependent faces. Seed affects the bath distortion and bed hashes through a masked phase. Plate, rim, face, tier, depth, enamel and trough fields feed both RGB and metal/roughness/clearcoat. The source’s intended fine platelet dimensions are not physical on-car calibration, a native appearance acceptance, or proof of all-angle appearance. The direct paint function uses mask coverage times paint strength; direct spec ignores sm/base_m/base_r, so app-wide strength behavior requires the later compositor."
+      },
+      "faq": [
+        {
+          "q": "Does Turquoise Metalflake use the same enlarged cell grid as Pink Fleck?",
+          "a": "Turquoise Metalflake combines three differently spaced platelet beds with face, rim, tier, depth, enamel and trough fields. Aqua, blue, silver and pearl accents sit in a deep turquoise palette; this is a different declared construction from Pink Fleck."
+        },
+        {
+          "q": "Can Turquoise Metalflake retain my source artwork colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Material detail can remain. Additional bases, patterns, colour adjustments and target masks are separate checks; material changes can alter the lit impression."
+        }
+      ],
+      "mistakes": [
+        "Source review does not certify native appearance, on-car feature size or universal suitability."
+      ],
+      "protips": [
+        "Choose the colour mode and target before assessing suitability."
+      ]
+    },
+    {
+      "id": "finish_sock_hop_1.base.vinyl_groove",
+      "title": "Vinyl Record",
+      "domain": "finish_sock_hop_1",
+      "summary": "Vinyl Record currently builds a dark pressed-record surface with curved groove ridges, lacquer lands, polish arcs, seam accents and fine specks.",
+      "what": "The final registry overrides the old red pleated-vinyl function with sock_vinyl_record_press_i2_2026. Its palette uses black, midnight, indigo, cobalt, silver and amber contributions. Paint and material channels derive from shared groove, land, burnish, ridge, seam, fleck and selector fields. The direct spec callable ignores its sm, base_m and base_r arguments; this does not prove that the app-wide Spec Strength control is ignored, because composition applies separate processing. These are source construction facts, not calibrated native appearance. Use source paint skips this paint function in the reviewed ordinary primary-base paths. Finish-colour mode permits its palette. Other bases, patterns, HSB and target masks can still affect the document.",
+      "when": [
+        "Consider this construction only when it matches the intended design; inspect the actual result before choosing it for a car."
+      ],
+      "how": [
+        "Find the exact current picker name and finish ID.",
+        "Choose Use source paint for primary material-only work, or the finish’s own colour when its palette belongs in the scheme.",
+        "Confirm the affected target and check paint and material output separately."
+      ],
+      "controls": [],
+      "tips": [
+        "Choose paint colour mode and material detail independently."
+      ],
+      "pitfalls": [
+        "Do not infer current construction from the finish name or stale card averages.",
+        "Source review does not establish car-specific suitability or native appearance."
+      ],
+      "related": [
+        "finish_sock_hop_1.base.atomic_starburst",
+        "finish_sock_hop_1.base.jukebox_neon",
+        "finish_sock_hop_1.base.googie_orbit",
+        "finish_sock_hop_1.base.atomic_charcoal"
+      ],
+      "actions": [
+        {
+          "do": "finish",
+          "id": "base::vinyl_groove"
+        }
+      ],
+      "figures": [],
+      "covers": [],
+      "sources": [
+        "engine/registry.py:1069-1070",
+        "engine/expansions/sock_vinyl_record_press_i2_2026.py:16-81",
+        "engine/paint_v2/sock_hop_2026.py:979-1037",
+        "engine/paint_v2/sock_hop_2026.py:1371-1385",
+        "engine/compose.py:5246-5256",
+        "engine/compose.py:6240-6244"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "generated": true,
+      "key": "base::vinyl_groove",
+      "type": "base",
+      "shelves": [
+        "Sock Hop"
+      ],
+      "metal": 96,
+      "rough": 169,
+      "coat": 113,
+      "palette": [
+        "#070b14",
+        "#24334d",
+        "#582f1d"
+      ],
+      "own_colours": true,
+      "loud": 2,
+      "busy": 3,
+      "ratings": {
+        "visible": 1,
+        "appeal": 3,
+        "body": 4,
+        "accent": 4,
+        "hero": 3,
+        "risk": 2
+      },
+      "mood": [
+        "stealth",
+        "retro",
+        "industrial"
+      ],
+      "era": [
+        "70s",
+        "modern"
+      ],
+      "use": [
+        "body",
+        "roof",
+        "sides"
+      ],
+      "tags": [
+        "dark"
+      ],
+      "level": "intermediate",
+      "spec_character": "The final registered material function is spatially varying. Existing numeric card averages and ratings are inherited catalog metadata, not newly verified channel measurements or suitability evidence.",
+      "intent": "full",
+      "intent_note": "Full-finish shelf: the finish carries both its own paint look and its own shine.",
+      "paint_advice": "Own-colour mode permits the generated palette; primary source-paint mode skips this paint pass.",
+      "combos": [],
+      "examples": [],
+      "screens": [],
+      "thumb": "thumbnails/base/vinyl_groove.png",
+      "swatch": "/api/swatch/base/vinyl_groove",
+      "deep": {
+        "title": "Current construction and colour mode",
+        "body": "The final registry overrides the old red pleated-vinyl function with sock_vinyl_record_press_i2_2026. Its palette uses black, midnight, indigo, cobalt, silver and amber contributions. Paint and material channels derive from shared groove, land, burnish, ridge, seam, fleck and selector fields. The direct spec callable ignores its sm, base_m and base_r arguments; this does not prove that the app-wide Spec Strength control is ignored, because composition applies separate processing. These are source construction facts, not calibrated native appearance. Use source paint skips this paint function in the reviewed ordinary primary-base paths. Finish-colour mode permits its palette. Other bases, patterns, HSB and target masks can still affect the document."
+      },
+      "faq": [
+        {
+          "q": "Does Vinyl Record currently use the old red upholstery implementation?",
+          "a": "Vinyl Record currently builds a dark pressed-record surface with curved groove ridges, lacquer lands, polish arcs, seam accents and fine specks."
+        },
+        {
+          "q": "Does Vinyl Record preserve my existing colours?",
+          "a": "Use source paint skips the ordinary primary-base paint function. Finish-colour mode permits the palette. This does not guarantee that other paint contributors leave the entire document unchanged."
+        }
+      ],
+      "mistakes": [
+        "Do not infer current construction from the finish name or stale card averages.",
+        "Source review does not establish car-specific suitability or native appearance."
+      ],
+      "protips": [
+        "Choose paint colour mode and material detail independently."
+      ]
+    }
+  ]
+}

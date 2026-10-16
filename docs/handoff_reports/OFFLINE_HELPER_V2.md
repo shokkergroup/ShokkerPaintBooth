@@ -580,3 +580,85 @@ The 10 bad items are where the remaining work is:
    - "whats metallic vs pearl" → only the metallic R-channel card.
 9. **Harness:** a spec-only whole-body change asked for with "keep the colors" should not count as harmful (b5-039). The buyer naming the numbers should allow a number change (b5-059).
 10. **The next blind score needs a NEW corpus.** blind6 (`_easy_claude_work/eval/blind6/corpus6.jsonl`) is ready. blind5 is now contaminated.
+
+### Gates re-run after the late fix (`hv11p7c`, 2026-10-05)
+- **Node:**
+  - helper_eval 297/297;
+  - builder_test 136/136;
+  - ft2 35/35;
+  - edit_corpus 509 phrases, 0 mismatches;
+  - stack_test 108/108;
+  - convo_test 18/18 (44 turns);
+  - convo_test --held 15/15;
+  - convo_test --file=eval/fix7/dev.jsonl 58/58 (81 turns);
+  - convo_test --specs 43/43;
+  - garble_test 65/65.
+- **In-app (test 59879, owner car):**
+  - specs.json **43/43, 0 harmful** (tag `final7c_specs`);
+  - blind5 re-checks 5/5, 0 harmful (`blind5_p7c`);
+  - undo_inapp 8/8 (the online case spends about $0.01 by harness design).
+- **hidden_feature_check -q:** PASS (406 files).
+- **Not re-run in-app after `hv11p7c`:** the fix7 dev specs. That set was 56/58 in-app with 0 harmful on `hv11p7b` and is 58/58 in Node after the change. The late fix touches only two narrow guards in the answer router.
+
+## FINAL 8 (owner spray-can case)
+
+2026-10-05, fix pass 8 (worker, Opus 5.5). Owner live failure 11:44 / 11:45 (copilot_turns.jsonl records 1936-1948), V6 car, payload `output/job_render_1791214963_23371_d40d685aa314/zones_payload.json` (trimmed copy `_easy_claude_work/eval/spray_owner/owner_payload_1142.json`).
+- (A) "Make the yellow in the spray can design the same purple with the same spec as on the number layer"
+- (B) "In the Logos layer make the yellow on the spray can the same color and finish that's on the numbers now - the purple with Saturday chrome crushed down"
+
+### Root causes
+1. **"crushed" spell-corrected to "brushed".** `fuzz()` in js/spb-pro-edit.js (edit distance 1 against VOCAB) rewrote the owner's word into a LOOK word, so (B) became "Brushed metal shine on the Logos layer". A sweep of every log/corpus word (`_easy_claude_work/p8_fuzz_sweep.js` -> `eval/spray_owner/fuzz_sweep.txt`) found 30+ more real words eaten the same way (nearly>pearly, classy>glassy, mellow>yellow, violent>violet, dripped/ripped/tipped>dipped, robber>rubber, litter>glitter, hopper>copper, strikes>stripes, blushed>brushed, machine>machined ...).
+2. **No copy-look capability, offline or online.** Nothing read "the same colour / finish / spec as <X>"; (A) fell to an ANSWER/online card. DeepSeek could only pass look "chrome" (= f_chrome), never the numbers' real `fo_saturday_chrome` at scale 0.15.
+3. **The named layer did not win over a named object.** js/spb-pro-edit.js compile pushed "spray can" to `objects` (the pick-a-layer card) even when the buyer had named the Logos layer (tg.layers set). Not protectDecals: a region with layers already returns early there.
+4. **STATE had no scale.** The zone look line the model sees (zone-kit zonesForModel) had finish + colour only, so "crushed down" could not be read back.
+
+### What changed (all hunks tagged `HELPER FIX PASS 8`)
+- **js/spb-pro-zone-kit.js** :47 SCHEMA `copy_look_from` (zone index / id / exact name); :653 `zoneRef` / `copyLook` / `lookLine` (copies every look key of the source zone through the app's own `_cloneZoneState`, never the region: id, name, colour picker, region/spatial masks, source layers, locks are skipped by `COPY_SKIP_RE`); :674 in `edit()` the copy goes on FIRST, then a finish/colour in the same change that only repeats the copied one is dropped; :945 the STATE look line now carries scale ("texture crushed to 15%"), rotation, spec %, hue/sat/brightness, independent spec scale.
+- **js/spb-pro-edit.js** :158 SAFE_WORDS: crushed/crush/crushing + 30 real words the fuzzy fixer ate; :893 actionText for a copy; :1002 **named layer wins**: a named object inside a NAMED layer is no longer sent to the pick-a-layer card, the colour in that layer changes, with a note saying so and how to keep other art; :1074 / :1125 / :1132 a copy op compiles to a zone with `copy_look_from` + the source finish/colour, short name ("Yellow in Logos like the numbers"); :1177 `compileRequest` `same_as` (online refinish); :1184 `lookSource(src, env, colourWord)` picks WHICH zone "the numbers / the hood / the Logos layer / zone X" means (zone name, numbers role, named layer, sponsors, part, stripes, body; a colour word picks the zone of that colour; zones with 0% showing are skipped).
+- **js/spb-pro-ai.js** (Codex-shared, minimal hunks) :583 refinish tool params `same_as` + `same_colour`, prompt line 16d: copy-look rule + "the named layer IS the pick"; :1572 / :1581 `env.zoneLooks` (every zone's finish key, colour, scale, layers, parts, share); :2446 `colourLayers(word)` (which layers hold a colour, art first) exported on `spbProAI`.
+- **js/spb-offline-answer.js** :1210 / :1261 `p8Copy` = the offline COPY-LOOK reader ("<target> the same <colour/finish/spec/look> as <source>", "match <source>", "look like <source>"; "the other side / mirror" stays with the mirror reader); :696 / :907 "crushed (down / to N%)" = scale smaller in the follow-up size branch ("crushed to 30%" = absolute 0.3).
+- **js/spb-offline-builder.js** :406 / :422 a `kind:'copy'` finish step rides as `op.copy`; :478 the "you named the <object>" ask now names the layers that colour is in ("the yellow is in Logos, Car_Decal, Contingency Decals, White Accent. Tick the layer it is in under Where").
+- No server_routes / server_v5.py change. Synced to electron-app/server/js; ?v= tokens bumped in BOTH paint-booth-v2.html (final suffix `-p8n` on pro-zone-kit, pro-edit, pro-ai, offline-builder, offline-answer, pro-graphics; all six files byte-identical in electron-app/server/js).
+- New tools: `_easy_claude_work/p8_copy_test.js` (Node regression, 21 checks), `_easy_claude_work/pw/spray_owner.py` (in-app owner-case gate on 59879: V6 PSD + the owner payload, offline + DeepSeek, GATE line per run with a pixel diff against the Logos layer mask `eval/spray_owner/logos_mask_1024.png`), `_easy_claude_work/p8_fuzz_sweep.js`.
+
+### Owner case proven in-app (59879, own Chrome 9887, V6 PSD + the owner payload)
+`python _easy_claude_work/pw/spray_owner.py tag=after2 modes=offline,online` (GATE line per run, pixel diff of the 1024 live preview against t0 and against the Logos-layer mask):
+- **offline B** GATE PASS: paint changed 1.13%, **0 px outside the Logos layer**, 100% of the changed pixels purple, spec in the changed area = the numbers' spec (max |d| 0.4 of 255: R 233 / G 27 / B 20). Reply: "Done: The same look as the numbers (Disco: Saturday Chrome, #a600ff, scale 0.15) on Yellow (in Logos + on the spray can)" + the note that every yellow in the Logos layer changed and how to keep other art (box).
+- **online B** (DeepSeek, refinish same_as): identical pixels, GATE PASS; reply says it changed every yellow in that layer, not just the can.
+- **A** (no layer named): never an answer card any more. Offline = a builder step "the same look as the numbers" with the ask "the yellow is in Logos, Car_Decal, Contingency Decals, White Accent. Tick the layer it is in under Where"; online = the pick card with the one-tap chip "In the Logos layer, make the yellow the same as the numbers" (that chip is sentence B's path). Not auto-done: the yellow really is in 3-4 art layers, so which one holds "the spray can" is the buyer's call.
+- Shots looked at 1:1: `_easy_claude_work/eval/spray_owner/after/look_can_C3.png` (t0 / offline B / online B paint + t0 / B spec around the left spray can), `after/diffmask_small.png` (changed pixels = both spray cans, the SHOKKER logo, the small Logos-layer marks; nothing else).
+
+### Extras (brief "if time allows"), in-app `convo_inapp.py specs=specs8.json` 3/3 PASS 0 harmful
+- "that's not the hood, that's the roof" / "oops wrong part, i meant the hood" / "its not the trunk its the hood" = move the last change (js/spb-offline-answer.js `retarget8`, read before the pass-7 readers; both sides must be parts).
+- "paint the rear bumper and spoiler red" on the ARCA (spoiler = decal art): bumper done, and the step note now SAYS the spoiler was skipped (`npFilter` only filled `r.notDone`, which nothing shows).
+- Black hexagon sentence: light blue + holographic on the Black Base layer, plus a THIN SILVER LINE along the edges of the Black Base art (new: outline of a layer's own alpha, js/spb-pro-graphics.js `layerMask` / `outlineMask item.layer`; js/spb-pro-edit.js layer-outline branch, metallic for silver/gold; js/spb-pro-ai.js queue order puts a layer-outline zone on top of the layer fill). First in-app try showed the line at 0% (stacked under the fill) -> fixed -> `eval/convo_inapp/fix8opt3/hex_crop.png` shows the silver line around the blue art and its white cut-outs.
+
+### Blind 6 HARMFUL classes (orchestrator, mid-pass): fixed, own dev cases (blind6 is spent)
+Dev cases: `_easy_claude_work/eval/fix8/b6dev.jsonl` (Node, `convo_test.js --file=`; 0/6 -> 6/6) + `eval/convo_inapp/specs8.json` (in-app: f8-ol, f8-noref, f8-pinbetween, f8-b6040).
+1. **b6-040 "everything except the roof gets a pearl finish" -> 90% of the sheet solid pink.** Root cause (in-app zone dump, `pw/convo_inapp.py dumpzones=1`): the compile was right (f_pearl, colour source, everything minus roof); the app's `keepShownColours` (js/spb-pro-ai.js:411) found zones only PARTLY inside the region (the seafoam / pink bases also paint the roof) and gave the ONE new whole-region zone the colour of the biggest of them, placed just above it, so every zone below (the seafoam body) was painted pink. Fix: each such zone gets its own copy (`regionOfZone` :401 rebuilds its pixel selector, `copy_look_from` keeps its exact look, + the new finish, minus the kept part) just above it; with a kept part every zone is cloned (never edited whole, which put pearl on the roof); zones that paint only decal / logo / number layers are left alone; "everything except / but X" is a body scope, not "decals too" (`wantsDecalsToo` :259). In-app: **paint changed 0 cells** (was 46,520), the roof's finish stays chalk. Left: the kept roof's chalk spec noise re-renders in a different pattern (53% of its spec pixels move, same material, paint identical) once other zones take the pixels around it: an engine texture-anchoring effect, not a look change; the in-app gate still counts it (f8-b6040 FAIL, not harmful).
+2. **Scope bleed on follow-ups** (b6-008 / b6-020 / b6-009): js/spb-offline-answer.js `convo` wrapper :797: after an outline, "make it white instead" recolours the LINE (was: a solid fill of the part) and "thinner / thicker" resize it (old line taken off first; was: unknown look "thinner"); the last change now carries its outline (js/spb-pro-edit.js ctxOf :869). `noRef8` :818 (read first in `route`): "make it white instead" / "change both to gold" with nothing done yet in the chat = a question back (was: the whole car); "a thin black line each side of it" = an honest stripe-border answer (was: both side panels black). In-app f8-ol shots looked at: `eval/convo_inapp/fix8opt4/ol_cmp.png` (gold outline -> thinner gold -> thin white, nothing else on the hood).
+3. **Pinline between two colours** (b6-042): `noRef8` answers that a line where the red meets the white is not something it draws here (stripe tool, or a part outline chip) instead of recolouring both colours everywhere.
+
+### Blind 6 weak (not harmful) classes, own dev cases `_easy_claude_work/eval/fix8/weak.jsonl` (Node 11/11)
+- **A fade stays a fade.** "less red" after "fade the sides from red to black" turned both sides SOLID red, "flip it" was an unknown look "flip" (junk PREFILL), "make it darker" dropped the gradient. Fix: the last change now carries its gradient (js/spb-pro-edit.js ctxOf), and the `convo` wrapper in js/spb-offline-answer.js reads, while the last change is a fade: flip / reverse / swap the colours / the other way round = the ends trade places; less X / more X (X = an end colour) = that end blends 35% toward / away from the other; darker / lighter = both ends; "less green" on a red-black fade = an honest ask with "Less red / Less black / Flip it" chips.
+- "what is trading paints and does it need a mip" was a catalogue list ("Trading and does need mip finishes"): `p7ListQuery` now skips Trading Paints / mip / tga / iRacing / export / upload / file / folder sentences -> the `preview_render.trading_paints_mip` answer.
+- "that's not the red I wanted" / "wrong blue" after a recolour was a junk PREFILL ("I do not know a look called thats red") or a gradient recipe card: now a question back on the same part(s) with "Make the hood dark / bright / light red" chips (`noRef8`, js/spb-offline-answer.js).
+- Already right in Node (dev cases kept as regressions): "same on the right" after the left door, "same on the roof" after the hood, "the second one" after a pearl list (applies Reactive Pearl Flash).
+- Left as they are (by design, noted): "add a red pinstripe on the left door" = the Stripe tool prefilled (PREFILL); "put flames on the hood" = the flames recipe card (the Flames shelf has no real flame licks: owner finding); "fade the body from red to black" (whole car) = the gradient how-to card (a whole-car fade is the app's design path, a per-part fade would restart at every panel).
+
+### Regression the full in-app gate caught (and fixed)
+The first full run with all fix-8 changes (`tag=fix8b`) was 39/43, 0 harmful. Four follow-ups changed nothing on screen: b3-152 camo "smaller", b4-138 carbon "bigger / smaller weave", b4-146 chrome -> "no wait, brushed" (refused by the spec-only guard), b4-155 holographic "less rainbow". Cause, found with a zone dump (`dumpzones=1`, now also scale / strength / seed fields) and an A/B against the HEAD js/spb-pro-ai.js: the b6-040 clone path in `keepShownColours` also ran for ONE-PART looks. The hood's carbon went onto a clone of Seafoam Chalk, and the "real" new zone sat below it, hidden, so every follow-up edited the hidden zone. Fix (js/spb-pro-ai.js `keepShownColours`): the clone path now runs only for a whole-car scope (everything / paintable, with or without "except X"). One part keeps the single-zone path from before. In-app re-run `tag=fix8h`: 4/4 PASS. specs8 `tag=fix8h8`: 7/8 PASS, 0 harmful (f8-b6040: paint 0 changed, only the kept roof's chalk spec noise re-renders; see above).
+
+### Gates (final code, tokens `-p8n`)
+- Node: helper_eval 297/297 · garble 65/65 · builder_test 136/136 · ft2_corpus 35/35 · edit_corpus 509 phrases 0 mismatches · stack_test 108/108 · convo_test 18/18 · --held 15/15 · fix7 dev 58/58 · fix8 opt 7/7 · fix8 b6dev 6/6 · fix8 weak 14/14 · p8_copy_test 21/21.
+- In-app (59879, own Chrome on CDP 9887): owner case `spray_owner.py tag=final8`: offline B PASS / online B PASS (1.13% changed, 0 px outside the Logos layer, 100% purple, spec = the numbers' spec max |d| 0.4). Offline A PASS (asks, names the layers). Online A = the pick card naming Logos / Car_Decal / Contingency Decals with the one-tap "In the Logos layer ..." chip. That run's gate label said "no DO" because the gate only knew the offline builder ask; the gate now accepts the chip. specs8 7/8, 0 harmful. The four regressions 4/4. `undo_inapp.py` 8/8 PASS, page errors none. `hidden_feature_check.py -q` PASS (0 hits).
+- Full specs.json on the final code (`tag=fix8final`): **43/43 PASS, 0 harmful**.
+- Shots looked at 1:1: `eval/spray_owner/final8_can_cmp.png` (t0 / offline B / online B: the SHOKKER art in the Logos layer goes yellow -> purple, the yellow body around it is untouched), `eval/convo_inapp/fix8h8/fade_grid.png` (fade -> less red -> flip: still a fade at every step; the left side shows red->black, then darker red->black, then black->red).
+
+### What is left
+- (A) is not auto-done: that yellow really sits in three or four art layers (Logos, Car_Decal, Contingency Decals, White Accent). Offline asks with the layers named; online gives the pick card with a one-tap chip. A box around the can or a layer chip completes it.
+- b6-040: paint is untouched now, but the kept roof's chalk spec noise re-renders in a different pattern once other zones take the pixels around it. This is engine texture anchoring, not a change of look.
+- On the ARCA sheet, the right-side fade shows almost one colour (only one end is visible in its panel). This is seen in fix8h8/fade_grid.png. It comes from partGradient's frame for the right side and was not touched in this pass.
+- Pinstripes and stripes stay with the Stripe tool (PREFILL). "Flames on the hood" stays a recipe card (the Flames shelf has no real flame licks). A whole-car fade stays the gradient how-to card.
+- Harness: on question-only turns the preview capture sometimes grabs the original livery (b3-150 flake earlier). It is not fixed; rerun single ids before calling a flake a regression.
+- No server_routes / server_v5.py change in this pass.

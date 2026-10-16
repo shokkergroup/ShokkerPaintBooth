@@ -164,7 +164,7 @@
       try { shown = parseInt(localStorageApi.getItem(albedoHintKey) || '0', 10) || 0; } catch (_) {}
       if (shown >= albedoHintMaxShows) return;
       try { localStorageApi.setItem(albedoHintKey, String(shown + 1)); } catch (_) {}
-      showToast('Chrome reads best on light/white albedo. Your color is dark; iRacing PBR may render it nearly black. Try a near-white base for a true mirror look.', 'warn');
+      showToast('Chrome looks best on a light base. A dark color can render nearly black in iRacing. Try a near-white base for a true mirror look.', 'warn');
     }
 
     function assignFinishToSelected(finishId) {

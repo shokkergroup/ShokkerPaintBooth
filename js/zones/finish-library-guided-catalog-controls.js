@@ -118,10 +118,14 @@
     function _renderLibraryRailButton(entry, activeGroup) {
       var active = activeGroup === entry.id;
       var count = typeof entry.count === 'number' ? entry.count : 0;
+      // [S17b 2026-10-12 owner: pickers show real descriptions] empty strength/purpose are left out; full description on hover (mirrors paint-booth-2-state-zones.js).
+      var railStrength = entry.strength == null ? 'Catalog' : entry.strength;
+      var railTitle = entry.label + (entry.purpose ? ': ' + entry.purpose : '');
       return '<button type="button" class="finish-rail-button' + (active ? ' active' : '') + '" data-group="' + escapeHtml(entry.id)
-        + '" onclick="_setLibraryActiveGroup(this.dataset.group)" title="' + escapeHtml(entry.label) + '">'
+        + '" onclick="_setLibraryActiveGroup(this.dataset.group)" title="' + escapeHtml(railTitle) + '">'
         + '<span class="finish-rail-main"><span class="finish-rail-label">' + escapeHtml(entry.label) + '</span><span class="finish-rail-count">' + count + '</span></span>'
-        + '<span class="finish-rail-meta"><span>' + escapeHtml(entry.strength || 'Catalog') + '</span><span>' + escapeHtml(entry.purpose || '') + '</span></span></button>';
+        + ((railStrength || entry.purpose) ? '<span class="finish-rail-meta">' + (railStrength ? '<span>' + escapeHtml(railStrength) + '</span>' : '') + (entry.purpose ? '<span>' + escapeHtml(entry.purpose) + '</span>' : '') + '</span>' : '')
+        + '</button>';
     }
 
     function _renderGuidedFinishCatalog(activeTab, groupMap, groupNames, activeTabId, itemType) {
@@ -137,6 +141,7 @@
         var ids = new Set(groupMap[groupName] || []);
         var count = activeTab.items.filter(function(item) { return ids.has(item.id); }).length;
         var info = _getLibraryGroupPurpose(groupName, activeTabId, count);
+        if (typeof global._spbBuyerGroupInfo === 'function') info = global._spbBuyerGroupInfo(groupName, activeTabId, count, info);   // [S17b 2026-10-12 owner: pickers show real descriptions]
         return { id: groupName, label: _cleanLibraryGroupLabel(groupName), count: count, strength: info.strength, purpose: info.purpose };
       }).filter(function(entry) { return entry.count > 0; });
       var railEntries = [
@@ -170,8 +175,8 @@
       var html = '<div class="finish-guided-catalog" data-active-tab="' + escapeHtml(activeTabId) + '"><div class="finish-category-rail" aria-label="Finish categories">'
         + railEntries.map(function(entry) { return _renderLibraryRailButton(entry, activeGroup); }).join('')
         + '</div><div class="finish-catalog-results"><div class="finish-catalog-heading"><div><div class="finish-catalog-title">'
-        + escapeHtml(activeEntry.label) + '</div><div class="finish-catalog-purpose">' + escapeHtml(activeEntry.strength || 'Catalog') + ' - '
-        + escapeHtml(activeEntry.purpose || '') + '</div></div><div class="finish-catalog-stats">' + visibleItems.length + ' shown' + queryNote + '</div></div>';
+        + escapeHtml(activeEntry.label) + '</div><div class="finish-catalog-purpose">'
+        + escapeHtml([activeEntry.strength == null ? 'Catalog' : activeEntry.strength, activeEntry.purpose || ''].filter(Boolean).join(' - ')) + '</div></div><div class="finish-catalog-stats">' + visibleItems.length + ' shown' + queryNote + '</div></div>';
       if (visibleItems.length === 0) {
         html += '<div class="finish-library-empty"><div style="font-size:12px; color:#ddd; margin-bottom:4px;">No finishes match this view.</div>'
           + '<div>Try All, Featured, or a broader search term like chrome, carbon, old, ocean, matte, or vision.</div></div>';

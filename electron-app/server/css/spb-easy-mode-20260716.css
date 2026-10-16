@@ -2187,7 +2187,7 @@ body.spb-easy-browse .spb-easy-stage { flex: 0 0 clamp(340px, 54vh, 720px); padd
 body.spb-easy-browse .spb-easy-rail-head { padding-top: 4px; padding-bottom: 2px; }
 body.spb-easy-browse .spb-easy-whole-stack { max-height: 132px; }
 /* An empty mix panel is 172px of nothing on a first-time buyer's screen. */
-body.spb-easy-browse .spb-easy-whole-stack:not(:has(.spb-easy-mix-row)) { display: none; }
+body.spb-easy-browse .spb-easy-whole-stack.spb-pf-nomix { display: none; }
 /* :has() fallback for any shell on an older Chromium: the empty-state child is
    already display:none, so at minimum collapse the container's own box. */
 body.spb-easy-browse .spb-easy-whole-stack { padding-top: 0; padding-bottom: 0; }

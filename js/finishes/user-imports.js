@@ -469,7 +469,7 @@
         }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
             .then(function (res) {
                 if (!res.ok) throw new Error((res.body && res.body.error) || 'Update failed');
-                toast('Updated M/R/CC for ' + id, 'success');
+                toast('Updated metallic, roughness and clearcoat for ' + id, 'success');
                 return loadUserImports().then(updateUserImportsStatus);
             })
             .catch(function (err) { toast('Failed: ' + err.message, 'error'); });
@@ -499,7 +499,7 @@
             .catch(function (err) { toast('Failed: ' + err.message, 'error'); });
     }
 
-    function deleteUserImport(id) {
+    async function deleteUserImport(id) {
         // Confirm with the drop's human name (the slug id alone reads like a
         // different item — "ui_x_1862_2" vs the card's "1862").
         var entry = null;
@@ -509,7 +509,8 @@
         var label = (entry && entry.name && entry.name !== id)
             ? ('"' + entry.name + '" (' + id + ')')
             : ('"' + id + '"');
-        if (!confirm('Delete drop ' + label + '? This removes it from the library and the booth picker.')) return Promise.resolve();
+        // [SPB-CONFIRM-POLISH 2026-10-10] native confirm() -> in-app SpbDialog.ask (kill switch SPB_CONFIRM_POLISH_OFF).
+        if (!(await SpbDialog.ask('Delete Drop?', { message: label + ' is removed from the library and the booth picker.', okLabel: 'Delete Drop', danger: true, nativeText: 'Delete drop ' + label + '? This removes it from the library and the booth picker.' }))) return;
         return fetch('/api/user-imports/delete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -564,11 +565,11 @@
                 window._pendingUserImportFiles = files;
                 window._pendingUserImportName = name;
                 window._pendingUserImportKind = kind;
-                toast('Preview ready — click Commit drop', 'success');
+                toast('Preview ready. Click Commit drop.', 'success');
                 return preview;
             }
             return importUserFinishFiles(files, name, kind).then(function () {
-                toast('Imported to SHOKK DROP', 'success');
+                toast('Imported to Shokk Drop', 'success');
                 return updateUserImportsStatus();
             });
         }).catch(function (err) { toast('Failed: ' + err.message, 'error'); throw err; });
@@ -610,13 +611,15 @@
         input.type = 'file';
         input.multiple = kind === 'paint_monolithic';
         input.accept = 'image/png,image/jpeg,image/webp,' + DROP_PACK_EXT + ',' + LEGACY_DROP_PACK_EXT;
-        input.onchange = function () {
+        // [SPB-PROMPT-FIX 2026-10-10] async: window.prompt() throws in Electron (importing a finish file died before processing) -> in-app box
+        // (SpbDialog.prompt, files are copied out of the input BEFORE the box). Esc = cancel the import, as before. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+        input.onchange = async function () {
             if (!input.files || !input.files.length) return;
             var files = Array.prototype.slice.call(input.files);
             var pack = files.length === 1 && _isDropPackName(files[0].name);
             var name = '';
             if (!pack && files.length >= 1) {
-                name = prompt('Name (optional):', files[0].name.replace(/\.[^.]+$/, ''));
+                name = await SpbDialog.prompt('Name This Import', files[0].name.replace(/\.[^.]+$/, ''), { message: 'Name (optional). Leave it as it is to keep the file name.', okLabel: 'Import', nativeText: 'Name (optional):' });
                 if (name === null) return;
             }
             processUserImportFileList(files, previewOnly !== false, name);
@@ -649,7 +652,7 @@
                 releaseBtn();
                 window._pendingUserImportFiles = null;
                 window._pendingUserImportKind = null;
-                toast('Imported to SHOKK DROP', 'success');
+                toast('Imported to Shokk Drop', 'success');
                 updateUserImportsStatus();
             }).catch(function (err) {
                 releaseBtn();

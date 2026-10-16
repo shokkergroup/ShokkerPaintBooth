@@ -86,6 +86,26 @@
             if (b) { b.textContent = ['Paint area in','Exclude area','Erase mask strokes'][i]; b.setAttribute('aria-label',b.textContent); pop.append(b); }
         });
         pop.append(button('Pixel detail · 1:1', () => window.spbPixelDetail(), 'Zoom to individual pixels for precise Exclude strokes. Hold Space to pan.'));
+        // [SPB-TFX1 2026-10-09 TA-016] Select > Modify, reachable: Grow / Shrink / Feather / Smooth / Fill holes / Invert were only inside the collapsed
+        // "Refine edges & advanced masks" fold (fixed 1/2 px steps, named for Zones). Now a visible "Modify selection" group with an Amount in px
+        // (Photoshop: Select > Modify > Expand/Contract/Feather/Smooth, Select > Inverse). Same functions as before (exact, undoable); kill switch SPB_TFX1_OFF.
+        if (!window.SPB_TFX1_OFF) {
+            const lab = document.createElement('div'); lab.className = 'spb-tb-pop-label'; lab.textContent = 'Modify selection';
+            const amtRow = document.createElement('label'); amtRow.className = 'spb-tfx1-amt'; amtRow.title = 'How many pixels Grow / Shrink / Feather / Smooth use (Grow and Shrink go up to 64, Feather up to 500).';
+            const amtTxt = document.createElement('span'); amtTxt.textContent = 'Amount';
+            const amt = document.createElement('input'); amt.type = 'number'; amt.id = 'spbTfx1ModAmt'; amt.min = '1'; amt.max = '500'; amt.step = '1'; amt.value = '2'; amt.setAttribute('aria-label', 'Modify selection amount in pixels');
+            const amtPx = document.createElement('span'); amtPx.textContent = 'px';
+            amtRow.append(amtTxt, amt, amtPx);
+            const n = () => Math.max(1, Math.min(500, parseInt(amt.value, 10) || 2));
+            const call = (fn, ...a) => { if (typeof window[fn] === 'function') return window[fn](...a); showToast('Selection tools are not ready - reload the booth', 'warn'); };
+            pop.append(lab, amtRow);
+            pop.append(button('Grow selection', () => call('growRegionMask', Math.min(64, n())), 'Expand the selection by Amount pixels.'));
+            pop.append(button('Shrink selection', () => call('shrinkRegionMask', Math.min(64, n())), 'Contract the selection by Amount pixels.'));
+            pop.append(button('Feather selection', () => call('featherRegionMask', n()), 'Soften the selection edge by Amount pixels.'));
+            pop.append(button('Smooth edges', () => call('smoothRegionMask', Math.min(64, n())), 'Round off jagged selection edges (radius = Amount).'));
+            pop.append(button('Fill holes', () => call('fillRegionHoles'), 'Include empty islands completely enclosed by the selection.'));
+            pop.append(button('Invert selection · Ctrl+Shift+I', () => call('invertRegionMask'), 'Swap selected and unselected areas.'));
+        }
         pop.append(advanced);
         if (spec) {
             spec.classList.remove('spb-tb-menu'); spec.classList.add('spb-tool-more');

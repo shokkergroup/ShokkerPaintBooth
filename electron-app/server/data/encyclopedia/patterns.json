@@ -1,0 +1,1737 @@
+{
+  "domain": "patterns",
+  "version": 1,
+  "articles": [
+    {
+      "id": "patterns.what_is_a_pattern",
+      "title": "What a pattern is",
+      "domain": "patterns",
+      "summary": "A pattern is a shape that tiles across a zone on top of the base finish, one of the six words (zone, base, pattern, spec pattern, monolithic, spec map). For example, a Hex pattern on a Gloss base on the hood; the picker lists 317.",
+      "what": "The base finish gives the material. A pattern adds visible shape on top: weave, scales, stripes, geometry, icons from an era. Each zone can have a primary pattern and more layers. A pattern changes the paint, and if you raise its spec amount it also changes the shine. Patterns are different from spec patterns, which only change the shine and never the colour.",
+      "when": [
+        "You want carbon, camo, scales or a geometric look",
+        "You want a retro motif"
+      ],
+      "how": [
+        "Click a zone card and open the PATTERN section.",
+        "Click the pattern swatch under Pattern 1 on this Layer/Zone to open the picker.",
+        "Pick a pattern. Click None to remove it.",
+        "Tune Scale, Rotate and Opacity."
+      ],
+      "controls": [
+        {
+          "label": "Pattern 1",
+          "range": "any of the catalogue patterns or None",
+          "default": "None",
+          "effect": "Chooses the pattern.",
+          "inv": "zone.pattern"
+        }
+      ],
+      "tips": [
+        "Pattern first, then colour. Many patterns are about shape and take any colour you give the zone.",
+        "Use a spec pattern when you want texture without visible shapes."
+      ],
+      "pitfalls": [
+        "A big pattern at default scale looks huge on a whole car."
+      ],
+      "related": [
+        "patterns.nine_groups",
+        "patterns.scale_rotation_opacity",
+        "patterns.paint_mode"
+      ],
+      "actions": [
+        {
+          "do": "pattern",
+          "id": "carbon_fiber"
+        },
+        {
+          "do": "pattern",
+          "id": "camo"
+        },
+        {
+          "do": "pattern",
+          "id": "art_deco"
+        },
+        {
+          "do": "control",
+          "id": "zone.pattern"
+        }
+      ],
+      "figures": [
+        "r06_pattern_scale"
+      ],
+      "covers": [
+        "catalog.patterns",
+        "zone.pattern",
+        "zone.section_pattern",
+        "wiki.finish_doctrine.pattern_base_finish_quality"
+      ],
+      "sources": [
+        "paint-booth-2-state-zones.js:2270-2347",
+        "js/spb-ai-atlas-data.js:2",
+        "SPB_WIKI.html#finish_doctrine",
+        "js/zones/pattern-transform-controls.js:9-12",
+        "engine/compose.py:5351-5356",
+        "engine/compose.py:5490",
+        "paint-booth-0-finish-data.js:5870",
+        "docs/ai_knowledge/sliders_and_controls.md:11",
+        "docs/ai_knowledge/sliders_and_controls.md:23",
+        "SPB_WIKI.html#lessons",
+        "docs/ai_knowledge/sliders_and_controls.md:14",
+        "docs/ai_knowledge/02_spec_and_finishes.md:6-10",
+        "docs/ai_knowledge/09_field_playbook.md:35",
+        "paint-booth-0-finish-data.js:5885",
+        "js/zones/pattern-transform-controls.js:11"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "aliases": [
+        "what is a pattern",
+        "patterns",
+        "add a pattern",
+        "pattern picker",
+        "carbon pattern",
+        "pattern list",
+        "how many patterns",
+        "what are patterns",
+        "pattern meaning",
+        "texture on top of paint",
+        "pattern",
+        "pattern and spec pattern",
+        "how are pattern and spec pattern different",
+        "pattern versus spec pattern"
+      ],
+      "level": "beginner",
+      "deep": [
+        {
+          "heading": "Where a pattern lands in the build order",
+          "body": "A zone is built in a fixed order. The base finish makes the colour and material first, then Base Strength mixes that finished base over your source paint, and only then does the pattern go on. The engine comment says patterns are deliberately kept outside the Base Strength mix and applied afterwards, so lowering Base Strength fades the base but never dims the pattern. Pattern 1 goes down first, then the extra layers in order, then any 2nd to 5th base overlays go on top of the finished pattern. So a pattern is always above the base and below the overlays, and the only sliders that fade it are its own Opacity and Strength."
+        },
+        {
+          "heading": "A pattern has two jobs, and only one is on by default",
+          "body": "A pattern can change two things: the paint (colour and light and dark) and the shine map (metal, roughness and clearcoat). Out of the box it only does the paint job. The Spec amount slider in the PATTERN section starts at 0%, which the slider tip explains is there to keep your existing base shine. At 50% the pattern shine and the base shine mix equally, and at 100% the pattern shine replaces the metal, roughness and clearcoat in that zone. That is why a fresh carbon pattern on a gloss base looks like printed weave but does not feel like carbon under the light until you raise Spec amount."
+        },
+        {
+          "heading": "Patterns versus the three other kinds of look",
+          "body": "A base finish is a plain material that takes the zone colour. A monolithic special brings its own colour and texture. A pattern is a paint design that sits on top of either. A spec pattern changes only the shine and never the colour, and each base in a zone (the primary and the 2nd to 5th base layers) can carry its own stack of up to 5 of them. The practical rule from the field notes: finishes that take the zone colour (gloss, satin, matte, candy, pearl, metallic) can be recoloured freely, while patterns and specials that bring their own palette are better steered with Hue and Saturation than with a solid colour, which would flatten them to one colour."
+        },
+        {
+          "heading": "Why some patterns never show up in the picker",
+          "body": "The picker only lists patterns that belong to one of the nine groups. The group lists add up to 317 patterns, and anything not placed in a group is removed when the app starts. The wiki lessons add the other half: the engine keeps its own list of what it can draw, and a pattern the engine does not know simply renders nothing. If you ever pick a pattern and the preview shows no change, check the Opacity, Strength and Paint mode first, and then suspect that the pattern is not in the picker lists."
+        }
+      ],
+      "examples": [
+        {
+          "title": "Clean single-colour carbon hood",
+          "goal": "Carbon weave in the colour you already chose, not a grey picture of carbon.",
+          "settings": {
+            "Pattern 1 on this Layer/Zone": "Carbon Fiber",
+            "Paint mode": "Blend - keep paint color",
+            "Scale": "0.40x",
+            "Opacity": "100%",
+            "Spec amount": "0%"
+          },
+          "result": "Your base colour stays and the weave shows as light and dark steps in that colour. The shine stays exactly what the base gave you."
+        },
+        {
+          "title": "Carbon that also feels like carbon",
+          "goal": "Weave in the paint and in the reflections.",
+          "settings": {
+            "Pattern 1 on this Layer/Zone": "Carbon Fiber",
+            "Paint mode": "Blend - keep paint color",
+            "Scale": "0.40x",
+            "Spec amount": "60%"
+          },
+          "result": "The pattern shine now mixes in at 60 percent: the weave catches light differently from the flat base, so it reads as a real woven surface when the car moves."
+        },
+        {
+          "title": "A fixed-palette pattern as a bold hero panel",
+          "goal": "Show a pattern in its own colours on one panel.",
+          "settings": {
+            "Pattern 1 on this Layer/Zone": "Camo",
+            "Paint mode": "Overlay - full pattern",
+            "Scale": "0.50x",
+            "Opacity": "100%"
+          },
+          "result": "The camo draws its own colours across the zone and your base colour no longer shows through. Use this when you want the pattern palette, not yours."
+        }
+      ],
+      "combos": [
+        {
+          "with": "patterns.paint_mode",
+          "why": "Decides whether the pattern shows its own colours or yours. It is the first thing to set after picking a pattern."
+        },
+        {
+          "with": "spec.paint_spec_marriage",
+          "why": "A pattern with Spec amount above 0% starts to carry shine of its own. The marriage article explains how to keep paint shapes and shine shapes pointing the same way."
+        },
+        {
+          "with": "finishes.colour_source_modes",
+          "why": "Decides whether the colour under the pattern is the finish own colour, your paint, or a solid colour. Solid colour on a finish that brings its own colours flattens it."
+        },
+        {
+          "with": "recipes.carbon_hood",
+          "why": "A finished walk-through of the most popular pattern job: a fine carbon weave on one part."
+        }
+      ],
+      "faq": [
+        {
+          "q": "What is the difference between a pattern and a spec pattern?",
+          "a": "A pattern is a visible paint design: it changes colour and light and dark, and can optionally carry shine through Spec amount. A spec pattern changes only the shine map and never the colour, so judge it on the spec preview."
+        },
+        {
+          "q": "Why does my pattern not change how shiny the car is?",
+          "a": "Spec amount starts at 0% on purpose so your base shine is preserved. Raise it in steps of 5 percent to let the pattern bring its own metal, roughness and clearcoat."
+        },
+        {
+          "q": "Can I use more than one pattern on a zone?",
+          "a": "Yes. A zone holds Pattern 1 plus four more layers added with + Add Layer, five in total."
+        },
+        {
+          "q": "Does Base Strength fade my pattern?",
+          "a": "No. The pattern is applied after the Base Strength mix, so it keeps its own strength. Use the pattern Opacity and Strength sliders to fade it."
+        },
+        {
+          "q": "Where do I find the pattern controls?",
+          "a": "Click a zone, open its popout panel and look for the PATTERN section. The pattern controls such as Paint mode, Opacity, Strength, Scale and Rotate only appear after you pick Pattern 1."
+        },
+        {
+          "q": "What is the difference between a finish and a pattern?",
+          "a": "A finish (the base) is the material of a zone: its colour, metal and shine, such as Gloss or Chrome. A pattern is a repeating shape laid on top of that finish, such as carbon weave or camo. Example: a Gloss base with a Hex pattern on the hood."
+        }
+      ],
+      "mistakes": [
+        {
+          "symptom": "I picked a pattern and the Opacity, Scale and Rotate sliders are missing.",
+          "cause": "The PATTERN section only shows its controls once Pattern 1 is set. With None chosen, only the picker and + Add Layer are there.",
+          "fix": "Click Pattern 1 on this Layer/Zone and choose a pattern. The sliders appear straight away."
+        },
+        {
+          "symptom": "The pattern looks printed on, but the shine is the same as before.",
+          "cause": "Spec amount is still at its starting value of 0%, so the pattern is not allowed to change metal, roughness or clearcoat.",
+          "fix": "Raise Spec amount to 40 to 60 percent and watch the spec preview change."
+        },
+        {
+          "symptom": "I gave the zone a solid colour and my camo turned into one flat colour.",
+          "cause": "Camo and snake finishes bring their own colours. A solid colour paints them one colour and loses the design.",
+          "fix": "Keep the finish own colour and shift Hue or Saturation, or use a base that takes colour and add the pattern on top in Blend mode."
+        }
+      ],
+      "protips": [
+        "Pattern shape and pattern colour are separate jobs: pick the shape in the picker, then decide colour with Paint mode. Blend keeps your colour and gives light and dark steps, Overlay brings the pattern own palette.",
+        "Because patterns sit above Base Strength, you can set Base Strength low to let your own paint show through and still have a full-strength pattern on top."
+      ],
+      "screens": [
+        "ui_zone_spec_overlays"
+      ]
+    },
+    {
+      "id": "patterns.nine_groups",
+      "title": "The nine pattern groups",
+      "domain": "patterns",
+      "summary": "Patterns are sorted into nine groups: abstract and fractal, tech and carbon, geometry and deco, nature, cultural, 50s to 80s, 90s and surf, reactive accents, and patriotic.",
+      "what": "Abstract, Fractal and Paradigm has 44 (fractals, biomechanical). Tech, Carbon and Industrial has 46 (carbon, kevlar, nanoweave). Geometry, Deco and Op-Art has 44 (art deco, celtic knot, chevron, greek key). Nature, Animals and Weather has 36 (camo, crocodile, feather, giraffe). Cultural, World and Dark has 39 (aztec, dragon scale). Decades 50s to 80s has 44. 90s, Skate and Surf has 36. Reactive and Surface Accents has 18 (shimmer effects). Let Freedom Ring has 10. Patterns not placed in a group are removed from the picker.",
+      "when": [
+        "You are looking for a type of shape",
+        "You want an era pattern"
+      ],
+      "how": [
+        "Open the pattern picker.",
+        "Choose a group tab or search.",
+        "Preview a pattern on the zone."
+      ],
+      "controls": [],
+      "tips": [
+        "Decades patterns carry icons of the era, such as diner checkerboards and jukebox arcs."
+      ],
+      "pitfalls": [
+        "Reactive accents are subtle and need a base with some shine to show."
+      ],
+      "related": [
+        "patterns.what_is_a_pattern",
+        "patterns.choosing_at_car_scale",
+        "patterns.layers_and_stacking"
+      ],
+      "actions": [
+        {
+          "do": "pattern",
+          "id": "fractal"
+        },
+        {
+          "do": "pattern",
+          "id": "kevlar_weave"
+        },
+        {
+          "do": "pattern",
+          "id": "greek_key"
+        },
+        {
+          "do": "pattern",
+          "id": "dragon_scale"
+        },
+        {
+          "do": "pattern",
+          "id": "celtic_knot"
+        }
+      ],
+      "figures": [],
+      "covers": [
+        "pattern_group.abstract_fractal_paradigm",
+        "pattern_group.tech_carbon_industrial",
+        "pattern_group.geometry_deco_op_art",
+        "pattern_group.nature_animals_weather",
+        "pattern_group.cultural_world_dark",
+        "pattern_group.decades_50s_80s",
+        "pattern_group.90s_skate_surf",
+        "pattern_group.reactive_surface_accents",
+        "pattern_group.let_freedom_ring"
+      ],
+      "sources": [
+        "js/spb-ai-atlas-data.js:2",
+        "paint-booth-2-state-zones.js:2271",
+        "paint-booth-0-finish-data.js:5870",
+        "paint-booth-0-finish-data.js:5871",
+        "paint-booth-0-finish-data.js:1516",
+        "docs/ai_knowledge/09_field_playbook.md:35",
+        "paint-booth-0-finish-data.js:5885"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "aliases": [
+        "pattern groups",
+        "pattern categories",
+        "types of patterns",
+        "decades patterns",
+        "camo patterns",
+        "carbon fiber patterns"
+      ],
+      "level": "beginner",
+      "deep": [
+        {
+          "heading": "How the nine groups add up",
+          "body": "The group lists in the catalogue hold 44 in Abstract, Fractal and Paradigm, 46 in Tech, Carbon and Industrial, 44 in Geometry, Deco and Op-Art, 36 in Nature, Animals and Weather, 39 in Cultural, World and Dark, 44 in Decades 50s to 80s, 36 in 90s, Skate and Surf, 18 in Reactive and Surface Accents, and 10 in Let Freedom Ring. Together that is all 317 patterns in the catalogue. A comment in the catalogue records that 25 small picker groups were collapsed into 8 groups of 50 or fewer; the list now runs to nine. Any pattern that is not named in a group is removed from the picker when the app starts, so the groups are also the complete visible list."
+        },
+        {
+          "heading": "What lives where, by job",
+          "body": "Tech, Carbon and Industrial is the structural family: carbon fiber, kevlar weave, nanoweave, chainlink, diamond plate, expanded metal, perforated, hex mesh, and the glitch and data-stream looks. Geometry, Deco and Op-Art is the repeat family: art deco, chevron, herringbone, houndstooth, argyle, tartan, greek key and moire grids. Nature holds camo, snake skins, leopard, zebra, tiger stripe, lightning and marble. Cultural has aztec, dragon scale, mandala, fleur de lis, runes and skulls. Abstract is the generative family: fractals, reaction diffusion, Julia and Lissajous curves, topography, voronoi. These are generated by maths rather than drawn as stock textures, which makes them distinctive hero-panel choices."
+        },
+        {
+          "heading": "The two era groups carry icons, not just texture",
+          "body": "Decades 50s to 80s has ids such as diner checkerboard, jukebox arc, sputnik orbit, drive-in marquee, peace sign, tie-dye spiral, lava lamp blob, pop-art halftone, disco glitter, pong pixels, pac-man maze, neon grid and rubiks cube. 90s, Skate and Surf has grunge splatter, smiley, cross colours, tamagotchi egg, floppy disk, dial-up static, windows 95, rollerblade streak and a run of surf and skate-deck designs. These are recognisable motifs, so use them on one hero area. Repeating an icon over the whole car turns a retro look into wallpaper."
+        },
+        {
+          "heading": "Reactive and Freedom groups are accents and themes",
+          "body": "Reactive and Surface Accents (18 patterns) holds the shimmer family plus iridescent fog, chrome delete edge, carbon clearcoat lock, racing scratch, pearlescent flip, frost crystal, satin wax and UV night accent. They are built to modulate a surface, so they need a base with some shine to read. Let Freedom Ring (10 patterns) is the patriotic set: star lattice, stripe drift, bunting scallop, distressed flag, eagle crest, firework radial, constellation field, ribbon weave, stencil stars and liberty filigree."
+        }
+      ],
+      "examples": [
+        {
+          "title": "Find a restrained sponsor-safe weave",
+          "goal": "Texture the roof without competing with numbers.",
+          "settings": {
+            "Pattern 1 on this Layer/Zone": "Carbon Fiber (Tech, Carbon & Industrial)",
+            "Paint mode": "Blend - keep paint color",
+            "Scale": "0.35x",
+            "Opacity": "60%"
+          },
+          "result": "A quiet woven texture in your own colour. The catalogue description of Carbon Fiber calls it sponsor-safe and professional on any base."
+        },
+        {
+          "title": "Retro diner hood",
+          "goal": "A period hero panel from the Decades group.",
+          "settings": {
+            "Pattern 1 on this Layer/Zone": "Diner Checkerboard",
+            "Paint mode": "Overlay - full pattern",
+            "Scale": "0.60x",
+            "Opacity": "100%"
+          },
+          "result": "The checkerboard shows in its own colours across the hood. Keep the rest of the car calm so the icon reads as one idea."
+        },
+        {
+          "title": "Generative hero panel",
+          "goal": "Something nobody else has, from the Abstract group.",
+          "settings": {
+            "Pattern 1 on this Layer/Zone": "Reaction Diffusion (Abstract, Fractal & Paradigm)",
+            "Paint mode": "Blend - keep paint color",
+            "Scale": "0.50x",
+            "Opacity": "80%"
+          },
+          "result": "An organic, generated texture in the zone colour rather than a stock weave."
+        }
+      ],
+      "combos": [
+        {
+          "with": "patterns.choosing_at_car_scale",
+          "why": "Every group needs a scale check on the car; icon-style groups especially look huge at 1.00x."
+        },
+        {
+          "with": "patterns.layers_and_stacking",
+          "why": "Mixing groups is how you get depth: a fine tech weave underneath and one bold geometry or era motif above it."
+        },
+        {
+          "with": "spec.pattern_groups",
+          "why": "Spec patterns have their own groups of shine-only textures. They pair with a paint pattern from here to make the weave feel real."
+        }
+      ],
+      "faq": [
+        {
+          "q": "How many patterns are there?",
+          "a": "The picker lists 317 patterns. The nine group lists add up to 317, and any pattern the catalogue defines but leaves out of every group is removed from the picker at startup. The groups are Abstract, Tech and Carbon, Geometry and Deco, Nature, Cultural, Decades 50s to 80s, 90s and Surf, Reactive Accents and Let Freedom Ring."
+        },
+        {
+          "q": "Where is the camo?",
+          "a": "In Nature, Animals and Weather: camo, multicam, dazzle and the animal skins. Ready-made camo finishes also exist in the finish catalogue and bring their own palette."
+        },
+        {
+          "q": "Where is the carbon fiber?",
+          "a": "Tech, Carbon and Industrial, with kevlar weave, nanoweave and wavy carbon next to it. Carbon fiber is listed first in that group."
+        },
+        {
+          "q": "Why can I not find a pattern I saw before?",
+          "a": "Patterns that are not placed in one of the nine groups are removed from the picker. Search the group names, or use the picker search with the pattern name."
+        }
+      ],
+      "mistakes": [
+        {
+          "symptom": "A reactive accent pattern shows almost nothing.",
+          "cause": "Reactive and Surface Accents are built to modulate shine, and a flat matte base gives them nothing to play on.",
+          "fix": "Put them on a base with some shine such as pearl, metallic or gloss, and raise Spec amount so the accent shows in the reflections."
+        },
+        {
+          "symptom": "The lightning pattern looks like grey cracks on my matte black car.",
+          "cause": "Lightning on matte black reads as grey cracked glass at any scale (field note from the design sessions).",
+          "fix": "Pick a different pattern, or put lightning on a lighter or glossier base so the bolts have contrast."
+        },
+        {
+          "symptom": "A retro icon pattern repeats across the whole car and feels like wallpaper.",
+          "cause": "Era patterns carry recognisable motifs, which are meant for one hero area.",
+          "fix": "Limit the pattern to one zone such as the hood and keep the neighbours calm."
+        }
+      ],
+      "protips": [
+        "Use the group as a casting call: weave from Tech for the calm area, a motif from Geometry or Decades for the hero panel, and a Reactive accent as the last thin layer on top.",
+        "Generative Abstract patterns such as reaction diffusion, truchet flow and phyllotaxis are maths, not stock artwork, so nobody else has seen the same panel on another car."
+      ],
+      "screens": [],
+      "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+    },
+    {
+      "id": "patterns.scale_rotation_opacity",
+      "title": "Pattern scale, rotation, opacity and strength",
+      "domain": "patterns",
+      "summary": "Scale, rotation, coverage and paint amount affect different parts of a pattern result. Inspect the active artwork/callback path; one slider does not guarantee matching paint/spec detail or source protection.",
+      "what": "Pattern placement acts on its source field before destination compositing. Amount and mask multiply in the pixel compositor, while the reviewed authored wrapper also accounts for opacity, strength and intensity. Blend changes brightness even when hue is retained. Paint and spec routes may transform or normalize their fields differently, so verify alignment rather than assuming it.",
+      "when": [
+        "The pattern looks huge",
+        "The pattern is too loud",
+        "The weave runs the wrong way"
+      ],
+      "how": [
+        "Adjust one placement control while comparing the actual target.",
+        "Check paint coverage and paint amount separately from material detail.",
+        "Keep exact-colour artwork out of brightness treatments if it must remain unchanged.",
+        "Compare paint and material fields for alignment at useful viewing sizes."
+      ],
+      "controls": [
+        {
+          "label": "Scale",
+          "range": "0.10x-4x",
+          "default": "1.00x",
+          "effect": "Pattern size.",
+          "inv": "zone.pattern_scale"
+        },
+        {
+          "label": "Rotate",
+          "range": "0-359",
+          "default": "0",
+          "effect": "Turns the pattern.",
+          "inv": "zone.pattern_rotation"
+        },
+        {
+          "label": "Opacity",
+          "range": "0-100%, step 5",
+          "default": "100%",
+          "effect": "Visibility.",
+          "inv": "zone.pattern_opacity"
+        },
+        {
+          "label": "Strength",
+          "range": "0-100%, step 5",
+          "default": "100%",
+          "effect": "Paint strength of the pattern.",
+          "inv": "zone.pattern_strength"
+        },
+        {
+          "label": "Pattern hue",
+          "range": "hue -180 to 180, saturation -100 to 100",
+          "default": "0",
+          "effect": "Recolours the pattern art.",
+          "inv": "zone.pattern_hue"
+        }
+      ],
+      "tips": [
+        "Fine detail of 8 to 32 pixels on the 2048 canvas looks rich. Large repeats look like smears.",
+        "Opacity is the first slider to try when a pattern is too much.",
+        "Pattern Opacity fades the pattern colour only. The shine a pattern adds comes from its Spec amount slider, which is independent of paint Opacity and Strength. The base finish keeps its own shine."
+      ],
+      "pitfalls": [
+        "Opacity 0 hides the pattern completely, not just softens it."
+      ],
+      "related": [
+        "patterns.paint_mode",
+        "patterns.choosing_at_car_scale",
+        "finishes.base_scale_rotation",
+        "layers.opacity_vs_shine"
+      ],
+      "actions": [
+        {
+          "do": "control",
+          "id": "zone.pattern_scale"
+        },
+        {
+          "do": "control",
+          "id": "zone.pattern_rotation"
+        },
+        {
+          "do": "control",
+          "id": "zone.pattern_opacity"
+        },
+        {
+          "do": "control",
+          "id": "zone.pattern_strength"
+        }
+      ],
+      "figures": [
+        "r06_pattern_scale",
+        "r07_pattern_rotation",
+        "r08_pattern_opacity_strength"
+      ],
+      "covers": [
+        "zone.pattern_scale",
+        "zone.pattern_rotation",
+        "zone.pattern_opacity",
+        "zone.pattern_strength",
+        "zone.pattern_hue"
+      ],
+      "sources": [
+        "engine/pattern_paint_placement.py:14-137",
+        "engine/pattern_artwork.py:67-104",
+        "AGENTS.md:Owner finish doctrine"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "aliases": [
+        "pattern scale",
+        "pattern size",
+        "pattern too big",
+        "pattern rotation",
+        "pattern opacity",
+        "pattern strength",
+        "rotate pattern",
+        "pattern too small",
+        "resize pattern"
+      ],
+      "level": "intermediate",
+      "deep": [
+        {
+          "heading": "Scale intent and verified behavior",
+          "body": "The owner construction intent favours fine 8–32 pixel features at 2048 with density and varied material shades. This is not physical UV calibration or a universal Scale preset. Direct paint, image artwork and material fields have distinct paths; inspect the composed result."
+        },
+        {
+          "heading": "Soft coverage multiplies amount",
+          "body": "In the pixel compositor, mask 0.5 and amount 0.4 produce a 0.2 paint contribution. Strength does not identify a sponsor or panel; protecting artwork requires correct coverage."
+        }
+      ],
+      "examples": [],
+      "combos": [],
+      "faq": [],
+      "mistakes": [
+        {
+          "symptom": "The pattern has almost vanished.",
+          "cause": "Opacity and Strength both sit below 100 and multiply, so 50% and 50% leaves only 25% of the pattern.",
+          "fix": "Raise one of them back to 100% and use the other as the single fade control."
+        },
+        {
+          "symptom": "The camo is so fine it just looks like plain colour.",
+          "cause": "Scale went too low. Too-fine detail averages out and reads as a flat tint on the car.",
+          "fix": "Raise Scale in steps of 0.05 until single shapes are readable again. The pink camo recipe in the field notes uses 0.60x for camo."
+        },
+        {
+          "symptom": "I changed Scale but the carbon weave of the base finish did not change.",
+          "cause": "The finish has its own Base Scale slider in the BASE section. The pattern Scale only resizes the pattern.",
+          "fix": "Open BASE and move Base Scale for the finish texture, or move the pattern Scale for the pattern."
+        }
+      ],
+      "protips": [
+        "Zone size changes how a slider value looks: the same Scale on a small zone is finer than on a big one. When you copy settings between zones, compare the result on the car instead of trusting the number.",
+        "Use the wiki size bands as a check. If the pattern features are 16 to 64 px they are macro; add a second layer at a much smaller scale for the 4 to 8 px band so the surface has detail at both distances."
+      ],
+      "screens": [],
+      "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+    },
+    {
+      "id": "patterns.placement",
+      "title": "Pattern placement",
+      "domain": "patterns",
+      "summary": "Pattern placement changes a Zone contributor, not imported artwork pixels or drawn Zone coverage. Select the actual Base/Pattern/additional-Base target. Fit uses bounds and disables its target offsets; it is not calibrated car-panel mapping.",
+      "what": "The inspected fitting helper measures one bounding box around active mask pixels and resizes the full source directly to that width and height. It does not place separate copies on disconnected islands or preserve image aspect ratio automatically. Pan converts normalized offsets to rounded wrapped pixel shifts. Caller coverage and authored alpha determine what finally lands.",
+      "when": [
+        "You want a logo-like single motif in an area",
+        "You want to slide a pattern or mirror it",
+        "You want the pattern strong in one place and faint in another"
+      ],
+      "how": [
+        "Confirm the actual target mask and disconnected areas.",
+        "Compare the fitted shape and aspect ratio with the original art.",
+        "Check whether the target is too thin or too close to full canvas for the helper to fit it.",
+        "Use pan while watching actual placement rather than assuming physical car directions."
+      ],
+      "controls": [
+        {
+          "label": "Placement",
+          "range": "Full Canvas, Fit to Zone, Edit on Template",
+          "default": "Full Canvas",
+          "effect": "How the pattern is placed.",
+          "inv": "zone.pattern_placement"
+        },
+        {
+          "label": "Position X and Y",
+          "range": "0-100, step 5",
+          "default": "50",
+          "effect": "Slides the pattern.",
+          "inv": "zone.pattern_position"
+        },
+        {
+          "label": "Fit to Zone",
+          "range": "on or off",
+          "default": "off",
+          "effect": "Fits one copy into the drawn box.",
+          "inv": "zone.fit_into_area"
+        }
+      ],
+      "tips": [
+        "Fit is a composition aid, not a semantic panel or UV-mapping system."
+      ],
+      "pitfalls": [
+        "A bounding box includes gaps between islands; final masking remains separate.",
+        "Small normalized pan changes may round to no pixel movement."
+      ],
+      "related": [
+        "patterns.practical_fit_bbox_limits",
+        "patterns.practical_pan_pixel_limits",
+        "patterns.practical_target_controls"
+      ],
+      "actions": [
+        {
+          "do": "control",
+          "id": "zone.pattern_placement"
+        },
+        {
+          "do": "control",
+          "id": "zone.pattern_position"
+        },
+        {
+          "do": "control",
+          "id": "zone.fit_into_area"
+        }
+      ],
+      "figures": [
+        "r07_pattern_rotation"
+      ],
+      "covers": [
+        "zone.pattern_placement",
+        "zone.pattern_position",
+        "zone.fit_into_area"
+      ],
+      "sources": [
+        "engine/compose.py:1193-1227",
+        "engine/compose.py:1999-2059",
+        "engine/pattern_artwork.py:94-104"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "aliases": [
+        "pattern placement",
+        "fit to zone",
+        "edit on template",
+        "move pattern",
+        "flip pattern",
+        "strength map",
+        "pattern position",
+        "position the pattern",
+        "move the pattern",
+        "place pattern",
+        "x y axis",
+        "move picture",
+        "move image",
+        "move photo",
+        "position the picture",
+        "pattern offset",
+        "where the pattern sits",
+        "focal point",
+        "centre the pattern",
+        "move left and right",
+        "move pattern left",
+        "move pattern right",
+        "pattern position x",
+        "pattern position y"
+      ],
+      "level": "intermediate",
+      "deep": [
+        {
+          "heading": "Bounds and coverage",
+          "body": "Fit counts non-boolean mask values above 0.05, skips width/height at most one pixel and returns the original when both bounds meet its approximately 95% thresholds. The monolithic pattern caller separately hardens coverage above 0.5; these are different branch rules."
+        }
+      ],
+      "examples": [],
+      "combos": [],
+      "faq": [],
+      "mistakes": [
+        {
+          "symptom": "Pattern X changes but the sponsor artwork stays put.",
+          "cause": "The pattern offset belongs to a Zone contributor, not the imported Layer image.",
+          "fix": "Use Layer transforms for artwork; use Zone-mask editing for coverage; use Pattern placement only for the intended contributor."
+        },
+        {
+          "symptom": "Position controls are faded in Fit to Zone.",
+          "cause": "The active Fit target disables its template offsets.",
+          "fix": "Switch that target to Centered or Edit on Template to adjust it."
+        }
+      ],
+      "protips": [
+        "Check which contributor is active before dragging. Fit bounds do not locate a physical door or infer opposite-side UV geometry."
+      ],
+      "screens": [],
+      "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+    },
+    {
+      "id": "patterns.layers_and_stacking",
+      "title": "Pattern layers and stacking",
+      "domain": "patterns",
+      "summary": "A zone holds up to five paint patterns in order, separately from additional bases, spec-overlay stacks and PSD layers. The current stacked paint path reads each pattern’s Blend setting after its normal composition; Opacity and zone Paint Mode remain separate controls.",
+      "what": "Each extra layer has its own pattern, opacity, scale, rotation and blend choice. Paint mode and Strength are shared by the whole zone. Paint mode, Overlay or Blend, applies to all pattern layers. Stacking lets you put a fine weave under a bold shape, or a stripe over camo. Order matters: later layers sit on top. Keep layers different in scale so they read as separate ideas. The current paint consumer reads blend_mode and applies a post-blend for Multiply, Screen and Overlay. This reverses older guidance that the list is ignored. The helper recovers coverage and top colour from the normally composited result, so it is an approximation rather than guaranteed Photoshop pixel parity.",
+      "when": [
+        "You want carbon with stripes on top",
+        "You want camo with a fine overlay"
+      ],
+      "how": [
+        "Pick Pattern 1.",
+        "Click + Add Layer and pick the next pattern.",
+        "Set a different scale on each layer.",
+        "Click None on any layer to take it out."
+      ],
+      "controls": [
+        {
+          "label": "Add Layer",
+          "range": "up to 5 patterns per zone",
+          "default": "none",
+          "effect": "Adds another pattern layer.",
+          "inv": "zone.add_pattern_layer"
+        }
+      ],
+      "tips": [
+        "Two layers at very different scales usually look best."
+      ],
+      "pitfalls": [
+        "Five busy layers turn into noise.",
+        "After five patterns a toast tells you the maximum.",
+        "Older guidance saying the per-pattern Blend list is ignored is stale for the reviewed current stacked paint path.",
+        "Blend labels do not establish pixel-for-pixel Photoshop parity."
+      ],
+      "related": [
+        "patterns.paint_mode",
+        "spec.how_layers_combine",
+        "patterns.placement"
+      ],
+      "actions": [
+        {
+          "do": "control",
+          "id": "zone.add_pattern_layer"
+        }
+      ],
+      "figures": [
+        "r06_pattern_scale"
+      ],
+      "covers": [
+        "zone.add_pattern_layer"
+      ],
+      "sources": [
+        "paint-booth-2-state-zones.js:5127-5128",
+        "paint-booth-2-state-zones.js:12198",
+        "paint-booth-2-state-zones.js:2270-2347",
+        "paint-booth-2-state-zones.js:2370-2437",
+        "js/zones/pattern-transform-controls.js:242-255",
+        "paint-booth-5-api-render.js:207-224",
+        "shokker_engine_v2.py:19571-19601",
+        "engine/compose.py:6322-6330",
+        "engine/compose.py:6351-6361",
+        "engine/pattern_material.py:51-79"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-04",
+      "aliases": [
+        "pattern layers",
+        "stack patterns",
+        "add layer",
+        "multiple patterns",
+        "two patterns on one zone",
+        "max patterns",
+        "more than one pattern",
+        "pattern stack",
+        "stacked pattern Multiply consumed",
+        "pattern Blend Photoshop parity",
+        "pattern layer Blend versus Paint Mode"
+      ],
+      "level": "intermediate",
+      "deep": [
+        {
+          "heading": "The order the layers are painted in",
+          "body": "The stack has Pattern 1 plus up to four more layers, five in total. Pattern 1 goes down first, then Pattern 2, 3, 4 and 5 in list order, and each one is painted over the result of the one before. Pattern 5 therefore sits on top. A layer left on None is ignored, and a layer whose Opacity is 0 is skipped in the paint (its shine is a separate setting). The engine reads at most four extra layers, which matches the four the app allows. Automatic scale for small zones is applied to each extra layer as it is to Pattern 1, unless Fit to Zone is on, in which case every layer is fitted to the zone box instead."
+        },
+        {
+          "heading": "What is per layer and what is shared",
+          "body": "Each extra layer has its own pattern, Opacity (5 percent steps), Scale (0.10x to 4.00x), Rotate (0 to 359), a Blend list with Normal, Multiply, Screen and Overlay, plus Hue, Saturation and Spec amount. A new layer starts on None, 100 percent Opacity, 1.00x and 0 degrees. Paint mode (Overlay or Blend) and Strength are shared by the whole zone, so changing them changes every layer at once. Position X and Y, Flip H, Flip V and the Strength Map belong to Pattern 1 only. Practical result: in Blend mode every layer takes your base colour and only adds light and dark steps. To give two layers their own palettes, use Overlay for the zone."
+        },
+        {
+          "heading": "The same pattern in Pattern 1 and in a layer",
+          "body": "If a pattern id appears in one of the extra layers, the engine skips it as Pattern 1. A comment in the engine explains why: drawing it twice at default scale would overwhelm the stack scale. So Pattern 1 on Carbon Fiber at 1.00x plus a Carbon Fiber layer at 0.30x shows only the 0.30x layer. If you want two scales of the same weave, put the finer one in the layer and choose a different Pattern 1, or use a second zone."
+        },
+        {
+          "heading": "Stacked shine mixes one layer at a time",
+          "body": "Spec amount is also per layer. The engine goes through Pattern 1 and then the layers in order, and for each one it mixes the pattern shine into the map: result equals earlier shine times one minus the amount, plus the layer shine times the amount. A layer at 100 percent Spec amount therefore replaces everything before it, and a layer at 30 percent only tints it. Each layer uses its own Scale and Rotate for its shine. Layers on 0 percent, the starting value, never touch the shine."
+        }
+      ],
+      "examples": [
+        {
+          "title": "Carbon with a stripe motif on top",
+          "goal": "A fine weave under one bold geometric shape.",
+          "settings": {
+            "Pattern 1 on this Layer/Zone": "Carbon Fiber",
+            "Paint mode": "Overlay - full pattern",
+            "Scale": "0.30x",
+            "Pattern 2 on this Layer/Zone": "Chevron",
+            "Pattern 2 Opacity": "60%",
+            "Pattern 2 Scale": "1.00x"
+          },
+          "result": "The chevron sits on top of the weave at 60 percent. The scales differ by more than three times, so they read as two separate ideas, as the tip recommends."
+        },
+        {
+          "title": "Camo that keeps your colour with a fine mesh over it",
+          "goal": "Texture on texture without losing the paint colour.",
+          "settings": {
+            "Pattern 1 on this Layer/Zone": "Multicam",
+            "Paint mode": "Blend - keep paint color",
+            "Opacity": "70%",
+            "Scale": "0.60x",
+            "Pattern 2 on this Layer/Zone": "Hex Mesh",
+            "Pattern 2 Opacity": "30%",
+            "Pattern 2 Scale": "0.25x"
+          },
+          "result": "Camo shapes in your base hue, with a very fine mesh adding micro texture on top. Blend mode is shared, so both layers keep your colour."
+        },
+        {
+          "title": "Add a shine-only layer",
+          "goal": "A layer that changes the reflections and not the colour.",
+          "settings": {
+            "Pattern 2 on this Layer/Zone": "Carbon Fiber",
+            "Pattern 2 Opacity": "0%",
+            "Pattern 2 Spec amount": "40%"
+          },
+          "result": "Opacity 0 skips the layer in the paint, while Spec amount is independent of Opacity, so the layer still mixes its shine into the map at 40 percent. Check it on the spec preview."
+        }
+      ],
+      "combos": [
+        {
+          "with": "patterns.paint_mode",
+          "why": "Paint mode is shared by every layer in the zone, so decide Overlay or Blend before you build the stack."
+        },
+        {
+          "with": "spec.how_layers_combine",
+          "why": "Explains how shine layers mix; paint pattern layers with Spec amount follow the same mixing idea."
+        },
+        {
+          "with": "finishes.second_base_overlays",
+          "why": "Base overlays go on after the whole pattern stack, so they sit above every pattern layer."
+        },
+        {
+          "with": "patterns.placement",
+          "why": "Fit to Zone fits every layer, and the Position, Flip and Strength Map controls are Pattern 1 only."
+        }
+      ],
+      "faq": [
+        {
+          "q": "How many patterns can I stack in one zone?",
+          "a": "Five: Pattern 1 plus four more layers. When you try to add a sixth, a message says Max 5 patterns (Pattern 1 + 4 layers)."
+        },
+        {
+          "q": "Which layer is on top?",
+          "a": "The last one. Pattern 5 is painted over 4, which is over 3, and so on back to Pattern 1."
+        },
+        {
+          "q": "How do I remove a layer?",
+          "a": "Click the None button on that layer. You can then add another layer."
+        },
+        {
+          "q": "Does each layer have its own Strength?",
+          "a": "No. Strength is one value for the whole zone. Each layer has its own Opacity, Scale, Rotate, Blend, Hue, Saturation and Spec amount."
+        },
+        {
+          "q": "What does the Blend list on a layer do?",
+          "a": "The visible choices are Normal, Multiply, Screen and Overlay. The current serializer sends blend_mode, and the stacked paint path applies the selected post-blend after generating/compositing the layer. It is not ignored. Zone Paint Mode and layer Opacity are separate. The helper infers coverage from pixel changes, so matching Photoshop exactly is not promised."
+        },
+        {
+          "q": "How do I stack two patterns on one zone and decide which is on top?",
+          "a": "Pick Pattern 1, press + Add Layer and pick the next pattern: later layers are painted over earlier ones, so Pattern 5 sits on top. Each layer has its own Opacity, Scale and Rotate; Strength and Paint mode are shared by the whole zone. Use a different Scale per layer so they read as separate ideas. Second to fifth bases stack separately as overlays."
+        },
+        {
+          "q": "Will stacked pattern Multiply match Photoshop pixel for pixel?",
+          "a": "No exact parity is verified. This helper estimates coverage as clipped four times the largest RGB change from the normally composited result, reconstructs a top colour, then applies its blend formula. It does not retain Photoshop’s original layer alpha. Judge this app’s output rather than assuming identical pixels."
+        },
+        {
+          "q": "If a stacked pattern changes no pixels, can its blend mode change the background anyway?",
+          "a": "For the reviewed post-blend helper, zero RGB delta gives zero recovered coverage, leaving those RGB pixels unchanged. This is not a guarantee about other paint/spec contributors or the entire rendering pipeline."
+        },
+        {
+          "q": "Are pattern layers, extra bases and PSD layers the same stack?",
+          "a": "No. The zone paint-pattern stack holds Pattern1 plus up to4additional patterns. Additional bases are separate paint/material contributors; spec overlays are material-channel layers; PSD layers are source artwork. Check which stack and target you are editing."
+        }
+      ],
+      "mistakes": [
+        {
+          "symptom": "Pattern 1 vanished when I added a layer.",
+          "cause": "The same pattern is also in a layer. The engine drops Pattern 1 when its pattern is already in the stack.",
+          "fix": "Pick a different pattern for Pattern 1 or for the layer, or put the second scale in another zone."
+        },
+        {
+          "symptom": "My second pattern shows my base colour instead of its own.",
+          "cause": "Paint mode is Blend, which applies to every layer in the zone.",
+          "fix": "Switch Paint mode to Overlay if you want layers to bring their own colours."
+        },
+        {
+          "symptom": "The layer I added shows nothing.",
+          "cause": "It is still on None, or its Opacity is 0, and the engine skips both in the paint.",
+          "fix": "Choose a pattern and keep Opacity above 0. A layer at Opacity 0 can still carry shine through Spec amount."
+        },
+        {
+          "symptom": "The stack turns to noise.",
+          "cause": "Five busy layers at similar scales fight each other.",
+          "fix": "Use two or three layers, make their scales very different, and fade the top ones with Opacity."
+        }
+      ],
+      "protips": [
+        "Think in size bands: a macro shape layer, a fine texture layer, and optionally a micro layer. The wiki lists the bands as 16 to 64 px, 4 to 8 px and 1 to 2 px on the 2048 sheet.",
+        "A layer at Opacity 0 and Spec amount above 0 is a shine-only layer: no paint from it, but its metal, roughness and clearcoat still mix in, since Spec amount is independent of Opacity.",
+        "Because overlay bases are painted after the pattern stack, a base overlay can tint or glow the whole stack at once, which is a cheap way to unify layers that do not quite agree."
+      ],
+      "screens": [
+        "ui_placement_mode",
+        "ui_zone_spec_overlays"
+      ]
+    },
+    {
+      "id": "patterns.paint_mode",
+      "title": "Pattern paint mode: Overlay or Blend",
+      "domain": "patterns",
+      "summary": "Overlay composites pattern art; Blend retains source hue/saturation while changing brightness. Neither mode guarantees exact RGB preservation. Paint coverage and pattern material contribution require separate checks.",
+      "what": "Overlay can introduce authored colours, including opaque dark pixels. Blend applies normalized luminance detail to source HSV brightness, so black or white can become grey and an exact sponsor RGB value can change. The actual image or callback path matters: authored alpha, shared plate normalization and fallback textures have different consequences.",
+      "when": [
+        "Your base colour vanished under a pattern",
+        "You want a pattern in your own colour"
+      ],
+      "how": [
+        "Choose the exact pattern and confirm its artwork or callback path.",
+        "Choose Overlay for authored colour art or Blend for source-hue brightness detail.",
+        "Exclude actual sponsor and number coverage if their RGB must stay unchanged.",
+        "Check material contribution separately from visible paint."
+      ],
+      "controls": [
+        {
+          "label": "Paint mode",
+          "range": "Overlay - full pattern, Blend - keep paint color",
+          "default": "Overlay",
+          "effect": "Whether the pattern hides the base colour.",
+          "inv": "zone.pattern_paint_mode"
+        },
+        {
+          "label": "Spec amount",
+          "range": "0-100%",
+          "default": "0%",
+          "effect": "Lets the pattern carry its own shine.",
+          "inv": "zone.pattern_spec_amount"
+        }
+      ],
+      "tips": [
+        "Retained hue is useful for tonal integration, but does not mean unchanged RGB."
+      ],
+      "pitfalls": [
+        "Full amount does not override a transparent artwork pixel or zero coverage.",
+        "A flat plate can behave differently in the pixel compositor and the authored callback wrapper."
+      ],
+      "related": [
+        "patterns.practical_blend_colour_protection",
+        "patterns.practical_overlay_colour_controls",
+        "patterns.practical_mask_weight",
+        "patterns.practical_authored_plate_limits",
+        "patterns.practical_artwork_alpha"
+      ],
+      "actions": [
+        {
+          "do": "control",
+          "id": "zone.pattern_paint_mode"
+        },
+        {
+          "do": "control",
+          "id": "zone.pattern_spec_amount"
+        }
+      ],
+      "figures": [
+        "r08_pattern_opacity_strength"
+      ],
+      "covers": [
+        "zone.pattern_paint_mode",
+        "zone.pattern_spec_amount"
+      ],
+      "sources": [
+        "engine/pattern_paint_placement.py:14-84",
+        "engine/pattern_artwork.py:39-104"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "aliases": [
+        "pattern paint mode",
+        "overlay vs blend",
+        "pattern hides my colour",
+        "pattern covers my paint",
+        "blend mode pattern",
+        "keep paint colour",
+        "pattern overlay or blend",
+        "pattern blend mode"
+      ],
+      "level": "intermediate",
+      "deep": [
+        {
+          "heading": "Practical colour protection",
+          "body": "The linked guides explain Blend black/white/constant-field behavior, global plate normalization, pattern-only colour adjustments and image alpha. Final document operations remain separate from these local helper facts."
+        }
+      ],
+      "examples": [],
+      "combos": [],
+      "faq": [],
+      "mistakes": [
+        {
+          "symptom": "Hue and Saturation sliders are greyed out.",
+          "cause": "Paint mode is Blend, where the pattern keeps your paint colour.",
+          "fix": "Switch to Overlay mode."
+        },
+        {
+          "symptom": "A solid colour flattened my camo to one colour.",
+          "cause": "Camo and snake finishes bring their own colours, and a solid colour paints them one flat colour (measured in the field notes).",
+          "fix": "Shift Hue or Saturation instead, or use a base that takes colour plus a pattern in Blend mode."
+        },
+        {
+          "symptom": "Raising Spec amount made the car look dull or odd.",
+          "cause": "At 100 percent the pattern shine replaces the metal, roughness and clearcoat in the zone, and pattern spec zones skip the usual minimums.",
+          "fix": "Go back to 40 to 60 percent and check the spec preview."
+        }
+      ],
+      "protips": [
+        "Overlay at 30 to 50 percent Opacity is a quick way to get a ghosted version of the pattern own palette over your paint without switching to Blend.",
+        "To recolour an Overlay pattern use its Hue slider, not the zone solid colour. A solid colour on a finish that brings its own palette loses the design."
+      ],
+      "screens": [],
+      "screens_exempt": "No app screenshot shows this topic yet; an unrelated picture was removed (ENC_READER_FIX 2026-10-05)."
+    },
+    {
+      "id": "patterns.choosing_at_car_scale",
+      "title": "Choosing patterns at car scale",
+      "domain": "patterns",
+      "summary": "Choose pattern scale using the actual canvas, target and viewing distance. Pixel dimensions alone do not establish physical size on a car or a universally best Scale value.",
+      "what": "On a2048-square canvas, the owner finish-design intent favours fine8–32pixel primitives with density and varied detail. This is a construction target, not a calibrated UV-to-centimetre rule. A64pixel feature cannot universally be called the size of a side mirror: template layout, island scale and car geometry matter. Broad graphics can serve a deliberate design while fine material detail needs closer inspection.",
+      "when": [
+        "A pattern looks wrong on the car",
+        "You are picking between two patterns"
+      ],
+      "how": [
+        "Identify the actual target and the kind of detail being adjusted.",
+        "Compare a few nearby Scale settings rather than automatically setting everything below0.50.",
+        "Inspect a sufficiently resolved crop and a practical viewing-size image.",
+        "Keep number and sponsor coverage separate when their readability must be protected."
+      ],
+      "controls": [
+        {
+          "label": "Scale",
+          "range": "0.10x-4x",
+          "default": "1.00x",
+          "effect": "Pattern size.",
+          "inv": "zone.pattern_scale"
+        }
+      ],
+      "tips": [
+        "Increase fine-feature density when a texture is sparse instead of enlarging every feature."
+      ],
+      "pitfalls": [
+        "A baked picker square is a selection aid, not a native car or UV calibration.",
+        "A low-resolution preview can lose fine detail; no fixed preview resolution applies to every view."
+      ],
+      "related": [
+        "patterns.scale_rotation_opacity",
+        "patterns.nine_groups",
+        "spec.paint_spec_marriage"
+      ],
+      "actions": [
+        {
+          "do": "pattern",
+          "id": "carbon_fiber"
+        },
+        {
+          "do": "pattern",
+          "id": "chainlink"
+        },
+        {
+          "do": "pattern",
+          "id": "diamond_plate"
+        }
+      ],
+      "figures": [
+        "g19_scale_on_car",
+        "r06_pattern_scale"
+      ],
+      "covers": [
+        "wiki.finish_doctrine.2048_car_canvas_scale_law"
+      ],
+      "sources": [
+        "AGENTS.md:Owner finish doctrine",
+        "engine/compose.py:4380-4420"
+      ],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "aliases": [
+        "pattern too large",
+        "whole car scale",
+        "car scale",
+        "2048 canvas",
+        "make pattern finer",
+        "pattern looks huge",
+        "pattern size on car",
+        "pattern looks tiny on car",
+        "what scale should i use",
+        "can i make a pattern finer"
+      ],
+      "level": "beginner",
+      "deep": [
+        {
+          "heading": "Fine construction and practical acceptance",
+          "body": "The owner mandates fine8–32pixel features at2048 with density, distinct material shades and non-repeated construction. An actual car comparison is still needed to judge fine detail, readability and scale. Canvas observations do not prove calibrated car geometry."
+        }
+      ],
+      "examples": [],
+      "combos": [],
+      "faq": [],
+      "mistakes": [
+        {
+          "symptom": "The pattern looks great on the swatch but huge on the car.",
+          "cause": "The swatch is a thumbnail. On a 2048 sheet over a whole car, medium shapes become mirror or door sized.",
+          "fix": "Drop Scale to 0.50x or lower and judge on the car preview, not the thumbnail."
+        },
+        {
+          "symptom": "One macro-size pattern carries the whole look and the car reads smeared.",
+          "cause": "Large features with no fine detail look like smeared paint.",
+          "fix": "Add a second layer at a much smaller scale so there is detail in the 4 to 8 px band."
+        },
+        {
+          "symptom": "The pattern is behind my number and I cannot read it.",
+          "cause": "Busy texture behind numbers kills contrast.",
+          "fix": "Put the number area in its own zone without a pattern, or lower Opacity there."
+        }
+      ],
+      "protips": [
+        "Plan sizes in bands instead of hoping one Scale does everything: the wiki lists macro at 16 to 64 px, fine at 4 to 8 px and micro at 1 to 2 px on the 2048 sheet.",
+        "If a small decorative zone looks too fine at 1.00x, that is the automatic zone scale at work. Raise Scale a little, or turn on Fit to Zone, which replaces the automatic factor with a fit to the zone box."
+      ],
+      "screens": [
+        "look_carbon"
+      ]
+    },
+    {
+      "id": "patterns.practical_blend_colour_protection",
+      "title": "Blend paint mode: hue retention is not RGB protection",
+      "domain": "patterns",
+      "summary": "Blend uses source hue and saturation while changing brightness. Black and white can become grey, and even plate content outside the destination mask can affect normalization.",
+      "what": "No. It retains source HSV hue/saturation in this helper but replaces much of its brightness. A red source with value 0.6 becomes roughly 0.20,0.54 or 0.88 across dark/mid/light detail at full amount. Protect exact sponsor RGB by excluding its actual coverage rather than relying on Blend. Yes. With full coverage/amount, pure black becomes neutral values about 0.08,0.42 and 0.76 across detail 0/0.5/1. Black has no hue to retain. Blend is a brightness treatment, not an exact-black preservation mode. Yes. At full amount the reviewed formula gives approximately 0.28,0.62 and 0.96 on a white source for detail 0/0.5/1. If white sponsor artwork must stay white, separate its actual coverage instead of assuming retained hue means unchanged white. The pixel compositor uses detail 0.5 when the plate luminance has no range. A red source with value 0.6 then becomes about 0.54 at full amount. This is different from the authored-callback wrapper, which can skip a flat plate with no usable texture. No. The helper uses luminance weights 0.2126/0.7152/0.0722 before normalizing detail. For pure red/green/blue plates over white, the observed output values are roughly 0.428/0.960/0.280. Pattern RGB channel magnitude alone is not the resulting brightness detail. Yes. The helper normalizes luminance across the supplied plate before applying the destination mask. With the same masked mid-grey pixel, an unmasked dark neighbour makes that pixel the high end, while an unmasked light neighbour makes it the low end. Unmasked source RGB still remains unchanged in this helper; the influence is on detail normalization.",
+      "when": [
+        "Protecting source artwork or troubleshooting a pattern result"
+      ],
+      "how": [
+        "Confirm the exact pattern, paint mode and actual target coverage.",
+        "Check the mode-specific behaviour and the active caller.",
+        "Compare source RGB, final paint and shape before accepting the result."
+      ],
+      "pitfalls": [
+        "Helper calculations and one inspected branch do not guarantee every later document operation or native car appearance."
+      ],
+      "faq": [
+        {
+          "q": "Does pattern Blend keep my exact sponsor RGB colour unchanged?",
+          "a": "No. It retains source HSV hue/saturation in this helper but replaces much of its brightness. A red source with value 0.6 becomes roughly 0.20,0.54 or 0.88 across dark/mid/light detail at full amount. Protect exact sponsor RGB by excluding its actual coverage rather than relying on Blend."
+        },
+        {
+          "q": "Can a Blend pattern make pure black paint lighter?",
+          "a": "Yes. With full coverage/amount, pure black becomes neutral values about 0.08,0.42 and 0.76 across detail 0/0.5/1. Black has no hue to retain. Blend is a brightness treatment, not an exact-black preservation mode."
+        },
+        {
+          "q": "Can pure white paint become grey under pattern Blend?",
+          "a": "Yes. At full amount the reviewed formula gives approximately 0.28,0.62 and 0.96 on a white source for detail 0/0.5/1. If white sponsor artwork must stay white, separate its actual coverage instead of assuming retained hue means unchanged white."
+        },
+        {
+          "q": "What does Blend do with a constant-colour pattern plate?",
+          "a": "The pixel compositor uses detail 0.5 when the plate luminance has no range. A red source with value 0.6 then becomes about 0.54 at full amount. This is different from the authored-callback wrapper, which can skip a flat plate with no usable texture."
+        },
+        {
+          "q": "Do equally bright red green and blue pattern pixels create equal Blend shading?",
+          "a": "No. The helper uses luminance weights 0.2126/0.7152/0.0722 before normalizing detail. For pure red/green/blue plates over white, the observed output values are roughly 0.428/0.960/0.280. Pattern RGB channel magnitude alone is not the resulting brightness detail."
+        },
+        {
+          "q": "Can pattern content outside my Zone change Blend detail inside it?",
+          "a": "Yes. The helper normalizes luminance across the supplied plate before applying the destination mask. With the same masked mid-grey pixel, an unmasked dark neighbour makes that pixel the high end, while an unmasked light neighbour makes it the low end. Unmasked source RGB still remains unchanged in this helper; the influence is on detail normalization."
+        }
+      ],
+      "aliases": [
+        "Does pattern Blend keep my exact sponsor RGB colour unchanged",
+        "Can a Blend pattern make pure black paint lighter",
+        "Can pure white paint become grey under pattern Blend",
+        "What does Blend do with a constant-colour pattern plate",
+        "Do equally bright red green and blue pattern pixels create equal Blend shading",
+        "Can pattern content outside my Zone change Blend detail inside it"
+      ],
+      "sources": [
+        "engine/pattern_paint_placement.py:51-69"
+      ],
+      "related": [
+        "patterns.paint_mode",
+        "patterns.placement"
+      ],
+      "actions": [],
+      "controls": [],
+      "deep": [
+        {
+          "heading": "Verification scope",
+          "body": "Actual helpers exercised on synthetic RGB/mask arrays and supplied stub callback plates. No real finish/pattern renderer, authored asset loading, project save, painting or native car test was executed. The monolithic mask threshold was checked as a source predicate rather than a full caller invocation."
+        }
+      ],
+      "quick": false,
+      "lane": "C",
+      "updated": "2026-10-12",
+      "level": "intermediate"
+    },
+    {
+      "id": "patterns.practical_overlay_colour_controls",
+      "title": "Overlay pattern colour controls",
+      "domain": "patterns",
+      "summary": "Overlay changes pattern art before compositing it. Hue wraps around and Saturation scales its distance from neutral or full saturation; these controls do not recolour the underlying source directly.",
+      "what": "It adjusts the pattern plate before masked compositing. In the helper a 120-degree hue shift turns red pattern art green; areas with zero destination mask keep source RGB. Later document effects still need separate checking. No. A positive shift moves the existing saturation toward 1 by that percentage of the remaining distance. Starting at 0.5, plus 50 gives 0.75. A plate RGB 0.5/0.25/0.25 becomes approximately 0.5/0.125/0.125; it is not a direct addition of 0.5. No. It makes pattern saturation zero while retaining its value; RGB 0.5/0.25/0.25 becomes grey 0.5/0.5/0.5 in the helper. Mask and paint amount still control whether that grey replaces source paint.",
+      "when": [
+        "Protecting source artwork or troubleshooting a pattern result"
+      ],
+      "how": [
+        "Confirm the exact pattern, paint mode and actual target coverage.",
+        "Check the mode-specific behaviour and the active caller.",
+        "Compare source RGB, final paint and shape before accepting the result."
+      ],
+      "pitfalls": [
+        "Helper calculations and one inspected branch do not guarantee every later document operation or native car appearance."
+      ],
+      "faq": [
+        {
+          "q": "Does an Overlay hue adjustment recolour the base paint everywhere?",
+          "a": "It adjusts the pattern plate before masked compositing. In the helper a 120-degree hue shift turns red pattern art green; areas with zero destination mask keep source RGB. Later document effects still need separate checking."
+        },
+        {
+          "q": "Does plus50 pattern Saturation simply add0.5 to saturation?",
+          "a": "No. A positive shift moves the existing saturation toward 1 by that percentage of the remaining distance. Starting at 0.5, plus 50 gives 0.75. A plate RGB 0.5/0.25/0.25 becomes approximately 0.5/0.125/0.125; it is not a direct addition of 0.5."
+        },
+        {
+          "q": "Does minus100 pattern Saturation make the pattern transparent?",
+          "a": "No. It makes pattern saturation zero while retaining its value; RGB 0.5/0.25/0.25 becomes grey 0.5/0.5/0.5 in the helper. Mask and paint amount still control whether that grey replaces source paint."
+        }
+      ],
+      "aliases": [
+        "Does an Overlay hue adjustment recolour the base paint everywhere",
+        "Does plus50 pattern Saturation simply add0.5 to saturation",
+        "Does minus100 pattern Saturation make the pattern transparent"
+      ],
+      "sources": [
+        "engine/pattern_paint_placement.py:70-82"
+      ],
+      "related": [
+        "patterns.paint_mode",
+        "patterns.placement"
+      ],
+      "actions": [],
+      "controls": [],
+      "deep": [
+        {
+          "heading": "Verification scope",
+          "body": "Actual helpers exercised on synthetic RGB/mask arrays and supplied stub callback plates. No real finish/pattern renderer, authored asset loading, project save, painting or native car test was executed. The monolithic mask threshold was checked as a source predicate rather than a full caller invocation."
+        }
+      ],
+      "quick": false,
+      "lane": "C",
+      "updated": "2026-10-12",
+      "level": "intermediate"
+    },
+    {
+      "id": "patterns.practical_mask_weight",
+      "title": "Pattern coverage and paint amount",
+      "domain": "patterns",
+      "summary": "Destination mask and amount multiply to set the paint contribution. Zero mask retains source RGB in the helper; this does not establish preservation by every later document operation.",
+      "what": "No. Mask 0.5×amount 0.4 gives a 0.2 contribution. With source RGB 0.2 and plate RGB 0.8 the helper outputs 0.32, not a half-and-half mix. This is compositing arithmetic, not a physical material percentage. The pixel compositor clamps the mask to 0–1. A negative mask leaves source RGB, while a value above 1 uses full available amount. This limit does not identify semantic panels or protect a sponsor that was included in the actual mask.",
+      "when": [
+        "Protecting source artwork or troubleshooting a pattern result"
+      ],
+      "how": [
+        "Confirm the exact pattern, paint mode and actual target coverage.",
+        "Check the mode-specific behaviour and the active caller.",
+        "Compare source RGB, final paint and shape before accepting the result."
+      ],
+      "pitfalls": [
+        "Helper calculations and one inspected branch do not guarantee every later document operation or native car appearance."
+      ],
+      "faq": [
+        {
+          "q": "Does a half coverage mask with40percent paint amount give50percent pattern?",
+          "a": "No. Mask 0.5×amount 0.4 gives a 0.2 contribution. With source RGB 0.2 and plate RGB 0.8 the helper outputs 0.32, not a half-and-half mix. This is compositing arithmetic, not a physical material percentage."
+        },
+        {
+          "q": "What happens to a pattern destination mask below0 or above1?",
+          "a": "The pixel compositor clamps the mask to 0–1. A negative mask leaves source RGB, while a value above 1 uses full available amount. This limit does not identify semantic panels or protect a sponsor that was included in the actual mask."
+        }
+      ],
+      "aliases": [
+        "Does a half coverage mask with40percent paint amount give50percent pattern",
+        "What happens to a pattern destination mask below0 or above1"
+      ],
+      "sources": [
+        "engine/pattern_paint_placement.py:51-84"
+      ],
+      "related": [
+        "patterns.paint_mode",
+        "patterns.placement"
+      ],
+      "actions": [],
+      "controls": [],
+      "deep": [
+        {
+          "heading": "Verification scope",
+          "body": "Actual helpers exercised on synthetic RGB/mask arrays and supplied stub callback plates. No real finish/pattern renderer, authored asset loading, project save, painting or native car test was executed. The monolithic mask threshold was checked as a source predicate rather than a full caller invocation."
+        }
+      ],
+      "quick": false,
+      "lane": "C",
+      "updated": "2026-10-12",
+      "level": "intermediate"
+    },
+    {
+      "id": "patterns.practical_authored_plate_limits",
+      "title": "Authored pattern plates: normalization and missing detail",
+      "domain": "patterns",
+      "summary": "The direct pattern wrapper samples a neutral plate, normalizes its shared RGB range and can fall back to a grayscale texture. A flat callback without usable detail can leave source paint unchanged.",
+      "what": "The wrapper samples the callback on a neutral plate. If the result has no spatial or channel range and no usable texture fallback, it returns a copy of source RGB. Raising placement or colour controls cannot create absent authored detail in that branch. Yes. When its plate is flat and a texture callback exists, the wrapper takes the texture field and repeats it into RGB. A varied fallback can produce a grayscale Overlay rather than the expected authored colour palette. Check the actual selected artwork/callback before interpreting missing colour as a base-colour problem. No. It stretches the shared minimum/maximum across the sampled RGB plate to 0–1 before placement and compositing. In a plate ranging 0.2–0.8, values 0.2/0.3/0.4 become roughly 0/0.167/0.333. This path is not an exact RGB passthrough of the callback output.",
+      "when": [
+        "Protecting source artwork or troubleshooting a pattern result"
+      ],
+      "how": [
+        "Confirm the exact pattern, paint mode and actual target coverage.",
+        "Check the mode-specific behaviour and the active caller.",
+        "Compare source RGB, final paint and shape before accepting the result."
+      ],
+      "pitfalls": [
+        "Helper calculations and one inspected branch do not guarantee every later document operation or native car appearance."
+      ],
+      "faq": [
+        {
+          "q": "Why can an authored pattern callback that returns one flat colour leave my paint unchanged?",
+          "a": "The wrapper samples the callback on a neutral plate. If the result has no spatial or channel range and no usable texture fallback, it returns a copy of source RGB. Raising placement or colour controls cannot create absent authored detail in that branch."
+        },
+        {
+          "q": "Can a flat authored paint callback fall back to a greyscale texture?",
+          "a": "Yes. When its plate is flat and a texture callback exists, the wrapper takes the texture field and repeats it into RGB. A varied fallback can produce a grayscale Overlay rather than the expected authored colour palette. Check the actual selected artwork/callback before interpreting missing colour as a base-colour problem."
+        },
+        {
+          "q": "Does the authored pattern wrapper use the callback RGB values completely unchanged?",
+          "a": "No. It stretches the shared minimum/maximum across the sampled RGB plate to 0–1 before placement and compositing. In a plate ranging 0.2–0.8, values 0.2/0.3/0.4 become roughly 0/0.167/0.333. This path is not an exact RGB passthrough of the callback output."
+        }
+      ],
+      "aliases": [
+        "Why can an authored pattern callback that returns one flat colour leave my paint unchanged",
+        "Can a flat authored paint callback fall back to a greyscale texture",
+        "Does the authored pattern wrapper use the callback RGB values completely unchanged"
+      ],
+      "sources": [
+        "engine/pattern_paint_placement.py:14-48"
+      ],
+      "related": [
+        "patterns.paint_mode",
+        "patterns.placement"
+      ],
+      "actions": [],
+      "controls": [],
+      "deep": [
+        {
+          "heading": "Verification scope",
+          "body": "Actual helpers exercised on synthetic RGB/mask arrays and supplied stub callback plates. No real finish/pattern renderer, authored asset loading, project save, painting or native car test was executed. The monolithic mask threshold was checked as a source predicate rather than a full caller invocation."
+        }
+      ],
+      "quick": false,
+      "lane": "C",
+      "updated": "2026-10-12",
+      "level": "intermediate"
+    },
+    {
+      "id": "patterns.practical_artwork_alpha",
+      "title": "Pattern image alpha and coverage boundaries",
+      "domain": "patterns",
+      "summary": "Opaque dark pixels are real artwork, not transparency. The reviewed monolithic image path multiplies authored alpha into a hard Zone mask; its threshold is specific to that caller.",
+      "what": "No. The reviewed artwork loader preserves authored alpha; dark RGB is artwork rather than a colour key. Opaque black at full mask/amount paints black in the pixel compositor. Use alpha or actual target coverage to leave the source visible. In the reviewed image caller, authored alpha multiplies the destination mask. Alpha 0 gives zero coverage and retains source RGB in the pixel compositor. That local fact does not guarantee that other stacked layers or later colour treatments leave the same pixel unchanged. No. That caller creates a hard mask by retaining values strictly greater than 0.5. Exactly 0.5 becomes zero;0.51 remains 0.51 and is then multiplied by artwork alpha. This threshold is caller-specific, not a universal rule for every Zone or every pattern path.",
+      "when": [
+        "Protecting source artwork or troubleshooting a pattern result"
+      ],
+      "how": [
+        "Confirm the exact pattern, paint mode and actual target coverage.",
+        "Check the mode-specific behaviour and the active caller.",
+        "Compare source RGB, final paint and shape before accepting the result."
+      ],
+      "pitfalls": [
+        "Helper calculations and one inspected branch do not guarantee every later document operation or native car appearance."
+      ],
+      "faq": [
+        {
+          "q": "Are black pixels in a pattern image treated as transparent?",
+          "a": "No. The reviewed artwork loader preserves authored alpha; dark RGB is artwork rather than a colour key. Opaque black at full mask/amount paints black in the pixel compositor. Use alpha or actual target coverage to leave the source visible."
+        },
+        {
+          "q": "Does transparent pattern artwork retain the source colour underneath?",
+          "a": "In the reviewed image caller, authored alpha multiplies the destination mask. Alpha 0 gives zero coverage and retains source RGB in the pixel compositor. That local fact does not guarantee that other stacked layers or later colour treatments leave the same pixel unchanged."
+        },
+        {
+          "q": "Does the monolithic pattern image caller retain a mask value exactly0.5?",
+          "a": "No. That caller creates a hard mask by retaining values strictly greater than 0.5. Exactly 0.5 becomes zero;0.51 remains 0.51 and is then multiplied by artwork alpha. This threshold is caller-specific, not a universal rule for every Zone or every pattern path."
+        }
+      ],
+      "aliases": [
+        "Are black pixels in a pattern image treated as transparent",
+        "Does transparent pattern artwork retain the source colour underneath",
+        "Does the monolithic pattern image caller retain a mask value exactly0.5"
+      ],
+      "sources": [
+        "engine/pattern_artwork.py:39-59",
+        "engine/pattern_artwork.py:94-104"
+      ],
+      "related": [
+        "patterns.paint_mode",
+        "patterns.placement"
+      ],
+      "actions": [],
+      "controls": [],
+      "deep": [
+        {
+          "heading": "Verification scope",
+          "body": "Actual helpers exercised on synthetic RGB/mask arrays and supplied stub callback plates. No real finish/pattern renderer, authored asset loading, project save, painting or native car test was executed. The monolithic mask threshold was checked as a source predicate rather than a full caller invocation."
+        }
+      ],
+      "quick": false,
+      "lane": "C",
+      "updated": "2026-10-12",
+      "level": "intermediate"
+    },
+    {
+      "id": "patterns.practical_fit_bbox_limits",
+      "title": "Fit to Zone: bounding-box limits",
+      "domain": "patterns",
+      "summary": "Fit resizes the full source into the active mask bounding box. Empty, one-pixel-wide or nearly full-canvas bounds can skip fitting; islands share one bounding box, and final masking remains separate.",
+      "what": "For a non-boolean mask, the fitting helper counts values strictly above 0.05. A mask containing only 0.05 produces no active bounds and returns the original source. This fitting threshold differs from final paint coverage and from the monolithic hard-mask threshold. The fitting helper skips bounds whose width or height is at most 1 pixel. A thin target can therefore retain the existing source placement rather than resizing the entire pattern into it. Check actual mask dimensions before repeatedly changing Scale. It skips fitting when both bounding-box dimensions meet the helper’s approximately 95 percent thresholds. The thresholds use integer dimensions, so do not treat 95 percent as an exact physical coverage measure. A full-canvas mask returns the original source. No. It uses one bounding box around all active mask pixels. Disconnected islands and the space between them share that resized source. The helper can resize pixels in the gap, but final destination masking determines whether paint lands there; it is not automatic island-aware UV placement. No. The inspected helper resizes directly to the bounding-box width and height. A wide image fitted to a tall narrow target can stretch its construction. Compare shape and readability after fitting; this is not a perspective or calibrated UV correction.",
+      "when": [
+        "Protecting source artwork or troubleshooting a pattern result"
+      ],
+      "how": [
+        "Confirm the exact pattern, paint mode and actual target coverage.",
+        "Check the mode-specific behaviour and the active caller.",
+        "Compare source RGB, final paint and shape before accepting the result."
+      ],
+      "pitfalls": [
+        "Helper calculations and one inspected branch do not guarantee every later document operation or native car appearance."
+      ],
+      "faq": [
+        {
+          "q": "Does mask value0.05 count when Fit to Zone measures its bounding box?",
+          "a": "For a non-boolean mask, the fitting helper counts values strictly above 0.05. A mask containing only 0.05 produces no active bounds and returns the original source. This fitting threshold differs from final paint coverage and from the monolithic hard-mask threshold."
+        },
+        {
+          "q": "Why may Fit to Zone do nothing on a one-pixel-wide target?",
+          "a": "The fitting helper skips bounds whose width or height is at most 1 pixel. A thin target can therefore retain the existing source placement rather than resizing the entire pattern into it. Check actual mask dimensions before repeatedly changing Scale."
+        },
+        {
+          "q": "Will Fit to Zone resize a pattern when the bounds already cover almost all the canvas?",
+          "a": "It skips fitting when both bounding-box dimensions meet the helper’s approximately 95 percent thresholds. The thresholds use integer dimensions, so do not treat 95 percent as an exact physical coverage measure. A full-canvas mask returns the original source."
+        },
+        {
+          "q": "Does Fit to Zone fit a separate pattern copy into each disconnected island?",
+          "a": "No. It uses one bounding box around all active mask pixels. Disconnected islands and the space between them share that resized source. The helper can resize pixels in the gap, but final destination masking determines whether paint lands there; it is not automatic island-aware UV placement."
+        },
+        {
+          "q": "Does Fit to Zone always preserve the pattern image aspect ratio?",
+          "a": "No. The inspected helper resizes directly to the bounding-box width and height. A wide image fitted to a tall narrow target can stretch its construction. Compare shape and readability after fitting; this is not a perspective or calibrated UV correction."
+        }
+      ],
+      "aliases": [
+        "Does mask value0.05 count when Fit to Zone measures its bounding box",
+        "Why may Fit to Zone do nothing on a one-pixel-wide target",
+        "Will Fit to Zone resize a pattern when the bounds already cover almost all the canvas",
+        "Does Fit to Zone fit a separate pattern copy into each disconnected island",
+        "Does Fit to Zone always preserve the pattern image aspect ratio"
+      ],
+      "sources": [
+        "engine/compose.py:1999-2059"
+      ],
+      "related": [
+        "patterns.paint_mode",
+        "patterns.placement"
+      ],
+      "actions": [],
+      "controls": [],
+      "deep": [
+        {
+          "heading": "Verification scope",
+          "body": "Actual helpers exercised on synthetic RGB/mask arrays and supplied stub callback plates. No real finish/pattern renderer, authored asset loading, project save, painting or native car test was executed. The monolithic mask threshold was checked as a source predicate rather than a full caller invocation."
+        }
+      ],
+      "quick": false,
+      "lane": "C",
+      "updated": "2026-10-12",
+      "level": "intermediate"
+    },
+    {
+      "id": "patterns.practical_pan_pixel_limits",
+      "title": "Pattern pan: pixel rounding and wrapped offsets",
+      "domain": "patterns",
+      "summary": "Tiny or very small Position X moves can round to zero pixels: the pan helper converts normalized offsets to integer pixel rolls. Increasing X uses a negative roll, and out-of-range offsets are clamped. These field rules do not establish physical directions on a car.",
+      "what": "The pan helper converts normalized X to a rounded pixel shift and applies a negative horizontal array roll. On a four-pixel row, changing X from 0.5 to 0.75 changes[0,1,2,3] to[1,2,3,0]. This describes the array helper, not a guarantee of physical left/right on every car island. Offsets are converted to rounded integer pixel shifts using the supplied canvas dimensions. On a four-pixel-wide field, X 0.51 rounds to zero shift. Larger canvases have finer normalized position steps, but this helper does not provide subpixel panning. The helper clamps it to the endpoint before converting it to a pixel roll. X 2 and X 1 therefore produce the same shift on the same field. None defaults to the centred 0.5 value; these bounds do not establish where a named panel is in the template.",
+      "when": [
+        "Protecting source artwork or troubleshooting a pattern result"
+      ],
+      "how": [
+        "Confirm the exact pattern, paint mode and actual target coverage.",
+        "Check the mode-specific behaviour and the active caller.",
+        "Compare source RGB, final paint and shape before accepting the result."
+      ],
+      "pitfalls": [
+        "Helper calculations and one inspected branch do not guarantee every later document operation or native car appearance."
+      ],
+      "faq": [
+        {
+          "q": "What array direction does increasing pattern Position X use?",
+          "a": "The pan helper converts normalized X to a rounded pixel shift and applies a negative horizontal array roll. On a four-pixel row, changing X from 0.5 to 0.75 changes[0,1,2,3] to[1,2,3,0]. This describes the array helper, not a guarantee of physical left/right on every car island."
+        },
+        {
+          "q": "Why can a very small pattern position change appear to do nothing?",
+          "a": "Offsets are converted to rounded integer pixel shifts using the supplied canvas dimensions. On a four-pixel-wide field, X 0.51 rounds to zero shift. Larger canvases have finer normalized position steps, but this helper does not provide subpixel panning."
+        },
+        {
+          "q": "What happens if a pattern offset is outside its0to1 range?",
+          "a": "The helper clamps it to the endpoint before converting it to a pixel roll. X 2 and X 1 therefore produce the same shift on the same field. None defaults to the centred 0.5 value; these bounds do not establish where a named panel is in the template."
+        }
+      ],
+      "aliases": [
+        "What array direction does increasing pattern Position X use",
+        "Why can a very small pattern position change appear to do nothing",
+        "What happens if a pattern offset is outside its0to1 range",
+        "tiny Position X move not moving pixels",
+        "very small position move rounded to zero",
+        "tiny pan movement"
+      ],
+      "sources": [
+        "engine/compose.py:1193-1227"
+      ],
+      "related": [
+        "patterns.paint_mode",
+        "patterns.placement"
+      ],
+      "actions": [],
+      "controls": [],
+      "deep": [
+        {
+          "heading": "Verification scope",
+          "body": "Actual helpers exercised on synthetic RGB/mask arrays and supplied stub callback plates. No real finish/pattern renderer, authored asset loading, project save, painting or native car test was executed. The monolithic mask threshold was checked as a source predicate rather than a full caller invocation."
+        }
+      ],
+      "quick": false,
+      "lane": "C",
+      "updated": "2026-10-12",
+      "level": "intermediate"
+    },
+    {
+      "id": "patterns.practical_target_controls",
+      "title": "Placement controls: pick the right texture, mask or artwork target",
+      "domain": "patterns",
+      "summary": "The placement-mode helper reports manual only when the active placement target matches and this is the selected Zone. A saved field saying manual alone is not proof that dragging is active for that Zone now. Select the Zone and the intended Base, Pattern or additional-Base target before dragging.",
+      "what": "The placement-mode helper reports manual only when the active placement target matches and this is the selected Zone. A saved field saying manual alone is not proof that dragging is active for that Zone now. Select the Zone and the intended Base, Pattern or additional-Base target before dragging. The inspected primary-Base placement helper reports normal or manual, and its setter converts fit to normal for that target. Patterns and additional Bases have separate Fit flags. Use the controls actually offered for the selected contributor; do not promise primary-Base fit from the Pattern button. The active placement controls disable X/Y offsets when the target mode is fit. Switch that target to Centered or Edit on Template to adjust offsets. This UI lock is distinct from a Randomize padlock, a layer paint lock or a source-layer restriction. Each additional Base has its own Fit flag: secondBaseFitZone through fifthBaseFitZone. The placement setter changes only the chosen target flag. Inspect every contributor if their textures should have similar placement; one Fit button is not a whole-Zone fit operation. The inspected setters update the selected Zone patternOffsetX or patternOffsetY, clamped from percent into 0 to 1. They do not modify an imported layer image or its source-layer restriction. To reposition artwork, use the actual Layer transform workflow; to move coverage, edit the Zone mask. The X/Y step helpers clamp their percent value to 0 through 100 before calling the setter. Repeated steps at an end can therefore leave the value unchanged. This control clamp is separate from the renderer’s wrapped texture pan; it is not a calibrated physical car distance. The inspected Base rotation setter snaps to the nearest five degrees after clamping its input, while the Pattern rotation setter stores integer degrees from 0 through 359. Colour and Spec rotation also have separate fields. Compare the actual target and displayed value instead of assuming every rotation control is the same. The inspected setPlacementMode changes mode and selection, activates or clears the placement editor, and refreshes the view, but does not itself call pushZoneUndo. Other transform setters do push Undo. Do not promise that one Undo always reverses a mode switch; inspect the current mode and switch it deliberately.",
+      "when": [
+        "You need to preserve artwork and understand which settings a control actually changes."
+      ],
+      "how": [
+        "Identify the exact Zone, contributor and target before changing settings.",
+        "For a temporary comparison, prefer muting a Zone over resetting it.",
+        "Check both the settings and actual preview after an intentional change."
+      ],
+      "pitfalls": [
+        "The inspected primary-Base placement helper reports normal or manual, and its setter converts fit to normal for that target. Patterns and additional Bases have separate Fit flags. Use the controls actually offered for the selected contributor; do not promise primary-Base fit from the Pattern button.",
+        "The active placement controls disable X/Y offsets when the target mode is fit. Switch that target to Centered or Edit on Template to adjust offsets. This UI lock is distinct from a Randomize padlock, a layer paint lock or a source-layer restriction."
+      ],
+      "faq": [
+        {
+          "q": "Why does Edit on Template appear active for only the selected placement target?",
+          "a": "The placement-mode helper reports manual only when the active placement target matches and this is the selected Zone. A saved field saying manual alone is not proof that dragging is active for that Zone now. Select the Zone and the intended Base, Pattern or additional-Base target before dragging."
+        },
+        {
+          "q": "Can the primary Base use the same Fit to Zone mode as a Pattern?",
+          "a": "The inspected primary-Base placement helper reports normal or manual, and its setter converts fit to normal for that target. Patterns and additional Bases have separate Fit flags. Use the controls actually offered for the selected contributor; do not promise primary-Base fit from the Pattern button."
+        },
+        {
+          "q": "Why are the pattern position controls disabled in Fit to Zone?",
+          "a": "The active placement controls disable X/Y offsets when the target mode is fit. Switch that target to Centered or Edit on Template to adjust offsets. This UI lock is distinct from a Randomize padlock, a layer paint lock or a source-layer restriction."
+        },
+        {
+          "q": "Does fitting my second Base also fit the third and fourth Bases?",
+          "a": "Each additional Base has its own Fit flag: secondBaseFitZone through fifthBaseFitZone. The placement setter changes only the chosen target flag. Inspect every contributor if their textures should have similar placement; one Fit button is not a whole-Zone fit operation."
+        },
+        {
+          "q": "Do the pattern X and Y sliders move my imported sponsor artwork layer?",
+          "a": "The inspected setters update the selected Zone patternOffsetX or patternOffsetY, clamped from percent into 0 to 1. They do not modify an imported layer image or its source-layer restriction. To reposition artwork, use the actual Layer transform workflow; to move coverage, edit the Zone mask."
+        },
+        {
+          "q": "Will stepping pattern position beyond 100 percent wrap back to the other end?",
+          "a": "The X/Y step helpers clamp their percent value to 0 through 100 before calling the setter. Repeated steps at an end can therefore leave the value unchanged. This control clamp is separate from the renderer’s wrapped texture pan; it is not a calibrated physical car distance."
+        },
+        {
+          "q": "Why do Base and Pattern rotation controls accept different angle increments?",
+          "a": "The inspected Base rotation setter snaps to the nearest five degrees after clamping its input, while the Pattern rotation setter stores integer degrees from 0 through 359. Colour and Spec rotation also have separate fields. Compare the actual target and displayed value instead of assuming every rotation control is the same."
+        },
+        {
+          "q": "Does switching a placement mode always create its own Undo entry?",
+          "a": "The inspected setPlacementMode changes mode and selection, activates or clears the placement editor, and refreshes the view, but does not itself call pushZoneUndo. Other transform setters do push Undo. Do not promise that one Undo always reverses a mode switch; inspect the current mode and switch it deliberately."
+        }
+      ],
+      "sources": [
+        "paint-booth-2-state-zones.js:9456-9524",
+        "paint-booth-2-state-zones.js:9586-9612",
+        "paint-booth-2-state-zones.js:9784-9803",
+        "docs/TOOL_ARCHITECTURE.md:18-25",
+        "paint-booth-2-state-zones.js:9804-9811",
+        "engine/compose.py:1193-1227",
+        "paint-booth-2-state-zones.js:9879-9898",
+        "paint-booth-2-state-zones.js:10549-10606"
+      ],
+      "aliases": [
+        "placement controls: pick the right texture, mask or artwork target"
+      ],
+      "related": [
+        "zones.card_controls",
+        "layers.lock_zone_to_layer",
+        "patterns.placement"
+      ],
+      "actions": [],
+      "controls": [],
+      "quick": false,
+      "lane": "A",
+      "updated": "2026-10-12",
+      "level": "intermediate",
+      "deep": [
+        {
+          "heading": "Verified control scope",
+          "body": "These instructions describe the installed handlers and property lists. They do not certify native painting, geometric car-panel calibration or recovery from an arbitrary concurrent project edit."
+        }
+      ],
+      "examples": [],
+      "mistakes": [],
+      "protips": [
+        "Keep source artwork and Zone coverage conceptually separate. A shared finish is not a shared geometric target."
+      ]
+    },
+    {
+      "id": "patterns.practical_stack_editor_state",
+      "title": "Pattern stack rows: replacement, indexing and numeric inputs",
+      "domain": "patterns",
+      "summary": "Current active-source transaction guidance: verify the originating slot, retained state and actual composed output.",
+      "what": "The new row starts with id none, opacity100, scale1, rotation0, normal blend and centered offsets0.5/0.5. It is an empty pattern slot until you choose an actual pattern. Adding the row alone is not a successful visible pattern application. The remove handler uses splice on patternStack. Later rows shift their array index, while their stored row objects and settings remain. A row number is not a persistent pattern identity; reopen the intended row before using an old layer index. setPatternLayerId changes only that row’s id, then refreshes the Zone UI and preview. It does not reset opacity, scale, rotation, blendMode or offsets. Inspect inherited row settings when a newly chosen pattern looks unexpectedly faint or misplaced. The opacity setter uses parseInt, clamps finite values to0–100 and substitutes100 for invalid input. Fractional values truncate rather than preserve decimals. This is the row opacity field, not an additional Base’s spec weight or a PSD layer opacity setting. The setter uses parseFloat(value) or1, so zero and invalid input fall back to1. It then rounds to SCALE_STEP0.05 and clamps to the pattern range0.10–4.0. These controls do not accept arbitrary sub-minimum detail scales; assess actual marks at the intended paint resolution. The rotation setter stores parseInt(value) or0 without clamping in that function. The step helper explicitly clamps its proposed value to0–359 before calling it. Typed and stepped inputs therefore have different boundary behavior; this does not establish a physical car-panel orientation.",
+      "when": [
+        "A material or pattern selection changed more or less state than expected."
+      ],
+      "how": [
+        "Check the originating Zone and exact row.",
+        "Inspect the material, colour-source and strength fields separately.",
+        "Assess the actual composed output before accepting a choice."
+      ],
+      "faq": [
+        {
+          "q": "Why does Add Pattern Layer create a row without adding visible pattern marks?",
+          "a": "The new row starts with id none, opacity100, scale1, rotation0, normal blend and centered offsets0.5/0.5. It is an empty pattern slot until you choose an actual pattern. Adding the row alone is not a successful visible pattern application."
+        },
+        {
+          "q": "Why did a lower pattern row get a new row number after I removed the one above it?",
+          "a": "The remove handler uses splice on patternStack. Later rows shift their array index, while their stored row objects and settings remain. A row number is not a persistent pattern identity; reopen the intended row before using an old layer index."
+        },
+        {
+          "q": "Why does changing the pattern in an existing stack row keep its old scale and opacity?",
+          "a": "setPatternLayerId changes only that row’s id, then refreshes the Zone UI and preview. It does not reset opacity, scale, rotation, blendMode or offsets. Inspect inherited row settings when a newly chosen pattern looks unexpectedly faint or misplaced."
+        },
+        {
+          "q": "Why does a fractional or empty stacked-pattern opacity input become an integer or100percent?",
+          "a": "The opacity setter uses parseInt, clamps finite values to0–100 and substitutes100 for invalid input. Fractional values truncate rather than preserve decimals. This is the row opacity field, not an additional Base’s spec weight or a PSD layer opacity setting."
+        },
+        {
+          "q": "Why does zero stacked-pattern scale return to1rather than create infinitely fine detail?",
+          "a": "The setter uses parseFloat(value) or1, so zero and invalid input fall back to1. It then rounds to SCALE_STEP0.05 and clamps to the pattern range0.10–4.0. These controls do not accept arbitrary sub-minimum detail scales; assess actual marks at the intended paint resolution."
+        },
+        {
+          "q": "Why can a typed stacked-pattern angle differ from the angle reached using step buttons?",
+          "a": "The rotation setter stores parseInt(value) or0 without clamping in that function. The step helper explicitly clamps its proposed value to0–359 before calling it. Typed and stepped inputs therefore have different boundary behavior; this does not establish a physical car-panel orientation."
+        }
+      ],
+      "sources": [
+        "paint-booth-2-state-zones.js:12244-12250",
+        "paint-booth-2-state-zones.js:12253-12257",
+        "paint-booth-2-state-zones.js:12260-12265",
+        "paint-booth-2-state-zones.js:12267-12289",
+        "paint-booth-2-state-zones.js:329,12296-12318",
+        "paint-booth-2-state-zones.js:12000-12021,12324-12327"
+      ],
+      "related": [
+        "finishes.base_locks",
+        "patterns.layers_and_stacking",
+        "finishes.second_base_overlays"
+      ],
+      "aliases": [
+        "pattern stack rows: replacement, indexing and numeric inputs"
+      ],
+      "actions": [],
+      "controls": [],
+      "quick": false,
+      "lane": "B",
+      "updated": "2026-10-12",
+      "level": "pro",
+      "deep": [],
+      "examples": [],
+      "mistakes": [],
+      "protips": [],
+      "pitfalls": [
+        "Source-derived state retention is not a native painting or appearance guarantee."
+      ]
+    }
+  ]
+}

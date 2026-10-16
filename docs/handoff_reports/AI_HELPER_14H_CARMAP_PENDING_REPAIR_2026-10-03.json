@@ -1,8 +1,8 @@
 {
   "title": "AI helper car-map pending identity repair",
-  "generated_at": "2026-10-04T04:14:02.394Z",
+  "generated_at": "2026-10-07T03:07:29.189Z",
   "mode": "actual car-map functions in VM with fake canvas/storage/fetch/chat only; no native, provider, server, or teaching-import calls",
-  "source_sha256": "bb9e05373c11550d59155fc680d3771c8ca31de555726bb1219125159be505ce",
+  "source_sha256": "53996520b6e3f91763178bdc654f714697527df4dc2f21bd55fb39bd8237e305",
   "prior_frozen_audit": {
     "path": "docs/handoff_reports/AI_HELPER_14H_CARMAP_IDENTITY_REVIEW_2026-10-03.json",
     "source_sha256_before": "4e2d851c7a43b072db10874b52c988f1deab6e0c9dfca0f541db0c6827c955d4",

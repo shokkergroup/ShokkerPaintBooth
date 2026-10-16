@@ -1188,7 +1188,7 @@
     min-width: 0 !important;
 }
 
-#fineTuningBody .stack-control-group:has(input[type="range"]) {
+#fineTuningBody .stack-control-group:is(div).spb-pf-hr {
     display: grid !important;
     grid-template-columns: 72px 24px minmax(104px, 1fr) 24px 44px !important;
     align-items: center !important;
@@ -1198,23 +1198,23 @@
     margin: 0 !important;
 }
 
-#fineTuningBody .stack-control-group:has(input[type="number"]):has(input[type="range"]) {
+#fineTuningBody .stack-control-group:is(div).spb-pf-hn:is(div).spb-pf-hr {
     grid-template-columns: 72px 24px minmax(92px, 1fr) 24px 46px 12px !important;
 }
 
-#fineTuningBody .stack-control-group:has(input[type="range"]) .stack-label-mini {
+#fineTuningBody .stack-control-group:is(div).spb-pf-hr .stack-label-mini {
     min-width: 0 !important;
     white-space: normal !important;
     line-height: 1.12 !important;
 }
 
-#fineTuningBody .stack-control-group:has(input[type="range"]) .stack-slider {
+#fineTuningBody .stack-control-group:is(div).spb-pf-hr .stack-slider {
     width: 100% !important;
     min-width: 88px !important;
 }
 
-#fineTuningBody .stack-control-group:has(input[type="range"]) .stack-step-btn,
-#fineTuningBody .stack-control-group:has(input[type="range"]) .btn.btn-sm {
+#fineTuningBody .stack-control-group:is(div).spb-pf-hr .stack-step-btn,
+#fineTuningBody .stack-control-group:is(div).spb-pf-hr .btn.btn-sm {
     width: 24px !important;
     min-width: 24px !important;
     height: 22px !important;
@@ -1244,7 +1244,7 @@
     min-width: 40px !important;
 }
 
-#fineTuningBody .stack-control-group:has(input[type="range"]) .stack-val {
+#fineTuningBody .stack-control-group:is(div).spb-pf-hr .stack-val {
     min-width: 40px !important;
     justify-self: end !important;
     padding: 2px 4px !important;
@@ -2891,10 +2891,10 @@ body::before {
    `auto` column. Re-point the flex column to the slider so it fills the row and
    both −/+ steppers stay visible. Scoped via :has(range) so the Spec Blend
    <select> row keeps its own wide column. Steps unchanged (5% scale / 5°). */
-.zone-editor-float .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:has(input[type="range"]),
-.zone-detail-body  .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:has(input[type="range"]),
-.zone-editor-float .zone-base-rotate-row .zone-scale-strength-stack .stack-control-group.zone-full-width-control:has(input[type="range"]),
-.zone-detail-body  .zone-base-rotate-row .zone-scale-strength-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) {
+.zone-editor-float .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr,
+.zone-detail-body  .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr,
+.zone-editor-float .zone-base-rotate-row .zone-scale-strength-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr,
+.zone-detail-body  .zone-base-rotate-row .zone-scale-strength-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr {
     grid-template-columns: 88px auto minmax(0, 1fr) auto auto auto !important;
 }
 
@@ -3018,10 +3018,10 @@ body::before {
    the popout reads the same length. The Spec Blend <select> row (no range)
    keeps the grid. Later-in-file + :has() specificity beats the grid rules and
    the width:100%/flex:none slider pins above. */
-.zone-editor-float .zone-scale-strength-stack .stack-control-group.zone-full-width-control:has(input[type="range"]),
-.zone-detail-body  .zone-scale-strength-stack .stack-control-group.zone-full-width-control:has(input[type="range"]),
-.zone-editor-float .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:has(input[type="range"]),
-.zone-detail-body  .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) {
+.zone-editor-float .zone-scale-strength-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr,
+.zone-detail-body  .zone-scale-strength-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr,
+.zone-editor-float .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr,
+.zone-detail-body  .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr {
     display: flex !important;
     flex-wrap: nowrap !important;
     align-items: center !important;
@@ -3030,31 +3030,31 @@ body::before {
     width: 100% !important;
     min-width: 0 !important;
 }
-.zone-editor-float .zone-scale-strength-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-label-mini,
-.zone-detail-body  .zone-scale-strength-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-label-mini,
-.zone-editor-float .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-label-mini,
-.zone-detail-body  .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-label-mini {
+.zone-editor-float .zone-scale-strength-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-label-mini,
+.zone-detail-body  .zone-scale-strength-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-label-mini,
+.zone-editor-float .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-label-mini,
+.zone-detail-body  .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-label-mini {
     flex: 0 0 auto !important;
     width: auto !important;
     min-width: 62px !important;
     white-space: nowrap !important;
 }
-.zone-editor-float .zone-scale-strength-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-slider,
-.zone-detail-body  .zone-scale-strength-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-slider,
-.zone-editor-float .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-slider,
-.zone-detail-body  .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-slider {
+.zone-editor-float .zone-scale-strength-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-slider,
+.zone-detail-body  .zone-scale-strength-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-slider,
+.zone-editor-float .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-slider,
+.zone-detail-body  .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-slider {
     flex: 1 1 auto !important;
     width: auto !important;
     min-width: 40px !important;
 }
-.zone-editor-float .zone-scale-strength-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-step-btn,
-.zone-detail-body  .zone-scale-strength-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-step-btn,
-.zone-editor-float .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-step-btn,
-.zone-detail-body  .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-step-btn,
-.zone-editor-float .zone-scale-strength-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .btn.btn-sm,
-.zone-detail-body  .zone-scale-strength-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .btn.btn-sm,
-.zone-editor-float .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .btn.btn-sm,
-.zone-detail-body  .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .btn.btn-sm {
+.zone-editor-float .zone-scale-strength-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-step-btn,
+.zone-detail-body  .zone-scale-strength-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-step-btn,
+.zone-editor-float .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-step-btn,
+.zone-detail-body  .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-step-btn,
+.zone-editor-float .zone-scale-strength-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .btn.btn-sm,
+.zone-detail-body  .zone-scale-strength-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .btn.btn-sm,
+.zone-editor-float .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .btn.btn-sm,
+.zone-detail-body  .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .btn.btn-sm {
     flex: 0 0 20px !important;
     width: 20px !important;
     min-width: 20px !important;
@@ -3063,10 +3063,10 @@ body::before {
     display: inline-grid !important;
     place-items: center !important;
 }
-.zone-editor-float .zone-scale-strength-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-val,
-.zone-detail-body  .zone-scale-strength-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-val,
-.zone-editor-float .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-val,
-.zone-detail-body  .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:has(input[type="range"]) .stack-val {
+.zone-editor-float .zone-scale-strength-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-val,
+.zone-detail-body  .zone-scale-strength-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-val,
+.zone-editor-float .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-val,
+.zone-detail-body  .zone-fine-tuning-stack .stack-control-group.zone-full-width-control:is(div).spb-pf-hr .stack-val {
     flex: 0 0 auto !important;
     min-width: 36px !important;
     text-align: right !important;

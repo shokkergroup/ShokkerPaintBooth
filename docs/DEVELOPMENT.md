@@ -72,7 +72,7 @@ Then open `http://localhost:<port>/` in Chrome. You lose the Electron shell (no 
 For quickly testing a new finish without boot overhead:
 
 ```bash
-python benchmark_finishes.py --finish chrome --iterations 5
+python scripts/benchmark_paint_finish_render_times.py --ids chrome --repeat 5
 ```
 
 ---
@@ -108,7 +108,7 @@ See [TESTING.md](TESTING.md) for what we test and what's still manual.
 ### Profile a slow render
 
 ```bash
-python -m cProfile -o profile.prof benchmark_finishes.py --finish chrome
+python -m cProfile -o profile.prof scripts/benchmark_paint_finish_render_times.py --ids chrome
 snakeviz profile.prof
 ```
 
@@ -147,7 +147,7 @@ cd electron-app && npm run lint
 cd electron-app && npm run build
 
 # Bench a finish
-python benchmark_finishes.py --finish <id>
+python scripts/benchmark_paint_finish_render_times.py --ids <id>
 
 # Verify 3-copy sync
 node electron-app/copy-server-assets.js --check

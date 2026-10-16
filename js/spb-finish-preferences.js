@@ -15,7 +15,7 @@
             /^(localhost|127\.0\.0\.1|\[::1\])$/.test(global.location.hostname))
             return global.location.origin + '/api/finish-preferences';
         return (global.ShokkerAPI && global.ShokkerAPI.baseUrl ||
-            'http://localhost:' + (global._SHOKKER_PORT || 59876)) + '/api/finish-preferences';
+            'http://localhost:' + (global.spbServerPort ? global.spbServerPort() : global._SHOKKER_PORT)) + '/api/finish-preferences';
     }
     async function post(body) {
         const response = await fetch(endpoint(), {

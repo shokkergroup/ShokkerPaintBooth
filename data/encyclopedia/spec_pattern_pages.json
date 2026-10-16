@@ -5,14 +5,14 @@
  "generated": true,
  "note": "One page per spec pattern (incl. the spov2 overlay set); grouped by spec group. Part files live in pages/.",
  "pageCount": 301,
- "bytes": 1215847,
+ "bytes": 1206900,
  "parts": [
   {
    "file": "pages/specpat_artistic_abstract_1.json",
    "domain": "specpat_artistic_abstract_1",
    "group": "Artistic & Abstract",
    "count": 1,
-   "bytes": 4089,
+   "bytes": 4058,
    "firstKey": "spec::halftone_print",
    "lastKey": "spec::halftone_print"
   },
@@ -21,7 +21,7 @@
    "domain": "specpat_carbon_composite_1",
    "group": "Carbon & Composite",
    "count": 4,
-   "bytes": 15914,
+   "bytes": 15790,
    "firstKey": "spec::spec_carbon_tow_spread",
    "lastKey": "spec::spec_prepreg_resin_bleed"
   },
@@ -30,7 +30,7 @@
    "domain": "specpat_carbon_composite_weave_1",
    "group": "Carbon & Composite Weave",
    "count": 8,
-   "bytes": 32389,
+   "bytes": 32141,
    "firstKey": "spec::spec_carbon_2x2_twill",
    "lastKey": "spec::spec_mesh_perforated"
   },
@@ -39,7 +39,7 @@
    "domain": "specpat_clearcoat_coating_1",
    "group": "Clearcoat & Coating",
    "count": 4,
-   "bytes": 15792,
+   "bytes": 15668,
    "firstKey": "spec::cc_overspray_halo",
    "lastKey": "spec::cc_wet_zone"
   },
@@ -48,7 +48,7 @@
    "domain": "specpat_crack_weather_1",
    "group": "Crack & Weather",
    "count": 1,
-   "bytes": 4046,
+   "bytes": 4015,
    "firstKey": "spec::spov2_crazed_porcelain",
    "lastKey": "spec::spov2_crazed_porcelain"
   },
@@ -57,7 +57,7 @@
    "domain": "specpat_crystal_mineral_1",
    "group": "Crystal & Mineral",
    "count": 1,
-   "bytes": 3996,
+   "bytes": 3965,
    "firstKey": "spec::spov2_crystal_front",
    "lastKey": "spec::spov2_crystal_front"
   },
@@ -66,7 +66,7 @@
    "domain": "specpat_cultural_inlay_1",
    "group": "Cultural & Inlay",
    "count": 1,
-   "bytes": 4247,
+   "bytes": 4216,
    "firstKey": "spec::spec_abalone_crack_inlay",
    "lastKey": "spec::spec_abalone_crack_inlay"
   },
@@ -75,7 +75,7 @@
    "domain": "specpat_dangerous_animals_1",
    "group": "Dangerous Animals",
    "count": 10,
-   "bytes": 40228,
+   "bytes": 40038,
    "firstKey": "spec::croc_delta_armor",
    "lastKey": "spec::widow_web_venom"
   },
@@ -84,7 +84,7 @@
    "domain": "specpat_directional_metal_brush_1",
    "group": "Directional Metal & Brush",
    "count": 3,
-   "bytes": 12088,
+   "bytes": 11995,
    "firstKey": "spec::brushed_cross",
    "lastKey": "spec::brushed_linear_cool"
   },
@@ -93,7 +93,7 @@
    "domain": "specpat_engine_turn_optical_1",
    "group": "Engine Turn & Optical",
    "count": 4,
-   "bytes": 15969,
+   "bytes": 15845,
    "firstKey": "spec::spec_anodized_hex_fade",
    "lastKey": "spec::spec_laser_etched_microbar"
   },
@@ -102,7 +102,7 @@
    "domain": "specpat_engine_turn_machined_1",
    "group": "Engine-Turn & Machined",
    "count": 1,
-   "bytes": 4147,
+   "bytes": 4116,
    "firstKey": "spec::airbrush_gradient_bloom",
    "lastKey": "spec::airbrush_gradient_bloom"
   },
@@ -111,7 +111,7 @@
    "domain": "specpat_engraved_ornamental_1",
    "group": "Engraved & Ornamental",
    "count": 1,
-   "bytes": 4361,
+   "bytes": 4330,
    "firstKey": "spec::spov2_security_guilloche",
    "lastKey": "spec::spov2_security_guilloche"
   },
@@ -120,7 +120,7 @@
    "domain": "specpat_exotic_kinetic_1",
    "group": "Exotic & Kinetic",
    "count": 3,
-   "bytes": 12536,
+   "bytes": 12443,
    "firstKey": "spec::spec_chameleon_flake",
    "lastKey": "spec::spec_liquid_metal"
   },
@@ -129,7 +129,7 @@
    "domain": "specpat_experimental_structures_1",
    "group": "Experimental Structures",
    "count": 1,
-   "bytes": 4073,
+   "bytes": 4042,
    "firstKey": "spec::spov2_aperiodic_alloy",
    "lastKey": "spec::spov2_aperiodic_alloy"
   },
@@ -138,7 +138,7 @@
    "domain": "specpat_fire_heat_1",
    "group": "Fire & Heat",
    "count": 1,
-   "bytes": 3985,
+   "bytes": 3954,
    "firstKey": "spec::ember_field",
    "lastKey": "spec::ember_field"
   },
@@ -147,7 +147,7 @@
    "domain": "specpat_fire_heat_exhaust_1",
    "group": "Fire, Heat & Exhaust",
    "count": 4,
-   "bytes": 16014,
+   "bytes": 15890,
    "firstKey": "spec::spec_burnt_clutch_dust",
    "lastKey": "spec::spec_titanium_heat_fishscale"
   },
@@ -156,7 +156,7 @@
    "domain": "specpat_geometric_structural_1",
    "group": "Geometric & Structural",
    "count": 1,
-   "bytes": 4055,
+   "bytes": 4024,
    "firstKey": "spec::diamond_lattice",
    "lastKey": "spec::diamond_lattice"
   },
@@ -165,7 +165,7 @@
    "domain": "specpat_gothic_horror_1",
    "group": "Gothic & Horror",
    "count": 4,
-   "bytes": 15858,
+   "bytes": 15758,
    "firstKey": "spec::brushed_sparkle",
    "lastKey": "spec::samhain_ritual"
   },
@@ -174,7 +174,7 @@
    "domain": "specpat_holographic_color_shift_1",
    "group": "Holographic & Color-Shift",
    "count": 1,
-   "bytes": 4352,
+   "bytes": 4321,
    "firstKey": "spec::holo_prism_shift",
    "lastKey": "spec::holo_prism_shift"
   },
@@ -183,7 +183,7 @@
    "domain": "specpat_let_freedom_ring_1",
    "group": "Let Freedom Ring",
    "count": 10,
-   "bytes": 40328,
+   "bytes": 40018,
    "firstKey": "spec::spec_lfr_anisotropic_drift",
    "lastKey": "spec::spec_lfr_torch_flicker"
   },
@@ -192,7 +192,7 @@
    "domain": "specpat_liquid_clearcoat_1",
    "group": "Liquid & Clearcoat",
    "count": 2,
-   "bytes": 7950,
+   "bytes": 7888,
    "firstKey": "spec::spec_fuel_stain_evap_ring",
    "lastKey": "spec::spec_polished_swirl_compound"
   },
@@ -201,7 +201,7 @@
    "domain": "specpat_liquid_coating_1",
    "group": "Liquid & Coating",
    "count": 1,
-   "bytes": 4021,
+   "bytes": 3990,
    "firstKey": "spec::spov2_tidal_meniscus",
    "lastKey": "spec::spov2_tidal_meniscus"
   },
@@ -210,7 +210,7 @@
    "domain": "specpat_machined_brushed_1",
    "group": "Machined & Brushed",
    "count": 2,
-   "bytes": 8254,
+   "bytes": 8192,
    "firstKey": "spec::spov2_toolpath_reversal",
    "lastKey": "spec::spov2_weld_pool_archive"
   },
@@ -219,7 +219,7 @@
    "domain": "specpat_machined_race_hardware_1",
    "group": "Machined & Race Hardware",
    "count": 6,
-   "bytes": 24389,
+   "bytes": 24203,
    "firstKey": "spec::spec_beadlock_bolt_circle",
    "lastKey": "spec::spec_weld_stack_rainbow"
   },
@@ -228,7 +228,7 @@
    "domain": "specpat_more_spec_patterns_1",
    "group": "More spec patterns",
    "count": 21,
-   "bytes": 85172,
+   "bytes": 84521,
    "firstKey": "spec::spov2_acanthus_scrolls",
    "lastKey": "spec::spov2_conchoidal_obsidian"
   },
@@ -237,7 +237,7 @@
    "domain": "specpat_more_spec_patterns_2",
    "group": "More spec patterns",
    "count": 21,
-   "bytes": 84492,
+   "bytes": 83841,
    "firstKey": "spec::spov2_coral_polyps",
    "lastKey": "spec::spov2_fresnel_segments"
   },
@@ -246,7 +246,7 @@
    "domain": "specpat_more_spec_patterns_3",
    "group": "More spec patterns",
    "count": 21,
-   "bytes": 85995,
+   "bytes": 85344,
    "firstKey": "spec::spov2_grid_stencil_mesh",
    "lastKey": "spec::spov2_optic_pinwheels"
   },
@@ -255,7 +255,7 @@
    "domain": "specpat_more_spec_patterns_4",
    "group": "More spec patterns",
    "count": 21,
-   "bytes": 85075,
+   "bytes": 84424,
    "firstKey": "spec::spov2_orange_peel_film",
    "lastKey": "spec::spov2_salt_hoppers"
   },
@@ -264,7 +264,7 @@
    "domain": "specpat_more_spec_patterns_5",
    "group": "More spec patterns",
    "count": 22,
-   "bytes": 90315,
+   "bytes": 89633,
    "firstKey": "spec::spov2_satin_float",
    "lastKey": "spec::spov2_wing_scale_sockets"
   },
@@ -273,7 +273,7 @@
    "domain": "specpat_more_spec_patterns_6",
    "group": "More spec patterns",
    "count": 2,
-   "bytes": 8548,
+   "bytes": 8486,
    "firstKey": "spec::spov2_wrinkled_lacquer",
    "lastKey": "spec::spov2_zone_plate_shards"
   },
@@ -282,7 +282,7 @@
    "domain": "specpat_optical_interference_1",
    "group": "Optical & Interference",
    "count": 9,
-   "bytes": 36453,
+   "bytes": 36174,
    "firstKey": "spec::galaxy_swirl",
    "lastKey": "spec::wave_ripple"
   },
@@ -291,7 +291,7 @@
    "domain": "specpat_organic_natural_1",
    "group": "Organic & Natural",
    "count": 4,
-   "bytes": 15958,
+   "bytes": 15834,
    "firstKey": "spec::lava_crack",
    "lastKey": "spec::spec_terrain_erosion"
   },
@@ -300,7 +300,7 @@
    "domain": "specpat_precision_guilloche_1",
    "group": "Precision & Guilloché",
    "count": 5,
-   "bytes": 19959,
+   "bytes": 19804,
    "firstKey": "spec::edm_dimple",
    "lastKey": "spec::knurl_diamond"
   },
@@ -309,7 +309,7 @@
    "domain": "specpat_predator_animal_armor_1",
    "group": "Predator & Animal Armor",
    "count": 4,
-   "bytes": 16260,
+   "bytes": 16136,
    "firstKey": "spec::spec_alligator_scute_plate",
    "lastKey": "spec::spec_sharkskin_riblet"
   },
@@ -318,7 +318,7 @@
    "domain": "specpat_predator_skins_1",
    "group": "Predator Skins",
    "count": 9,
-   "bytes": 36045,
+   "bytes": 35778,
    "firstKey": "spec::alligator_hide",
    "lastKey": "spec::viper_pit_hex"
   },
@@ -327,7 +327,7 @@
    "domain": "specpat_race_track_materials_1",
    "group": "Race Track Materials",
    "count": 4,
-   "bytes": 15567,
+   "bytes": 15443,
    "firstKey": "spec::spec_braided_hose_sleeve",
    "lastKey": "spec::spec_tar_snake_sealant"
   },
@@ -336,7 +336,7 @@
    "domain": "specpat_racing_livery_story_1",
    "group": "Racing & Livery Story",
    "count": 4,
-   "bytes": 16156,
+   "bytes": 16032,
    "firstKey": "spec::checker_flag_subtle",
    "lastKey": "spec::vinyl_stretched"
   },
@@ -345,7 +345,7 @@
    "domain": "specpat_rising_sun_spec_1",
    "group": "Rising Sun Spec",
    "count": 9,
-   "bytes": 36806,
+   "bytes": 36635,
    "firstKey": "spec::bonsai_drift_circuit",
    "lastKey": "spec::shogun_scale_brocade"
   },
@@ -354,7 +354,7 @@
    "domain": "specpat_skin_cellular_1",
    "group": "Skin & Cellular",
    "count": 2,
-   "bytes": 8027,
+   "bytes": 7965,
    "firstKey": "spec::spov2_denticle_armor",
    "lastKey": "spec::spov2_diatom_sieve"
   },
@@ -363,7 +363,7 @@
    "domain": "specpat_source_pattern_plates_1",
    "group": "Source Pattern Plates",
    "count": 12,
-   "bytes": 48298,
+   "bytes": 47926,
    "firstKey": "spec::spec_acid_carbon_mesh",
    "lastKey": "spec::spec_ice_facet_shatter"
   },
@@ -372,7 +372,7 @@
    "domain": "specpat_source_pattern_plates_2",
    "group": "Source Pattern Plates",
    "count": 12,
-   "bytes": 48685,
+   "bytes": 48313,
    "firstKey": "spec::spec_lime_pixel_confetti",
    "lastKey": "spec::spec_tokyo_script_textile"
   },
@@ -381,7 +381,7 @@
    "domain": "specpat_sparkle_micro_metal_1",
    "group": "Sparkle & Micro-Metal",
    "count": 9,
-   "bytes": 36131,
+   "bytes": 35852,
    "firstKey": "spec::anodized_rainbow",
    "lastKey": "spec::voronoi_fracture"
   },
@@ -390,7 +390,7 @@
    "domain": "specpat_structure_geometry_1",
    "group": "Structure & Geometry",
    "count": 9,
-   "bytes": 35313,
+   "bytes": 35034,
    "firstKey": "spec::banded_rows",
    "lastKey": "spec::wave_bands"
   },
@@ -399,7 +399,7 @@
    "domain": "specpat_surface_spray_texture_1",
    "group": "Surface & Spray Texture",
    "count": 5,
-   "bytes": 20137,
+   "bytes": 19982,
    "firstKey": "spec::pebble_grain",
    "lastKey": "spec::spec_pvd_coating"
   },
@@ -408,7 +408,7 @@
    "domain": "specpat_track_motorsport_1",
    "group": "Track & Motorsport",
    "count": 1,
-   "bytes": 4236,
+   "bytes": 4205,
    "firstKey": "spec::spov2_pit_lane_ghost",
    "lastKey": "spec::spov2_pit_lane_ghost"
   },
@@ -417,7 +417,7 @@
    "domain": "specpat_voodoo_inspired_1",
    "group": "Voodoo Inspired",
    "count": 10,
-   "bytes": 39232,
+   "bytes": 39042,
    "firstKey": "spec::bayou_hex_burlap",
    "lastKey": "spec::swamp_charm_patina"
   },
@@ -426,7 +426,7 @@
    "domain": "specpat_weather_wear_track_1",
    "group": "Weather, Wear & Track",
    "count": 5,
-   "bytes": 20239,
+   "bytes": 20084,
    "firstKey": "spec::crackle_network",
    "lastKey": "spec::spec_stress_fractures"
   },
@@ -435,7 +435,7 @@
    "domain": "specpat_weathered_physical_1",
    "group": "Weathered Physical",
    "count": 4,
-   "bytes": 15519,
+   "bytes": 15395,
    "firstKey": "spec::spec_ice_frost_feather",
    "lastKey": "spec::spec_sandblasted_mask_edge"
   },
@@ -444,7 +444,7 @@
    "domain": "specpat_weave_composite_1",
    "group": "Weave & Composite",
    "count": 1,
-   "bytes": 4148,
+   "bytes": 4117,
    "firstKey": "spec::spov2_braided_junction",
    "lastKey": "spec::spov2_braided_junction"
   }

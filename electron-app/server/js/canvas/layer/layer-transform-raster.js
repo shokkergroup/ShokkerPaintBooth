@@ -129,9 +129,12 @@
             if (radians) pieceCtx.rotate(radians);
             pieceCtx.imageSmoothingEnabled = true;
             pieceCtx.imageSmoothingQuality = 'high';
-            pieceCtx.drawImage(source, entry.sx, entry.sy, entry.sw, entry.sh,
-                -entry.drawWidth / 2, -entry.drawHeight / 2,
-                entry.drawWidth, entry.drawHeight);
+            if (!pcDraw(pieceCtx, source, entry.sx, entry.sy, entry.sw, entry.sh,
+                -entry.drawWidth / 2, -entry.drawHeight / 2, entry.drawWidth, entry.drawHeight, true)) {
+                pieceCtx.drawImage(source, entry.sx, entry.sy, entry.sw, entry.sh,
+                    -entry.drawWidth / 2, -entry.drawHeight / 2,
+                    entry.drawWidth, entry.drawHeight);
+            }
             destCtx.drawImage(piece, target.x1 - unionX1, target.y1 - unionY1);
         });
 
@@ -146,14 +149,32 @@
     // Draw the exact active whole-layer transform into an arbitrary destination.
     // Layer-selection -> Zone-mask baking uses this so its alpha follows the
     // live move/scale/rotate/flip instead of stale pre-transform bounds.
-    function drawSourceRect(ctx, source, rect, sourceBbox, width, height) {
+    // PORT-W3 (2026-10-09, PhotoCraft transform.rs warp): pcDraw() routes the resample through SPBPcWarp
+    // (bicubic, premultiplied alpha, pre-filtered reduction). Returns false -> use the browser drawImage as before.
+    // window.SPB_PC_W3_OFF = true restores the old path exactly. `exact` = commit/bake (no live size budget).
+    function pcDraw(ctx, source, sx, sy, sw, sh, dx, dy, dw, dh, exact) {
+        const pc = (typeof window !== 'undefined') ? window.SPBPcWarp : (typeof globalThis !== 'undefined' ? globalThis.SPBPcWarp : null);
+        if (!pc || typeof pc.drawImage !== 'function') return false;
+        // TOOLS-FIX 2026-10-09 (QA defect 4): while a handle is being dragged the LIVE preview uses the cheap browser resample;
+        // bicubic runs for the settled preview and always for Apply (exact). Changes preview speed only, never the Apply result.
+        if (!exact && typeof freeTransformState !== 'undefined' && freeTransformState && freeTransformState.dragging && !window.SPB_TOOLSFIX_PREVIEW_HQ) return false;
+        try { return pc.drawImage(ctx, source, sx, sy, sw, sh, dx, dy, dw, dh, { maxPx: exact ? Infinity : pc.liveBudgetPx }); }
+        catch (_pcErr) { return false; }
+    }
+
+    function drawSourceRect(ctx, source, rect, sourceBbox, width, height, exact) {
         if (rect && Array.isArray(sourceBbox)) {
             const scaleX = Number(source.naturalWidth || source.width) / Math.max(1, sourceBbox[2] - sourceBbox[0]);
             const scaleY = Number(source.naturalHeight || source.height) / Math.max(1, sourceBbox[3] - sourceBbox[1]);
-            ctx.drawImage(source, (rect.x1 - sourceBbox[0]) * scaleX, (rect.y1 - sourceBbox[1]) * scaleY,
-                (rect.x2 - rect.x1) * scaleX, (rect.y2 - rect.y1) * scaleY,
-                -width / 2, -height / 2, width, height);
-        } else ctx.drawImage(source, -width / 2, -height / 2, width, height);
+            const sx = (rect.x1 - sourceBbox[0]) * scaleX, sy = (rect.y1 - sourceBbox[1]) * scaleY;
+            const sw = (rect.x2 - rect.x1) * scaleX, sh = (rect.y2 - rect.y1) * scaleY;
+            if (pcDraw(ctx, source, sx, sy, sw, sh, -width / 2, -height / 2, width, height, exact)) return;
+            ctx.drawImage(source, sx, sy, sw, sh, -width / 2, -height / 2, width, height);
+        } else {
+            const nw = Number(source.naturalWidth || source.width), nh = Number(source.naturalHeight || source.height);
+            if (nw > 0 && nh > 0 && pcDraw(ctx, source, 0, 0, nw, nh, -width / 2, -height / 2, width, height, exact)) return;
+            ctx.drawImage(source, -width / 2, -height / 2, width, height);
+        }
     }
 
     function drawTransformedSource(ctx, source, state) {
@@ -173,7 +194,7 @@
         if (radians) ctx.rotate(radians);
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
-        drawSourceRect(ctx, source, state.sourceRect || state.origSubRect, state.sourceBbox || state.origBbox, width, height);
+        drawSourceRect(ctx, source, state.sourceRect || state.origSubRect, state.sourceBbox || state.origBbox, width, height, !!state.exact);
         ctx.restore();
         return true;
     }
@@ -187,7 +208,7 @@
         canvas.width = w;
         canvas.height = h;
         const ctx = canvas.getContext && canvas.getContext('2d');
-        if (!ctx || !drawTransformedSource(ctx, state.origImg, state)) return null;
+        if (!ctx || !drawTransformedSource(ctx, state.origImg, Object.assign({}, state, { exact: true }))) return null;
         const rgba = ctx.getImageData(0, 0, w, h).data;
         const alpha = new Uint8Array(w * h);
         let nonZero = 0;
@@ -228,6 +249,7 @@
         composeElementTransforms,
         drawSourceRect,
         drawTransformedSource,
+        pcDraw,
         rasterizeTransformedAlpha,
         combineZoneMask,
     });

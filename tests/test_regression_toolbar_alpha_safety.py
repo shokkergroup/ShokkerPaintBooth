@@ -662,7 +662,7 @@ def test_toolbar_brush_label_and_layer_transform_failure_are_specific():
     assert "const reason = (typeof _diagnoseLayerPaintFail === 'function') ? _diagnoseLayerPaintFail() : null;" in transform_body
     assert "showToast(reason || 'Select an editable layer first', true);" in transform_body
     assert "const reason = (typeof _diagnoseLayerPaintFail === 'function') ? _diagnoseLayerPaintFail() : null;" in require_layer_body
-    assert "showToast(reason || `${toolName} needs an editable selected layer in LAYER mode`, 'warn');" in require_layer_body
+    assert "showToast(reason || `${toolName} needs an editable selected layer in Layer mode`, 'warn');" in require_layer_body
 
 
 def test_spatial_mode_legacy_helper_uses_real_erase_mode():
@@ -2294,8 +2294,8 @@ def test_render_results_labels_follow_actual_download_filenames():
     assert "const paintDownloadKey = downloadKeys.find(k => /^car_num_\\d+$/.test(k))" in render_result
     assert "|| downloadKeys.find(k => /^car_\\d+$/.test(k));" in render_result
     assert "const specDownloadKey = downloadKeys.find(k => /^car_spec_\\d+$/.test(k));" in render_result
-    assert "paintLabel.textContent = paintDownloadKey ? `PAINT (${paintDownloadKey}.tga)` : 'PAINT';" in render_result
-    assert "specLabel.textContent = specDownloadKey ? `SPEC MAP (${specDownloadKey}.tga)` : 'SPEC MAP';" in render_result
+    assert "paintLabel.textContent = paintDownloadKey ? `Paint (${paintDownloadKey}.tga)` : 'Paint';" in render_result
+    assert "specLabel.textContent = specDownloadKey ? `Spec map (${specDownloadKey}.tga)` : 'Spec map';" in render_result
 
 
 def test_render_results_escape_output_and_live_link_dynamic_html():
@@ -2405,11 +2405,11 @@ def test_change_file_live_flat_source_blocks_path_only_script_and_backup_tools()
 
     assert "const hasLiveFlatSource = !!(typeof window !== 'undefined' && window._spbFlatPaintLiveSource);" in script_generator
     assert "if (hasLiveFlatSource) {" in script_generator
-    assert "Python script export needs a real disk TGA Source Paint" in script_generator
+    assert "Script export needs a TGA Source Paint file on disk" in script_generator
     assert script_generator.index("if (hasLiveFlatSource)") < script_generator.index("if (!paintFile)")
 
     assert "window._spbFlatPaintLiveSource" in backup_helper
-    assert "Reset Source Backup needs a real disk Source Paint path" in backup_helper
+    assert "Reset Source Backup needs a Source Paint file on disk" in backup_helper
     assert backup_helper.index("window._spbFlatPaintLiveSource") < backup_helper.index("if (!paintFile)")
 
 

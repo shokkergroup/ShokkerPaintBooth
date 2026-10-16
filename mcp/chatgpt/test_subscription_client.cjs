@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict');
+const policy=require('./subscription-client.cjs');
+const original={Path:'same',CODEX_HOME:'owned',OPENAI_API_KEY:'secret',codex_api_key:'secret2',OPENAI_BASE_URL:'proxy',CODEX_ACCESS_TOKEN:'token'};
+assert.deepEqual(policy.cleanEnvironment(original),{Path:'same',CODEX_HOME:'owned'});
+assert.equal(original.OPENAI_API_KEY,'secret');
+const args=policy.execArguments({isolated:true,overrides:['-c','service_tier="fast"'],model:'gpt-6.1-sol',config:'mcp_servers={spb={required=true}}',prompt:'one question'});
+for(const value of ['--ignore-user-config','--ephemeral','read-only','forced_login_method="chatgpt"','model_provider="openai"','gpt-6.1-sol'])assert(args.includes(value));
+assert(!args.includes('--dangerously-bypass-approvals-and-sandbox'));
+assert(!args.includes('danger-full-access'));
+assert.equal(args.at(-1),'one question');
+const normal=policy.execArguments({config:'mcp_servers={}',prompt:'bounded'});
+assert(!normal.includes('--ignore-user-config'));assert(normal.includes('forced_login_method="chatgpt"'));
+console.log('PASS subscription environment filtering, caller immutability, forced ChatGPT/provider, explicit model, private ephemeral config isolation and read-only sandbox.');

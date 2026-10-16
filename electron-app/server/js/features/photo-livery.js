@@ -1,7 +1,7 @@
 /*
  * PHOTO-TO-LIVERY — bonus MEGA FEATURE (frontend panel)
  * -----------------------------------------------------
- * A small "📷 Photo → Livery" panel: pick ANY reference image (a sunset photo, a
+ * A small "Photo → Livery" panel: pick ANY reference image (a sunset photo, a
  * real race car, an album cover), POST it to /api/design-from-image, preview the
  * extracted palette, then APPLY the returned multi-zone config to the live editor.
  *
@@ -11,7 +11,7 @@
  * those globals exist (falling back to window.zones + renderZones()), and no-ops
  * gracefully if anything it needs is absent.
  *
- * Open the panel: click the floating "📷 Photo → Livery" button (bottom-right,
+ * Open the panel: click the floating "Photo → Livery" button (bottom-right,
  * just above the ✨ Design It button), or call window.SPBPhotoLivery.open() from
  * the console / a menu item.
  */
@@ -212,17 +212,17 @@
         .then(function (r) { return r.json(); })
         .then(function (data) { handleResult(data, out, btn); });
     }).catch(function (e) {
-      if (btn) { btn.disabled = false; btn.textContent = '📷 Build Livery'; }
-      if (out) out.textContent = '⚠ ' + e;
+      if (btn) { btn.disabled = false; btn.textContent = 'Build Livery'; }
+      if (out) out.textContent = '' + e;
       toast('Photo request error: ' + e);
     });
   }
 
   function handleResult(data, out, btn) {
-    if (btn) { btn.disabled = false; btn.textContent = '📷 Build Livery'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'Build Livery'; }
     if (!data || !data.ok) {
       var err = (data && data.error) || 'Design failed';
-      if (out) out.textContent = '⚠ ' + err;
+      if (out) out.textContent = '' + err;
       toast('Photo → Livery failed: ' + err);
       return;
     }
@@ -260,7 +260,7 @@
              'box-shadow:0 10px 40px rgba(0,0,0,.55);padding:14px;font:13px/1.4 system-ui,Segoe UI,sans-serif;display:none;'
     });
     var head = el('div', { style: 'display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;' }, [
-      el('div', { text: '📷 Photo → Livery', style: 'font-weight:700;font-size:14px;' }),
+      el('div', { text: 'Photo → Livery', style: 'font-weight:700;font-size:14px;' }),
       el('button', { id: 'spbPLClose', title: 'Close', text: '✕',
         style: 'background:none;border:none;color:#9aa;cursor:pointer;font-size:16px;' })
     ]);
@@ -278,7 +278,7 @@
              'background:#10141a;border:1px solid #23303a;' });
     var palette = el('div', { id: 'spbPLPalette',
       style: 'display:flex;gap:3px;margin-top:8px;min-height:6px;' });
-    var go = el('button', { id: 'spbPLGo', text: '📷 Build Livery',
+    var go = el('button', { id: 'spbPLGo', text: 'Build Livery',
       style: 'margin-top:10px;width:100%;padding:9px;border:none;border-radius:8px;cursor:pointer;' +
              'background:linear-gradient(90deg,#0f9b8e,#1ec8b0);color:#04201c;font-weight:800;font-size:13px;' });
     var out = el('pre', { id: 'spbPLOutput',
@@ -310,7 +310,7 @@
   function close() { var p = document.getElementById(PANEL_ID); if (p) p.style.display = 'none'; }
   function toggle() { var p = document.getElementById(PANEL_ID); if (p && p.style.display === 'block') close(); else open(); }
 
-  // NOTE (2026-06-13): the floating bottom-right "📷 Photo → Livery" FAB has
+  // NOTE (2026-06-13): the floating bottom-right "Photo → Livery" FAB has
   // been removed. The owner is moving these MEGA-FEATURE launchers into a
   // toolbar dropdown, so this module no longer self-injects a fixed-position
   // button on load. Open the panel via the public API instead:

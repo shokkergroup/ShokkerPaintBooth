@@ -1,0 +1,313 @@
+{
+ "v": 1,
+ "cars": [
+  {
+   "id": "claude-dirtumpmod",
+   "name": "dirtumpmod (draft)",
+   "folders": [
+    "dirtumpmod"
+   ],
+   "sigs": [],
+   "parts": {
+    "right side": {
+     "box": [
+      0.33,
+      0.265,
+      0.9,
+      0.58
+     ]
+    },
+    "left side": {
+     "box": [
+      0.29,
+      0.75,
+      0.85,
+      1.0
+     ]
+    },
+    "roof": {
+     "box": [
+      0.43,
+      0.495,
+      0.745,
+      0.745
+     ]
+    }
+   },
+   "learned": true,
+   "guess": true,
+   "sources": [
+    "claude-suggested"
+   ],
+   "n": 1,
+   "updated": "2026-10-02T17:22:17"
+  },
+  {
+   "id": "claude-protruckspro4truck",
+   "name": "protrucks pro4truck (draft)",
+   "folders": [
+    "protrucks pro4truck"
+   ],
+   "sigs": [],
+   "parts": {
+    "right side": {
+     "box": [
+      0.0,
+      0.0,
+      0.785,
+      0.29
+     ]
+    },
+    "left side": {
+     "box": [
+      0.0,
+      0.7,
+      0.785,
+      0.99
+     ]
+    },
+    "roof": {
+     "box": [
+      0.37,
+      0.335,
+      0.635,
+      0.64
+     ]
+    },
+    "hood": {
+     "box": [
+      0.64,
+      0.21,
+      0.935,
+      0.765
+     ]
+    }
+   },
+   "learned": true,
+   "guess": true,
+   "sources": [
+    "claude-suggested"
+   ],
+   "n": 1,
+   "updated": "2026-10-02T17:22:17"
+  },
+  {
+   "id": "claude-protruckspro2lite",
+   "name": "protrucks pro2lite (draft)",
+   "folders": [
+    "protrucks pro2lite"
+   ],
+   "sigs": [],
+   "parts": {
+    "right side": {
+     "box": [
+      0.0,
+      0.11,
+      0.745,
+      0.31
+     ]
+    },
+    "left side": {
+     "box": [
+      0.0,
+      0.795,
+      0.75,
+      1.0
+     ]
+    },
+    "roof": {
+     "box": [
+      0.395,
+      0.42,
+      0.62,
+      0.7
+     ]
+    },
+    "hood": {
+     "box": [
+      0.665,
+      0.3,
+      0.93,
+      0.82
+     ]
+    }
+   },
+   "learned": true,
+   "guess": true,
+   "sources": [
+    "claude-suggested"
+   ],
+   "n": 1,
+   "updated": "2026-10-02T17:22:17"
+  },
+  {
+   "id": "claude-legendsford34c",
+   "name": "legends ford34c (draft)",
+   "folders": [
+    "legends ford34c",
+    "legends dirtford34c"
+   ],
+   "sigs": [],
+   "parts": {
+    "right side": {
+     "box": [
+      0.33,
+      0.13,
+      0.78,
+      0.4
+     ]
+    },
+    "left side": {
+     "box": [
+      0.32,
+      0.61,
+      0.74,
+      0.87
+     ]
+    },
+    "roof": {
+     "box": [
+      0.4,
+      0.41,
+      0.69,
+      0.61
+     ]
+    }
+   },
+   "learned": true,
+   "guess": true,
+   "sources": [
+    "claude-suggested"
+   ],
+   "n": 1,
+   "updated": "2026-10-02T17:22:17"
+  },
+  {
+   "id": "claude-dirtsprintwinged360",
+   "name": "dirtsprint winged 360 (draft)",
+   "folders": [
+    "dirtsprint winged 360",
+    "dirtsprint winged 305",
+    "dirtsprint winged 410"
+   ],
+   "sigs": [],
+   "parts": {
+    "wing sideboards": {
+     "box": [
+      0.63,
+      0.685,
+      1.0,
+      1.0
+     ]
+    },
+    "tank": {
+     "box": [
+      0.43,
+      0.425,
+      0.635,
+      0.81
+     ]
+    },
+    "top wing": {
+     "box": [
+      0.38,
+      0.0,
+      1.0,
+      0.3
+     ]
+    }
+   },
+   "learned": true,
+   "guess": true,
+   "sources": [
+    "claude-suggested"
+   ],
+   "n": 1,
+   "updated": "2026-10-02T17:22:17"
+  },
+  {
+   "id": "claude-skmodified",
+   "name": "skmodified (draft)",
+   "folders": [
+    "skmodified",
+    "skmodified tour"
+   ],
+   "sigs": [],
+   "parts": {
+    "roof": {
+     "box": [
+      0.33,
+      0.46,
+      0.545,
+      0.69
+     ]
+    },
+    "right side": {
+     "box": [
+      0.0,
+      0.09,
+      0.64,
+      0.37
+     ]
+    },
+    "left side": {
+     "box": [
+      0.0,
+      0.78,
+      0.62,
+      1.0
+     ]
+    }
+   },
+   "learned": true,
+   "guess": true,
+   "sources": [
+    "claude-suggested"
+   ],
+   "n": 1,
+   "updated": "2026-10-02T17:22:17"
+  },
+  {
+   "id": "claude-dirtmodified358",
+   "name": "dirtmodified 358 (draft)",
+   "folders": [
+    "dirtmodified 358",
+    "dirtmodified bigblock"
+   ],
+   "sigs": [],
+   "parts": {
+    "right side": {
+     "box": [
+      0.16,
+      0.05,
+      0.74,
+      0.3
+     ]
+    },
+    "left side": {
+     "box": [
+      0.16,
+      0.575,
+      0.76,
+      0.84
+     ]
+    },
+    "roof": {
+     "box": [
+      0.5,
+      0.33,
+      0.72,
+      0.565
+     ]
+    }
+   },
+   "learned": true,
+   "guess": true,
+   "sources": [
+    "claude-suggested"
+   ],
+   "n": 1,
+   "updated": "2026-10-02T17:22:17"
+  }
+ ]
+}

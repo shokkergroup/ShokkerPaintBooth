@@ -1,0 +1,197 @@
+/* [S7 2026-10-12 owner: "MUST lose this vibecoded look"] Tool options bars + tool popovers.
+   Same @layer spb-skin as css/spb-skin-pro-20261012.css (layers merge across files; this file loads after it).
+   Tokens/rules: docs/UI_SKIN_2026-10-12.md. Kill switch: localStorage SPB_SKIN_OFF='1' (shared).
+   RULES FOR THIS FILE: never set `display` on anything JS toggles inline (labels/groups in the bars are shown/hidden per tool);
+   never set font-size on [data-pl]/[data-pld-i] icon buttons (font-size:0 + ::after label swap).
+   Bars = #spbToolRowTop (band above SOURCE / LIVE PREVIEW) + #toolOptionsBar (bar under the canvas). One control height (28px). */
+@layer spb-skin {
+
+/* ==S7A-BEGIN== tool option bars: containers, labels, values, fields, buttons ============================ */
+/* containers: one flat panel tone, one hairline, no gradient */
+html:not(.spb-skin-off) #spbToolRowTop { min-height: 36px !important; padding: 4px 8px !important; gap: 4px 10px !important; align-items: center !important; box-shadow: none !important; }
+html:not(.spb-skin-off) #toolOptionsBar { background: var(--sk-panel) !important; background-image: none !important; border: 0 !important;
+  border-radius: 0 !important; box-shadow: none !important; min-height: 36px !important; padding: 4px 8px !important; gap: 4px 10px !important; align-items: center !important; }
+html:not(.spb-skin-off) #toolSpecificOptions { gap: 4px 10px !important; align-items: center !important; }
+html:not(.spb-skin-off) #contextActionsBar { gap: 6px !important; align-items: center !important; }
+html:not(.spb-skin-off) :is(#toolSpecificOptions,#spbToolRowTop,#toolOptionsBar) > :is(span,label)[style*="margin-left"] { margin-left: 0 !important; }
+/* inline-flex groups (label + slider + value, label + number + unit ...): one 8px gap */
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) span[style*="gap"] { gap: 6px !important; align-items: center !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) .spb-tr-group { gap: 6px !important; align-items: center !important; }
+
+/* labels: 12px / 500 / sentence case, one neutral tone (inline gold/cyan/green label colours removed) */
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) label { font-size: 12px !important; font-weight: 500 !important; color: var(--sk-text-2) !important;
+  line-height: 16px !important; letter-spacing: 0 !important; text-transform: none !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) span:not(:has(*)):not([id$="Val"]) { font-size: 12px !important; font-weight: 500 !important; color: var(--sk-text-2) !important;
+  line-height: 16px !important; letter-spacing: 0 !important; text-transform: none !important; }
+/* units ("px"), hints (shortcuts) and slider read-outs are quieter than labels */
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) span[style*="#555"]:not(:has(*)) { font-size: 11px !important; font-weight: 400 !important; color: var(--sk-text-3) !important; margin-left: -4px !important; }
+html:not(.spb-skin-off) :is(#toolOptionsBar,#spbToolRowTop) span[id$="Hint"]:not(:has(*)) { font-size: 11px !important; font-weight: 400 !important; color: var(--sk-text-2) !important; font-style: normal !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) span[id$="Val"] { font-size: 11px !important; font-weight: 400 !important; color: var(--sk-text-2) !important; line-height: 16px !important;
+  font-variant-numeric: tabular-nums !important; width: auto !important; min-width: 30px !important; text-align: right !important; }
+/* label + checkbox: a real gap, checkbox centred on the text */
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) label > input[type="checkbox"] { margin: 0 6px 0 0 !important; vertical-align: -3px !important; cursor: pointer !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) label:has(> input[type="checkbox"]) { cursor: pointer !important; white-space: nowrap !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) label:has(> #textBold) { font-weight: 700 !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) label:has(> #textItalic) { font-style: italic !important; color: var(--sk-text) !important; }
+
+/* fields: one height, one tone */
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) :is(select,input[type="number"],input[type="text"]) { height: var(--sk-h) !important; min-height: var(--sk-h) !important;
+  box-sizing: border-box !important; border-radius: var(--sk-r) !important; font-size: 12px !important; font-weight: 500 !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) :is(input[type="number"],input[type="text"]) { background-color: var(--sk-field) !important; border: 1px solid var(--sk-line-2) !important;
+  padding: 0 6px 0 8px !important; font-variant-numeric: tabular-nums !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) input[type="number"] { width: 52px !important; padding: 0 2px 0 8px !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) input[type="text"]#fgHexInput { width: 64px !important; font-family: var(--sk-mono) !important; font-weight: 400 !important; letter-spacing: 0 !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) :is(input[type="number"],input[type="text"]):hover { border-color: var(--sk-line-3) !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) :is(input[type="number"],input[type="text"],select):focus-visible { outline: none !important; border-color: var(--sk-accent) !important; box-shadow: 0 0 0 1px var(--sk-accent) !important; }
+/* number steppers stay clickable but only show on hover / focus (calm fields) */
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) input[type="number"]::-webkit-inner-spin-button { opacity: 0 !important; margin-left: 0 !important; width: 12px !important; cursor: pointer !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) input[type="number"]:hover::-webkit-inner-spin-button,
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) input[type="number"]:focus::-webkit-inner-spin-button { opacity: .8 !important; }
+/* sliders: one length */
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) input[type="range"] { width: 60px !important; flex: 0 0 60px !important; }
+
+/* buttons: 28px ghost-on-raised, 12px/500; icon buttons square */
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) button { height: var(--sk-h) !important; min-height: var(--sk-h) !important; box-sizing: border-box !important; padding: 0 10px !important;
+  border-radius: var(--sk-r) !important; border: 1px solid var(--sk-line-2) !important; background-color: var(--sk-raised) !important; background-image: none !important; color: var(--sk-text) !important;
+  box-shadow: none !important; line-height: 1 !important; letter-spacing: 0 !important; text-transform: none !important; cursor: pointer; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) button:not([data-pld-i]):not([data-pl]) { font-size: 12px !important; font-weight: 500 !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) button:hover { background-color: var(--sk-hover) !important; border-color: var(--sk-line-3) !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) button:is([aria-pressed="true"],[aria-expanded="true"],.active) { background-color: var(--sk-accent-soft) !important; border-color: var(--sk-accent-line) !important; color: var(--sk-accent-hi) !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) button:focus-visible { outline: none !important; box-shadow: var(--sk-ring) !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) button:is([data-pld-i],.spb-tf-more) { padding: 0 !important; min-width: var(--sk-h) !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) button:is([data-pld-i],.spb-tf-more) { width: var(--sk-h) !important; }
+html:not(.spb-skin-off) #toolOptionsBar .spb-tf-more { width: 32px !important; min-width: 32px !important; }
+html:not(.spb-skin-off) #toolOptionsBar .context-action-btn { padding: 0 8px !important; }
+/* "Pick Color / Click any color ..." empty-state strip: name in text tone, tip in secondary tone, both 12px */
+html:not(.spb-skin-off) #spbToolRowTop.spb-tr-empty::before { font-size: 12px !important; font-weight: 600 !important; color: var(--sk-text) !important; line-height: 16px !important; letter-spacing: 0 !important; text-transform: none !important; }
+html:not(.spb-skin-off) #spbToolRowTop.spb-tr-empty::after { font-size: 12px !important; font-weight: 400 !important; color: var(--sk-text-2) !important; line-height: 16px !important; }
+/* ==S7A-END== */
+
+/* ==S7B-BEGIN== colour fields, FG/BG pair, stroke-highlight control, dynamics / mirror buttons ============== */
+/* every colour field in the bars + layer panel: 28px square well, inset swatch with a faint edge (black swatches stay visible) */
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar,.layer-row-details) input[type="color"] { width: 28px !important; height: 28px !important; min-width: 28px !important; padding: 3px !important;
+  box-sizing: border-box !important; border: 1px solid var(--sk-line-2) !important; border-radius: var(--sk-r) !important; background: var(--sk-field) !important; cursor: pointer !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar,.layer-row-details) input[type="color"]:hover { border-color: var(--sk-line-3) !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar,.layer-row-details) input[type="color"]::-webkit-color-swatch-wrapper { padding: 0 !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar,.layer-row-details) input[type="color"]::-webkit-color-swatch { border: 1px solid rgba(255,255,255,.22) !important; border-radius: 3px !important; }
+/* FG / BG: FG label, FG well, FG hex, BG label, BG well, then the three small buttons. The 16px FG dot only mirrored the FG well (same click), so it is folded away */
+html:not(.spb-skin-off) #colorBrushOptions { gap: 4px !important; align-items: center !important; }
+html:not(.spb-skin-off) #colorBrushOptions > span:first-child { order: 1; }
+html:not(.spb-skin-off) #colorBrushOptions > #fgColorPicker { order: 2; }
+html:not(.spb-skin-off) #colorBrushOptions > #fgHexInput { order: 3; }
+html:not(.spb-skin-off) #colorBrushOptions > #fgColorSwatch { display: none !important; }
+html:not(.spb-skin-off) #colorBrushOptions > #fgColorSwatch + span { order: 4; margin-left: 4px; }
+html:not(.spb-skin-off) #colorBrushOptions > #bgColorSwatch { order: 5; width: 28px !important; height: 28px !important; box-sizing: border-box !important; border: 1px solid var(--sk-line-2) !important; border-radius: var(--sk-r) !important; flex: 0 0 28px; }
+html:not(.spb-skin-off) #colorBrushOptions > button { order: 6; }
+html:not(.spb-skin-off) #colorBrushOptions > #colorSwatchBar { order: 7; }
+/* live stroke highlight (S1, js/canvas/pc-strokehl.js): same field language as its neighbours, a hairline group divider instead of a floating box */
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) #strokeHlLabel { margin-left: 0 !important; padding-left: 12px !important; border-left: 1px solid var(--sk-line-2) !important; gap: 8px !important; min-height: var(--sk-h) !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) #strokeHlLabel > label { gap: 6px !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) #strokeHlLabel label > input[type="checkbox"] { margin: 0 !important; vertical-align: middle !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) #strokeHlLabel label > span { font-size: 12px !important; font-weight: 500 !important; color: var(--sk-text-2) !important; line-height: 16px !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) #strokeHlClear { font-size: 0 !important; width: var(--sk-h) !important; min-width: var(--sk-h) !important; padding: 0 !important; color: var(--sk-text-2) !important; position: relative; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) #strokeHlClear::after { content: "\00d7"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 400; line-height: 1; color: var(--sk-text-2); }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) #strokeHlClear:hover::after { color: var(--sk-text); }
+/* ==S7B-END== */
+
+/* ==S7C-BEGIN== right Layers panel: layer-row-details (opacity / blend / mask / HSB / overlay), one 24px control height ============= */
+html:not(.spb-skin-off) .layer-row-details { gap: 6px 4px !important; padding: 8px 8px 8px 8px !important; }
+html:not(.spb-skin-off) .layer-row-details > div:not(.tlay2-actions):not(.tlay2-hint):not(.spb-lm-row) { margin-bottom: 0 !important; min-height: 24px !important; align-items: center !important; gap: 8px !important; }
+/* label column: one 52px column, 11px/500 text-2 (was 8-10px / #888 / 400) */
+html:not(.spb-skin-off) .layer-row-details > div > span:first-child:not(:has(*)) { flex: 0 0 52px !important; min-width: 52px !important; width: 52px !important; font-size: 11px !important; font-weight: 500 !important; color: var(--sk-text-2) !important; line-height: 16px !important; letter-spacing: 0 !important; text-transform: none !important; }
+/* value read-outs: 11px tabular, right-aligned in one 32px column */
+html:not(.spb-skin-off) .layer-row-details > div > span:not(:first-child):not(:has(*)) { font-size: 11px !important; font-weight: 400 !important; color: var(--sk-text-2) !important; line-height: 16px !important; font-variant-numeric: tabular-nums !important; min-width: 32px !important; text-align: right !important; }
+html:not(.spb-skin-off) .layer-row-details > div:nth-child(1) > span:last-child { min-width: 12px !important; width: 12px !important; text-align: left !important; color: var(--sk-text-3) !important; margin-left: -4px !important; }
+html:not(.spb-skin-off) .layer-row-details > div:nth-child(3) > span:last-child { min-width: 0 !important; text-align: left !important; }
+/* sliders fill the row; fields are 24px */
+html:not(.spb-skin-off) .layer-row-details input[type="range"] { flex: 1 1 0 !important; width: auto !important; min-width: 40px !important; }
+html:not(.spb-skin-off) .layer-row-details :is(select,input[type="number"]) { height: var(--sk-h-sm) !important; min-height: var(--sk-h-sm) !important; box-sizing: border-box !important; border-radius: var(--sk-r) !important;
+  font-size: 12px !important; font-weight: 500 !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) .layer-row-details input[type="number"] { width: 48px !important; flex: 0 0 48px !important; padding: 0 2px 0 8px !important; border: 1px solid var(--sk-line-2) !important; background-color: var(--sk-field) !important; font-variant-numeric: tabular-nums !important; }
+html:not(.spb-skin-off) .layer-row-details input[type="number"]::-webkit-inner-spin-button { opacity: 0 !important; cursor: pointer !important; width: 12px !important; }
+html:not(.spb-skin-off) .layer-row-details input[type="number"]:hover::-webkit-inner-spin-button,
+html:not(.spb-skin-off) .layer-row-details input[type="number"]:focus::-webkit-inner-spin-button { opacity: .8 !important; }
+html:not(.spb-skin-off) .layer-row-details select { flex: 1 1 auto !important; width: auto !important; }
+html:not(.spb-skin-off) .layer-row-details > div:has(> input[type="color"]) > span:last-child { margin-right: 32px !important; }
+/* the overlay colour well follows the 24px panel height */
+html:not(.spb-skin-off) .layer-row-details input[type="color"] { width: 24px !important; height: 24px !important; min-width: 24px !important; flex: 0 0 24px !important; padding: 2px !important; }
+/* + Mask / Hide all / From sel: one 24px ghost button each, 11px/500, equal widths */
+html:not(.spb-skin-off) .layer-row-details .layer-act-btn { height: var(--sk-h-sm) !important; min-height: var(--sk-h-sm) !important; padding: 0 8px !important; font-size: 11px !important; font-weight: 500 !important; line-height: 1 !important;
+  border-radius: var(--sk-r) !important; border: 1px solid var(--sk-line-2) !important; background: var(--sk-raised) !important; color: var(--sk-text) !important; box-shadow: none !important; }
+html:not(.spb-skin-off) .layer-row-details .layer-act-btn:hover { background: var(--sk-hover) !important; border-color: var(--sk-line-3) !important; }
+/* per-slider reset arrow: 24px ghost icon button (icon comes from the data-pld-i ::after; font-size untouched) */
+html:not(.spb-skin-off) .layer-row-details button[data-pld-i="undo"] { width: var(--sk-h-sm) !important; height: var(--sk-h-sm) !important; min-width: var(--sk-h-sm) !important; padding: 0 !important; border: 1px solid transparent !important; background: transparent !important; border-radius: var(--sk-r) !important; box-shadow: none !important; }
+html:not(.spb-skin-off) .layer-row-details button[data-pld-i="undo"]:hover { background: var(--sk-hover) !important; border-color: var(--sk-line-2) !important; }
+/* hint line + the layer lock glyph (an orange emoji) */
+html:not(.spb-skin-off) .layer-row-details .tlay2-hint { font-size: 11px !important; color: var(--sk-text-3) !important; margin-top: 2px !important; line-height: 1.35 !important; }
+html:not(.spb-skin-off) .layer-lock-toggle { filter: grayscale(1) opacity(.8) !important; }
+html:not(.spb-skin-off) .layer-lock-toggle:hover { filter: grayscale(1) !important; }
+/* ==S7C-END== */
+
+/* ==S7D-BEGIN== S1 controls (zone-coverage chip + checkbox, restrict-to-layers list) and the Layer Transform quickbar ===================== */
+/* zone-coverage chip on SOURCE: calm label, 6px radius, no weight. JS sets border-color / left / top / transform inline, so none of those are touched. */
+html:not(.spb-skin-off) #zoneCovChip { font: 500 11px/16px var(--sk-font) !important; color: var(--sk-text) !important; background: rgba(24,27,32,.94) !important;
+  border-width: 1px !important; border-style: solid !important; border-radius: var(--sk-r) !important; padding: 2px 8px !important; font-variant-numeric: tabular-nums !important; box-shadow: none !important; }
+/* "Show what this zone covers on Source" checkbox row */
+html:not(.spb-skin-off) label:has(> input.spb-zonecov-toggle) { gap: 8px !important; font-size: 11px !important; font-weight: 500 !important; line-height: 16px !important; color: var(--sk-text-2) !important; margin-bottom: 6px !important; }
+html:not(.spb-skin-off) label:has(> input.spb-zonecov-toggle) > span { font-size: 11px !important; font-weight: 500 !important; color: var(--sk-text-2) !important; }
+/* Restrict to layers (zone editor): neutral panel instead of a cyan-tinted box; names 500, group in text-3 */
+html:not(.spb-skin-off) div[style*="rgba(0,229,255,0.05)"] { background: var(--sk-raised) !important; border: 1px solid var(--sk-line) !important; border-radius: var(--sk-r) !important; padding: 8px !important; }
+html:not(.spb-skin-off) div[style*="rgba(0,229,255,0.05)"] > div:first-child { font-size: 11px !important; font-weight: 600 !important; letter-spacing: 0 !important; text-transform: none !important; color: var(--sk-text) !important; margin-bottom: 6px !important; }
+html:not(.spb-skin-off) label:has(> input[onchange*="toggleZoneSourceLayer"]) { font-size: 11px !important; line-height: 16px !important; gap: 8px !important; padding: 2px 2px !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) label:has(> input[onchange*="toggleZoneSourceLayer"]) > span { font-weight: 500 !important; }
+html:not(.spb-skin-off) label:has(> input[onchange*="toggleZoneSourceLayer"]) > span > span { font-weight: 400 !important; color: var(--sk-text-3) !important; }
+html:not(.spb-skin-off) div[style*="rgba(0,229,255,0.05)"] > div[style*="font-size:9px"] { font-size: 11px !important; line-height: 16px !important; margin-top: 6px !important; }
+
+/* Layer Transform quickbar (position / display are JS-owned and left alone): neutral panel, one control height, no coloured buttons */
+html:not(.spb-skin-off) #layerTransformQuickbar { gap: 8px !important; padding: 6px 8px !important; border-radius: 8px !important; border: 1px solid var(--sk-line-2) !important; background: var(--sk-panel) !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,.45) !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+html:not(.spb-skin-off) #layerTransformQuickbarLabel { font-size: 12px !important; font-weight: 600 !important; letter-spacing: 0 !important; color: var(--sk-text) !important; padding-right: 4px !important; }
+html:not(.spb-skin-off) #layerTransformQuickbar > button { height: var(--sk-h) !important; min-height: var(--sk-h) !important; padding: 0 10px !important; font: 500 12px/1 var(--sk-font) !important; border-radius: var(--sk-r) !important;
+  border: 1px solid var(--sk-line-2) !important; background: var(--sk-raised) !important; color: var(--sk-text) !important; box-shadow: none !important; cursor: pointer !important; }
+html:not(.spb-skin-off) #layerTransformQuickbar > button:hover { background: var(--sk-hover) !important; border-color: var(--sk-line-3) !important; }
+html:not(.spb-skin-off) #layerTransformQuickbar > button:focus-visible { outline: none !important; box-shadow: var(--sk-ring) !important; }
+/* Apply = the one accent action here (cyan = active); Cancel stays neutral, danger tone on hover only */
+html:not(.spb-skin-off) #layerTransformQuickbar > button[onclick*="commitLayerTransform"] { background: var(--sk-accent-soft) !important; border-color: var(--sk-accent-line) !important; color: var(--sk-accent-hi) !important; }
+html:not(.spb-skin-off) #layerTransformQuickbar > button[onclick*="commitLayerTransform"]:hover { background: var(--sk-accent-soft) !important; border-color: var(--sk-accent) !important; }
+html:not(.spb-skin-off) #layerTransformQuickbar > button[onclick*="cancelActiveTransformSession"]:hover { color: #f08a8a !important; border-color: rgba(240,138,138,.45) !important; }
+/* live readout (Rot / Scale / Pos), badges and the Smart Text Pick toggle */
+html:not(.spb-skin-off) #layerTransformQuickbarNumerics { font-size: 11px !important; color: var(--sk-text-2) !important; gap: 12px !important; margin-left: 4px !important; font-variant-numeric: tabular-nums !important; }
+html:not(.spb-skin-off) #layerTransformQuickbarNumerics b { font-weight: 600 !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) #layerTransformQuickbarNumerics > span[style*="background"] { font-size: 10px !important; font-weight: 500 !important; padding: 1px 6px !important; border-radius: 4px !important; background: var(--sk-raised) !important; color: var(--sk-text-2) !important; border: 1px solid var(--sk-line-2) !important; }
+html:not(.spb-skin-off) #layerTransformQuickbarNumerics > span[style*="color:#a5f3fc"], html:not(.spb-skin-off) #layerTransformQuickbarNumerics > span[style*="color:#67e8f9"] { color: var(--sk-text-2) !important; font-size: 11px !important; }
+html:not(.spb-skin-off) #layerTransformQuickbarNumerics input { height: 22px !important; font-size: 11px !important; border-radius: 4px !important; border: 1px solid var(--sk-accent-line) !important; background: var(--sk-field) !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) #layerSmartTextToggle { font-size: 11px !important; gap: 8px !important; }
+html:not(.spb-skin-off) #layerSmartTextToggle > span { color: var(--sk-text-2) !important; }
+html:not(.spb-skin-off) #layerSmartTextToggle > button { height: 22px !important; font-size: 11px !important; font-weight: 500 !important; padding: 0 8px !important; border-radius: 4px !important; background: var(--sk-raised) !important; color: var(--sk-text) !important; border: 1px solid var(--sk-line-2) !important; }
+html:not(.spb-skin-off) #layerSmartTextToggle > button[style*="#166534"] { background: var(--sk-accent-soft) !important; border-color: var(--sk-accent-line) !important; color: var(--sk-accent-hi) !important; }
+/* ==S7D-END== */
+
+/* ==S7E-BEGIN== brush Dynamics popover (js/canvas/tfx3-dynamics.js): same radius / line / type scale as every other popover ===================== */
+html:not(.spb-skin-off) #spbTfx3DynPop { background: var(--sk-panel) !important; border: 1px solid var(--sk-line-2) !important; border-radius: 8px !important; box-shadow: 0 10px 28px rgba(0,0,0,.5) !important; padding: 12px !important; font-family: var(--sk-font) !important; }
+html:not(.spb-skin-off) #spbTfx3DynPop h4 { font-size: 12px !important; font-weight: 600 !important; opacity: 1 !important; color: var(--sk-text) !important; margin: 0 0 8px !important; }
+html:not(.spb-skin-off) #spbTfx3DynPop .sec { font-size: 11px !important; font-weight: 600 !important; letter-spacing: 0 !important; text-transform: none !important; opacity: 1 !important; color: var(--sk-text-3) !important; margin: 12px 0 2px !important; }
+html:not(.spb-skin-off) #spbTfx3DynPop .chips { gap: 6px !important; }
+html:not(.spb-skin-off) #spbTfx3DynPop .chip { height: var(--sk-h-sm) !important; padding: 0 10px !important; font-size: 11px !important; font-weight: 500 !important; border-radius: var(--sk-r) !important; border: 1px solid var(--sk-line-2) !important; background: var(--sk-raised) !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) #spbTfx3DynPop .chip:hover { background: var(--sk-hover) !important; border-color: var(--sk-line-3) !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) #spbTfx3DynPop .chip.on { background: var(--sk-accent-soft) !important; border-color: var(--sk-accent-line) !important; color: var(--sk-accent-hi) !important; }
+html:not(.spb-skin-off) #spbTfx3DynPop .sl label { font-size: 11px !important; font-weight: 500 !important; opacity: 1 !important; color: var(--sk-text-2) !important; }
+html:not(.spb-skin-off) #spbTfx3DynPop .sl output { font-size: 11px !important; opacity: 1 !important; color: var(--sk-text-2) !important; font-variant-numeric: tabular-nums !important; }
+html:not(.spb-skin-off) #spbTfx3DynPop canvas { border: 1px solid var(--sk-line-2) !important; border-radius: var(--sk-r) !important; background: var(--sk-field) !important; }
+html:not(.spb-skin-off) #spbTfx3DynPop button.b { height: var(--sk-h-sm) !important; padding: 0 10px !important; font-size: 11px !important; font-weight: 500 !important; border-radius: var(--sk-r) !important; border: 1px solid var(--sk-line-2) !important; background: var(--sk-raised) !important; color: var(--sk-text) !important; }
+html:not(.spb-skin-off) #spbTfx3DynPop button.b:hover { background: var(--sk-hover) !important; border-color: var(--sk-line-3) !important; }
+html:not(.spb-skin-off) #spbTfx3DynPop .hint { font-size: 11px !important; opacity: 1 !important; color: var(--sk-text-3) !important; line-height: 1.4 !important; }
+/* ==S7E-END== */
+
+/* ==S7F-BEGIN== width budget (Priority+ "..." must not swallow FG/BG, Erase, Highlight at 1920): label - slider - value triplets sit tight, 6px group gap ============= */
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) #toolSpecificOptions { column-gap: 6px !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) #toolSpecificOptions > input[type="range"] { margin-left: -2px !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) #toolSpecificOptions > span[id$="Val"] { margin-left: -4px !important; min-width: 24px !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) { column-gap: 8px !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) #spbSymToggle { padding: 0 8px !important; gap: 4px !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) #colorSwatchBar:empty { margin-left: -6px !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) { padding-inline: 6px !important; }
+html:not(.spb-skin-off) :is(#spbToolRowTop,#toolOptionsBar) input[type="text"]#fgHexInput { padding: 0 4px 0 6px !important; }
+/* ==S7F-END== */
+
+}

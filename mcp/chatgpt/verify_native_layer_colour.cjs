@@ -1,0 +1,22 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../..'),dir=path.join(root,'_codex_mcp_work/chatgpt-dev/59910'),projects=path.join(root,'_release_evidence/chatgpt-dev/59910/projects');
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),digest=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+const names=['paint-arca-fx-undo-settled-pre-2026-10-10T00-49-24-614Z.json','paint-arca-fx-undo-settled-post-2026-10-10T00-49-47-255Z.json','paint-arca-fx-undo-settled-undo-2026-10-10T00-49-59-410Z.json'];
+const rs=names.map(n=>read(path.join(dir,n))),ss=rs.map(r=>JSON.parse(r.calls.find(c=>c.tool==='spb_get_state').text));
+const images=r=>r.images.map(i=>({name:i.name,hash:digest(path.join(dir,i.file))}));
+assert.equal(ss[0].layers.length,42);assert.equal(ss[0].zones.length,5);
+assert.deepEqual(ss[0].zones,ss[1].zones);assert.deepEqual(ss[0].zones,ss[2].zones);
+assert.deepEqual(ss[0].layers,ss[2].layers);assert.deepEqual(images(rs[0]),images(rs[2]));
+assert.notEqual(images(rs[0])[0].hash,images(rs[1])[0].hash);assert.deepEqual(images(rs[0]).at(-1),images(rs[1]).at(-1));
+const changed=ss[0].layers.filter((l,i)=>JSON.stringify(l)!==JSON.stringify(ss[1].layers[i]));assert.deepEqual(changed.map(l=>l.id),['psd_0']);
+assert.deepEqual(ss[1].layers.find(l=>l.id==='psd_0').colour_overlay,{blend:'source-over',colour:'#c8102e',enabled:true,opacity:100});
+const projectNames=['ARCA exact-layer baseline - private59910.spbproj','ARCA native colour after choice - private59910.spbproj','ARCA native colour Undo - private59910.spbproj','ARCA native colour Undo successor - private59910.spbproj'];
+const [before,after,failed,undo]=projectNames.map(n=>read(path.join(projects,n)));
+assert.deepEqual(before.config.zones,after.config.zones);assert.deepEqual(before.layers,undo.layers);assert.deepEqual(before.config.zones,undo.config.zones);
+const changedSaved=before.layers.filter((l,i)=>JSON.stringify(l)!==JSON.stringify(after.layers[i]));assert.equal(changedSaved.length,1);
+for(let i=0;i<42;i++){const a={...before.layers[i]},b={...after.layers[i]};delete a.effects;delete b.effects;assert.deepEqual(a,b);}
+assert.equal(failed.layers[0].effects.colorOverlay.enabled,true,'Preserve original native false-success Undo failure');
+const checked_at=new Date().toISOString(),receipt='native-layer-colour-'+checked_at.replace(/[:.]/g,'-')+'.json';
+const report={pass:true,checked_at,receipts:names,projects:projectNames.map(n=>({name:n,sha256:digest(path.join(projects,n))})),actual_body_ID:'psd_0',actual_layers:42,unchanged_zones:5,saved_rasters_exact:42,other_saved_layer_records_exact:41,native_Undo_saved_layers_zones_exact:true,native_Undo_preview_bytes_exact:true,spec_preview_bytes_exact:true,failed_native_Undo_retained:true,authentication:'Offline Helper; no model inference',limits:'Gray masks and visible decals reviewed in cached JPEG. No full-resolution/export/UV geometry proof, model parity, production promotion or customer52 gate.',candidate_manifest:read(path.join(__dirname,'candidates/sources.json'))};
+fs.writeFileSync(path.join(dir,receipt),JSON.stringify(report,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify({pass:true,receipt,rasters_exact:42,zones_exact:5,native_Undo_exact:true,spec_preview_exact:true}));

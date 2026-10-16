@@ -1,0 +1,87 @@
+{
+  "js/spb-pro-zone-kit.js": {
+    "review": "Owner CX3 promoted shared findings; preserve executable semantics and kill switch. Behavioral acceptance required after refresh.",
+    "functions": {
+      "findLayer": "ffcb6086d543f4a29f50ad81fa7b5a5d0cfa2484683972ff4a84fc72319683f5"
+    },
+    "skip_indices": [
+      0
+    ],
+    "base_edit_count": 1
+  },
+  "js/spb-pro-edit.js": {
+    "review": "Owner CX3 promoted shared findings; preserve executable semantics and kill switch. Behavioral acceptance required after refresh.",
+    "functions": {
+      "withLayerIds": "c643dac8ab6dce502adf5ebcba63e12d06f22557b0b2687a86bad14248d7fc1f",
+      "layerScope": "de48e35b0f93c42e66b8a63ff54d602b26dfff38aaf688dc4d51e396f00ef2cb"
+    },
+    "skip_indices": [
+      0,
+      1,
+      2
+    ],
+    "base_edit_count": 5,
+    "fragments": [
+      "            if (region && region.layers && !window.SPB_CX3_OFF && window.SpbLayerTargets) {          // CX3 2026-10-09: bind to ONE exact layer (id when the name repeats); never the first same-named layer\n                var exact3 = region.layers.map(function (ref3) { return window.SpbLayerTargets.resolve(ref3, layers); });\n                if (exact3.some(function (x3) { return !x3.ok; })) { ask = { text: 'Choose the exact group and layer before applying this change. Nothing has changed.', chips: [] }; missing.push({ why: 'ambiguous-layer' }); return; }\n                region.layers = exact3.map(function (x3) { return x3.selector; });\n            }\n"
+    ]
+  },
+  "js/spb-intent-report.js": {
+    "review": "Owner CX3 promoted shared findings; preserve executable semantics and kill switch. Behavioral acceptance required after refresh.",
+    "functions": {
+      "layerLabel": "385ef245f98765b2e4c5804c099ba50dd71dd53246609283792cc4f1926b0808",
+      "scopeOf": "0199af435b6c56a9cac0cf277d0197b973d64df8aadc9262a5000d8d15ecbf50",
+      "scopeWords": "fa50c7e8cc2b45f799766019fa9804cd05ef7ac549b794cae4717f324c6a3684",
+      "claimLine": "9ba60bd20bdc3279f9d1097a0f3c312ab48611834d829571fefb9e3431c053cf"
+    },
+    "skip_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "js/spb-pro-carmap.js": {
+    "review": "Owner CX3 promoted shared findings; preserve executable semantics and kill switch. Behavioral acceptance required after refresh.",
+    "functions": {
+      "roleOf": "f166fbf76d207fbefe225c5d2149e09785352505c8bf41f79da8cb8496ec3e87",
+      "roles": "18f4b10f2980a07dd3e676149c7e023d8b5e48e6c62fcb016843fb412e21ad3b"
+    },
+    "skip_indices": [
+      0,
+      1
+    ],
+    "base_edit_count": 2
+  },
+  "js/spb-pbn.js": {
+    "review": "Owner CX3 promoted shared findings; preserve executable semantics and kill switch. Behavioral acceptance required after refresh.",
+    "functions": {
+      "draw": "073683ad4ee74466cae4ef895f56eb213c75e4fde075c8558cae228953d646c9"
+    },
+    "skip_indices": [
+      2,
+      3
+    ],
+    "base_edit_count": 5
+  },
+  "js/spb-mcp-bridge.js": {
+    "review": "Owner CX3 promoted shared findings; preserve executable semantics and kill switch. Behavioral acceptance required after refresh.",
+    "functions": {
+      "stopPolling": "09120ee289cf0e75628952eb5273d690425363b314e2215114efc2eb6d8127fb",
+      "pollFetch": "ecd325e72365809be3c7ba5ca72d0ec53367dbf76179fec7181d5eb83eae794e",
+      "loop": "3c8321f75561603dc958ee35cafcba7de7a235e6ab2037b0c4603815f29f5d03",
+      "start": "a9dd15ff270d3b00f1c628d37ff797dcc410e1e31da12a6026e031d83ffdee5d",
+      "setEnabled": "942c7260a53ec164c85ebaf007e985505744840c4bc6ae03d99a315e9a523843"
+    },
+    "skip_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "base_edit_count": 6
+  }
+}

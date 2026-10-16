@@ -5,6 +5,21 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    // PORT-W1 (2026-10-09, owner: "our tools basically SUCK"): the flood now
+    // runs through SPBPcSelection.wandRegion, ported from PhotoCraft
+    // crates/algo/src/selection.rs (span fill, Chebyshev R,G,B,A <= tolerance,
+    // 4-connected - same semantics as before) with PhotoCraft's geometric 3x3
+    // edge anti-alias (0.5 + 0.5*avg) in place of the old colour-distance halo,
+    // which grew the selection outward and capped at alpha 192. window.SPB_PC_W1_OFF
+    // = true restores the legacy flood + halo below exactly.
+    const G = typeof window !== 'undefined' ? window : globalThis;
+    function pcCore() {
+        if (G.SPB_PC_W1_OFF) return null;
+        if (G.SPBPcSelection) return G.SPBPcSelection;
+        try { if (typeof require === 'function') return require('../pc-selection-core.js'); } catch (e) { /* legacy path */ }
+        return null;
+    }
+
     function clampInt(value, min, max) {
         return Math.max(min, Math.min(max, Math.round(Number(value) || 0)));
     }
@@ -58,6 +73,14 @@
         const seedY = clampInt(seedYValue, 0, height - 1);
         const tolerance = clampInt(opts.tolerance, 0, 255);
         const sample = sampleColor(rgba, width, height, seedX, seedY, opts.sampleSize);
+        const pc = pcCore();
+        if (pc) {
+            const pcRegion = pc.wandRegion(rgba, width, height, seedX, seedY, {
+                tolerance, contiguous: opts.contiguous !== false, antiAlias: opts.antiAlias !== false,
+                target: { r: sample.r, g: sample.g, b: sample.b, a: sample.a },
+            });
+            return { regionMask: pcRegion.mask, sample, tolerance };
+        }
         const region = new Uint8Array(width * height);
         const matches = function (index) { return colorDistance(rgba, index, sample) <= tolerance; };
 

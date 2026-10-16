@@ -21,8 +21,11 @@
             const scale = Math.min(size / width, size / height), dw = width * scale, dh = height * scale;
             try {
                 const filter = root.SPBLayerClippingMask?.adjustFilterFor?.(layer);
-                if (filter) ctx.filter = filter;
-                ctx.drawImage(layer.img, 0, 0, layer.img.width || width, layer.img.height || height, (size - dw) / 2, (size - dh) / 2, dw, dh);
+                // [SPB-TLAY2 2026-10-10 L2-3] thumbnail shows the same baked Hue/Sat copy as the canvas (js/canvas/tlay2-hsb.js); SPB_TLAY2_OFF -> old CSS filter.
+                const t2h = root.SPBTlay2Hsb?.baked?.(layer) || null;
+                if (filter && !t2h) ctx.filter = filter;
+                const t2s = t2h || layer.img;
+                ctx.drawImage(t2s, 0, 0, t2s.width || width, t2s.height || height, (size - dw) / 2, (size - dh) / 2, dw, dh);
             } catch (_) { /* Preserve the checkerboard if the image is not drawable. */ }
             ctx.filter = 'none';
             cache.set(layer.id, { img: layer.img, key, canvas: off });

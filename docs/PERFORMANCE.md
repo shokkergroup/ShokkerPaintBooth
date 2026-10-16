@@ -92,12 +92,12 @@ Python: `import psutil; psutil.Process().memory_info().rss`
 JS: `performance.memory.usedJSHeapSize`
 
 ### End-to-end bench
-`benchmark_finishes.py` runs each registered finish once at 2048x2048 and prints per-finish timing. Use as a regression guard:
+`scripts/audit_render_perf.py --size 2048` runs each registered finish once and prints per-finish timing (`scripts/benchmark_paint_finish_render_times.py` does the same per finish id or category, resumable). Use as a regression guard:
 
 ```bash
-python benchmark_finishes.py > bench_before.txt
+python scripts/audit_render_perf.py --size 2048 > bench_before.txt
 # make your change
-python benchmark_finishes.py > bench_after.txt
+python scripts/audit_render_perf.py --size 2048 > bench_after.txt
 diff bench_before.txt bench_after.txt
 ```
 
@@ -119,10 +119,10 @@ diff bench_before.txt bench_after.txt
 
 ```bash
 # 1. Baseline
-python benchmark_finishes.py > bench_baseline.txt
+python scripts/audit_render_perf.py --size 2048 > bench_baseline.txt
 
 # 2. Profile the slow op
-python -m cProfile -o profile.prof -s cumulative benchmark_finishes.py --finish <slow_id>
+python -m cProfile -o profile.prof -s cumulative scripts/benchmark_paint_finish_render_times.py --ids <slow_id>
 
 # 3. Visualize
 snakeviz profile.prof
@@ -132,7 +132,7 @@ python -c "import pstats; pstats.Stats('profile.prof').sort_stats('cumulative').
 # 4. Make your change
 
 # 5. Re-measure
-python benchmark_finishes.py > bench_after.txt
+python scripts/audit_render_perf.py --size 2048 > bench_after.txt
 diff bench_baseline.txt bench_after.txt
 
 # 6. Sanity check: does render output still match pixel-for-pixel (or within tolerance)?

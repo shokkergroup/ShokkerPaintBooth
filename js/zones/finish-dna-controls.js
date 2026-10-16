@@ -254,7 +254,7 @@
                 var b64 = btoa(unescape(encodeURIComponent(json)));
                 var dnaStr = 'SHOKK:v1:' + b64;
                 navigator.clipboard.writeText(dnaStr).then(function () {
-                    if (typeof showToast === 'function') showToast('Finish DNA copied to clipboard!');
+                    if (typeof showToast === 'function') showToast('Finish DNA copied to clipboard');
                 }).catch(function () {
                     // Fallback: select a temp textarea
                     var ta = document.createElement('textarea');
@@ -299,7 +299,7 @@
             }
             var dna = _parseDNAString(dnaStr);
             if (!dna) {
-                if (typeof showToast === 'function') showToast('Invalid DNA string. Expected format: SHOKK:v1:...');
+                if (typeof showToast === 'function') showToast('That isn\'t a valid Finish DNA code. It should start with SHOKK:v1:');
                 return;
             }
             pushZoneUndo('Paste DNA');

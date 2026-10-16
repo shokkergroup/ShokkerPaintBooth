@@ -181,7 +181,7 @@
     }
     // every action shape -> {do, id, label}: v2 {do, id} and the index's {finish_id | pattern_id | spec_id, label}
     function normAct(x) {
-        if (!x) return null; if (x.do && x.id) return { do: x.do, id: x.id, label: x.label || '' };
+        if (!x) return null; if (x.do && x.id) { var o = { do: x.do, id: x.id, label: x.label || '' }; if (x.style) { o.style = x.style; o.part = x.part || null; } return o; }      // FLAMES 2026-10-05: keep the flame style / parts
         if (x.finish_id) return { do: 'finish', id: x.finish_id, label: x.label || '' }; if (x.pattern_id) return { do: 'pattern', id: x.pattern_id, label: x.label || '' }; if (x.spec_id) return { do: 'spec', id: x.spec_id, label: x.label || '' };
         if (x.choice) return normAct(x.choice); return null;
     }
@@ -560,11 +560,12 @@
         return null;
     }
     function exLook(x) { var st = x.settings || {}; for (var k in st) { var l = lookByName(k, st[k]); if (l) return l; } return null; }
+    function exArtworkScope(x) { return Object.keys((x && x.settings) || {}).some(function (k) { var v = norm(x.settings[k]); return norm(k) === 'restrict to layers' && v && !/^(none|off|no restriction|all layers)$/.test(v); }); }
     function exHtml(x, k) {
         var st = x.settings || {}, rows = Object.keys(st).map(function (l) { return '<tr><td><span class="spb-enc-ui">' + esc(l) + '</span></td><td>' + esc(st[l]) + '</td></tr>'; }).join(''), lk = exLook(x), sc = x.screen && SCR[x.screen];
         return '<div class="spb-enc-ex"><div class="spb-enc-exn">Example ' + (k + 1) + '</div><h3>' + esc(x.title || '') + '</h3>' + (x.goal ? '<p class="spb-enc-exg">Goal: ' + txt(x.goal) + '</p>' : '') +
             (rows ? '<table class="spb-enc-ctl ex"><tbody>' + rows + '</tbody></table>' : '') + (x.result ? '<p class="spb-enc-exr"><b>You get:</b> ' + txt(x.result) + '</p>' : '') + (sc ? shotHtml(sc, 'small', '') : '') +
-            '<div class="spb-enc-acts">' + (lk ? '<button type="button" class="spb-enc-do hot" data-e="exdo" data-k="' + k + '">▶ Start this on my car (' + esc(lk.label) + ')</button>' : '') + (rows ? '<button type="button" class="spb-enc-do" data-e="excopy" data-k="' + k + '">⧉ Copy settings</button>' : '') + '</div></div>';
+            '<div class="spb-enc-acts">' + (lk ? '<button type="button" class="spb-enc-do hot" data-e="exdo" data-k="' + k + '">' + (exArtworkScope(x) ? '▶ Choose artwork for (' : '▶ Start this on my car (') + esc(lk.label) + ')</button>' : '') + (rows ? '<button type="button" class="spb-enc-do" data-e="excopy" data-k="' + k + '">⧉ Copy settings</button>' : '') + '</div></div>';
     }
     function comboTarget(w) {
         w = String(w || ''); var m = /^(base|monolithic)::/.test(w) ? ['finish', w] : (/^(pattern|spec)::/.test(w) ? [w.split('::')[0], w.split('::')[1]] : null);
@@ -594,17 +595,23 @@
         // ENC_READER_FIX 2026-10-05: a Do-it applies what the PAGE says. When the page pairs the look with a colour (stealth: Flat Black
         // + BASE COLOR #0a0a0c) the builder gets the helper's own two-step shape ('body>recolour', 'step1>finish'), the named look is
         // pre-selected in the grid, the step says what will change, and a 'Back to the article' pill re-opens the reader where it was.
-        var B = W.SpbOfflineBuilder, act = { do: x.do, id: x.id, label: actLabel(x) }, hex = x.do === 'finish' ? lookColour(a, x) : null;
+        // FLAMES 2026-10-05: a flame-licks Do-it ({do:'flow', id:'flames', style, part}) draws the real licks on the named parts at once (one Undo), see SpbFlames
+        if (x.do === 'flow' && x.style && W.SpbFlames && W.SpbFlames.apply) {
+            var fr = null; try { fr = W.SpbFlames.apply({ style: x.style, part: x.part || ['hood', 'left side', 'right side'], label: x.label || null }); } catch (eF) { fr = { ok: false, error: String(eF && eF.message || eF) }; }
+            if (fr && fr.ok) { close(); backPill(a); return; }
+            S.note = 'I could not draw the flames: ' + esc((fr && (fr.error || (fr.warnings || [])[0])) || 'the car parts are not known yet') + '. Show the app the hood and sides first (the car map), then press this button again.'; drawMain(); return;
+        }
+        var B = W.SpbOfflineBuilder, act = { do: x.do, id: x.id, label: actLabel(x), artworkScope: !!x.artworkScope }, hex = x.do === 'finish' ? lookColour(a, x) : null;
         close(); backPill(a);
         if (B && B.takeAction) {
             var two = !!(hex && B.newStep && B.pickChoice && B.showSteps && B.offlineMode && B.offlineMode());
-            if (two) { try { if (W.spbProAI && W.spbProAI.open) W.spbProAI.open(); } catch (e0) {} var s1 = B.newStep({ what: { k: 'body' } }); B.pickChoice(s1, { kind: 'colour', hex: hex, name: hexName(hex), label: hexName(hex), exact: true }); s1.prefilled = true; s1.note = 'From the encyclopedia: the colour “' + a.title + '” uses.'; B.showSteps([s1], ''); }
+            if (two) { try { if (W.spbProAI && W.spbProAI.open) W.spbProAI.open(); } catch (e0) {} var s1 = B.newStep({ what: x.artworkScope ? null : { k: 'body' }, requireArtworkScope: !!x.artworkScope }); B.pickChoice(s1, { kind: 'colour', hex: hex, name: hexName(hex), label: hexName(hex), exact: true }); s1.prefilled = true; s1.note = x.artworkScope ? "Choose an artwork layer or draw a tight area for this example. Inspect the selected artwork and exclude the numbers and sponsors before Run; a layer name is not proof." : 'From the encyclopedia: the colour “' + a.title + '” uses.'; B.showSteps([s1], ''); }
             if (B.takeAction(act)) {
-                try { var S0 = B.state(), ls = S0.steps[S0.steps.length - 1]; if (ls && x.do !== 'flow') { ls.search = act.label; ls.note = 'From the encyclopedia: ' + act.label + (two ? ' on ' + hexName(hex) + ' (step 1)' : '') + '. Press Run to put it on the car; Undo takes it back.'; if (B.draw) B.draw(); } } catch (e1) {}
+                try { var S0 = B.state(), ls = S0.steps[S0.steps.length - 1]; if (ls && x.do !== 'flow') { ls.search = act.label; ls.note = x.artworkScope ? "Choose an artwork layer or draw a tight area for this example. Inspect the selected artwork and exclude the numbers and sponsors before Run; a layer name is not proof." : 'From the encyclopedia: ' + act.label + (two ? ' on ' + hexName(hex) + ' (step 1)' : '') + '. Press Run to put it on the car; Undo takes it back.'; if (B.draw) B.draw(); } } catch (e1) {}
                 return;
             }
         }
-        try { if (W.spbProAI && W.spbProAI.open) W.spbProAI.open(); var inp = D.querySelector('#spbProAI .spb-pai-input'); if (inp) { inp.value = x.do === 'flow' ? actLabel(x) : 'Use ' + act.label + (hex ? ' in ' + hex : '') + ' on the car'; inp.focus(); } } catch (e) {}
+        try { if (W.spbProAI && W.spbProAI.open) W.spbProAI.open(); var inp = D.querySelector('#spbProAI .spb-pai-input'); if (inp) { inp.value = x.artworkScope ? 'Help me choose the artwork layer or a tight area for ' + act.label + '; keep numbers and sponsors unchanged' : x.do === 'flow' ? actLabel(x) : 'Use ' + act.label + (hex ? ' in ' + hex : '') + ' on the car'; inp.focus(); } } catch (e) {}
     }
     // the colour a page pairs with a look: a #hex in the same step / example setting as the look's name (within ~160 characters)
     function lookColour(a, x) {
@@ -629,12 +636,126 @@
         } catch (e) {}
     }
     function visible(e) { if (!e || !e.getBoundingClientRect) return false; var r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && !(root && root.contains(e)); }
-    function showControl(id, label) {
-        var c = [], k = norm(String(label || '').replace(/\b(dropdown|slider|button|toggle|switch|checkbox|input|box)\b/gi, ''));
+    // ---- KNOW-3 SHOW-ME 2026-10-10 (lane KNOW-3 Show-me helper, owner brief k3/SHOWME_BRIEF.md): "Show me in the app" now OPENS the holder first.
+    // Before: a control that exists but is hidden (closed toolbar menu, closed modal/dropdown, inactive tool strip, other right-panel tab, chat window on top)
+    // only got the note "I could not point at X right now (its panel is closed)". After: the hider is found (outermost display:none ancestor or closed <details>),
+    // opened with ONE rule from K3_RULES (the same function / button the app's own button uses), then the control is flashed.
+    // Measured in the real page, 562 actions (561 with the corrected labels), lands / hidden-but-exists / nowhere:  1920x1080 93/346/123 -> 330/116/115, 1100x800 4/436/122 -> 331/116/114 (kill switch ON reproduces the old numbers: 89/357/115 and 4/443/114 with the new labels).
+    // Kill switch: window.SPB_KNOW3_SHOWME_OFF = true (or localStorage SPB_KNOW3_SHOWME_OFF = '1') restores the old behaviour exactly.
+    // SAFETY: rules only OPEN or SHOW panels. Nothing here renders, saves, exports, deletes, uploads, sends or touches /api/native-dialog
+    // (the in-app file picker is deliberately NOT in the table: the app swaps it for the native dialog). Everything is synchronous, so runAction can close the reader at once.
+    function k3Off() { try { if (W.SPB_KNOW3_SHOWME_OFF === true) return true; return W.localStorage.getItem('SPB_KNOW3_SHOWME_OFF') === '1'; } catch (e) { return W.SPB_KNOW3_SHOWME_OFF === true; } }
+    function k3Call(n, a) { return function () { if (typeof W[n] !== 'function') return false; W[n](a); return true; }; }
+    function k3Click(sel) { return function () { var b = D.querySelector(sel); if (!b) return false; b.click(); return true; }; }
+    function k3Zone() { try { return typeof selectedZoneIndex !== 'undefined' && selectedZoneIndex >= 0 ? selectedZoneIndex : 0; } catch (e) { return 0; } }
+    function k3Swatch() { // a zone's finish swatch button opens the picker; that button lives in the zone editor panel
+        var t = function () { return [].filter.call(D.querySelectorAll('.swatch-trigger'), visible)[0]; }, b = t();
+        if (!b && typeof W.toggleZoneFloat === 'function') { W.toggleZoneFloat(); b = t(); }
+        if (!b) return false; b.click(); return true;
+    }
+    var K3_MODES = ['brush', 'colorbrush', 'wand', 'text', 'shape', 'gradient', 'erase', 'heal', 'clone', 'dodge', 'blur-brush', 'history-brush', 'pen', 'fill', 'rect', 'recolor', 'smudge', 'eyedropper'];
+    var K3_MIRROR = { spbTextPrimary: 'textToolOptions', spbShapePrimary: 'shapeToolOptions' };   // tool-row mirrors follow these source strips
+    function k3Shown(e) { return W.getComputedStyle(e).display !== 'none'; }
+    function k3Soon(el) { // the tool row re-syncs its groups / mirrors with MutationObservers (a microtask later): sure when only that sync is pending
+        var band = D.getElementById('spbToolRowTop'); if (!band || !band.contains(el)) return false;
+        for (var a = el; a && a !== band; a = a.parentElement) {
+            if (a.parentElement === band) { if (/(^|\s)spb-tr-group(\s|$)/.test(a.className)) continue; var src = K3_MIRROR[a.id] && D.getElementById(K3_MIRROR[a.id]); if (src && k3Shown(src)) continue; return false; }
+            if (!k3Shown(a)) return false;
+        }
+        return true;
+    }
+    function k3Tool(h, el) { // tool-option strips / sliders show only for their own tool: press tools (setCanvasMode, as the tool buttons do) until the control shows
+        if (typeof W.setCanvasMode !== 'function') return false;
+        var prev = null; try { prev = typeof canvasMode !== 'undefined' ? canvasMode : null; } catch (e) {}
+        for (var i = 0; i < K3_MODES.length; i++) { try { W.setCanvasMode(K3_MODES[i]); } catch (e1) { continue; } if (visible(el)) return true; if (k3Soon(el)) return 'later'; }
+        if (prev) { try { W.setCanvasMode(prev); } catch (e2) {} }
+        return false;
+    }
+    var K3_RULES = [   // [hider selector or predicate(hider, control), opener(hider, control) -> false when it could not open]
+        ['#layerEffectsDialog', k3Call('openSelectedLayerEffects')],
+        ['#zoneMoreMenu', k3Click('.zone-more-btn')],
+        ['#zoneEditorFloat', k3Call('toggleZoneFloat')],
+        ['#specMaterialRemapOverlay', k3Call('openSpecMaterialRemap')],        // these three dialogs refuse without a zone selection (their own message)
+        ['#decalRescueOverlay', k3Call('openDecalRescueKit')],
+        ['#specLightingMaskOverlay', k3Call('openSpecLightingMask')],
+        ['#specMapInspectorModal', k3Call('openSpecMapInspector')],
+        ['#settingsDropdown', k3Call('toggleSettingsDropdown')],
+        ['#layerTransformQuickbar', k3Call('spbSmartTransform')],
+        ['#finishBrowserOverlay', function () { return k3Call('openFinishBrowser', k3Zone())(); }],
+        ['#finishCompareOverlay', function () { return k3Call('openFinishCompare', k3Zone())(); }],
+        ['#dualShiftOverlay', function () { return k3Call('openDualShiftModal', k3Zone())(); }],
+        ['#shokkLibraryModal', k3Call('openShokkLibrary')],
+        ['#saveShokkModal', k3Call('openSaveShokkDialog')],
+        ['#exportToPhotoshopModal', k3Call('openExportToPhotoshopModal')],  // only shows the dialog; its Export button is never pressed
+        ['#scriptModal', k3Call('openModal')],
+        ['#previewLightbox', k3Call('openPreviewLightbox', 'spec')],
+        ['#presetGalleryOverlay', k3Call('openPresetGallery')],
+        ['#shortcutOverlay', k3Call('showShortcutLegend')],
+        ['#fineTuningPanel', k3Call('openFineTuning')],
+        ['#renderStatsOverlay', k3Call('toggleRenderStats')],
+        ['#layerActionsMenu', k3Click('#layerActionsMenuBtn')],
+        ['#swatchPopup', k3Swatch],
+        ['#spbPfMorePop', k3Click('#spbPfMoreBtn')],   // narrow window: the toolbar folds its menus into the "Menus" popup
+        ['#leftCollapseBtn', k3Click('#spbPgPopRail')],   // the collapse arrow shows only while the Zone Popout is open; its rail button opens it
+        ['#rightCollapseBtn', k3Click('#spbPgLayRail')],
+        [function (h) { return h.getAttribute && h.getAttribute('role') === 'tabpanel'; }, function (h) { var t = D.getElementById(h.getAttribute('aria-labelledby') || ''), was = D.querySelector('.rp-tab.active'); if (!t) return false; t.click(); if (W.getComputedStyle(h).display === 'none') { if (was && was !== t) was.click(); return false; } return true; }],   // right-panel tab; put the old tab back when this one stays hidden (the clean skin hides the Finishes tab)
+        [function (h) { return !!(h.closest && h.closest('#spbToolRowTop,#toolSpecificOptions')); }, k3Tool],
+        [function (h) { return !!(h.classList && h.classList.contains('spb-tf-hid')); }, function (h) { var m = [].filter.call(D.querySelectorAll('.spb-tf-more'), function (b) { return b.parentNode && b.parentNode.contains(h); })[0]; if (!m) return false; m.click(); return true; }],   // Priority+ row: its "..." button shows what did not fit
+    ];
+    function k3Hider(el) { // outermost ancestor-or-self that hides el: display:none, or a closed <details> (el not in its <summary>)
+        var chain = [], cur = el; while (cur && cur !== D.documentElement) { chain.push(cur); cur = cur.parentElement; }
+        for (var i = chain.length - 1; i >= 0; i--) { var a = chain[i]; if (W.getComputedStyle(a).display === 'none') return a; if (a.tagName === 'DETAILS' && !a.open && i > 0 && chain[i - 1].tagName !== 'SUMMARY') return a; }
+        return null;
+    }
+    var K3_LATER = false;   // set when the control is sure to show a moment later (tool-row sync): the scroll then waits a beat
+    function k3Reveal(el) { // open what hides el (one rule per holder); true only when el is visible now
+        var last = null;
+        for (var n = 0; n < 6 && !visible(el); n++) {
+            var h = k3Hider(el); if (!h || h === last) return false; last = h;
+            if (h.tagName === 'DETAILS') { h.open = true; continue; }
+            var ok = false, res;
+            for (var i = 0; i < K3_RULES.length && !ok; i++) { var r = K3_RULES[i]; if (typeof r[0] === 'string' ? (h.matches && h.matches(r[0])) : r[0](h, el)) { try { res = r[1](h, el); ok = res !== false; } catch (e) { ok = false; } } }
+            if (!ok) return false;
+            if (res === 'later') { K3_LATER = true; return true; }
+        }
+        return visible(el);
+    }
+    function k3Slide(e) { // the history panel slides in from outside the window: its own toggle brings it in
+        var r = e.getBoundingClientRect(); if (r.right > 0 && r.bottom > 0 && r.left < W.innerWidth && r.top < W.innerHeight) return;
+        if (e.closest && e.closest('#undoHistoryPanel') && typeof W.toggleUndoHistoryPanel === 'function') W.toggleUndoHistoryPanel();
+    }
+    function k3InStudioUi(e) { for (var c = e; c && c !== D.body; c = c.parentElement) { if (c.id === 'spbProAI') return true; if (/(^|\s)spb-cs/.test(typeof c.className === 'string' ? c.className : '')) return true; } return false; }
+    function k3StudioExit(e) { // the chat window sits on top of the full editor: its own "Full editor" button is SpbChatStudio.close()
+        try { if (D.body.classList.contains('spb-chat-studio') && !k3InStudioUi(e) && W.SpbChatStudio && W.SpbChatStudio.close) W.SpbChatStudio.close(); } catch (e0) {}
+    }
+    function scanControl(id, k) {
+        var c = [];
         try { c.push(D.getElementById(id)); c.push(D.querySelector('[data-testid="' + String(id).replace(/"/g, '') + '"]')); } catch (e) {}
-        if (k) { var L = D.querySelectorAll('button,label,summary,h3,h4,h5,.section-title,[aria-label],[title]'); for (var i = 0; i < L.length && c.filter(Boolean).length < 6; i++) { var e2 = L[i], t = norm(e2.getAttribute('aria-label') || '') , tx = norm((e2.textContent || '').slice(0, 80)), ti = norm(e2.getAttribute('title') || ''); if (tx === k || t === k || (ti && ti.indexOf(k) === 0 && k.length > 4)) c.push(e2); } }
-        var hit = c.filter(visible)[0]; if (!hit) return false;
-        try { hit.scrollIntoView({ block: 'center', behavior: 'smooth' }); hit.classList.add('spb-ob-flash'); setTimeout(function () { hit.classList.remove('spb-ob-flash'); }, 3200); } catch (e) {}
+        if (k) { var L = D.querySelectorAll('button,label,summary,h3,h4,h5,.section-title,[aria-label],[title]'); for (var i = 0; i < L.length && c.filter(Boolean).length < 6; i++) { var e2 = L[i], t = norm(e2.getAttribute('aria-label') || ''), tx = norm((e2.textContent || '').slice(0, 80)), ti = norm(e2.getAttribute('title') || ''); if (tx === k || t === k || (ti && ti.indexOf(k) === 0 && k.length > 4)) c.push(e2); } }
+        return c;
+    }
+    function k3Open(c, id, k) { // no candidate is visible: open the holder of the first one that can be opened
+        var cand = c.filter(function (e) { return e && !(root && root.contains(e)); });
+        if (!cand.length && typeof W.toggleZoneFloat === 'function') { // the zone editor builds its rows only while it is open
+            var z = D.getElementById('zoneEditorFloat'), wasHidden = z && W.getComputedStyle(z).display === 'none';
+            if (wasHidden) { W.toggleZoneFloat(); cand = scanControl(id, k).filter(function (e) { return e && !(root && root.contains(e)); }); if (!cand.length) W.toggleZoneFloat(); }
+        }
+        for (var i = 0; i < cand.length; i++) { k3StudioExit(cand[i]); if (visible(cand[i]) || k3Reveal(cand[i])) return cand[i]; }
+        return null;
+    }
+    function k3Settle(hit) { // the app's own async layout passes (tool-row sync, Priority+ overflow) can hide the control again a beat later: reveal once more
+        setTimeout(function () { try { if (!visible(hit) && k3Reveal(hit)) hit.scrollIntoView({ block: 'center', behavior: 'auto' }); } catch (e) {} }, 350);
+    }
+    function showControl(id, label) {
+        var k = norm(String(label || '').replace(/\b(dropdown|slider|button|toggle|switch|checkbox|input|box)\b/gi, ''));
+        var c = scanControl(id, k);
+        var hit = c.filter(visible)[0];
+        var opened = false;
+        if (!k3Off()) { if (hit) k3StudioExit(hit); else { hit = k3Open(c, id, k); opened = !!hit; } if (hit) k3Slide(hit); }   // a control we just opened is scrolled INSTANTLY (smooth scroll inside a fresh menu can stall in a background tab and leave it out of view)
+        if (!hit) return false;
+        var later = K3_LATER; K3_LATER = false;
+        try { if (later) setTimeout(function () { try { hit.scrollIntoView({ block: 'center', behavior: opened ? 'auto' : 'smooth' }); } catch (e3) {} }, 120); else hit.scrollIntoView({ block: 'center', behavior: opened ? 'auto' : 'smooth' }); hit.classList.add('spb-ob-flash'); setTimeout(function () { hit.classList.remove('spb-ob-flash'); }, 3200); } catch (e) {}
+        if (!k3Off()) k3Settle(hit);
         return true;
     }
     // ---- events
@@ -659,7 +780,7 @@
         else if (e === 'otp') { var hh = root.querySelector('#encs' + b.getAttribute('data-k')); if (hh) hh.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
         else if (EXT.clicks[e]) { try { EXT.clicks[e](b, ev); } catch (er) {} }
         else if (e === 'dyk') { S.dyk = (S.dyk || 0) + 1; var db = root.querySelector('.spb-enc-dyk'); if (db) db.innerHTML = dykHtml(); }
-        else if (e === 'exdo') { var ex = S.curC && (S.curC.examples || [])[Number(b.getAttribute('data-k'))], lk = ex && exLook(ex); if (lk) runAction(S.cur, lk); }
+        else if (e === 'exdo') { var ex = S.curC && (S.curC.examples || [])[Number(b.getAttribute('data-k'))], lk = ex && exLook(ex); if (lk) { lk.artworkScope = exArtworkScope(ex); runAction(S.cur, lk); } }
         else if (e === 'excopy') { var ex2 = S.curC && (S.curC.examples || [])[Number(b.getAttribute('data-k'))]; if (ex2) { var st = ex2.settings || {}, tx = (ex2.title || '') + '\n' + Object.keys(st).map(function (l) { return l + ': ' + st[l]; }).join('\n'); try { (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(tx) : Promise.reject()).then(function () { b.textContent = '✓ Copied'; }, function () { b.textContent = tx; }); } catch (er) { b.textContent = tx; } } }
         else if (e === 'do') { var a = S.cur; if (a) runAction(a, actsOf(a)[Number(b.getAttribute('data-k'))]); }
         else if (e === 'tlink') { var a2 = S.cur, l = a2 && (a2.links || [])[Number(b.getAttribute('data-k'))]; var B = W.SpbOfflineBuilder; S.linkOut = l && B && B.linkOut ? (B.linkOut(l) || '') : ''; drawMain(); }

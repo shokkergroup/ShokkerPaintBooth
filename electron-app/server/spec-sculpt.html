@@ -4,9 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- SPEC SCULPT BUILD TOKEN — bump on every edit to this page (served with no ?v=, so this is the cache marker). -->
-  <meta name="spec-sculpt-build" content="8.0.4-install-truth-20260721a">
+  <meta name="spec-sculpt-build" content="8.0.4-install-truth-20260721a-promptfix1">
   <!-- DIAGNOSTICS RECORDER: FIRST <script> in <head> for the one-click "Report a Problem" feature. -->
   <script src="js/diagnostics/spb-diag-recorder.js?v=spb-diag-recorder-20260604"></script>
+  <script src="js/spb-dialog-20261010.js?v=spb-promptfix-20261010a-cfm1"></script><!-- [SPB-PROMPT-FIX 2026-10-10] in-app prompt (Electron has no window.prompt) -->
   <title>SHOKKER Spec Sculpt Lab</title>
   <style>
     :root {
@@ -38,6 +39,18 @@
       height: 100vh;
       min-height: 0;
     }
+    /* [LEFTOVERS-3 item 4, 2026-10-10] one-line pointer to the in-app Spec Sculpt panel (SCULPT-2). Kill switch: localStorage SPB_LO3_OFF=1 or SPB_LO3_4_OFF=1 (or window flag). */
+    .app.ss-lo3-banner { grid-template-rows: auto auto 1fr; }
+    .app.ss-lo3-banner > #ssNewHomeBanner { grid-row: 1; }
+    .app.ss-lo3-banner > header { grid-row: 2; }
+    .app.ss-lo3-banner > aside, .app.ss-lo3-banner > main { grid-row: 3; }   /* the lab pins aside / main to row 2: they move down one row with the banner */
+    #ssNewHomeBanner { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 7px 14px; font-size: 12.5px; line-height: 1.3;
+      background: linear-gradient(90deg, rgba(63,186,181,0.18), rgba(98,215,255,0.07)); border-bottom: 1px solid var(--line); }
+    #ssNewHomeBanner[hidden] { display: none; }
+    #ssNewHomeBanner a { color: #cfe9ff; text-decoration: none; }
+    #ssNewHomeBanner a b { color: #62d7ff; letter-spacing: 0.3px; }
+    #ssNewHomeBanner a u { text-decoration: underline; text-underline-offset: 2px; }
+    #ssNewHomeBanner a:hover, #ssNewHomeBanner a:focus-visible { color: #fff; }
     header {
       grid-column: 1 / -1;
       display: flex; align-items: center; justify-content: space-between;
@@ -726,7 +739,16 @@
       } catch (e) {}
     })();
   </script>
-  <div class="app">
+  <div class="app ss-lo3-banner">
+    <div id="ssNewHomeBanner" role="note"><a id="ssNewHomeLink" href="paint-booth-v2.html" title="Back to the Paint Booth: Material / Spec menu, then Spec Sculpt"><b>New:</b> Spec Sculpt now lives inside the <u>Paint Booth (Material / Spec &rarr; Spec Sculpt)</u></a></div>
+    <script>
+      (function () {   /* [LEFTOVERS-3 item 4] kill switch */
+        try {
+          var off = window.SPB_LO3_OFF || window.SPB_LO3_4_OFF || localStorage.getItem('SPB_LO3_OFF') === '1' || localStorage.getItem('SPB_LO3_4_OFF') === '1';
+          if (off) { var b = document.getElementById('ssNewHomeBanner'); if (b) b.hidden = true; var a = document.querySelector('.app'); if (a) a.classList.remove('ss-lo3-banner'); }
+        } catch (e) {}
+      })();
+    </script>
     <header>
       <div class="brand">
         <div class="ss-kicker">SHOKKER · Material Lab</div>
@@ -743,13 +765,13 @@
               data-spb-report-btn-class="btn"
               title="Hit a bug? Copy a diagnostics report to paste to Shokker support."></span>
         <button type="button" class="btn" id="btnReopenGuide" title="Show the quick start guide">? Guide</button>
-        <button type="button" class="btn" id="btnPaintBooth" title="Open main Paint Booth">Paint Booth</button>
+        <button type="button" class="btn" id="btnPaintBooth" title="Back to the Paint Booth (Esc)" aria-label="Back to the Paint Booth">&larr; Paint Booth</button>
         <button type="button" class="btn" id="btnPaintLab" title="Spin a finish on the Finish Viewer ball">Finish Viewer</button>
       </div>
     </header>
 
     <aside>
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+      <div id="specAltShellRow" style="display:none;gap:8px;align-items:center;margin-bottom:8px;"><!-- NUQ-FIX #3 2026-10-10: parked shell entry stays hidden; kill switch SPB_NUQ_OFF -->
         <button type="button" id="btnEasyMode" style="flex:0 0 auto;min-height:38px;padding:0 14px;">✨ OPEN EASY SPEC SCULPT</button>
         <span class="hint" id="easyModeHint" style="font-size:10px;margin:0;">One guided screen for the whole paint, individual colors, and linked scale. Full Controls stay here.</span>
       </div>
@@ -3748,8 +3770,10 @@
     renderLooks(); if (typeof renderRecipes === 'function') renderRecipes();
     setBanner('Saved look “' + escAttr(name) + '”.', 'ok');
   }
-  function renameLook(name) {
-    var nn = (window.prompt ? (window.prompt('Rename look:', name) || '') : '').trim();
+  // [SPB-PROMPT-FIX 2026-10-10] async: window.prompt() exists but THROWS in Electron (the rename pencil did nothing) -> in-app box (SpbDialog.prompt).
+  // Esc = nothing renamed. Kill switch window.SPB_PROMPT_FIX_OFF -> native prompt.
+  async function renameLook(name) {
+    var nn = String((await SpbDialog.prompt('Rename Look', name, { message: 'Rename "' + name + '" to:', okLabel: 'Rename', nativeText: 'Rename look:' })) || '').trim();
     if (!nn || nn === name) return;
     var recipes = _loadRecipes();
     if (recipes[name]) { recipes[nn] = Object.assign({}, recipes[name], { name: nn, ts: Date.now() }); delete recipes[name]; _saveRecipes(recipes); renderLooks(); if (typeof renderRecipes === 'function') renderRecipes(); }
@@ -7496,6 +7520,26 @@
     try { persistSessionNow(); } catch (e) {}
     window.location.href = API + '/paint-booth-v2.html';
   });
+  // [LEFTOVERS-3 item 4, 2026-10-10] the banner link behaves exactly like the "Paint Booth" button above (keeps the lab session, navigates in this window).
+  (function () {
+    var a = document.getElementById('ssNewHomeLink');
+    if (a) a.addEventListener('click', function (e) { e.preventDefault(); var b = document.getElementById('btnPaintBooth'); if (b) b.click(); else window.location.href = API + '/paint-booth-v2.html'; });
+  })();
+  // [NUQ-FIX #3 2026-10-10 first-hour QA] Esc returns to the main editor, exactly like the back arrow. It never steals Esc from a
+  // typing field (first Esc leaves the field) or an open window (folder browser etc.). Kill switch: localStorage SPB_NUQ_OFF=1.
+  (function () {
+    var off = false;
+    try { off = localStorage.getItem('SPB_NUQ_OFF') === '1'; } catch (e) {}
+    if (off) { var row = document.getElementById('specAltShellRow'); if (row) row.style.display = 'flex'; return; }
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' || e.defaultPrevented || e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
+      var ae = document.activeElement, tag = ae && ae.tagName;
+      if (ae && (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || ae.isContentEditable)) { try { ae.blur(); } catch (x) {} return; }
+      if (document.querySelector('.fb-overlay.open, dialog[open]')) return;
+      e.preventDefault();
+      var b = document.getElementById('btnPaintBooth'); if (b) b.click();
+    });
+  })();
   $('btnPaintLab').addEventListener('click', function () {
     try { persistSessionNow(); } catch (e) {}
     window.location.href = API + '/finish-viewer.html?source=api';

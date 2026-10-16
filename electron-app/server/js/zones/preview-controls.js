@@ -87,9 +87,9 @@
       doc.querySelectorAll('.spec-channel-btn').forEach(function(b) {
         b.classList.toggle('active', b.dataset.ch === activeSpecChannel);
       });
-      var labels = { all: 'SPEC MAP', r: 'METALLIC (R)', g: 'ROUGHNESS (G)', b: 'CLEARCOAT (B)', a: 'SPEC MASK (A)' };
+      var labels = { all: 'Spec map', r: 'Metallic (R)', g: 'Roughness (G)', b: 'Clearcoat (B)', a: 'Spec mask (A)' };
       var label = doc.querySelector('#previewSpecPane .preview-dual-label');
-      if (label) label.textContent = labels[activeSpecChannel] || 'SPEC MAP';
+      if (label) label.textContent = labels[activeSpecChannel] || 'Spec map';
       renderSpecChannel();
     }
 
@@ -327,16 +327,22 @@
     function toggleBeforeAfter() {
       // 2026-05-30 owner UI fix: redundant "BEFORE (Original Paint)" pane removed (left SOURCE box
       // already shows the original). No-op so the legacy 'b' shortcut/buttons can't show it.
+      // [SPB-TFX3 2026-10-09 BA-button] the visible B/A button now drives the existing Compare slider (source paint vs the render);
+      // see paint-booth-2-state-zones.js toggleBeforeAfter. SPB_TFX3_OFF = old no-op.
+      if (global.SPB_TFX3_OFF) return;
+      if (typeof global.toggleCompareMode === 'function') global.toggleCompareMode();
     }
 
     doc.addEventListener('keydown', function(e) {
       if (e.defaultPrevented) return;
+      if (!global.SPB_TFX3_OFF) return;   // [SPB-TFX3 2026-10-09 BA-button] B is the Brush key; the button drives Compare, the key must not
       if (e.key === 'b' && !e.ctrlKey && !e.altKey && !e.metaKey && !e.repeat) {
         if (isTextEntryTarget(e.target)) return;
         if (beforeImageCaptured && !beforeAfterActive) toggleBeforeAfter();
       }
     });
     doc.addEventListener('keyup', function(e) {
+      if (!global.SPB_TFX3_OFF) return;   // [SPB-TFX3 2026-10-09 BA-button] see keydown above
       if (e.key === 'b' && beforeAfterActive) toggleBeforeAfter();
     });
 

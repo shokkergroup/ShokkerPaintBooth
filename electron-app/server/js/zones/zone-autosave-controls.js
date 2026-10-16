@@ -52,7 +52,7 @@
           }
         } catch (e) {
           if (e && e.name === 'QuotaExceededError') {
-            showToast('Auto-save failed: localStorage full. Export your config to free space.', true);
+            showToast('Auto-save failed: browser storage is full. Export your config to free up space.', true);
           }
         }
       }, 500);

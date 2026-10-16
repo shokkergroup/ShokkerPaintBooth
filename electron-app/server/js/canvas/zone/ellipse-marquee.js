@@ -5,6 +5,18 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
+    // PORT-W1 (2026-10-09): composeMask rasterises with exact anti-aliased
+    // polygon coverage from SPBPcSelection (PhotoCraft selection.rs polygon)
+    // instead of a hard per-pixel inside test. window.SPB_PC_W1_OFF = true
+    // restores the hard-edged legacy rasteriser.
+    const G = typeof window !== 'undefined' ? window : globalThis;
+    function pcCore() {
+        if (G.SPB_PC_W1_OFF) return null;
+        if (G.SPBPcSelection) return G.SPBPcSelection;
+        try { if (typeof require === 'function') return require('../pc-selection-core.js'); } catch (e) { /* legacy path */ }
+        return null;
+    }
+
     function point(value) {
         return {
             x: Number(value && value.x) || 0,
@@ -87,6 +99,18 @@
         const ry = Math.abs(Number(gesture.ry) || 0);
         if (!length || rx < 1 || ry < 1) {
             return { nextMask: next, enclosedPixels: 0, changedPixels: countDifferences(current, next) };
+        }
+        const pc = pcCore();
+        if (pc) {
+            const cover = pc.ellipse(cx, cy, rx, ry, width, height, true);
+            const composed = pc.compose(current, cover.mask, mode);
+            let pcEnclosed = 0;
+            if (cover.bbox) {
+                for (let y = cover.bbox.y0; y < cover.bbox.y1; y++) {
+                    for (let x = cover.bbox.x0; x < cover.bbox.x1; x++) if (cover.mask[y * width + x] > 127) pcEnclosed++;
+                }
+            }
+            return { nextMask: composed, enclosedPixels: pcEnclosed, changedPixels: countDifferences(current, composed) };
         }
         const rx2 = rx * rx;
         const ry2 = ry * ry;

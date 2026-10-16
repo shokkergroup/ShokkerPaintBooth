@@ -81,7 +81,7 @@ Reference values for the canonical materials (from `SPB_SPEC_MAP_GUIDE.md`):
 
 ## Step 5 — The channel inspector
 
-SPB has a built-in tool for visually debugging spec maps. Open it from `View → Channel Inspector` (or `Ctrl+Shift+I`).
+SPB has a built-in tool for visually debugging spec maps. Open it from `View → Channel Inspector`.
 
 ![Step 5 — Channel inspector open](docs/img/tutorial-05-step5.png)
 

@@ -79,7 +79,7 @@ Bundled presets worth trying:
 
 ## Step 6 — Smudge Tool
 
-`R` (or `Shift+S` on some configs). The smudge tool pushes color around as if you were dragging wet paint. Great for:
+`Q`. The smudge tool pushes color around as if you were dragging wet paint. Great for:
 
 - Softening a hard edge
 - Blending two colors into a gradient
@@ -134,7 +134,7 @@ Use cases:
 Detail a sponsor logo with the smudge tool and a custom brush preset:
 
 1. Import a simple text-only sponsor logo. Give it a solid color fill (no effects yet).
-2. Pick the **Smudge** tool (`R`). Set strength to 40%.
+2. Pick the **Smudge** tool (`Q`). Set strength to 40%.
 3. Enable stabilizer at 40.
 4. On the logo, drag the smudge brush *across* the text at 45 degrees. The text edges now have a slight motion-blur/streak feel.
 5. Save your smudge tool settings as a preset called "Motion Streak."

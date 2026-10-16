@@ -1,0 +1,16 @@
+{
+  "roster_records": 192,
+  "roster_reconciliation": {
+    "cars": 192,
+    "catalog_cards": 187,
+    "unmatched_catalog_cards": 0,
+    "official_filepath_rows": 177,
+    "template_directory_rows": 188
+  },
+  "with_template_url": 188,
+  "with_inspected_template_metadata": 188,
+  "with_documented_car_facts": 192,
+  "with_local_hand_labelled_reference": 8,
+  "with_local_draft_only": 12,
+  "uv_maps_verified_by_this_research": 0
+}

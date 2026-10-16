@@ -85,7 +85,9 @@
           "!assets/shokker-forge-showcase/source/**",
           "!assets/reference_textures/colorshoxx/_wilds_source_contact.png",
           "!assets/reference_textures/colorshoxx/ai_reference_2026_05_27/source/**",
-          "!thumbnails/base_spec_preview/**"
+          "!thumbnails/base_spec_preview/**",
+          "!thumbnails/swatch_cache/**",
+          "!engine/paint_v2/era_image_2026/authoring/**"
         ]
       }
     ],

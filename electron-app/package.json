@@ -1,6 +1,6 @@
 {
   "name": "shokker-paint-booth-v6",
-  "version": "11.0.0",
+  "version": "11.0.1",
   "description": "Shokker Paint Booth V11 — iRacing Spec Map Tool",
   "main": "main.js",
   "author": "Shokker Group",
@@ -86,7 +86,8 @@
           "!assets/reference_textures/colorshoxx/_wilds_source_contact.png",
           "!assets/reference_textures/colorshoxx/ai_reference_2026_05_27/source/**",
           "!thumbnails/base_spec_preview/**",
-          "!thumbnails/swatch_cache/**",
+          "!thumbnails/swatch_cache/*.png",
+          "!thumbnails/swatch_cache/*.lock",
           "!engine/paint_v2/era_image_2026/authoring/**"
         ]
       }

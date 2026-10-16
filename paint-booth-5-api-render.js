@@ -919,7 +919,7 @@ const ConnectionStatus = {
 if (typeof window !== 'undefined') window.ConnectionStatus = ConnectionStatus;
 
 // [IMP-13] Server version mismatch detection
-const CLIENT_VERSION = '11.0.0-beta';
+const CLIENT_VERSION = '11.0.1-beta'; // [11.0.1 hotfix 2026-10-16, Claude] picker bakes shipped again
 let _serverVersionWarned = false;
 function checkServerVersion(statusData) {
     if (!statusData || !statusData.version || _serverVersionWarned) return;

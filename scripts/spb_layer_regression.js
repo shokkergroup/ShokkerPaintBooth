@@ -27,8 +27,11 @@ const EXPECTED_SHOTS = [
     'D1-verify', 'D2-verify', 'D3-verify', 'offcanvas-commit-verify',
     'contract-sweep', 'stackclaim-verify',
 ];
-const EXPECTED_CHECKS = 95;
-const EXPECTED_PLAN_SHA256 = '7d6614dd8b6898d1533e849129986a188e79ccc02b049b33f43c7645714893ae';
+// [11.0.0 release 2026-10-16, Claude] 95 -> 93: C6 (Easy Car Parts drawer, 3 checks) removed - Easy mode is hidden
+// (owner 2026-10-04) and scoped out; +1 SPB-93 check (a VISIBLE guide owns its pixels). B4/B6 label match, D1
+// in-app dialog and stackclaim (Mask guide hidden) updated for deliberate app changes; see the plan's dated notes.
+const EXPECTED_CHECKS = 93;
+const EXPECTED_PLAN_SHA256 = 'b205d5021ca3deabb3dab935d43f24553951330c4d4713abbc7eace36c3eb00e';
 const planSha256 = crypto.createHash('sha256').update(fs.readFileSync(PLAN)).digest('hex');
 if (planSha256 !== EXPECTED_PLAN_SHA256) {
     console.error('FAIL  layer plan bytes changed without updating the pinned manifest hash');

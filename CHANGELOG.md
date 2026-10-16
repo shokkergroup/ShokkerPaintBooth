@@ -1,3 +1,8 @@
+## 2026-10-16 — 11.0.0 beta LIVE (V10 → V11)
+- Feed activated 2026-10-16T18:46Z after the owner's clean Sandbox upgrade test (10.0.3 stub, then 11.0.0) and explicit GO; public latest.yml + payload (6,901,636,242 B) verified cold. Commits f63096a47 (candidate), 8560a43bb (Layer plan 93 checks for deliberate app changes), 5b91e0f68 (installer drops the 6.5 GB dev swatch_cache and 2.9 GB ERA authoring scratch).
+- Recovery from the 2026-10-15 hard delete of root assets/: tracked files from git; spec_overlay_patterns from the mirror; four gitignored premium dirs (forbidden_dragon, pattern_plates, colorshoxx/ai_reference_2026_05_27, spec_overlays/ricky_reference_batch2) re-extracted from the 10.0.3 payload (2048 slim = what buyers had; 4K originals lost). Premium bundle back to 363 files / 1682 MiB.
+- Proof: Layer 93/93, security 6/6, Easy scoped out (standing owner exception). Notes `docs/RELEASE_NOTES_11.0.0.md`; evidence `_release_evidence/11.0.0/`.
+
 ## 2026-10-11 — SPB11.00 shared AI/Offline baseline
 - Official display11.00/package11.0.0; adopted reviewed shared provider briefing/reference delivery, conversation/editor safeguards, Offline answers, layer/import/history work and setup/build dependency closure. Preserved newer Claude work and stable app/license/data identities.
 - Local V11 application and MCPB built and verified; actual packaged setup works with bundled Node20.18.3. Native advice and Tape hide/Undo/Redo/global Undo acceptance pass on private59910. Full details and honest remaining limits: mcp/chatgpt/baseline11/README.md. Public distribution not performed.

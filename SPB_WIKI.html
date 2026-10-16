@@ -1344,7 +1344,6 @@ Rows are <b>ownership</b>, not a work diary — details go in the <a href="#dail
 | **Codex — Source/Live Preview fidelity repair** | Owner screenshots: missing car parts, misaligned coverage and degrading Source zoom. | Scoped guide filter in paint-booth-5-api-render.js, pc-zonecov display, zoom/canvas CSS, targeted tests/runtime mirrors. Preserve Claude and other concurrent edits. | COMPLETE in canonical/Electron and private59910 — car art retained, hover coverage aligned, crisp native zoom; four settled zoom cycles identical. Owner-window reload/custom PSD acceptance still pending; Helper remains paused. | 2026-10-14 |
 
 
-| **Claude — BETA READINESS (next beta update)** | Owner 2026-10-13: "do whatever you need to ... getting ready for the Beta update"; no code signing. Plan: `docs/BETA_CLAUDE_SETUP_PLAN_2026-10-12.md`. | Release gates/preflight audit, `.mcpb` release gate, Claude setup card + connector update banner (AI panel `js/spb-ai-connect.js`, `server_routes/claude_connect_routes.py`, `mcp/server/index.js` — coordinate with Codex), help text, packaged smoke. No publish/stage/activate without owner OK. | WAITING ON OWNER — Claude-side fixes done + live; commit/build/stage/smoke/activate need the owner (`docs/BETA_11.0.0_READINESS_2026-10-13.md`) | 2026-10-13 |
 
 | **Codex — Encyclopedia save/recovery guidance** | Owner requests useful Encyclopedia expansion that improves Offline answers. | `ui_shell.save_open_projects`, paired knowledge consumers if required, scoped tests/mirrors;59910 only. | COMPLETE scoped content — three articles/11FAQs; runtime+MCPB mirrored.18Offline advice probes;16/18backend parity. Native browser stalled; retrieval follow-up recorded. | 2026-10-11 |
 
@@ -1922,6 +1921,7 @@ Rows are <b>ownership</b>, not a work diary — details go in the <a href="#dail
 
 
 
+- **2026-10-16 — 11.0.0 beta LIVE** (Claude): V10 → V11 rename shipped on the R2 feed after the owner's clean Sandbox upgrade test; payload 6.9 GB; premium art lost in the 10-15 assets delete recovered from the 10.0.3 payload. Evidence `_release_evidence/11.0.0/`.
 - **2026-10-12 — Fractured Cosmos + Wilds R2** (Claude): 170 new unique finishes (60 `cz_`, 110 `wx_`), old sets kept as FIRST SET groups.
 
 - **2026-10-12 — Owner follow-ups** (Claude): big square spec tiles + drag-resizable panels, base-picker covers/descriptions fixed, Corn Snake Blotch busy-render retry fix.
@@ -2293,6 +2293,8 @@ A preliminary structural review is written up in **`docs/CODEBASE_HEALTH_HANDOFF
 </script></section>
 
 <section id="sec-trouble" class="wiki-section"><script type="text/markdown" data-section="trouble">
+
+**2026-10-16 — Gitignored runtime art has NO backup:** The 2026-10-15 hard delete of root `assets/` silently removed gitignored premium packs; the build still went green with a short premium bundle (727 MiB vs 1686). Recovered from the 10.0.3 payload, 4K originals lost. Before any build compare the `bundle-all` per-pack lines with the previous release's build.log. Fix pending (backup / Git LFS plan).
 
 **Recovery11 open/owner paused:** Cold first shared-search lookup12.008s with two initial concurrent MCP timeouts; false no-page message on card close and six inherited display differences. Real subscriber-host and clean final Beta installer unqualified. No automatic resumption.
 
@@ -3200,6 +3202,14 @@ Observed while opening AI immediately after a fresh page showed the restored lay
 </script></section>
 
 <section id="sec-dailylog" class="wiki-section"><script type="text/markdown" data-section="dailylog">
+
+### 2026-10-16 18:50 UTC — Claude (Opus): 11.0.0 beta SHIPPED (V10 → V11, live feed)
+- Owner GO after a clean Sandbox upgrade test (10.0.3 stub, then 11.0.0). Feed verified cold: version 11.0.0, payload 6,901,636,242 B public. PayHip zip + page text + Discord post: `_payhip_11.0.0*`.
+- Root assets/ had been hard-deleted 2026-10-15: tracked files restored from git; spec_overlay_patterns from the mirror; forbidden_dragon, pattern_plates, colorshoxx/ai_reference_2026_05_27, spec_overlays/ricky_reference_batch2 re-extracted from the 10.0.3 payload (2048 slim; **4K originals lost**). See Known Trouble Spots.
+- Installer filter now drops thumbnails/swatch_cache (6.5 GB dev cache) and era_image_2026/authoring (2.9 GB scratch) - 5b91e0f68. First build had packed 15.7 GB.
+- Layer plan 95 → 93 for deliberate app changes (8560a43bb); proof 93/93, security 6/6, Easy scoped out (standing).
+- Next: back up gitignored runtime art (proposal card); R2 is ~14.6 GB - owner may delete the 10.0.1 objects (keep 10.0.3 = rollback).
+
 
 **2026-10-14 - Codex Source/Live Preview fidelity repair delivered:** Six runtime pairs synchronized; five JS/CSS HTTP59910 bytes match and served HTML version tokens verified. Settled 100% Source crop after four Fit/native cycles: ZERO changed RGB values. Guide/art/eye/active-edit and 180 native-preserving zoom transitions PASS. Real ARCA fixture preview parts restored; real wheel coverage rectangles match at62/39/24/15%. Source native2048 retained. Owner custom yellow PSD/open-window acceptance and native TGA export not tested. Prior Helper automation stays paused. Report `_codex_mcp_work/source-preview-20261014/REPORT.md`.
 

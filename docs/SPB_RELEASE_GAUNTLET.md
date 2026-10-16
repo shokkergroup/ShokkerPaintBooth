@@ -1213,3 +1213,20 @@ Activation:all 10 preflight gates PASS; R2 staged object checks PASS; exact feed
 Withdrawal:owner requested 10.0.2 removal; only its payload and installer deleted; authenticated absence and public 404 verified. 10.0.3 revalidated.
 Evidence: _release_evidence/10.0.3/release-complete.json; withdraw-10.0.2-receipt.json
 ```
+
+```text
+Date: 2026-10-16 (2026-10-16T18:47Z) - 11.0.0 beta LIVE (V10 -> V11 rename)
+Build: 11.0.0 / config 11.0.0-beta; SPB_BUNDLE_ALL=1, premium bundle 363 files / 1682.2 MiB
+Fixture: spb-chevy-truck-2048-v1; full A-F inherited from 2026-09-05 (10.0.1), delta record + owner Sandbox upgrade acceptance (10.0.3 -> 11.0.0).
+Candidate HEAD: 5b91e0f687af37d3d5db4176a863c9d96cab5ab9 / clean at proof, stage and activation
+Source hash: a16e87773c3473e19aab5c3f1bc3c53717f471c6afb786f79dd7fac801cb21b8
+Isolated proof: _release_evidence/11.0.0-beta/isolated-2026-10-16T17-02-22-773Z/isolated-proof.json / SHA256 e0f3c1851f737314a583a9cde4b4489a54b018aeae854a9323295287b250cf5f
+Layer 93/93 (plan updated for deliberate app changes, 8560a43bb); security 6/6 PASS; Easy 14 passed / 8 failed / 16 broken steps under the standing owner-approved scope-out.
+Packaged smoke: _release_evidence/11.0.0/packaged-smoke-2026-10-16.md / SHA256 f60fabc21b509e54d3969d2724ac816b27e68ff2eee68b54ead1e075336a32a2
+updaterPackage: electron-app/dist/nsis-web/shokker-paint-booth-v6-11.0.0-x64.nsis.7z / 6901636242 bytes / SHA256 7c6744ca74240d9736874f0f1cc93cc5e1da2a9fe660e4b2b275d40acbd81080
+webInstaller: electron-app/dist/nsis-web/ShokkerPaintBoothV11-11.0.0-Web-Setup.exe / 719034 bytes / SHA256 a23df22ac1475432e83f2e305875cf88d2014074950b776b62148544b8337820
+payhipBundle: ShokkerPaintBooth-11.0.0-Payhip.zip / 699463 bytes / SHA256 4d1fe4bbd8352ee22f86e8aab5bd9d3e54a251dd0a8705de9cf25c2e6cb561b0
+Live feed SHA256: ede7763b1d05824bd43557f293dc60ddd12555accccd60d5ae2c113ff1cea3d7 / public bytes match; payload public at declared size
+Activation: evidence gate + preflight activate PASS; R2 staged object checks PASS; exact feed activation and verify PASS.
+Evidence: _release_evidence/11.0.0/ (gauntlet-record-2026-10-16.md, release-evidence.json, stage.log, activate.log, verify-live.log)
+```

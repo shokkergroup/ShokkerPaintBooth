@@ -218,14 +218,14 @@ class _Config:
     # app displays (server /build-info -> SPB.applyBuildInfo -> title bar). It was
     # left at 8.0.4-beta through the entire 8.0.5 release, so the app under-reported
     # its own version to every user. Bump it here on EVERY release.
-    VERSION: str = "11.0.1-beta"          # [Claude BETA-READINESS 2026-10-13] was "11.00" (not SemVer: release preflight version identity failed, and the client warned "app is v11.00 but this window is v10.0.3-beta" on every start)
+    VERSION: str = "11.0.2-beta"          # [Claude BETA-READINESS 2026-10-13] was "11.00" (not SemVer: release preflight version identity failed, and the client warned "app is v11.00 but this window is v10.0.3-beta" on every start)
     # BUILD_TAG feeds server logs, /build-info and the observability startup line
     # (server_v5.py falls back to it when APP_VERSION is absent). It is no longer
     # shown in the title bar — the seasonal codename ("Spring Catalogue") was stale
     # and rendered as "BSpring Catalogue" because the title builder prefixes a "B"
     # for numeric build ids. Owner 2026-08-09: drop the codename; carry the version
     # so logs and the build-change toast track something real.
-    BUILD_TAG: str = "11.0.1"
+    BUILD_TAG: str = "11.0.2"
     APP_NAME: str = "Shokker Paint Booth V11"
 
     # Internal lock for any future thread-safe mutation (e.g. live config reload).

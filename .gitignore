@@ -130,6 +130,8 @@ Fractured PROMO/
 *.png
 # 11.0.2 slim download: lossless WebP twins of the (also ignored) picture-finish art
 engine/paint_v2/*/assets/*.webp
+# 11.0.2: verified lossless texture cache for the packaged build (scripts/slim_packaged_textures.py)
+_build_cache/
 !docs/*.png
 !assets/*.png
 !assets/**/*.png

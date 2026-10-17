@@ -1,6 +1,6 @@
 {
   "name": "shokker-paint-booth-v6",
-  "version": "11.0.1",
+  "version": "11.0.2",
   "description": "Shokker Paint Booth V11 — iRacing Spec Map Tool",
   "main": "main.js",
   "author": "Shokker Group",
@@ -23,6 +23,7 @@
   "build": {
     "appId": "com.shokker.paintbooth.v6",
     "productName": "Shokker Paint Booth V11",
+    "afterPack": "./after-pack-slim.js",
     "electronLanguages": [
       "en-US",
       "en-GB"
@@ -40,7 +41,7 @@
       "allowToChangeInstallationDirectory": false,
       "createDesktopShortcut": true,
       "shortcutName": "Shokker Paint Booth V11",
-      "differentialPackage": false,
+      "differentialPackage": true,
       "deleteAppDataOnUninstall": false,
       "include": "installer.nsh"
     },
@@ -102,7 +103,8 @@
     "publish": {
       "provider": "generic",
       "url": "https://pub-9969ab01838a4d69bb55822f42553904.r2.dev",
-      "channel": "latest"
+      "channel": "latest",
+      "useMultipleRangeRequest": false
     }
   },
   "dependencies": {

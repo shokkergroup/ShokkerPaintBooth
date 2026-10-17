@@ -1230,3 +1230,21 @@ Live feed SHA256: ede7763b1d05824bd43557f293dc60ddd12555accccd60d5ae2c113ff1cea3
 Activation: evidence gate + preflight activate PASS; R2 staged object checks PASS; exact feed activation and verify PASS.
 Evidence: _release_evidence/11.0.0/ (gauntlet-record-2026-10-16.md, release-evidence.json, stage.log, activate.log, verify-live.log)
 ```
+
+```text
+Date: 2026-10-16 local (2026-10-17T01:21Z) - 11.0.1 hotfix LIVE (finish previews restored)
+Build: 11.0.1; SPB_BUNDLE_ALL=1, premium bundle 363 files / 1682.2 MiB; 7130 picker bakes packaged
+Fix: ca5fcebd5 (installer filter keeps thumbnails/swatch_cache/faithful_split_v1) + 7cdcf188b (Claude connector 11.0.1)
+Candidate HEAD: 7cdcf188ba94ba4554bac3cbeda5404810ca219e / clean at proof, stage and activation
+Source hash: 1d981a549881c8a86d0831457aaf2ec3a6a2e50c8356f8f4f7ad8bdea3b1e828
+Isolated proof: _release_evidence/11.0.1-beta/isolated-2026-10-16T21-55-30-489Z/isolated-proof.json / SHA256 336338118154abbfdb2609f89f850a53c9d57df30a0525a56c0f10726d1b2a8f
+Layer 93/93; security 6/6 PASS; Easy under the standing owner-approved scope-out.
+Packaged picker sweep: 3147/3219 HTTP 200 through the real &baked=1 route (67 lazy-expansion 404 + 5 '80s image 503, pre-existing)
+Packaged smoke: _release_evidence/11.0.1/packaged-smoke-2026-10-17.md / SHA256 b2925c14b01ce86cb680b5c0567c899846f70fd8330598a638ed1a7ff7db98f0 (owner's verbatim "Go" to the PASS/GO prompt)
+updaterPackage: electron-app/dist/nsis-web/shokker-paint-booth-v6-11.0.1-x64.nsis.7z / 11191442324 bytes / SHA256 68bbafa4b76a9e292221fd9f0a53ace8865ac151a5ab862fc34b1cd9b1b1d44b
+webInstaller: electron-app/dist/nsis-web/ShokkerPaintBoothV11-11.0.1-Web-Setup.exe / 719063 bytes / SHA256 c1f5332e801d0a485957be5810ac4eabadf65e9c82a2d41e10e30cfafd4195ad
+payhipBundle: ShokkerPaintBooth-11.0.1-Payhip.zip / 699569 bytes / SHA256 6994eac5e6095c352dee2c0123f1dab5e7807a5a7bf28edd5bf694f9638d666e
+Live feed SHA256: ea4f516ef80df7649c6749132da9c395138abebcfa32aeed765a727fe37f17a1 / public bytes match; payload public at declared size (cold HEAD 200)
+Activation: evidence gate + preflight activate PASS; exact feed activation and public SHA match PASS.
+Evidence: _release_evidence/11.0.1/ (gauntlet-record-2026-10-16.md, release-evidence.json, stage.log, activate.log)
+```

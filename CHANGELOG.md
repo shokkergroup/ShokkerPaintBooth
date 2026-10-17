@@ -1,3 +1,9 @@
+## 2026-10-16 — 11.0.1 hotfix LIVE (finish previews)
+- Buyer report after 11.0.0: "no previews are working on finishes after new update". Root cause: 5b91e0f68 filtered `thumbnails/swatch_cache/**` out of the installer, which also removed `faithful_split_v1/` (the picker's baked previews; the picker asks with `&baked=1` and never renders, so every tile got a 503). Fix ca5fcebd5 drops only the loose dev cache (`swatch_cache/*.png`, `*.lock`); 7cdcf188b brings the Claude connector to 11.0.1.
+- Feed activated 2026-10-17T01:21Z (2026-10-16 local) on the owner's GO; public latest.yml SHA matches, payload 11,191,442,324 B public at declared size (cold HEAD). Packaged picker sweep 3147/3219 HTTP 200 (67 lazy-expansion ids + 5 '80s image finishes, pre-existing).
+- Proof: Layer 93/93, security 6/6, Easy scoped out (standing). Notes `docs/RELEASE_NOTES_11.0.1.md`; evidence `_release_evidence/11.0.1/`.
+- Next: the 11.0.2 slim download (~7 GB; hover previews fetched on first hover) is coded on branch claude/slim-download (worktree `C:/DRIVE E BACKUP/spb-slim-wt`), not merged yet.
+
 ## 2026-10-16 — 11.0.0 beta LIVE (V10 → V11)
 - Feed activated 2026-10-16T18:46Z after the owner's clean Sandbox upgrade test (10.0.3 stub, then 11.0.0) and explicit GO; public latest.yml + payload (6,901,636,242 B) verified cold. Commits f63096a47 (candidate), 8560a43bb (Layer plan 93 checks for deliberate app changes), 5b91e0f68 (installer drops the 6.5 GB dev swatch_cache and 2.9 GB ERA authoring scratch).
 - Recovery from the 2026-10-15 hard delete of root assets/: tracked files from git; spec_overlay_patterns from the mirror; four gitignored premium dirs (forbidden_dragon, pattern_plates, colorshoxx/ai_reference_2026_05_27, spec_overlays/ricky_reference_batch2) re-extracted from the 10.0.3 payload (2048 slim = what buyers had; 4K originals lost). Premium bundle back to 363 files / 1682 MiB.

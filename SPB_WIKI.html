@@ -1341,7 +1341,7 @@ Rows are <b>ownership</b>, not a work diary — details go in the <a href="#dail
 
 
 ### Active lanes
-| **Claude — 11.0.2 slim download (~7 GB)** | Owner 2026-10-16: "Keep everything offline except the big hover previews, about 7 GB." | Branch claude/slim-download (worktree `C:/DRIVE E BACKUP/spb-slim-wt`): server_routes/preview_cdn.py + faithful_swatch.py + swatch_routes.py, scripts/bake_faithful_picker.py + server_v5.py boot warm (`--cards-only`), electron-app/package.json filters + copy-server-assets.js gate, spb_release.ps1, scripts/r2_picker_previews.py, scripts/slim_image_art_webp.py | CODED, 44 tests pass, NOT merged. Next: merge, WebP convert/patch, re-bake ~201 picture finishes, build/sweep/stage 11.0.2, owner GO | 2026-10-16 |
+| **Claude — 11.0.3 hover-preview TLS fix** | Owner 2026-10-17: "Go live now, fix in 11.0.3". On PCs that cache the expired ISRG Root X2 cross-cert, Python TLS rejects r2.dev and hover previews fall back to the grid tile. | `server_routes/preview_cdn.py`, `server_routes/preview_cdn_roots.py` (new), `scripts/r2_picker_previews.py`, version files | IN PROGRESS - build + stage for owner Sandbox | 2026-10-17 |
 | **Codex — Source/Live Preview fidelity repair** | Owner screenshots: missing car parts, misaligned coverage and degrading Source zoom. | Scoped guide filter in paint-booth-5-api-render.js, pc-zonecov display, zoom/canvas CSS, targeted tests/runtime mirrors. Preserve Claude and other concurrent edits. | COMPLETE in canonical/Electron and private59910 — car art retained, hover coverage aligned, crisp native zoom; four settled zoom cycles identical. Owner-window reload/custom PSD acceptance still pending; Helper remains paused. | 2026-10-14 |
 
 
@@ -1922,6 +1922,7 @@ Rows are <b>ownership</b>, not a work diary — details go in the <a href="#dail
 
 
 
+- **2026-10-17 — 11.0.2 LIVE** (Claude): 7 GB download (was 11), renders pixel-exact, hover previews from R2, incremental updates on (next update ~0.1% when little changes); evidence `_release_evidence/11.0.2/`.
 - **2026-10-16 — 11.0.1 hotfix LIVE** (Claude): finish previews restored (11.0.0's installer filter had cut the picker bakes); 11 GB download; evidence `_release_evidence/11.0.1/`.
 - **2026-10-16 — 11.0.0 beta LIVE** (Claude): V10 → V11 rename shipped on the R2 feed after the owner's clean Sandbox upgrade test; payload 6.9 GB; premium art lost in the 10-15 assets delete recovered from the 10.0.3 payload. Evidence `_release_evidence/11.0.0/`.
 - **2026-10-12 — Fractured Cosmos + Wilds R2** (Claude): 170 new unique finishes (60 `cz_`, 110 `wx_`), old sets kept as FIRST SET groups.
@@ -3204,6 +3205,13 @@ Observed while opening AI immediately after a fresh page showed the restored lay
 </script></section>
 
 <section id="sec-dailylog" class="wiki-section"><script type="text/markdown" data-section="dailylog">
+
+### 2026-10-17 05:30 UTC — Claude (Opus): 11.0.2 LIVE (7 GB, incremental updates) + 11.0.3 started
+- Owner: 6 GB + only download what changed. Shipped 7.02 GB (estimate was wrong), renders 27/27 pixel-exact, picker sweeps CDN on/off OK.
+- Incremental proven: simulated next update fetched 0.12%; R2 400s multi-range so `useMultipleRangeRequest: false` is load-bearing.
+- Build trap again: copy-server dirties the mirror (scripts + 2048 grunge/mortal) - restore to HEAD bytes, `sync --write`, `git update-index --refresh`.
+- Found at activation: Python TLS rejects r2.dev on PCs caching the expired ISRG Root X2 cross-cert -> hover falls back to the tile. Owner: ship now, fix in 11.0.3.
+- Next: 11.0.3 (bundled roots for the preview fetch), staged for the owner's Sandbox test.
 
 ### 2026-10-17 01:25 UTC — Claude (Opus): 11.0.1 hotfix LIVE + 11.0.2 slim download coded
 - Buyer: "no previews are working on finishes after new update". 5b91e0f68's `!thumbnails/swatch_cache/**` also cut `faithful_split_v1/` (baked picker previews) so every tile got a 503. ca5fcebd5 keeps that folder; 7cdcf188b connector 11.0.1. Owner GO; feed + 11.19 GB payload verified cold.

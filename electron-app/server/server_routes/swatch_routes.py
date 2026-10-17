@@ -251,7 +251,16 @@ def register_swatch_routes(
                         except Exception:
                             publish = False
                     renderer_hash = picker_finish_renderer_hash(finish_type, finish_key) if picker_finish_renderer_hash else ''
+                    # [11.0.2 slim download 2026-10-16, Claude] the installer ships grid
+                    # cards only; a hover master is fetched once into the user profile.
+                    from server_routes import preview_cdn
+                    preview_dir = preview_cdn.download_dir()
+                    served = {}
                     png = faithful_split_bytes(
+                        info=served,
+                        fetch_master=preview_cdn.fetch_master if baked_only else None,
+                        download_dir=preview_dir,
+                        store_download=_disk_write_allowed(preview_dir, 'picker-preview-download'),
                         cache_dir=swatch_cache_dir,
                         # A change elsewhere in the engine must not invalidate
                         # this finish. Retain the global fallback only for ids
@@ -263,6 +272,11 @@ def register_swatch_routes(
                         render=lambda master_size: render_picker_split_snapshot_bytes(
                             finish_type, finish_key, color_hex, master_size, seed),
                     )
+                    if served.get('stand_in'):
+                        # Offline hover: the grid card enlarged. no-store so the real
+                        # preview replaces it once the network is back.
+                        return Response(png, mimetype='image/png', headers={
+                            'Cache-Control': 'no-store', 'X-SPB-Swatch-Source': 'faithful-card-stand-in'})
                     return Response(png, mimetype='image/png', headers={
                         **cache_headers, 'X-SPB-Swatch-Source': 'faithful-disk' if request.args.get('baked') == '1' else 'faithful',
                     })

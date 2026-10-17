@@ -1243,7 +1243,8 @@ if __name__ == '__main__':
                 # worker a hidden console that its children inherit - nothing ever pops up.
                 flags = 0x4000 | 0x08000000  # BELOW_NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW
                 with open(os.path.join(os.path.dirname(os.path.dirname(script)), "_swatch_warm_boot.log"), "w") as _lg:
-                    _sp.Popen([sys.executable, script],
+                    # --cards-only: installs ship grid cards, not hover masters (11.0.2 slim).
+                    _sp.Popen([sys.executable, script, "--cards-only"],
                               cwd=os.path.dirname(os.path.dirname(script)), stdout=_lg, stderr=_sp.STDOUT,
                               creationflags=flags)
                 logger.info("[SwatchWarm] current full-detail picker bake repair launched (unchanged identities skipped)")

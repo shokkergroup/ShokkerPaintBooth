@@ -3,7 +3,8 @@
 After catalog edits: --export-registry, then node scripts/spb_picker_catalog.cjs.
 Default: offline bake; unchanged identities skipped. --check fails on stale
 source/registry exports or missing masters/cards.
-Startup uses this exact baker, independent of Node or HTTP.
+Startup uses this exact baker, independent of Node or HTTP, with --cards-only:
+the installer ships grid cards but not masters (11.0.2 slim download).
 """
 import argparse
 import contextlib
@@ -134,9 +135,13 @@ def check_baked_route(s):
             s.THUMBNAIL_DIR, s._render_picker_split_snapshot_bytes = previous_dir, previous_render
 
 
-def bake_pair_ready(paths, verify=False):
+def bake_pair_ready(paths, verify=False, need_master=True):
     from PIL import Image
-    for path, dimensions in zip(paths, [(1024, 512), (512, 256)]):
+    pairs = list(zip(paths, [(1024, 512), (512, 256)]))
+    # [11.0.2 slim download 2026-10-16, Claude] An installed app has no masters
+    # (fetched on first hover). Counting them would re-render all ~3,200 on the
+    # buyer's PC at first launch. The packaging --check still needs both.
+    for path, dimensions in (pairs if need_master else pairs[1:]):
         try:
             with Image.open(path) as image:
                 if image.format != 'PNG' or image.size != dimensions:
@@ -172,6 +177,8 @@ def main():
     parser.add_argument('--prefix', action='append', default=[])
     parser.add_argument('--workers', type=int, default=2)
     parser.add_argument('--check', action='store_true')
+    parser.add_argument('--cards-only', action='store_true',
+                        help='installed app: a finish is ready when its grid card is (masters are fetched on hover)')
     parser.add_argument('--export-registry', action='store_true')
     args = parser.parse_args()
     if args.export_registry:
@@ -209,7 +216,7 @@ def run(args):
     pending = []
     for item in items:
         paths = faithful_paths(Path(s.THUMBNAIL_DIR) / 'swatch_cache', identity_for(item))
-        if not bake_pair_ready(paths, verify=args.check):
+        if not bake_pair_ready(paths, verify=args.check, need_master=not args.cards_only):
             pending.append(item)
     print(f'Faithful picker: {len(items)-len(pending)}/{len(items)} ready; {len(pending)} need baking.', flush=True)
     if args.check:

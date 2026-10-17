@@ -413,6 +413,11 @@ async function bundleAllPremiumPacks(destAssetsDir, pythonExe) {
     (fs.existsSync(path.join(SERVER_DIR, 'python/python.exe')) ? path.join(SERVER_DIR, 'python/python.exe') : 'python');
   execFileSync(pickerPython, [path.join(REPO_ROOT, 'scripts/bake_faithful_picker.py'), '--check'],
     { cwd: REPO_ROOT, stdio: 'inherit', windowsHide: true });
+  // [11.0.2 slim download 2026-10-16, Claude] The installer ships the picture finishes'
+  // art as lossless WebP only (package.json drops their PNGs). Every PNG needs a
+  // decode-equal twin, or that finish would vanish from the installed app.
+  execFileSync(pickerPython, [path.join(REPO_ROOT, 'scripts/slim_image_art_webp.py'), 'check'],
+    { cwd: REPO_ROOT, stdio: 'inherit', windowsHide: true });
   ensureDir(SERVER_DIR);
   log('dirs', `server=${SERVER_DIR}`);
 

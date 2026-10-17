@@ -128,6 +128,8 @@ Fractured PROMO/
 
 # ----- Test / preview images (allow docs + assets) --------------------------
 *.png
+# 11.0.2 slim download: lossless WebP twins of the (also ignored) picture-finish art
+engine/paint_v2/*/assets/*.webp
 !docs/*.png
 !assets/*.png
 !assets/**/*.png

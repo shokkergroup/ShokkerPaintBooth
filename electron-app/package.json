@@ -88,7 +88,13 @@
           "!thumbnails/base_spec_preview/**",
           "!thumbnails/swatch_cache/*.png",
           "!thumbnails/swatch_cache/*.lock",
-          "!engine/paint_v2/era_image_2026/authoring/**"
+          "!engine/paint_v2/era_image_2026/authoring/**",
+          "!thumbnails/swatch_cache/faithful_split_v1/????????????????????????????????????????????????????????????????.png",
+          "!engine/paint_v2/all_that_pilot/**",
+          "!engine/spec_sculpt/models/*.joblib",
+          "!engine/paint_v2/era_image_2026/assets/*.png",
+          "!engine/paint_v2/all_that_image_2026/assets/*.png",
+          "!engine/paint_v2/flaw_lab_rebuild_2026/assets/*.png"
         ]
       }
     ],

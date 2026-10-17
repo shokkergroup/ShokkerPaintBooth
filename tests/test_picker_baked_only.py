@@ -62,7 +62,8 @@ def test_startup_build_and_sync_cover_current_picker_format():
     startup = (root / 'server_v5.py').read_text(encoding='utf8')
     warm = startup[startup.index('def _boot_swatch_warm()'):]
     assert '"scripts", "bake_faithful_picker.py"' in warm
-    assert '[sys.executable, script]' in warm
+    # 11.0.2 slim download: startup counts grid cards only; masters are fetched on hover.
+    assert '[sys.executable, script, "--cards-only"]' in warm
     supervisor = (root / 'spb_server_supervisor.py').read_text(encoding='utf8')
     assert '"SPB_NO_BOOT_SWATCH_WARM": "1"' not in supervisor
     build = (root / 'electron-app/copy-server-assets.js').read_text(encoding='utf8')

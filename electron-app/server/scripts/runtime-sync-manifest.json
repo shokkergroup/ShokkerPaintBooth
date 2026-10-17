@@ -40,6 +40,7 @@
     "js/spb-finish-preferences.js",
     "js/spb-picker-detail.js",
     "server_routes/faithful_swatch.py",
+    "server_routes/preview_cdn.py",
     "scripts/bake_faithful_picker.py",
     "spb_server_supervisor.py",
     "scripts/spb_picker_catalog.cjs",

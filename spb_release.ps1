@@ -291,6 +291,23 @@ function Invoke-R2ReleasePhase([string]$Flag) {
     if ($script:NativeExit -ne 0) { Die ("R2 " + $Flag + " failed. The release boundary remains closed.") }
 }
 
+# [11.0.2 slim download 2026-10-16, Claude] The 1024x512 hover previews no longer ship in
+# the installer; the app fetches them from R2 on first hover. Stage uploads the ones this
+# build's cards point at (content-hash names: re-runs only send new ones); activate refuses
+# to publish the feed unless a sample reads back from the public URL.
+$pickerCards = "electron-app\dist\win-unpacked\resources\server\thumbnails\swatch_cache\faithful_split_v1"
+$pickerMasters = "electron-app\server\thumbnails\swatch_cache\faithful_split_v1"
+function Invoke-PickerPreviews([string]$Mode) {
+    $previousPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        if ($Mode -eq "upload") { & py -3 scripts\r2_picker_previews.py upload --cards $pickerCards --masters $pickerMasters }
+        else { & py -3 scripts\r2_picker_previews.py check --cards $pickerCards }
+        $script:NativeExit = $LASTEXITCODE
+    } finally { $ErrorActionPreference = $previousPreference }
+    if ($script:NativeExit -ne 0) { Die ("Picker hover previews " + $Mode + " failed. The feed is unchanged.") }
+}
+
 function Confirm-LiveFeedHash {
     $localFeed = Join-Path $webDir "latest.yml"
     if (-not (Test-Path -LiteralPath $localFeed)) { Die "Local latest.yml disappeared before confirmation." }
@@ -314,6 +331,8 @@ function Confirm-LiveFeedHash {
 if ($Phase -eq "stage" -or $Phase -eq "deploy") {
     Invoke-ReleasePreflight "prestage"
     Acquire-R2Credentials
+    Head "STAGE - picker hover previews (fetched by the app on first hover)"
+    Invoke-PickerPreviews "upload"
     Head "STAGE - exact payload + web installer (latest.yml held)"
     Invoke-R2ReleasePhase "--hold-latest"
     Say "STAGED and authenticated SHA-verified. The live feed is unchanged." "Green"
@@ -333,6 +352,7 @@ if ($Phase -eq "stage" -or $Phase -eq "deploy") {
         $go = Read-Host ("Type GO (capital) to publish " + $verCore + " - anything else cancels")
         if ($go -ne "GO") { Say "Cancelled. Feed unchanged; staged objects remain." "Yellow"; exit 0 }
     }
+    Invoke-PickerPreviews "check"
     Head ("ACTIVATE - exact latest.yml for " + $verCore)
     Invoke-R2ReleasePhase "--only-latest"
     Confirm-LiveFeedHash
@@ -349,6 +369,7 @@ if ($Phase -eq "activate") {
         $go = Read-Host "Type GO (capital) to publish the exact evidence-listed latest.yml - anything else cancels"
         if ($go -ne "GO") { Say "Cancelled. Feed unchanged." "Yellow"; exit 0 }
     }
+    Invoke-PickerPreviews "check"
     Invoke-R2ReleasePhase "--only-latest"
     Confirm-LiveFeedHash
     exit 0

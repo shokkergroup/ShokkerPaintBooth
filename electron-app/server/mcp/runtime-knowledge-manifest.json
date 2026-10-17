@@ -2065,8 +2065,8 @@
     },
     {
       "path": "mcp/server/index.js",
-      "sha256": "0ffc22b4d13d803053e24d934f09b108ab6c3c7aaedb69f990c241ee567adbf5",
-      "bytes": 129388
+      "sha256": "2a4bb7a2d5efc673fd8ff95f0aec200b543108dc6887643d25996f24cb3d48dd",
+      "bytes": 129454
     },
     {
       "path": "mcp/server/knowledge-health.cjs",

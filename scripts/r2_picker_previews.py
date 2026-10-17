@@ -113,11 +113,14 @@ def check(cards_dir, *, base_url, sample=40, fetch=None, out=print):
         return 1
     picked = sorted(set(random.Random(len(keys)).sample(keys, min(sample, len(keys))) + [keys[0], keys[-1]]))
 
+    # 11.0.3: same TLS trust as the app's fetch (an expired cached cross-cert made this check fail on the release PC)
+    tls = _cdn().tls_context() if fetch is None else None
+
     def head(key):
         request = urllib.request.Request(base_url + key + '.png', method='HEAD',
                                          headers={'User-Agent': 'ShokkerPaintBooth-release'})
         try:
-            with urllib.request.urlopen(request, timeout=20) as response:
+            with urllib.request.urlopen(request, timeout=20, context=tls) as response:
                 return response.status == 200 and int(response.headers.get('Content-Length') or 0) > 0
         except (urllib.error.URLError, OSError, ValueError):
             return False

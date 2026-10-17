@@ -109,7 +109,7 @@ def test_cdn_cools_down_after_a_network_error_but_not_after_a_404(monkeypatch):
     monkeypatch.setitem(preview_cdn._state, 'offline_until', 0.0)
     calls = []
 
-    def missing(request, timeout):
+    def missing(request, timeout, context=None):   # 11.0.3: fetch passes its TLS context
         calls.append(request.full_url)
         raise urllib.error.HTTPError(request.full_url, 404, 'nf', {}, None)
     monkeypatch.setattr(preview_cdn.urllib.request, 'urlopen', missing)
@@ -117,7 +117,7 @@ def test_cdn_cools_down_after_a_network_error_but_not_after_a_404(monkeypatch):
     assert preview_cdn.fetch_master(name) is None and preview_cdn.fetch_master(name) is None
     assert len(calls) == 2
 
-    def down(request, timeout):
+    def down(request, timeout, context=None):   # 11.0.3: fetch passes its TLS context
         calls.append(request.full_url)
         raise OSError('no route')
     monkeypatch.setattr(preview_cdn.urllib.request, 'urlopen', down)
